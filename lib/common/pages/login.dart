@@ -60,7 +60,8 @@ class _LoginPageState extends State<LoginPage> {
                                 decoration: InputDecoration(hintText: "Usuario"),
                               ),
                               ///TODO("yapmDev")
-                              /// To avoid re-render the entire ui, extract this widget as a single component.
+                              /// To avoid re-render the entire ui, extract this widget as a single component, like
+                              /// PasswordTextField.
                               TextFormField(
                                   controller: _passwordController,
                                   obscureText: _obscureText,
