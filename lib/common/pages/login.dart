@@ -23,7 +23,7 @@ class _LoginPageState extends State<LoginPage> {
       child: Stack(
         children: [
           // Background image
-          Positioned.fill(child: Image.asset("images/taxi.jpg", fit: BoxFit.fitHeight)),
+          Positioned.fill(child: Image.asset("assets/images/taxi.jpg", fit: BoxFit.fitHeight)),
           // Opacity Mask
           Positioned.fill(child: ColoredBox(color: customColors.darkestColor.withAlpha(100))),
           // Main Content
