@@ -9,10 +9,10 @@ class MapboxService {
   final String _accessToken = const String.fromEnvironment('MAPBOX_ACCESS_TOKEN');
 
   Future<MapboxRoute> getRoute({
-    required double originLat,
-    required double originLng,
-    required double destinationLat,
-    required double destinationLng,
+    required num originLat,
+    required num originLng,
+    required num destinationLat,
+    required num destinationLng,
   }) async {
     final url = '$_baseUrl/$_profile/$originLng,$originLat;$destinationLng,'
         '$destinationLat?geometries=geojson&overview=full&access_token=$_accessToken';

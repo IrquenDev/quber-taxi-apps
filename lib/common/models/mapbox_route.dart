@@ -2,7 +2,7 @@
 class MapboxRoute {
   final double distance; // in meters
   final double duration; // in seconds
-  final List<List<double>> coordinates; // [ [lng, lat], ... ]
+  final List<List<num>> coordinates; // [ [lng, lat], ... ]
 
   MapboxRoute({
     required this.distance,
@@ -18,7 +18,7 @@ class MapboxRoute {
       distance: route['distance']?.toDouble() ?? 0.0,
       duration: route['duration']?.toDouble() ?? 0.0,
       coordinates: geometry
-          .map<List<double>>((position) => [position[0].toDouble(), position[1].toDouble()]).toList()
+          .map<List<double>>((position) => [position[0], position[1]]).toList()
     );
   }
 }
