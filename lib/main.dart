@@ -42,7 +42,26 @@ class HomePage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) =>
-                      MapPage(position: Position(position.longitude, position.latitude))
+                      MapPage(
+                        position: Position(position.longitude, position.latitude),
+                        widgetLayerBuilder: (mapController) {
+                          if(mapController == null) return null;
+                          return <Positioned>[
+                            Positioned(
+                                right: 20, bottom: 20,
+                                child: FloatingActionButton(
+                                    onPressed: () {
+                                      mapController.easeTo(CameraOptions(center: Point(coordinates: Position(
+                                          position.longitude, position.latitude))),
+                                          MapAnimationOptions(duration: 500)
+                                      );
+                                    },
+                                child: Icon(Icons.not_listed_location_outlined),
+                                )
+                            )
+                          ];
+                        },
+                      )
                   )
                 );
               },
