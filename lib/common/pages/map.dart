@@ -1,19 +1,16 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart' as g;
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:quber_taxi/common/models/mapbox_place.dart';
 import 'package:quber_taxi/common/services/mapbox_service.dart';
+import 'package:quber_taxi/enums/mapbox_place_type.dart';
 
 class MapPage extends StatefulWidget {
-  const MapPage({
-    super.key,
-    required this.position,
-    this.widgetLayerBuilder
-  });
+  const MapPage({super.key, required this.position});
 
   final Position position;
-
-  final WidgetLayerBuilder? widgetLayerBuilder;
 
   @override
   State<MapPage> createState() => _MapPageState();
@@ -21,7 +18,7 @@ class MapPage extends StatefulWidget {
 
 class _MapPageState extends State<MapPage> {
 
-  final _mapboxService = MapboxService();
+  final _mapboxService = const MapboxService();
   final _lineLayer = LineLayer(
       id: "line-layer",
       sourceId: "sourceId", // matches GeoJsonSource.id
@@ -30,8 +27,13 @@ class _MapPageState extends State<MapPage> {
       minZoom: 1,
       maxZoom: 24
   );
+  final _originQueryController = TextEditingController();
+  final _destinationQueryController = TextEditingController();
 
   MapboxMap? _mapController;
+  MapboxPlace? _origin;
+  MapboxPlace? _destination;
+
   late PointAnnotationManager _pointAnnotationManager;
   late PointAnnotation _pointAnnotation;
   late Uint8List _imageData;
@@ -81,8 +83,13 @@ class _MapPageState extends State<MapPage> {
                   final pointManager = await mapboxMap.annotations.createPointAnnotationManager();
                   final bytes = await rootBundle.load('assets/mapbox/location-marker.png');
                   if (!mounted) return;
+                  final origin = await _mapboxService.searchLocationName(
+                      longitude: widget.position.lng, latitude: widget.position.lat,
+                      types: [MapboxPlaceType.place, MapboxPlaceType.address]
+                  );
                   setState(() {
                     _mapController = mapboxMap;
+                    _origin = origin;
                     _pointAnnotationManager = pointManager;
                     _imageData = bytes.buffer.asUint8List();
                   });
@@ -142,6 +149,13 @@ class _MapPageState extends State<MapPage> {
                     await _mapController?.style.addLayer(_lineLayer);
                   }
 
+                  final destination = await _mapboxService.searchLocationName(
+                      longitude: lng, latitude: lat,
+                      types: [MapboxPlaceType.place, MapboxPlaceType.address]
+                  );
+
+                  setState(() => _destination = destination);
+
                   // If all instructions are completed correctly, it's safe to set that a location has been selected.
                   // This is necessary to decide whether to create/update markers or routes.
                   isLocationSelectedOnce = true;
@@ -180,9 +194,7 @@ class _MapPageState extends State<MapPage> {
                                       )
                                     ),
                                     ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
+                                      onPressed: () => Navigator.pop(context),
                                       child: const Text("Hacer Viaje"),
                                     )
                                   ]
@@ -193,11 +205,66 @@ class _MapPageState extends State<MapPage> {
                   );
                 }
             ),
-            ...? widget.widgetLayerBuilder?.call(_mapController)
+
+            // Find my location
+            Positioned(
+                right: 20, bottom: 20,
+                child: FloatingActionButton(
+                  onPressed: () async {
+                    final position = await g.Geolocator.getCurrentPosition();
+                    _mapController!.easeTo(CameraOptions(center: Point(coordinates:
+                        Position(position.longitude, position.latitude))),
+                        MapAnimationOptions(duration: 500)
+                    );
+                  },
+                  child: Icon(Icons.not_listed_location_outlined)
+                )
+            ),
+
+            // Example Search Input (Origin - Destination)
+            Positioned(
+              top: 8.0, right: 8.0, left: 8.0,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  spacing: 8.0,
+                  children: [
+                    TextFormField(
+                      controller: _originQueryController,
+                      decoration: InputDecoration(
+                          hintText: _origin?.placeName ?? "Origen",
+                          suffixIcon: Icon(Icons.search_outlined)
+                      ),
+                    ),
+                    TextFormField(
+                      controller: _destinationQueryController,
+                      decoration: InputDecoration(
+                          hintText: _destination?.placeName ?? "Destino",
+                          suffixIcon: IconButton(
+                            onPressed: () async {
+                              final queryString = _destinationQueryController.text;
+                              if(queryString.isEmpty) return;
+                              final destination = await _mapboxService.searchLocationCoords(
+                                  query: queryString,
+                                  proximity: widget.position,
+                                  types: [MapboxPlaceType.place, MapboxPlaceType.address, MapboxPlaceType.locality]
+                              );
+                              if(destination != null) {
+                                _mapController!.easeTo(CameraOptions(center: Point(coordinates:
+                                Position(destination.coordinates[0], destination.coordinates[1]))),
+                                    MapAnimationOptions(duration: 500)
+                                );
+                                setState(() => _destination = destination);
+                              }
+                            },
+                            icon: Icon(Icons.search_outlined),
+                          )
+                      )
+                    )
+                  ]
+                )
+            )
           ]
       )
     );
   }
 }
-
-typedef WidgetLayerBuilder = List<Positioned>? Function(MapboxMap? controller);
