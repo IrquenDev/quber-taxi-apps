@@ -64,7 +64,8 @@ final appTheme = ThemeData(
         borderRadius: BorderRadius.circular(_defaultBorderRadius),
         borderSide: BorderSide.none,
       ),
-      hintStyle: TextStyle(color: _neutralColor)
+      hintStyle: TextStyle(color: _neutralColor),
+      suffixIconColor: _defaultIconColor
   ),
 
   elevatedButtonTheme: ElevatedButtonThemeData(

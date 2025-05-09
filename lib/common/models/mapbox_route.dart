@@ -1,10 +1,12 @@
+import 'package:flutter/foundation.dart';
 
+@immutable
 class MapboxRoute {
   final double distance; // in meters
   final double duration; // in seconds
   final List<List<num>> coordinates; // [ [lng, lat], ... ]
 
-  MapboxRoute({
+  const MapboxRoute({
     required this.distance,
     required this.duration,
     required this.coordinates,
