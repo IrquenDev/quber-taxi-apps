@@ -31,15 +31,20 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # mapbox sdk for flutter apps integration.
-  mapbox_maps_flutter: ^2.7.0
+  # Mapbox sdk for flutter apps integration.
+  # Do not use the semantic compatibility operator (^).
+  mapbox_maps_flutter: 2.8.0
 
-  # Keep current version.
+  # Geolocation service.
   # Do not use the semantic compatibility operator (^).
   # Versions >=14.0.0 may generate errors with non-existent methods (e.g., toARGB32).
   geolocator: 13.0.2
 
   http: ^1.4.0
+
+  flutter_fusion:
+    git:
+      url: https://github.com/yapmDev/flutter_fusion.git
 
 dev_dependencies:
   flutter_test:
