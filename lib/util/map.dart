@@ -1,3 +1,5 @@
+//This file is a guide for map functionalities.
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,16 +10,16 @@ import 'package:quber_taxi/common/models/mapbox_place.dart';
 import 'package:quber_taxi/common/services/mapbox_service.dart';
 import 'package:quber_taxi/enums/mapbox_place_type.dart';
 
-class MapPage extends StatefulWidget {
-  const MapPage({super.key, required this.position});
+class MapPageExample extends StatefulWidget {
+  const MapPageExample({super.key, required this.position});
 
   final Position position;
 
   @override
-  State<MapPage> createState() => _MapPageState();
+  State<MapPageExample> createState() => _MapPageExampleState();
 }
 
-class _MapPageState extends State<MapPage> {
+class _MapPageExampleState extends State<MapPageExample> {
 
   final _mapboxService = const MapboxService();
   final _lineLayer = LineLayer(

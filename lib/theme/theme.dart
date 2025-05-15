@@ -7,7 +7,7 @@ import 'package:quber_taxi/theme/dimensions.dart';
 // The app primary color, most commonly used color to to emphasize components.
 // Available in Theme.of(context).colorScheme.primaryColor.
 // @Temporal
-const _primaryColor = Colors.deepPurple;
+const _primaryColor = Color(0xFFFBB735);
 
 // The neutral app color to use in disabled (or unselected if applies)
 // Available in Theme.of(context).extension<ColorExtension>()!.neutralColor
