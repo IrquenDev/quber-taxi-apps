@@ -1,0 +1,57 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -82.3785,
+                            23.1456
+                        ],
+                        [
+                            -82.3675,
+                            23.1433
+                        ],
+                        [
+                            -82.3577,
+                            23.146
+                        ],
+                        [
+                            -82.3585,
+                            23.1374
+                        ],
+                        [
+                            -82.3655,
+                            23.1248
+                        ],
+                        [
+                            -82.3743,
+                            23.1242
+                        ],
+                        [
+                            -82.3769,
+                            23.1322
+                        ],
+                        [
+                            -82.3785,
+                            23.1456
+                        ]
+                    ]
+                ]
+            },
+            "type": "Feature",
+            "properties": {
+                "province": "La Habana",
+                "DPA_municipality_code": "23.03",
+                "country": "Cuba",
+                "region": "municipality",
+                "municipality": "Centro Habana",
+                "country_domain": "cu",
+                "province_id": "lha",
+                "DPA_province_code": "23"
+            }
+        }
+    ]
+}

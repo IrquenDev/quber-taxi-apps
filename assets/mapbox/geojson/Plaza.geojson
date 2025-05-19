@@ -1,0 +1,65 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -82.4107,
+                            23.1345
+                        ],
+                        [
+                            -82.3917,
+                            23.1481
+                        ],
+                        [
+                            -82.3785,
+                            23.1456
+                        ],
+                        [
+                            -82.3769,
+                            23.1322
+                        ],
+                        [
+                            -82.3863,
+                            23.1136
+                        ],
+                        [
+                            -82.404,
+                            23.1006
+                        ],
+                        [
+                            -82.4108,
+                            23.1042
+                        ],
+                        [
+                            -82.406,
+                            23.112
+                        ],
+                        [
+                            -82.4118,
+                            23.1217
+                        ],
+                        [
+                            -82.4107,
+                            23.1345
+                        ]
+                    ]
+                ]
+            },
+            "type": "Feature",
+            "properties": {
+                "province": "La Habana",
+                "DPA_municipality_code": "23.02",
+                "country": "Cuba",
+                "region": "municipality",
+                "municipality": "Plaza de la Revoluci\u00f3n",
+                "country_domain": "cu",
+                "province_id": "lha",
+                "DPA_province_code": "23"
+            }
+        }
+    ]
+}

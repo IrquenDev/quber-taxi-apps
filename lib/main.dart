@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
-import 'package:quber_taxi/client-app/pages/client_map.dart';
+import 'package:quber_taxi/examples/distance_calc_example.dart';
 import 'package:quber_taxi/theme/theme.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   String accessToken = const String.fromEnvironment("MAPBOX_ACCESS_TOKEN");
   MapboxOptions.setAccessToken(accessToken);
@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: appTheme,
-      home: const ClientMap(),
+      home: const MapGeoJsonCheckPage(),
     );
   }
 }
