@@ -1,0 +1,69 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -82.3663,
+                            23.1143
+                        ],
+                        [
+                            -82.3507,
+                            23.1122
+                        ],
+                        [
+                            -82.3427,
+                            23.1039
+                        ],
+                        [
+                            -82.3397,
+                            23.0924
+                        ],
+                        [
+                            -82.3361,
+                            23.0867
+                        ],
+                        [
+                            -82.3426,
+                            23.078
+                        ],
+                        [
+                            -82.3486,
+                            23.0853
+                        ],
+                        [
+                            -82.3801,
+                            23.0801
+                        ],
+                        [
+                            -82.3824,
+                            23.0971
+                        ],
+                        [
+                            -82.3794,
+                            23.1032
+                        ],
+                        [
+                            -82.3663,
+                            23.1143
+                        ]
+                    ]
+                ]
+            },
+            "type": "Feature",
+            "properties": {
+                "province": "La Habana",
+                "DPA_municipality_code": "23.09",
+                "country": "Cuba",
+                "region": "municipality",
+                "municipality": "Diez de Octubre",
+                "country_domain": "cu",
+                "province_id": "lha",
+                "DPA_province_code": "23"
+            }
+        }
+    ]
+}

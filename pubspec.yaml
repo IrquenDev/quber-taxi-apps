@@ -40,6 +40,8 @@ dependencies:
   # Versions >=14.0.0 may generate errors with non-existent methods (e.g., toARGB32).
   geolocator: 13.0.2
 
+  turf: ^0.0.10
+
   http: ^1.4.0
 
   flutter_fusion:
@@ -70,7 +72,8 @@ flutter:
 
   assets:
     - assets/images/taxi.jpg
-    - assets/mapbox/location-marker.png
+    - assets/mapbox/markers/
+    - assets/mapbox/geojson/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

@@ -20,4 +20,3 @@ extension CameraOptionsExtension on CameraOptions {
     );
   }
 }
-

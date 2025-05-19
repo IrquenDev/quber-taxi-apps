@@ -2,23 +2,21 @@ import 'package:flutter/foundation.dart';
 
 @immutable
 class MapboxPlace {
-
-  final String placeName;
+  final String name;
   final List<double> coordinates;
-  final double relevance;
 
   const MapboxPlace({
-    required this.placeName,
+    required this.name,
     required this.coordinates,
-    required this.relevance
   });
 
   factory MapboxPlace.fromJson(Map<String, dynamic> json) {
     final center = json['center'] as List<dynamic>;
+    final placeName = json['text'] as String;
+
     return MapboxPlace(
-      placeName: json['place_name'],
-      coordinates: [center[0], center[1]], // [lng, lat]
-      relevance: (json['relevance'] as num).toDouble()
+      name: placeName,
+      coordinates: [center[0] as double, center[1] as double],
     );
   }
 }

@@ -27,7 +27,7 @@ class MapboxService {
     return MapboxRoute.fromJson(jsonDecode(response.body));
   }
 
-  Future<MapboxPlace?> searchLocationCoords({
+  Future<MapboxPlace?> getLocationCoords({
     required String query,
     required List<MapboxPlaceType> types,
     Position? proximity,
@@ -45,18 +45,24 @@ class MapboxService {
     return MapboxPlace.fromJson(features.first);
   }
 
-  Future<MapboxPlace> searchLocationName({
+  Future<MapboxPlace?> getLocationName({
     required num longitude,
     required num latitude,
-    required List<MapboxPlaceType> types,
   }) async {
     final url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/$longitude,$latitude.json'
         '?access_token=$_accessToken'
-        '&types=${types.map((type) => type.value).join(',')}'
-        '&limit=1';
+        '&language=es';
     final response = await http.get(Uri.parse(url));
     final data = jsonDecode(response.body);
     final features = data['features'] as List<dynamic>;
-    return MapboxPlace.fromJson(features.first);
+    final localityFeature = features.firstWhere(
+          (f) => f['place_type'] != null &&
+          List.from(f['place_type']).contains('locality'),
+      orElse: () => null,
+    );
+    if (localityFeature == null) {
+      return null;
+    }
+    return MapboxPlace.fromJson(localityFeature);
   }
 }

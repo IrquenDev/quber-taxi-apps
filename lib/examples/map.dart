@@ -1,4 +1,5 @@
-//This file is a guide for map functionalities.
+// This file is a guide for map functionalities.
+// Do not edit for any reason.
 
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -89,10 +90,10 @@ class _MapPageExampleState extends State<MapPageExample> {
                       onMapCreated: (mapboxMap) async {
                         // Init fields
                         final pointManager = await mapboxMap.annotations.createPointAnnotationManager();
-                        final bytes = await rootBundle.load('assets/mapbox/location-marker.png');
-                        final origin = await _mapboxService.searchLocationName(
-                            longitude: widget.position.lng, latitude: widget.position.lat,
-                            types: [MapboxPlaceType.place, MapboxPlaceType.address]
+                        final bytes = await rootBundle.load('assets/mapbox/markers/location-marker.png');
+                        final origin = await _mapboxService.getLocationName(
+                            longitude: widget.position.lng,
+                            latitude: widget.position.lat
                         );
                         // Update some mapbox component
                         mapboxMap.location.updateSettings(LocationComponentSettings(enabled: true));
@@ -156,9 +157,9 @@ class _MapPageExampleState extends State<MapPageExample> {
                           await _mapController?.style.addLayer(_lineLayer);
                         }
                         // Updating destination
-                        final destination = await _mapboxService.searchLocationName(
-                            longitude: lng, latitude: lat,
-                            types: [MapboxPlaceType.place, MapboxPlaceType.address]
+                        final destination = await _mapboxService.getLocationName(
+                            longitude: lng,
+                            latitude: lat
                         );
                         setState(() => _destination = destination);
                         // If all instructions are completed correctly, it's safe to set that a location has been
@@ -237,19 +238,19 @@ class _MapPageExampleState extends State<MapPageExample> {
                           TextFormField(
                             controller: _originQueryController,
                             decoration: InputDecoration(
-                                hintText: _origin?.placeName ?? "Origen",
+                                hintText: _origin?.name ?? "Origen",
                                 suffixIcon: Icon(Icons.search_outlined)
                             ),
                           ),
                           TextFormField(
                               controller: _destinationQueryController,
                               decoration: InputDecoration(
-                                  hintText: _destination?.placeName ?? "Destino",
+                                  hintText: _destination?.name ?? "Destino",
                                   suffixIcon: IconButton(
                                     onPressed: () async {
                                       final queryString = _destinationQueryController.text;
                                       if(queryString.isEmpty) return;
-                                      final destination = await _mapboxService.searchLocationCoords(
+                                      final destination = await _mapboxService.getLocationCoords(
                                           query: queryString,
                                           proximity: widget.position,
                                           types: [
