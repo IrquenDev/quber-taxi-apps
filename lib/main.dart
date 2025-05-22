@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
-import 'package:quber_taxi/examples/distance_calc_example.dart';
 import 'package:quber_taxi/theme/theme.dart';
+
+import 'client-app/pages/client_map.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: appTheme,
-      home: const MapGeoJsonCheckPage(),
+      home: const ClientMap(),
     );
   }
 }
