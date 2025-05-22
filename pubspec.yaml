@@ -71,12 +71,16 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/images/taxi.jpg
-    - assets/images/estandar_car.png
-    - assets/images/confort_car.png
-    - assets/images/family_car.png
-    - assets/mapbox/markers/
+    - assets/mapbox/markers/v1/
+    - assets/mapbox/markers/v2/
+    - assets/mapbox/markers/v3/
     - assets/mapbox/geojson/
+    - assets/icon/v1/
+    - assets/icon/v2/
+    - assets/icon/v3/
+    - assets/images/v1/
+    - assets/images/v2/
+    - assets/images/v3/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

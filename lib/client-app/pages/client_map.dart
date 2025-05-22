@@ -228,9 +228,9 @@ class _ClientMapState extends State<ClientMap> {
                               valueListenable: selectedVehicle,
                               builder: (context, selected, _) {
                                 final vehicles = [
-                                  {'type': 'Estándar', 'image': 'assets/images/estandar_car.png'},
-                                  {'type': 'Familiar', 'image': 'assets/images/family_car.png'},
-                                  {'type': 'Confort', 'image': 'assets/images/confort_car.png'},
+                                  {'type': 'Estándar', 'image': 'assets/images/v1/estandar_car.png'},
+                                  {'type': 'Familiar', 'image': 'assets/images/v1/family_car.png'},
+                                  {'type': 'Confort', 'image': 'assets/images/v1/confort_car.png'},
                                 ];
 
                                 return ListView.separated(
