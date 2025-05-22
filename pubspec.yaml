@@ -72,6 +72,9 @@ flutter:
 
   assets:
     - assets/images/taxi.jpg
+    - assets/images/estandar_car.png
+    - assets/images/confort_car.png
+    - assets/images/family_car.png
     - assets/mapbox/markers/
     - assets/mapbox/geojson/
 
