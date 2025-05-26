@@ -19,35 +19,35 @@ class _MapGeoJsonCheckPageState extends State<MapGeoJsonCheckPage> {
   final _service = MapboxService();
   late turf.Polygon _havanaPolygon;
 
-  Future<void> _loadGeoJson() async {
+  Future<void> _loadHavanaGeoJson() async {
     _havanaPolygon = await loadGeoJsonPolygon("assets/mapbox/geojson/CiudadDeLaHabana.geojson");
   }
 
   Future<void> _handleMapTap(MapContentGestureContext tappedPoint) async {
 
-    // Get new point
-    final dest = turf.Position(tappedPoint.point.coordinates.lng, tappedPoint.point.coordinates.lat);
+    final lng = tappedPoint.point.coordinates.lng;
+    final lat = tappedPoint.point.coordinates.lat;
 
     // Check if inside of Havana
-    final isInside = isPointInPolygon(dest, _havanaPolygon);
+    final isInside = isPointInPolygon(lng, lat, _havanaPolygon);
     if(!isInside) {
       showToast(context: context, message: "Los destinos están limitados a La Habana");
       return;
     }
 
     // Get municipality name
-    final place = await _service.getLocationName(longitude: dest.lng, latitude: dest.lat);
+    final place = await _service.getMunicipalityName(longitude: lng, latitude: lat);
     if (!mounted) return;
     if (place == null) {
       showToast(context: context, message: "No se pudo determinar la localidad");
       return;
     }
-    showToast(context: context, message: place.name, position: Alignment.center);
+    showToast(context: context, message: place.text, position: Alignment.center);
 
     // Match .geojson
-    final geoJsonPath = Municipalities.resolveGeoJsonRef(place.name);
+    final geoJsonPath = Municipalities.resolveGeoJsonRef(place.text);
     if (geoJsonPath == null) {
-      showToast(context: context, message: "Municipio no reconocido: ${place.name}");
+      showToast(context: context, message: "Municipio no reconocido: ${place.text}");
       return;
     }
 
@@ -75,7 +75,7 @@ class _MapGeoJsonCheckPageState extends State<MapGeoJsonCheckPage> {
   @override
   void initState() {
     super.initState();
-    _loadGeoJson();
+    _loadHavanaGeoJson();
   }
 
   @override

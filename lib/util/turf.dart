@@ -48,4 +48,5 @@ Waypoint findFarthestPointInPolygon({
   return Waypoint(benchmark, farthestPoint!, maxDistance!);
 }
 
-bool isPointInPolygon(turf.Position point, turf.Polygon polygon) => turf.booleanPointInPolygon(point, polygon);
+bool isPointInPolygon(num lng, num lat, turf.Polygon polygon) =>
+    turf.booleanPointInPolygon(turf.Position(lng, lat), polygon);

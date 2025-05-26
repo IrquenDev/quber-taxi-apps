@@ -21,7 +21,7 @@ const _lightestColor = Colors.white;
 // Available in Theme.of(context).extension<ColorExtension>()!.darkestColor.
 const _darkestColor = Colors.black;
 
-// The default icon color around the app. Available in Theme.of(context).iconTheme.color.
+// The default icons color around the app. Available in Theme.of(context).iconTheme.color.
 final _defaultIconColor = _darkestColor.withAlpha(175);
 
 // ---- Dimensions ----
@@ -38,9 +38,14 @@ const _defaultElevation = 4.0;
 // Available in Theme.of(context).extension<DimensionExtension>()!.contentPadding.
 const _defaultContentPadding = EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0);
 
-// The default size for any icon.
+// The default size for any icons.
 // Available in Theme.of(context).iconTheme.size.
 const _defaultIconSize = 28.0;
+
+// ---- Typography ----
+
+// The default text color around the app.
+final _defaultTextColor = _darkestColor.withAlpha(150);
 
 /// The app theme itself. Only `light mode` will be available for now.
 final appTheme = ThemeData(
@@ -78,6 +83,8 @@ final appTheme = ThemeData(
       )
   ),
 
+  dividerColor: _defaultIconColor,
+
   // Custom theme extension.
   // Available in ... final appTheme = Theme.of(context).extension<SomeXExtension>()!;
   extensions: <ThemeExtension<dynamic>>[
@@ -87,9 +94,11 @@ final appTheme = ThemeData(
         neutralColor: _neutralColor
     ),
     const DimensionExtension(
-        borderRadius: BorderRadius.all(Radius.circular(_defaultBorderRadius)),
+        borderRadius: _defaultBorderRadius,
         elevation: _defaultElevation,
         contentPadding: _defaultContentPadding
     )
-  ]
+  ],
+
+  textTheme: TextTheme(bodyMedium:TextStyle(color: _defaultTextColor), bodyLarge:TextStyle(color: _defaultTextColor))
 );
