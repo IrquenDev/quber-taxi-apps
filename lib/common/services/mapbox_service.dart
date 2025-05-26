@@ -45,7 +45,7 @@ class MapboxService {
     return MapboxPlace.fromJson(features.first);
   }
 
-  Future<MapboxPlace?> getLocationName({
+  Future<MapboxPlace?> getMunicipalityName({
     required num longitude,
     required num latitude,
   }) async {
@@ -64,5 +64,36 @@ class MapboxService {
       return null;
     }
     return MapboxPlace.fromJson(localityFeature);
+  }
+
+  Future<MapboxPlace?> getMapboxPlace({
+    required num longitude,
+    required num latitude,
+  }) async {
+    final url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/$longitude,$latitude.json'
+        '?access_token=$_accessToken';
+    final response = await http.get(Uri.parse(url));
+    final data = jsonDecode(response.body);
+    final features = data['features'] as List<dynamic>;
+    return MapboxPlace.fromJson(features.first);
+  }
+
+  Future<List<MapboxPlace>> fetchSuggestions(String query) async {
+    final encodedQuery = Uri.encodeComponent(query);
+    const bbox = '-82.586995,22.934228,-82.081898,23.26079';
+    const proximityLon = -82.3666;
+    const proximityLat = 23.1136;
+    final url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/$encodedQuery.json'
+        '?access_token=$_accessToken'
+        '&autocomplete=true'
+        '&proximity=$proximityLon,$proximityLat'
+        '&bbox=$bbox'
+        '&language=es'
+        '&country=cu'
+        '&limit=20';
+    final response = await http.get(Uri.parse(url));
+    final data = json.decode(response.body);
+    final features = data['features'] as List<dynamic>;
+    return features.map((json) => MapboxPlace.fromJson(json)).toList();
   }
 }

@@ -1,4 +1,4 @@
-// This file is a guide for map functionalities.
+// This file is a guide for client_map functionalities.
 // Do not edit for any reason.
 
 import 'dart:convert';
@@ -91,7 +91,7 @@ class _MapPageExampleState extends State<MapPageExample> {
                         // Init fields
                         final pointManager = await mapboxMap.annotations.createPointAnnotationManager();
                         final bytes = await rootBundle.load('assets/mapbox/markers/location-marker.png');
-                        final origin = await _mapboxService.getLocationName(
+                        final origin = await _mapboxService.getMunicipalityName(
                             longitude: widget.position.lng,
                             latitude: widget.position.lat
                         );
@@ -157,7 +157,7 @@ class _MapPageExampleState extends State<MapPageExample> {
                           await _mapController?.style.addLayer(_lineLayer);
                         }
                         // Updating destination
-                        final destination = await _mapboxService.getLocationName(
+                        final destination = await _mapboxService.getMunicipalityName(
                             longitude: lng,
                             latitude: lat
                         );
@@ -238,14 +238,14 @@ class _MapPageExampleState extends State<MapPageExample> {
                           TextFormField(
                             controller: _originQueryController,
                             decoration: InputDecoration(
-                                hintText: _origin?.name ?? "Origen",
+                                hintText: _origin?.text ?? "Origen",
                                 suffixIcon: Icon(Icons.search_outlined)
                             ),
                           ),
                           TextFormField(
                               controller: _destinationQueryController,
                               decoration: InputDecoration(
-                                  hintText: _destination?.name ?? "Destino",
+                                  hintText: _destination?.text ?? "Destino",
                                   suffixIcon: IconButton(
                                     onPressed: () async {
                                       final queryString = _destinationQueryController.text;

@@ -75,9 +75,9 @@ flutter:
     - assets/mapbox/markers/v2/
     - assets/mapbox/markers/v3/
     - assets/mapbox/geojson/
-    - assets/icon/v1/
-    - assets/icon/v2/
-    - assets/icon/v3/
+    - assets/icons/v1/
+    - assets/icons/v2/
+    - assets/icons/v3/
     - assets/images/v1/
     - assets/images/v2/
     - assets/images/v3/
