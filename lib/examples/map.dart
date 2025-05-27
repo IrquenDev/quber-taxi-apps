@@ -1,4 +1,4 @@
-// This file is a guide for client_map functionalities.
+// This file is a guide for mapbox maps functionalities.
 // Do not edit for any reason.
 
 import 'dart:convert';
@@ -22,7 +22,7 @@ class MapPageExample extends StatefulWidget {
 
 class _MapPageExampleState extends State<MapPageExample> {
 
-  final _mapboxService = const MapboxService();
+  final _mapboxService = MapboxService();
   final _lineLayer = LineLayer(
       id: "line-layer",
       sourceId: "sourceId", // matches GeoJsonSource.id

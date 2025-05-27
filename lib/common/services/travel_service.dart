@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:quber_taxi/common/models/travel.dart';
+import 'package:quber_taxi/config/api_config.dart';
 import 'package:quber_taxi/enums/taxi_type.dart';
 
 class TravelService {
 
-  const TravelService();
+  final _apiConfig = ApiConfig();
+  final _endpoint = "travels";
 
   Future<Travel> requestNewTravel({
     int clientId = 1, // just for testing, (obviously required a registered client with this specific id)
@@ -20,7 +22,7 @@ class TravelService {
     required num minPrice,
     required num maxPrice
   }) async {
-    final url = Uri.parse("http://10.0.2.2:8080/travels/$clientId");
+    final url = Uri.parse("${_apiConfig.baseUrl}/$_endpoint/$clientId");
     final headers = {'Content-Type': 'application/json'};
     final response = await http.post(
       url,
@@ -38,6 +40,7 @@ class TravelService {
           "maxPrice": maxPrice
         })
     );
+    print(response.statusCode);
     return Travel.fromJson(jsonDecode(response.body));
   }
 }
