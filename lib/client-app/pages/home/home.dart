@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
-import 'package:quber_taxi/client-app/pages/client_map/bottom_sheet.dart';
-import 'package:quber_taxi/client-app/pages/client_map/map_view.dart';
+import 'package:quber_taxi/client-app/pages/home/bottom_sheet.dart';
+import 'package:quber_taxi/client-app/pages/home/map_view.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 
 class ClientHome extends StatefulWidget {

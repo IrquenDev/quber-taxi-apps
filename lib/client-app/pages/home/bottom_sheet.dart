@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
-import 'package:quber_taxi/client-app/pages/client_map/search_destination.dart';
-import 'package:quber_taxi/client-app/pages/client_map/search_origin.dart';
+import 'package:quber_taxi/client-app/pages/home/search_destination.dart';
+import 'package:quber_taxi/client-app/pages/home/search_origin.dart';
 import 'package:quber_taxi/common/models/mapbox_place.dart';
 import 'package:quber_taxi/common/services/travel_service.dart';
 import 'package:turf/turf.dart' as turf;
@@ -25,7 +25,7 @@ class RequestTravelSheet extends StatefulWidget {
 
 class _RequestTravelSheetState extends State<RequestTravelSheet> {
 
-  final _travelService = const TravelService();
+  final _travelService = TravelService();
 
   String? _originName;
   List<num>? _originCoords;
