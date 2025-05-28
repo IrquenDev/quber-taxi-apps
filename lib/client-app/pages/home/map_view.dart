@@ -56,7 +56,7 @@ class _MapViewState extends State<MapView> {
           Positioned(
               right: 20.0, bottom: widget.usingExtendedScaffold ? 100.0 : 20.0,
               child: FloatingActionButton(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                   onPressed: () async {
                     await requestLocationPermission(
                         context: context,

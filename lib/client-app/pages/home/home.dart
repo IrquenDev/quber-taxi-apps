@@ -28,7 +28,7 @@ class _ClientHomeState extends State<ClientHome> {
       body: const MapView(usingExtendedScaffold: true),
       floatingActionButton: FloatingActionButton(
         shape: CircleBorder(),
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
           onPressed: () {
             showModalBottomSheet(
               isDismissible: false,
@@ -51,7 +51,7 @@ class _ClientHomeState extends State<ClientHome> {
       bottomNavigationBar: BottomAppBar(
         shape: const CircularNotchedRectangle(),
         notchMargin: 12.0,
-        color: Theme.of(context).colorScheme.primary,
+        color: Theme.of(context).colorScheme.primaryContainer,
         child: Row(
           spacing: _bottomAppBarHeight,
           children: [

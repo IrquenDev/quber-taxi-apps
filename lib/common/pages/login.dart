@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:quber_taxi/theme/colors.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -18,14 +17,14 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final customColors = Theme.of(context).extension<ColorExtension>()!;
+    final colorScheme = Theme.of(context).colorScheme;
     return Material(
       child: Stack(
         children: [
           // Background image
           Positioned.fill(child: Image.asset("assets/images/taxi.jpg", fit: BoxFit.fitHeight)),
           // Opacity Mask
-          Positioned.fill(child: ColoredBox(color: customColors.darkestColor.withAlpha(100))),
+          Positioned.fill(child: ColoredBox(color: colorScheme.onSurface.withAlpha(96))),
           // Main Content
           Positioned.fill(
               child: Column(
@@ -37,7 +36,7 @@ class _LoginPageState extends State<LoginPage> {
                     Text(
                         "Bienvenido a QuberTaxi",
                         textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.displayMedium?.copyWith(color: customColors.lightestColor)
+                        style: Theme.of(context).textTheme.displayMedium?.copyWith(color: colorScheme.surface)
                     ),
                     Spacer(flex: 3),
                     // Form
@@ -100,12 +99,13 @@ class _LoginPageState extends State<LoginPage> {
                     // New Account
                     Text(
                         "Crear cuenta",
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: customColors.lightestColor)),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colorScheme.surface)
+                    ),
                     SizedBox(height: 12.0),
                     // Forgot password
                     Text(
                         "Olvidé mi contraseña",
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: customColors.lightestColor)
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colorScheme.surface)
                     ),
                     Spacer(flex: 4)
                   ]
