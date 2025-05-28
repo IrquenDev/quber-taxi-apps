@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
 import 'package:quber_taxi/client-app/pages/home/search_destination.dart';
@@ -7,7 +8,6 @@ import 'package:quber_taxi/common/services/travel_service.dart';
 import 'package:turf/turf.dart' as turf;
 import 'package:quber_taxi/enums/municipalities.dart';
 import 'package:quber_taxi/enums/taxi_type.dart';
-import 'package:quber_taxi/theme/colors.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/util/turf.dart';
 
@@ -117,7 +117,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                                       style: Theme.of(context).textTheme.bodyLarge
                                   )
                               ),
-                              Divider(height: 1, color: Theme.of(context).extension<ColorExtension>()?.neutralColor),
+                              Divider(height: 1),
                               GestureDetector(
                                   onTap: () async {
                                     _destinationName = await Navigator.of(context).push<String>(
@@ -183,13 +183,13 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                   Text("¿Lleva mascota?", style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
                   Switch(
                     value: _hasPets,
-                    activeColor: Colors.amber,
+                    activeColor: Theme.of(context).colorScheme.primaryFixedDim,
                     onChanged: (value) => setState(() => _hasPets = value)
                   )
                 ],
               ),
               // Estimations for distance and price
-              Divider(height: 1, color: Theme.of(context).extension<ColorExtension>()?.neutralColor),
+              Divider(height: 1),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -233,6 +233,9 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                           minPrice: _minPrice!,
                           maxPrice: _maxPrice!
                       );
+                      if (kDebugMode) {
+                        print(travel);
+                      }
                       if(!context.mounted) return;
                       showToast(context: context, message: "Solicitud de viaje enviada");
                     } : null,
@@ -245,20 +248,24 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
   }
 
   Widget _vehicleItemBuilder(int index) {
+
     final vehicle = TaxiType.values[index];
     final isSelected = _selectedVehicle == vehicle;
-    final customColors = Theme.of(context).extension<ColorExtension>()!;
     final dimensions = Theme.of(context).extension<DimensionExtension>()!;
+    final colorScheme = Theme.of(context).colorScheme;
+
     return GestureDetector(
         onTap: () => setState(() => _selectedVehicle= vehicle),
         child: Container(
             decoration: BoxDecoration(
-              color: customColors.lightestColor,
+              color: colorScheme.surface,
               borderRadius: BorderRadius.circular(dimensions.borderRadius),
-              boxShadow: [BoxShadow(color: Colors.black.withAlpha(25), blurRadius: 6, offset: const Offset(0, 3))],
+              boxShadow: [
+                BoxShadow(color: colorScheme.shadow.withAlpha(25), blurRadius: 6, offset: const Offset(0, 3))
+              ],
               border: isSelected ?
-              Border.all(color: Theme.of(context).colorScheme.primary, width: 2)
-                  : Border.all(color: customColors.neutralColor),
+              Border.all(color: colorScheme.primaryFixedDim, width: 2)
+                  : Border.all(color: colorScheme.outline)
             ),
             width: 120,
             height: 120,
@@ -280,7 +287,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                           if (isSelected)
                             Container(
                               decoration: BoxDecoration(
-                                  color: Theme.of(context).colorScheme.primary,
+                                  color: colorScheme.primaryContainer,
                                   shape: BoxShape.circle
                               ),
                               padding: const EdgeInsets.all(2),

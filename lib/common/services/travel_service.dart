@@ -40,7 +40,6 @@ class TravelService {
           "maxPrice": maxPrice
         })
     );
-    print(response.statusCode);
     return Travel.fromJson(jsonDecode(response.body));
   }
 }
