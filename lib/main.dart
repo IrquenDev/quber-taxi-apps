@@ -19,19 +19,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     // Retrieves the default theme for the platform.
     TextTheme textTheme = Theme.of(context).textTheme;
-
     // Use google_fonts package to use a downloadable font, based on the default platform's theme.
     // TextTheme textTheme = createTextTheme(context, "Roboto", "Roboto");
-
     MaterialTheme theme = MaterialTheme(textTheme);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: theme.light(),
       darkTheme: theme.dark(),
-      home:  isClientMode ? const ClientHome() : DriverHome(),
+      home: isClientMode ? const ClientHome() : DriverHome(),
     );
   }
 }
