@@ -8,4 +8,12 @@ enum TaxiType {
   final String assetRef;
   final String apiValue;
   const TaxiType(this.displayText, this.assetRef, this.apiValue);
+
+  /// Resolves a [TaxiType] from a given string value.
+  static TaxiType resolve(String value) {
+    return TaxiType.values.firstWhere(
+            (e) => e.apiValue == value,
+        orElse: () => throw Exception()
+    );
+  }
 }

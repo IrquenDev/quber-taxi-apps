@@ -1,3 +1,6 @@
+import 'package:quber_taxi/enums/taxi_type.dart';
+import 'package:quber_taxi/enums/travel_state.dart';
+
 class Travel {
 
   final int id;
@@ -6,12 +9,12 @@ class Travel {
   final List<num> originCoords;
   final int requiredSeats;
   final bool hasPets;
-  final String taxiType;
+  final TaxiType taxiType;
   final double minDistance;
   final double maxDistance;
   final double minPrice;
   final double maxPrice;
-  final String? state;
+  final TravelState state;
 
   Travel({
     required this.id,
@@ -36,11 +39,12 @@ class Travel {
       "originCoords": originCoords,
       "requiredSeats": requiredSeats,
       "hasPets": hasPets,
-      "taxiType": taxiType,
+      "taxiType": taxiType.apiValue,
       "minDistance": minDistance,
       "maxDistance": maxDistance,
       "minPrice": minPrice,
-      "maxPrice": maxPrice
+      "maxPrice": maxPrice,
+      "state": state.apiValue
     };
   }
 
@@ -53,12 +57,12 @@ class Travel {
         originCoords: (json["originCoords"] as List).map((e) => e as num).toList(),
         requiredSeats: json["requiredSeats"],
         hasPets: json["hasPets"],
-        taxiType: json["taxiType"],
+        taxiType: TaxiType.resolve(json["taxiType"]),
         minDistance: json["minDistance"],
         maxDistance: json["maxDistance"],
         minPrice: json["minPrice"],
         maxPrice: json["maxPrice"],
-        state: json["state"]
+        state: TravelState.resolve(json["state"])
     );
   }
 }

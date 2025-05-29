@@ -1,8 +1,8 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
 import 'package:quber_taxi/client-app/pages/home/search_destination.dart';
 import 'package:quber_taxi/client-app/pages/home/search_origin.dart';
+import 'package:quber_taxi/client-app/pages/search_driver.dart';
 import 'package:quber_taxi/common/models/mapbox_place.dart';
 import 'package:quber_taxi/common/services/travel_service.dart';
 import 'package:turf/turf.dart' as turf;
@@ -233,11 +233,15 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                           minPrice: _minPrice!,
                           maxPrice: _maxPrice!
                       );
-                      if (kDebugMode) {
-                        print(travel);
-                      }
                       if(!context.mounted) return;
-                      showToast(context: context, message: "Solicitud de viaje enviada");
+                      print('TRAVEL ID: ${travel.id}');
+                      final wasAccepted = await Navigator.of(context).push<bool>(
+                          MaterialPageRoute(builder: (context) => SearchDriver(travelId: travel.id))
+                      );
+                      if(!context.mounted) return;
+                      if(wasAccepted ?? false) {
+                        showToast(context: context, message: "Su viaje fue aceptado", duration: Duration(seconds: 5));
+                      }
                     } : null,
                     child: const Text("Pedir taxi"),
                   )
