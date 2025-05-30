@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:quber_taxi/client-app/pages/home/search_destination.dart';
 import 'package:quber_taxi/client-app/pages/home/search_origin.dart';
 import 'package:quber_taxi/client-app/pages/search_driver.dart';
@@ -145,7 +146,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
               // Available taxis list view
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: List.generate(TaxiType.values.length, _vehicleItemBuilder),
+                children: List.generate(TaxiType.values.length, (index) => Flexible(child: _vehicleItemBuilder(index))),
               ),
               // Seats selection
               Row(
@@ -256,53 +257,64 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
     final vehicle = TaxiType.values[index];
     final isSelected = _selectedVehicle == vehicle;
     final dimensions = Theme.of(context).extension<DimensionExtension>()!;
-    final colorScheme = Theme.of(context).colorScheme;
 
     return GestureDetector(
         onTap: () => setState(() => _selectedVehicle= vehicle),
-        child: Container(
-            decoration: BoxDecoration(
-              color: colorScheme.surface,
-              borderRadius: BorderRadius.circular(dimensions.borderRadius),
-              boxShadow: [
-                BoxShadow(color: colorScheme.shadow.withAlpha(25), blurRadius: 6, offset: const Offset(0, 3))
-              ],
-              border: isSelected ?
-              Border.all(color: colorScheme.primaryFixedDim, width: 2)
-                  : Border.all(color: colorScheme.outline)
-            ),
-            width: 120,
-            height: 120,
-            child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("vehículo", style: Theme.of(context).textTheme.bodySmall),
-                              Text(vehicle.displayText, style: Theme.of(context).textTheme.labelLarge),
-                            ],
-                          ),
-                          if (isSelected)
-                            Container(
-                              decoration: BoxDecoration(
-                                  color: colorScheme.primaryContainer,
-                                  shape: BoxShape.circle
-                              ),
-                              padding: const EdgeInsets.all(2),
-                              child: Icon(Icons.check_outlined, size: Theme.of(context).iconTheme.size! / 1.5),
-                            )
-                        ]
-                    ),
-                  ),
-                  Expanded(child: Image.asset(vehicle.assetRef))
-                ]
-            )
+        child: SizedBox(
+          height: 120,
+          child: Stack(
+              children: [
+                // Background Card
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: LayoutBuilder(
+                    builder: (context, constraints) => SizedBox(
+                      // using a responsive 80% width from parent, also resolved
+                      // dynamically by Flexible widget, who's wrapping this items.
+                      width: constraints.maxWidth * 0.8,
+                      child: Card(
+                        elevation: dimensions.elevation,
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 8.0, bottom: 8.0, left: 8.0),
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text("vehículo", style: Theme.of(context).textTheme.bodySmall),
+                                        if (isSelected)
+                                          SizedBox(width: 8.0),
+                                        if (isSelected)
+                                          SizedBox(
+                                            width: Theme.of(context).iconTheme.size! * 0.75,
+                                            height: Theme.of(context).iconTheme.size! * 0.75,
+                                            child: SvgPicture.asset("assets/icons/yellow_check.svg"),
+                                          )
+                                      ]
+                                    ),
+                                    Text(vehicle.displayText, style: Theme.of(context).textTheme.labelLarge),
+                                  ]
+                                )
+                              ]
+                          )
+                        )
+                      )
+                    )
+                  )
+                ),
+                // Vehicle Image
+                Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Padding(
+                        padding: EdgeInsets.only(bottom: 8.0, right: 8.0),
+                        child: Image.asset(vehicle.assetRef)
+                    )
+                )
+              ]
+          )
         )
     );
   }
