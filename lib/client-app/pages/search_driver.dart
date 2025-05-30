@@ -87,6 +87,8 @@ class _SearchDriverState extends State<SearchDriver> with SingleTickerProviderSt
                       },
                     );
                   }),
+                  ///TODO("yapmDev")
+                  /// - Replace the custom centered circle with the one provided in the assets.
                   Container(
                     width: centeredCircleSize,
                     height: centeredCircleSize,
@@ -114,6 +116,8 @@ class _SearchDriverState extends State<SearchDriver> with SingleTickerProviderSt
               padding: const EdgeInsets.only(bottom: 40.0),
               child: GestureDetector(
                   onTap: () => Navigator.of(context).pop(false),
+                  ///TODO("yapmDev")
+                  /// - Replace the custom circle for cancel with the one provided in the assets.
                   child: CircleAvatar(
                     radius: 20,
                     backgroundColor: Theme.of(context).colorScheme.onPrimaryContainer.withAlpha(80),

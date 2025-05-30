@@ -20,7 +20,7 @@ class _MapGeoJsonCheckPageState extends State<MapGeoJsonCheckPage> {
   late turf.Polygon _havanaPolygon;
 
   Future<void> _loadHavanaGeoJson() async {
-    _havanaPolygon = await loadGeoJsonPolygon("assets/mapbox/geojson/CiudadDeLaHabana.geojson");
+    _havanaPolygon = await loadGeoJsonPolygon("assets/geojson/CiudadDeLaHabana.geojson");
   }
 
   Future<void> _handleMapTap(MapContentGestureContext tappedPoint) async {

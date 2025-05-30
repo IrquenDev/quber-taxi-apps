@@ -1,8 +1,8 @@
 enum TaxiType {
 
-  standard("Estándar", "assets/images/v1/estandar_car.png", "STANDARD"),
-  familiar("Familiar", "assets/images/v1/family_car.png", "FAMILIAR"),
-  comfort("Confort", "assets/images/v1/confort_car.png", "COMFORT");
+  standard("Estándar", "assets/images/vehicles/v1/standard.png", "STANDARD"),
+  familiar("Familiar", "assets/images/vehicles/v1/familiar.png", "FAMILIAR"),
+  comfort("Confort", "assets/images/vehicles/v1/comfort.png", "COMFORT");
 
   final String displayText;
   final String assetRef;

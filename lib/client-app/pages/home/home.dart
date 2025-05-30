@@ -31,6 +31,7 @@ class _ClientHomeState extends State<ClientHome> {
         backgroundColor: Theme.of(context).colorScheme.primaryContainer,
           onPressed: () {
             showModalBottomSheet(
+              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
               isDismissible: false,
               context: context,
               isScrollControlled: true,
