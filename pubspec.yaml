@@ -81,7 +81,8 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/geojson/
+    - assets/geojson/polygon/
+    - assets/geojson/line/
     - assets/icons/discounts/x24/
     - assets/icons/discounts/x48/
     - assets/icons/discounts/x72/

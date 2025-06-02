@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 
 @immutable
 class MapboxRoute {
+
   final double distance; // in meters
   final double duration; // in seconds
   final List<List<num>> coordinates; // [ [lng, lat], ... ]
@@ -19,8 +20,7 @@ class MapboxRoute {
     return MapboxRoute(
       distance: route['distance']?.toDouble() ?? 0.0,
       duration: route['duration']?.toDouble() ?? 0.0,
-      coordinates: geometry
-          .map<List<double>>((position) => [position[0], position[1]]).toList()
+      coordinates: geometry.map<List<num>>((position) => [position[0], position[1]]).toList()
     );
   }
 }
