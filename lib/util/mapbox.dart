@@ -1,4 +1,7 @@
+import 'dart:convert';
+import 'package:flutter/services.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:quber_taxi/common/models/mapbox_route.dart';
 
 extension CameraOptionsExtension on CameraOptions {
 
@@ -19,4 +22,9 @@ extension CameraOptionsExtension on CameraOptions {
       pitch: pitch ?? this.pitch
     );
   }
+}
+
+Future<MapboxRoute> loadGeoJsonFakeRoute(String source) async {
+  final data = await rootBundle.loadString(source);
+  return MapboxRoute.fromJson(json.decode(data));
 }

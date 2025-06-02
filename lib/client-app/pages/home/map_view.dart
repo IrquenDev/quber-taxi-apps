@@ -28,7 +28,7 @@ class _MapViewState extends State<MapView> {
   }
 
   Future<void> _loadHavanaGeoJson() async {
-    _havanaPolygon = await loadGeoJsonPolygon("assets/geojson/CiudadDeLaHabana.geojson");
+    _havanaPolygon = await loadGeoJsonPolygon("assets/geojson/polygon/CiudadDeLaHabana.geojson");
   }
 
   @override
