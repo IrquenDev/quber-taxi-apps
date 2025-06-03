@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
-import 'package:quber_taxi/client-app/pages/home/home.dart';
 import 'package:quber_taxi/config/api_config.dart';
 import 'package:quber_taxi/config/build_config.dart';
 import 'package:quber_taxi/theme/theme.dart';
-import 'package:quber_taxi/util/runtime.dart';
-
 import 'package:quber_taxi/driver-app/pages/driver_map/driver_map.dart';
 
 void main() async {
@@ -29,7 +26,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: theme.light(),
       darkTheme: theme.dark(),
-      home: isClientMode ? const ClientHome() : DriverMap(),
+      home: isClientMode ? const ClientHome() : DriverMap()
     );
   }
 }

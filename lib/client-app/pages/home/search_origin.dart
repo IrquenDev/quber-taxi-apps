@@ -42,7 +42,7 @@ class _SearchOriginPageState extends State<SearchOriginPage> {
   }
 
   Future<void> _loadHavanaGeoJson() async {
-    _havanaPolygon = await loadGeoJsonPolygon("assets/geojson/CiudadDeLaHabana.geojson");
+    _havanaPolygon = await loadGeoJsonPolygon("assets/geojson/polygon/CiudadDeLaHabana.geojson");
   }
 
   @override
