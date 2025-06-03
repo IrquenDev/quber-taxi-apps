@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:quber_taxi/driver-app/pages/driver_map/driver_map.dart';
+import 'package:quber_taxi/driver-app/pages/home/home.dart';
 
-class ClientInfoBottomSheet extends StatelessWidget {
+class InfoClientSheet extends StatelessWidget {
   final String nombreCompleto;
   final String telefono;
   final String direccionDesde;
@@ -11,7 +11,7 @@ class ClientInfoBottomSheet extends StatelessWidget {
   final String tipoVehiculo;
   final String urlImagen; // Puede ser local o de red
 
-  const ClientInfoBottomSheet({
+  const InfoClientSheet({
     super.key,
     required this.nombreCompleto,
     required this.telefono,
