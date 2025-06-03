@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:quber_taxi/driver-app/pages/driver_map/clientInfoBottonSheet.dart';
+import 'package:quber_taxi/driver-app/pages/home/info_client_sheet.dart';
 
 class TripCard extends StatefulWidget {
   final String desde;
@@ -139,7 +139,7 @@ class _TripCardState extends State<TripCard> {
                           context: context,
                           isScrollControlled: true,
                           backgroundColor: Colors.transparent,
-                          builder: (context) => const ClientInfoBottomSheet(
+                          builder: (context) => const InfoClientSheet(
                             nombreCompleto: 'Esmeralda Pérez',
                             telefono: '+53 56748383',
                             direccionDesde: 'Calle 25 entre Paseo y 2. Vedado',
