@@ -5,6 +5,7 @@ import 'package:quber_taxi/client-app/pages/home/search_destination.dart';
 import 'package:quber_taxi/client-app/pages/home/search_origin.dart';
 import 'package:quber_taxi/client-app/pages/search_driver.dart';
 import 'package:quber_taxi/common/models/mapbox_place.dart';
+import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/services/travel_service.dart';
 import 'package:turf/turf.dart' as turf;
 import 'package:quber_taxi/enums/municipalities.dart';
@@ -223,6 +224,8 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                   child: ElevatedButton(
                     onPressed: canEstimateDistance ? () async {
                       final travel = await _travelService.requestNewTravel(
+                          /// TODO("yapmDev": static client id)
+                          clientId: 1,
                           originName: _originName!,
                           destinationName: _destinationName!,
                           originCoords: _originCoords!,
@@ -236,12 +239,13 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                       );
                       if(!context.mounted) return;
                       print('TRAVEL ID: ${travel.id}');
-                      final wasAccepted = await Navigator.of(context).push<bool>(
+                      final updatedTravel = await Navigator.of(context).push<Travel?>(
                           MaterialPageRoute(builder: (context) => SearchDriver(travelId: travel.id))
                       );
                       if(!context.mounted) return;
-                      if(wasAccepted ?? false) {
+                      if(updatedTravel != null) {
                         showToast(context: context, message: "Su viaje fue aceptado", duration: Duration(seconds: 5));
+                        print('DRIVER: ${updatedTravel.driver.toString()}');
                       }
                     } : null,
                     child: const Text("Pedir taxi"),
@@ -269,7 +273,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                   alignment: Alignment.centerRight,
                   child: LayoutBuilder(
                     builder: (context, constraints) => SizedBox(
-                      // using a responsive 80% width from parent, also resolved
+                      // Using a responsive 80% width from parent, also resolved
                       // dynamically by Flexible widget, who's wrapping this items.
                       width: constraints.maxWidth * 0.8,
                       child: Card(

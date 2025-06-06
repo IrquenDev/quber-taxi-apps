@@ -1,3 +1,6 @@
+// This file is a guide for mapbox maps functionalities.
+// Do not edit for any reason.
+
 import 'package:flutter/material.dart';
 import 'package:flutter_fusion/flutter_fusion.dart' show showToast;
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';

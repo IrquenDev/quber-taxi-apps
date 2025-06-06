@@ -10,7 +10,7 @@ class TravelService {
   final _endpoint = "travels";
 
   Future<Travel> requestNewTravel({
-    int clientId = 1, // just for testing, (obviously required a registered client with this specific id)
+    required int clientId,
     required String originName,
     required String destinationName,
     required List<num> originCoords,
@@ -41,5 +41,24 @@ class TravelService {
         })
     );
     return Travel.fromJson(jsonDecode(response.body));
+  }
+
+  Future<List<Travel>> findAvailableTravels() async {
+    final url = Uri.parse('${_apiConfig.baseUrl}/$_endpoint?seats=4&type=STANDARD');
+    final response = await http.get(url);
+    if (response.body.trim().isEmpty) {
+      return [];
+    }
+    final List<dynamic> jsonList = jsonDecode(response.body);
+    return jsonList.map((json) => Travel.fromJson(json)).toList();
+  }
+
+  Future<http.Response> assignTravelToDriver({
+    required int travelId,
+    required int driverId,
+  }) async {
+    final url = Uri.parse("${_apiConfig.baseUrl}/$_endpoint/$travelId/assignTo?driverId=$driverId");
+    final headers = {'Content-Type': 'application/json'};
+    return await http.patch(url, headers: headers);
   }
 }
