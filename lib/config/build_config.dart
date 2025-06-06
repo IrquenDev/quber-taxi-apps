@@ -10,9 +10,12 @@ class BuildConfig {
 
   /// Loads and resolves build configurations.
   static void loadConfig() {
-    String definedAppProfile = const String.fromEnvironment("APP_PROFILE", defaultValue: "CLIENT");
+    String definedAppProfile = const String.fromEnvironment("APP_PROFILE");
     appProfile = AppProfile.resolve(definedAppProfile);
-    String definedBaseUrl = const String.fromEnvironment("BASE_URL", defaultValue: "https://qnecesitas.nat.cu");
+    String definedBaseUrl = const String.fromEnvironment(
+        "BASE_URL",
+        defaultValue: "http://qnecesitas.nat.cu/qubertaxiapi"
+    );
     String definedMapboxAccessToken = const String.fromEnvironment("MAPBOX_ACCESS_TOKEN");
     ApiConfig.populate(definedBaseUrl, definedMapboxAccessToken);
   }
