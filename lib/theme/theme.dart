@@ -381,7 +381,19 @@ class MaterialTheme {
             elevation: dimensions.elevation
         )
     ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          backgroundColor: colorScheme.primaryContainer,
+          disabledBackgroundColor: colorScheme.onSurface.withAlpha(32),
+          foregroundColor: colorScheme.onPrimaryContainer,
+          disabledForegroundColor: colorScheme.onSurface.withAlpha(96),
+          padding: dimensions.contentPadding,
+          side: BorderSide.none,
+          elevation: dimensions.elevation,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(dimensions.borderRadius * 0.5))),
+        )
+    ),
     dividerColor: colorScheme.outlineVariant,
-    extensions: <ThemeExtension<dynamic>>[dimensions],
+    extensions: <ThemeExtension<dynamic>>[dimensions]
   );
 }

@@ -1,3 +1,5 @@
+import 'package:quber_taxi/common/models/client.dart';
+import 'package:quber_taxi/common/models/driver.dart';
 import 'package:quber_taxi/enums/taxi_type.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
 
@@ -10,11 +12,13 @@ class Travel {
   final int requiredSeats;
   final bool hasPets;
   final TaxiType taxiType;
-  final double minDistance;
-  final double maxDistance;
+  final int minDistance;
+  final int maxDistance;
   final double minPrice;
   final double maxPrice;
   final TravelState state;
+  final Client client;
+  final Driver? driver;
 
   Travel({
     required this.id,
@@ -28,25 +32,10 @@ class Travel {
     required this.maxDistance,
     required this.minPrice,
     required this.maxPrice,
-    required this.state
+    required this.state,
+    required this.client,
+    this.driver
   });
-
-  Map<String, dynamic> toJson() {
-    return {
-      "id": id,
-      "originName": originName,
-      "destinationName": destinationName,
-      "originCoords": originCoords,
-      "requiredSeats": requiredSeats,
-      "hasPets": hasPets,
-      "taxiType": taxiType.apiValue,
-      "minDistance": minDistance,
-      "maxDistance": maxDistance,
-      "minPrice": minPrice,
-      "maxPrice": maxPrice,
-      "state": state.apiValue
-    };
-  }
 
   factory Travel.fromJson(Map<String, dynamic> json) {
 
@@ -62,7 +51,9 @@ class Travel {
         maxDistance: json["maxDistance"],
         minPrice: json["minPrice"],
         maxPrice: json["maxPrice"],
-        state: TravelState.resolve(json["state"])
+        state: TravelState.resolve(json["state"]),
+        client: Client.fromJson(json["client"]),
+        driver: json["driver"] != null ? Driver.fromJson(json["driver"]) : null
     );
   }
 }

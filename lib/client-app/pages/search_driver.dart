@@ -24,11 +24,11 @@ class _SearchDriverState extends State<SearchDriver> with SingleTickerProviderSt
     // handling animation
     _controller = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat(); // infinity loop
     // connect to websocket in order to see if any driver took the trip
-    connectToWebSocket(widget.travelId, (travel) => Navigator.of(context).pop(true));
+    connectToWebSocket(widget.travelId, (travel) => Navigator.of(context).pop(travel));
     // schedule timeout in 3 min
     _timeoutTimer = Timer(const Duration(minutes: 3), () {
       if (mounted) {
-        Navigator.of(context).pop(false);
+        Navigator.of(context).pop(null);
       }
     });
   }
@@ -115,7 +115,7 @@ class _SearchDriverState extends State<SearchDriver> with SingleTickerProviderSt
             Padding(
               padding: const EdgeInsets.only(bottom: 40.0),
               child: GestureDetector(
-                  onTap: () => Navigator.of(context).pop(false),
+                  onTap: () => Navigator.of(context).pop(null),
                   ///TODO("yapmDev")
                   /// - Replace the custom circle for cancel with the one provided in the assets.
                   child: CircleAvatar(
