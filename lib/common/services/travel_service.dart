@@ -43,8 +43,8 @@ class TravelService {
     return Travel.fromJson(jsonDecode(response.body));
   }
 
-  Future<List<Travel>> findAvailableTravels() async {
-    final url = Uri.parse('${_apiConfig.baseUrl}/$_endpoint?seats=4&type=STANDARD');
+  Future<List<Travel>> findAvailableTravels(int seats, TaxiType type) async {
+    final url = Uri.parse('${_apiConfig.baseUrl}/$_endpoint?seats=$seats&type=${type.apiValue}');
     final response = await http.get(url);
     if (response.body.trim().isEmpty) {
       return [];

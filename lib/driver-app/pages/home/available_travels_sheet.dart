@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/services/travel_service.dart';
 import 'package:quber_taxi/driver-app/pages/home/trip_card.dart';
+import 'package:quber_taxi/enums/taxi_type.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 
 class AvailableTravelsSheet extends StatefulWidget {
@@ -27,7 +28,8 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
   bool _isActionPending = true;
 
   Future<void> _refreshTravels() async {
-    final newTravels = await travelService.findAvailableTravels();
+    /// TODO("yapmDev": Static params)
+    final newTravels = await travelService.findAvailableTravels(4, TaxiType.standard);
     if(newTravels.isEmpty) {
       _sheetController.jumpTo(0.15);
     }
@@ -40,7 +42,8 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
   void _loadTravels() {
     setState(() {
       _isActionPending = true;
-      futureTravels = travelService.findAvailableTravels().whenComplete(() {
+      /// TODO("yapmDev": Static params)
+      futureTravels = travelService.findAvailableTravels(4, TaxiType.standard).whenComplete(() {
         if (mounted) {
           setState(() => _isActionPending = false);
         }
@@ -97,9 +100,9 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
                           ),
                           Text("Seleccione un viaje", style: Theme.of(context).textTheme.titleMedium)
                         ]
-                    ),
-                  ),
-                ),
+                    )
+                  )
+                )
               ),
               // Main Container with Content
               Positioned.fill(
