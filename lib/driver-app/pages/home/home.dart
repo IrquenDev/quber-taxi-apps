@@ -10,6 +10,7 @@ import 'package:quber_taxi/driver-app/pages/home/info_travel_sheet.dart';
 import 'package:quber_taxi/util/geolocator.dart' as g_util;
 import 'package:quber_taxi/driver-app/pages/home/available_travels_sheet.dart';
 import 'package:quber_taxi/util/mapbox.dart' as mb_util;
+import 'package:quber_taxi/websocket/core/websocket_service.dart';
 
 class DriverHome extends StatefulWidget {
   const DriverHome({super.key, this.coords});
@@ -37,6 +38,7 @@ class _DriverHomeState extends State<DriverHome> {
   late final PointAnnotation _driverAnnotation;
   late final Uint8List _driverMarkerImage;
   // Driver location streaming
+  late final Stream<g.Position> _locationStream;
   late Position _coords;
   late Position _lastKnownCoords;
   bool _isLocationStreaming = false;
@@ -44,30 +46,71 @@ class _DriverHomeState extends State<DriverHome> {
   Travel? _selectedTravel;
   final _travelService = TravelService();
 
-  @override
-  void initState() {
-    super.initState();
-    _ticker = Ticker(_onTick);
+  void _startStreamingLocation() async {
+    // Get current position
+    final position = await g.Geolocator.getCurrentPosition();
+    final coords = Position(position.longitude, position.latitude);
+    // Update class's field coord references
+    _coords = coords;
+    _lastKnownCoords = coords;
+    // Add driver marker to map
+    await _pointAnnotationManager.create(
+      PointAnnotationOptions(
+        geometry: Point(coordinates: coords),
+        image: _driverMarkerImage,
+        iconAnchor: IconAnchor.CENTER,
+      ),
+    ).then((annotation) {
+      _driverAnnotation = annotation;
+      // Listen for real location updates
+      _locationStream.listen((position) async {
+        // Update coords
+        final coords = Position(position.longitude, position.latitude);
+        _lastKnownCoords = _coords;
+        _coords = coords;
+        // Adjust bearing
+        final bearing = mb_util.calculateBearing(
+            _lastKnownCoords.lat, _lastKnownCoords.lng,
+            coords.lat, coords.lng
+        );
+        final adjustedBearing = (bearing - _mapBearing + 360) % 360;
+        _driverAnnotation.iconRotate = adjustedBearing;
+        _driverAnnotation.geometry = Point(coordinates: coords);
+        _pointAnnotationManager.update(_driverAnnotation);
+      });
+    });
+    _isLocationStreaming = true;
+  }
+
+  void _startSharingLocation() {
+    _locationStream.listen((position) async {
+      WebSocketService.instance.send(
+        "/app/travels/${_selectedTravel!.id}/location",
+        {"longitude": position.longitude, "latitude": position.latitude},
+      );
+      if(!_isLocationStreaming) _startStreamingLocation();
+    });
   }
 
   void _onTravelSelected(Travel travel) async {
     /// TODO("yapmDev": static driver id)
-    final response = await _travelService.assignTravelToDriver(travelId: _selectedTravel!.id, driverId: 1);
+    final response = await _travelService.assignTravelToDriver(travelId: travel.id, driverId: 3);
     if(response.statusCode == 200) {
       final assetBytes = await rootBundle.load('assets/markers/route/x120/origin.png');
       final originMarkerImage = assetBytes.buffer.asUint8List();
-      final coords = Position(travel.originCoords[0], travel.originCoords[1]);
+      final originCoords = Position(travel.originCoords[0], travel.originCoords[1]);
       await _pointAnnotationManager.create(
         PointAnnotationOptions(
-          geometry: Point(coordinates: coords),
+          geometry: Point(coordinates: originCoords),
           image: originMarkerImage,
-          iconAnchor: IconAnchor.CENTER,
+          iconAnchor: IconAnchor.BOTTOM,
         ),
       );
       _mapController.easeTo(
-          CameraOptions(center: Point(coordinates: coords)),
+          CameraOptions(center: Point(coordinates: originCoords)),
           MapAnimationOptions(duration: 500)
       );
+      _startSharingLocation();
       setState(() => _selectedTravel = travel);
     } else {
       if(mounted) {
@@ -83,6 +126,13 @@ class _DriverHomeState extends State<DriverHome> {
       taxi.updatePosition(elapsed, _mapBearing);
       _pointAnnotationManager.update(taxi.annotation);
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _locationStream = g.Geolocator.getPositionStream().asBroadcastStream();
+    _ticker = Ticker(_onTick);
   }
 
   @override
@@ -178,39 +228,8 @@ class _DriverHomeState extends State<DriverHome> {
                     await g_util.requestLocationPermission(
                         context: context,
                         onPermissionGranted: () async {
-                          if(!_isLocationStreaming) {
-                            // Get current position
-                            final position = await g.Geolocator.getCurrentPosition();
-                            final coords = Position(position.longitude, position.latitude);
-                            // Update class's field coord references
-                            _coords = coords;
-                            _lastKnownCoords = coords;
-                            // Add driver marker to map
-                            await _pointAnnotationManager.create(
-                              PointAnnotationOptions(
-                                geometry: Point(coordinates: coords),
-                                image: _driverMarkerImage,
-                                iconAnchor: IconAnchor.CENTER,
-                              ),
-                            ).then((annotation) {
-                              _driverAnnotation = annotation;
-                              // Listen for real location updates
-                              g.Geolocator.getPositionStream().listen((position) async {
-                                final coords = Position(position.longitude, position.latitude);
-                                _lastKnownCoords = _coords;
-                                _coords = coords;
-                                final bearing = mb_util.calculateBearing(
-                                    _lastKnownCoords.lat, _lastKnownCoords.lng,
-                                    coords.lat, coords.lng
-                                );
-                                final adjustedBearing = (bearing - _mapBearing + 360) % 360;
-                                _driverAnnotation.iconRotate = adjustedBearing;
-                                _driverAnnotation.geometry = Point(coordinates: coords);
-                                _pointAnnotationManager.update(_driverAnnotation);
-                              });
-                            });
-                            _isLocationStreaming = true;
-                          }
+                          // Start streaming location
+                          if(!_isLocationStreaming) _startStreamingLocation();
                           // Ease to current position (Whether the location is being streaming)
                           _mapController.easeTo(
                               CameraOptions(center: Point(coordinates: _coords)),

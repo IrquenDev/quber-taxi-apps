@@ -1,7 +1,6 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:quber_taxi/util/websocket.dart';
+import 'package:quber_taxi/websocket/impl/travel_accepted_handler.dart';
 
 class SearchDriver extends StatefulWidget {
 
@@ -17,14 +16,19 @@ class _SearchDriverState extends State<SearchDriver> with SingleTickerProviderSt
 
   late AnimationController _controller;
   late final Timer _timeoutTimer;
+  late final TravelAcceptedHandler _handler;
 
   @override
   void initState() {
     super.initState();
-    // handling animation
+    // handling radar animation
     _controller = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat(); // infinity loop
     // connect to websocket in order to see if any driver took the trip
-    connectToWebSocket(widget.travelId, (travel) => Navigator.of(context).pop(travel));
+    _handler = TravelAcceptedHandler(
+      travelId: widget.travelId,
+      onMessage: (travel) => Navigator.of(context).pop(travel)
+    );
+    _handler.activate();
     // schedule timeout in 3 min
     _timeoutTimer = Timer(const Duration(minutes: 3), () {
       if (mounted) {
@@ -36,7 +40,7 @@ class _SearchDriverState extends State<SearchDriver> with SingleTickerProviderSt
   @override
   void dispose() {
     _controller.dispose();
-    disconnectSocket();
+    _handler.deactivate();
     _timeoutTimer.cancel();
     super.dispose();
   }

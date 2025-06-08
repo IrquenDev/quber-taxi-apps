@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:quber_taxi/client-app/pages/home/search_destination.dart';
 import 'package:quber_taxi/client-app/pages/home/search_origin.dart';
 import 'package:quber_taxi/client-app/pages/search_driver.dart';
+import 'package:quber_taxi/client-app/pages/track_driver.dart';
 import 'package:quber_taxi/common/models/mapbox_place.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/services/travel_service.dart';
@@ -244,8 +245,9 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                       );
                       if(!context.mounted) return;
                       if(updatedTravel != null) {
-                        showToast(context: context, message: "Su viaje fue aceptado", duration: Duration(seconds: 5));
-                        print('DRIVER: ${updatedTravel.driver.toString()}');
+                        Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => TrackDriver(travel: travel))
+                        );
                       }
                     } : null,
                     child: const Text("Pedir taxi"),

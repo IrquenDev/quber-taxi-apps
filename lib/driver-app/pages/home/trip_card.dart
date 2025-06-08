@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
+import 'package:quber_taxi/util/geolocator.dart' as g_util;
 
 class TripCard extends StatelessWidget {
 
@@ -45,8 +46,24 @@ class TripCard extends StatelessWidget {
             Align(
               alignment: Alignment.centerRight,
               child: OutlinedButton(
-                onPressed: () => onTravelSelected.call(travel),
-                child: const Text('Aceptar'),
+                onPressed: () async {
+                  // Ask for location permission
+                  await g_util.requestLocationPermission(
+                      context: context,
+                      onPermissionGranted: () async => onTravelSelected.call(travel),
+                      onPermissionDenied: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("Permiso de ubicación denegado")),
+                        );
+                      },
+                      onPermissionDeniedForever: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("Permiso de ubicación denegado permanentemente")),
+                        );
+                      }
+                  );
+                },
+                child: const Text('Aceptar')
               )
             )
           ]

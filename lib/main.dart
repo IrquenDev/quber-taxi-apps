@@ -6,11 +6,13 @@ import 'package:quber_taxi/config/build_config.dart';
 import 'package:quber_taxi/theme/theme.dart';
 import 'package:quber_taxi/driver-app/pages/home/home.dart';
 import 'package:quber_taxi/util/runtime.dart';
+import 'package:quber_taxi/websocket/core/websocket_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   BuildConfig.loadConfig();
   MapboxOptions.setAccessToken(ApiConfig().mapboxAccessToken);
+  WebSocketService.instance.connect(baseUrl: ApiConfig().baseUrl);
   runApp(const MyApp());
 }
 
