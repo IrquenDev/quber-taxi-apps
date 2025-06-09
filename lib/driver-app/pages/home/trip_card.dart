@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_fusion/flutter_fusion.dart';
 import 'package:quber_taxi/common/models/travel.dart';
+import 'package:quber_taxi/driver-app/pages/home/dialogs/confirm_dialog.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/util/geolocator.dart' as g_util;
 
@@ -47,21 +49,28 @@ class TripCard extends StatelessWidget {
               alignment: Alignment.centerRight,
               child: OutlinedButton(
                 onPressed: () async {
-                  // Ask for location permission
-                  await g_util.requestLocationPermission(
-                      context: context,
-                      onPermissionGranted: () async => onTravelSelected.call(travel),
-                      onPermissionDenied: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("Permiso de ubicación denegado")),
-                        );
-                      },
-                      onPermissionDeniedForever: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("Permiso de ubicación denegado permanentemente")),
-                        );
-                      }
+                  // ConfirmDialog
+                  final result = await showDialog<bool>(
+                    context: context,
+                    builder: (context) => const ConfirmDialog(
+                      title: 'Aceptar Viaje',
+                      message: "Se le notificará al cliente que se ha aceptado su solicitud de viaje. Su ubicación se"
+                          " comenzará a compartir solo con él.",
+                    )
                   );
+
+                  if (result == true) {
+                    if(!context.mounted) return;
+                    // Ask for location permission
+                    await g_util.requestLocationPermission(
+                        context: context,
+                        onPermissionGranted: () async => onTravelSelected.call(travel),
+                        onPermissionDenied: () => showToast(context: context, message: "Para comenzar a compartir su"
+                        " ubicación con el cliente se necesita su acceso explícito"),
+                        onPermissionDeniedForever: () => showToast(context: context, message: "Permiso de ubicación "
+                        "bloqueado. Habilitar nuevamente en ajustes")
+                    );
+                  }
                 },
                 child: const Text('Aceptar')
               )
