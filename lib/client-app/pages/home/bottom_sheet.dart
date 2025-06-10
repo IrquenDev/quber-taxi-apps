@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:quber_taxi/client-app/pages/home/search_destination.dart';
-import 'package:quber_taxi/client-app/pages/home/search_origin.dart';
-import 'package:quber_taxi/client-app/pages/search_driver.dart';
-import 'package:quber_taxi/client-app/pages/track_driver.dart';
+import 'package:go_router/go_router.dart';
+import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/models/mapbox_place.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/services/travel_service.dart';
-import 'package:turf/turf.dart' as turf;
 import 'package:quber_taxi/enums/municipalities.dart';
 import 'package:quber_taxi/enums/taxi_type.dart';
+import 'package:quber_taxi/routes/route_paths.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/util/turf.dart';
+import 'package:turf/turf.dart' as turf;
 
 class RequestTravelSheet extends StatefulWidget {
 
@@ -77,6 +76,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final isConnected = NetworkScope.of(context).value == ConnectionStatus.online;
     return Padding(
         padding: EdgeInsets.only(left: 16.0, right: 16.0, bottom: 32.0),
         child: Column(
@@ -106,9 +106,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                             children: [
                               GestureDetector(
                                   onTap: () async {
-                                    final mapboxPlace = await Navigator.of(context).push<MapboxPlace>(
-                                        MaterialPageRoute(builder: (context)=> SearchOriginPage())
-                                    );
+                                    final mapboxPlace = await context.push<MapboxPlace>(RoutePaths.searchOrigin);
                                     setState(() {
                                       _originName = mapboxPlace?.placeName;
                                       _originCoords = mapboxPlace?.coordinates;
@@ -123,9 +121,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                               Divider(height: 1),
                               GestureDetector(
                                   onTap: () async {
-                                    _destinationName = await Navigator.of(context).push<String>(
-                                        MaterialPageRoute(builder: (context)=> SearchDestinationPage())
-                                    );
+                                    _destinationName = await context.push<String>(RoutePaths.searchDestination);
                                     if(canEstimateDistance) _estimateDistance();
                                   },
                                   child: Text(
@@ -223,8 +219,8 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
               SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: canEstimateDistance ? () async {
-                      final travel = await _travelService.requestNewTravel(
+                    onPressed: canEstimateDistance && isConnected ? () async {
+                      Travel travel = await _travelService.requestNewTravel(
                           /// TODO("yapmDev": static client id)
                           clientId: 1,
                           originName: _originName!,
@@ -239,15 +235,10 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                           maxPrice: _maxPrice!
                       );
                       if(!context.mounted) return;
-                      print('TRAVEL ID: ${travel.id}');
-                      final updatedTravel = await Navigator.of(context).push<Travel?>(
-                          MaterialPageRoute(builder: (context) => SearchDriver(travelId: travel.id))
-                      );
+                      final updatedTravel = await context.push<Travel?>(RoutePaths.searchDriver, extra: travel.id);
                       if(!context.mounted) return;
                       if(updatedTravel != null) {
-                        Navigator.of(context).push(
-                            MaterialPageRoute(builder: (context) => TrackDriver(travel: travel))
-                        );
+                        context.push(RoutePaths.trackDriver, extra: updatedTravel);
                       }
                     } : null,
                     child: const Text("Pedir taxi"),

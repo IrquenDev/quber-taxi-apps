@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
-import 'package:quber_taxi/client-app/pages/home/home.dart';
-import 'package:quber_taxi/client-app/pages/navigation/client_navigation.dart';
+import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/config/api_config.dart';
 import 'package:quber_taxi/config/build_config.dart';
+import 'package:quber_taxi/routes/app_router.dart';
 import 'package:quber_taxi/theme/theme.dart';
-import 'package:quber_taxi/driver-app/pages/home/home.dart';
-import 'package:quber_taxi/util/runtime.dart';
 import 'package:quber_taxi/websocket/core/websocket_service.dart';
 
 void main() async {
@@ -27,12 +25,22 @@ class MyApp extends StatelessWidget {
     // Use google_fonts package to use a downloadable font, based on the default platform's theme.
     // TextTheme textTheme = createTextTheme(context, "Roboto", "Roboto");
     MaterialTheme theme = MaterialTheme(textTheme);
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: theme.light(),
-      darkTheme: theme.dark(),
-      // home: isClientMode ? const ClientHome() : DriverHome()
-      home: ClientNavigation(),
+    return MaterialApp.router(
+        debugShowCheckedModeBanner: false,
+        theme: theme.light(),
+        darkTheme: theme.dark(),
+        routerConfig: appRouter,
+        builder: (context, child) => NetworkChecker(
+            config: ConnectionConfig(
+                pingUrl: '${ApiConfig().baseUrl}/network-checker',
+                timeLimit: Duration(seconds: 3)
+            ),
+            // Delegate to child whether to use a network alert and decide it style and position. To do that, wrap
+            // the child in a NetworkAlertTemplate.
+            alertBuilder: null, // anyway it's null by default, it's just for you knowledge.
+            child: child!
+        )
+      // home: ClientNavigation(),
     );
   }
 }

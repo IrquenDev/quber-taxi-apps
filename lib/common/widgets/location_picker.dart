@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:quber_taxi/common/services/mapbox_service.dart';
 import 'package:quber_taxi/util/geolocator.dart';
@@ -21,14 +22,17 @@ class _LocationPickerState extends State<LocationPicker> {
   final _mapboxService = MapboxService();
   late turf.Polygon _havanaPolygon;
 
+  Future<void> _loadHavanaGeoJson() async {
+    _havanaPolygon = await loadGeoJsonPolygon("assets/geojson/polygon/CiudadDeLaHabana.geojson");
+  }
+
   @override
   void initState() {
     super.initState();
     _loadHavanaGeoJson();
-  }
-
-  Future<void> _loadHavanaGeoJson() async {
-    _havanaPolygon = await loadGeoJsonPolygon("assets/geojson/polygon/CiudadDeLaHabana.geojson");
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      showToast(context: context, message: "Mantén pulsado para seleccionar una ubicación");
+    });
   }
 
   @override
@@ -51,19 +55,21 @@ class _LocationPickerState extends State<LocationPicker> {
               _mapController = controller;
             },
             onLongTapListener: (mapContext) async {
+              // Getting coords
               final lng = mapContext.point.coordinates.lng;
               final lat = mapContext.point.coordinates.lat;
-              final mapboxPlace = await _mapboxService.getMapboxPlace(
-                  longitude: lng, latitude: lat
-              );
               // Check if inside of Havana
               final isInside = isPointInPolygon(lng, lat, _havanaPolygon);
-              if(!context.mounted) return;
               if(!isInside) {
                 showToast(context: context, message: "Los destinos están limitados a La Habana");
                 return;
               }
-              Navigator.of(context).pop(mapboxPlace);
+              // Return the place
+              final mapboxPlace = await _mapboxService.getMapboxPlace(
+                  longitude: lng, latitude: lat
+              );
+              if(!context.mounted) return;
+              context.pop(mapboxPlace);
             },
           ),
           // Find my location

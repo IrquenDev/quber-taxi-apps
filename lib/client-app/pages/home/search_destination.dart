@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quber_taxi/enums/municipalities.dart';
 
-class SearchDestinationPage extends StatefulWidget {
-  const SearchDestinationPage({super.key});
+class SearchDestination extends StatefulWidget {
+  const SearchDestination({super.key});
 
   @override
-  State<SearchDestinationPage> createState() => _SearchOriginPageState();
+  State<SearchDestination> createState() => _SearchOriginPageState();
 }
 
-class _SearchOriginPageState extends State<SearchDestinationPage> {
+class _SearchOriginPageState extends State<SearchDestination> {
 
   final _controller = TextEditingController();
 
@@ -52,7 +53,7 @@ class _SearchOriginPageState extends State<SearchDestinationPage> {
                       final item = _suggestions[index];
                       return ListTile(
                         title: Text(item),
-                        onTap: () => Navigator.of(context).pop(item),
+                        onTap: () => context.pop(item)
                       );
                     }
                 )

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quber_taxi/websocket/impl/travel_accepted_handler.dart';
 
 class SearchDriver extends StatefulWidget {
@@ -26,13 +27,13 @@ class _SearchDriverState extends State<SearchDriver> with SingleTickerProviderSt
     // connect to websocket in order to see if any driver took the trip
     _handler = TravelAcceptedHandler(
       travelId: widget.travelId,
-      onMessage: (travel) => Navigator.of(context).pop(travel)
+      onMessage: (travel) => context.pop(travel)
     );
     _handler.activate();
     // schedule timeout in 3 min
     _timeoutTimer = Timer(const Duration(minutes: 3), () {
       if (mounted) {
-        Navigator.of(context).pop(null);
+        context.pop(null);
       }
     });
   }
@@ -119,7 +120,7 @@ class _SearchDriverState extends State<SearchDriver> with SingleTickerProviderSt
             Padding(
               padding: const EdgeInsets.only(bottom: 40.0),
               child: GestureDetector(
-                  onTap: () => Navigator.of(context).pop(null),
+                  onTap: () => context.pop(null),
                   ///TODO("yapmDev")
                   /// - Replace the custom circle for cancel with the one provided in the assets.
                   child: CircleAvatar(

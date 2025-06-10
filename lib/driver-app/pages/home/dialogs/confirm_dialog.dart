@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class ConfirmDialog extends StatelessWidget {
   final String title;
@@ -21,13 +22,13 @@ class ConfirmDialog extends StatelessWidget {
       content: Text(message),
       actions: [
         TextButton(
-          onPressed: () => Navigator.of(context).pop(false),
+          onPressed: () => context.pop(false),
           child: Text(cancelText),
         ),
         OutlinedButton(
-          onPressed: () => Navigator.of(context).pop(true),
+          onPressed: () => context.pop(true),
           child: Text(acceptText),
-        ),
+        )
       ]
     );
   }
