@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:quber_taxi/common/widgets/circle_stack.dart';
+import 'package:flutter_fusion/flutter_fusion.dart' show CircleStack;
 
 class TripCompletedBottomSheet extends StatefulWidget {
   const TripCompletedBottomSheet({super.key});
@@ -11,10 +11,6 @@ class TripCompletedBottomSheet extends StatefulWidget {
 class _TripCompletedBottomSheetState extends State<TripCompletedBottomSheet> {
 
   final TextEditingController _commentController = TextEditingController();
-
-  // Profile Image
-  final double _profileImagesRadius = 40.0;
-  final double _circleIntersection = 20.0;
 
   final double _horizontalPadding = 20.0;
   final double _highHorizontalPadding = 40.0;
@@ -42,10 +38,9 @@ class _TripCompletedBottomSheetState extends State<TripCompletedBottomSheet> {
                     children: [
                       // Client & Driver Profile Images
                       CircleStack(
-                          overlayDirection: OverlayDirection.rightToLeft,
                           count: 2, radius: 40.0, offset: 20.0,
                           prototypeBuilder: (index) =>
-                              Image.asset('assets/images/vehicles/v1/standard.png', fit: BoxFit.cover)
+                              Image.asset('assets/images/driver.png', fit: BoxFit.cover)
                       ),
                       // Title
                       Text(
