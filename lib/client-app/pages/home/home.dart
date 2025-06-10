@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/client-app/pages/home/bottom_sheet.dart';
 import 'package:quber_taxi/client-app/pages/home/map.dart';
+import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 
 class ClientHome extends StatefulWidget {
@@ -22,43 +24,47 @@ class _ClientHomeState extends State<ClientHome> {
   @override
   Widget build(BuildContext context) {
     final borderRadius = Theme.of(context).extension<DimensionExtension>()!.borderRadius;
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      extendBody: true,
-      body: const MapView(usingExtendedScaffold: true),
-      floatingActionButton: FloatingActionButton(
-        shape: CircleBorder(),
-        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-          onPressed: () {
-            showModalBottomSheet(
-              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-              isDismissible: false,
-              context: context,
-              isScrollControlled: true,
-              showDragHandle: true,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(borderRadius)),
-              ),
-              builder: (context) => RequestTravelSheet()
-            );
-          },
-          child: Icon(
-            Icons.local_taxi,
-            color: Theme.of(context).iconTheme.color,
-            size: Theme.of(context).iconTheme.size
-        )
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 12.0,
-        color: Theme.of(context).colorScheme.primaryContainer,
-        child: Row(
-          spacing: _bottomAppBarHeight,
-          children: [
-            Flexible(flex: 1, child: Center(child: _BottomBarItem(icon: Icons.location_on, label: 'Mapa'))),
-            Flexible(flex: 1, child: Center(child: _QuberPoints())),
-          ],
+    return NetworkAlertTemplate(
+      alertBuilder: (context, status) => customNetworkAlert(context, status, true),
+      alertPosition: Alignment.topCenter,
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        extendBody: true,
+        body: const MapView(usingExtendedScaffold: true),
+        floatingActionButton: FloatingActionButton(
+          shape: CircleBorder(),
+          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+            onPressed: () {
+              showModalBottomSheet(
+                backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                isDismissible: false,
+                context: context,
+                isScrollControlled: true,
+                showDragHandle: true,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(borderRadius)),
+                ),
+                builder: (context) => RequestTravelSheet()
+              );
+            },
+            child: Icon(
+              Icons.local_taxi,
+              color: Theme.of(context).iconTheme.color,
+              size: Theme.of(context).iconTheme.size
+          )
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        bottomNavigationBar: BottomAppBar(
+          shape: const CircularNotchedRectangle(),
+          notchMargin: 12.0,
+          color: Theme.of(context).colorScheme.primaryContainer,
+          child: Row(
+            spacing: _bottomAppBarHeight,
+            children: [
+              Flexible(flex: 1, child: Center(child: _BottomBarItem(icon: Icons.location_on, label: 'Mapa'))),
+              Flexible(flex: 1, child: Center(child: _QuberPoints())),
+            ],
+          ),
         ),
       ),
     );

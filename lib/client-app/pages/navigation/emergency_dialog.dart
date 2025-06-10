@@ -3,6 +3,7 @@ import 'package:quber_taxi/client-app/pages/navigation/trip_completed.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 
 class EmergencyDialog extends StatelessWidget {
+
   const EmergencyDialog({super.key});
 
   @override

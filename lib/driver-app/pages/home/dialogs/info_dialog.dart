@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class InfoDialog extends StatelessWidget {
   final String title;
@@ -28,7 +29,7 @@ class InfoDialog extends StatelessWidget {
       ),
       actions: [
         OutlinedButton(
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => context.pop(),
           child: Text(buttonText)
         )
       ]

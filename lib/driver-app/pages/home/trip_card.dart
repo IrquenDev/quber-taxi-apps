@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
+import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/driver-app/pages/home/dialogs/confirm_dialog.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
@@ -14,6 +15,7 @@ class TripCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isConnected = NetworkScope.of(context).value == ConnectionStatus.online;
     final dimensions = Theme.of(context).extension<DimensionExtension>()!;
     return Card(
       elevation: dimensions.elevation,
@@ -48,7 +50,7 @@ class TripCard extends StatelessWidget {
             Align(
               alignment: Alignment.centerRight,
               child: OutlinedButton(
-                onPressed: () async {
+                onPressed: isConnected ? () async {
                   // ConfirmDialog
                   final result = await showDialog<bool>(
                     context: context,
@@ -71,7 +73,7 @@ class TripCard extends StatelessWidget {
                         "bloqueado. Habilitar nuevamente en ajustes")
                     );
                   }
-                },
+                } : null,
                 child: const Text('Aceptar')
               )
             )

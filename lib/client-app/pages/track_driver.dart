@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/models/travel.dart';
+import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
 import 'package:quber_taxi/websocket/impl/driver_location_handler.dart';
 import 'package:quber_taxi/util/mapbox.dart' as mb_util;
 
@@ -89,36 +91,40 @@ class _TrackDriverState extends State<TrackDriver> {
     final originCoords = widget.travel.originCoords;
     final center = Point(coordinates: Position(originCoords[0], originCoords[1]));
 
-    return MapWidget(
-      styleUri: MapboxStyles.STANDARD,
-      cameraOptions: CameraOptions(
-        center: center,
-        pitch: 45,
-        bearing: 0,
-        zoom: 17,
-      ),
-        onMapCreated: (controller) async {
-          // Init class's field references
-          _mapController = controller;
-          _mapBearing = await _mapController.getCameraState().then((c) => c.bearing);
-          // Update some mapbox component
-          await controller.location.updateSettings(LocationComponentSettings(enabled: false));
-          await controller.scaleBar.updateSettings(ScaleBarSettings(enabled: false));
-          // Create PAM
-          _pointAnnotationManager = await controller.annotations.createPointAnnotationManager();
-        },
-        onCameraChangeListener: (cameraData) async {
-          _mapBearing = cameraData.cameraState.bearing;
-          if(_driverAnnotation != null) {
-            final bearing = mb_util.calculateBearing(
-                _lastKnownCoords.lat, _lastKnownCoords.lng,
-                _coords.lat, _coords.lng
-            );
-            final adjustedBearing = (bearing - _mapBearing + 360) % 360;
-            _driverAnnotation!.iconRotate = adjustedBearing;
-            _pointAnnotationManager.update(_driverAnnotation!);
+    return NetworkAlertTemplate(
+      alertBuilder: (context, status) => customNetworkAlert(context, status, true),
+      alertPosition: Alignment.topCenter,
+      child: MapWidget(
+        styleUri: MapboxStyles.STANDARD,
+        cameraOptions: CameraOptions(
+          center: center,
+          pitch: 45,
+          bearing: 0,
+          zoom: 17,
+        ),
+          onMapCreated: (controller) async {
+            // Init class's field references
+            _mapController = controller;
+            _mapBearing = await _mapController.getCameraState().then((c) => c.bearing);
+            // Update some mapbox component
+            await controller.location.updateSettings(LocationComponentSettings(enabled: false));
+            await controller.scaleBar.updateSettings(ScaleBarSettings(enabled: false));
+            // Create PAM
+            _pointAnnotationManager = await controller.annotations.createPointAnnotationManager();
+          },
+          onCameraChangeListener: (cameraData) async {
+            _mapBearing = cameraData.cameraState.bearing;
+            if(_driverAnnotation != null) {
+              final bearing = mb_util.calculateBearing(
+                  _lastKnownCoords.lat, _lastKnownCoords.lng,
+                  _coords.lat, _coords.lng
+              );
+              final adjustedBearing = (bearing - _mapBearing + 360) % 360;
+              _driverAnnotation!.iconRotate = adjustedBearing;
+              _pointAnnotationManager.update(_driverAnnotation!);
+            }
           }
-        }
+      ),
     );
   }
 }

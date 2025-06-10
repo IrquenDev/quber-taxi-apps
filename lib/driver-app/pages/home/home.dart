@@ -4,8 +4,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart' as g;
+import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/services/travel_service.dart';
+import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
 import 'package:quber_taxi/driver-app/pages/home/info_travel_sheet.dart';
 import 'package:quber_taxi/util/geolocator.dart' as g_util;
 import 'package:quber_taxi/driver-app/pages/home/available_travels_sheet.dart';
@@ -149,133 +151,137 @@ class _DriverHomeState extends State<DriverHome> {
       bearing: 0,
       zoom: 17,
     );
-    return Material(
-      child: Stack(
-        children: [
-          MapWidget(
-            styleUri: MapboxStyles.STANDARD,
-            cameraOptions: cameraOptions,
-            onMapCreated: (controller) async {
-              // Init class's field references
-              _mapController = controller;
-              _mapBearing = await _mapController.getCameraState().then((c) => c.bearing);
-              // Update some mapbox component
-              await controller.location.updateSettings(LocationComponentSettings(enabled: false));
-              await controller.scaleBar.updateSettings(ScaleBarSettings(enabled: false));
-              // Create PAM
-              _pointAnnotationManager = await controller.annotations.createPointAnnotationManager();
-              // Load Taxi Marker
-              final assetBytes = await rootBundle.load('assets/markers/taxi/taxi_pin_x172.png');
-              _driverMarkerImage = assetBytes.buffer.asUint8List();
-              // Add Fake Drivers Animation.
-              // FDA is too heavy for the emulator.
-              // As it is a requirement of the app, it will be enabled by default.
-              // If you are working in this view or any other flow where you need to go through it, you can
-              // disable it if you want (you should).
-              // To do that set -dart-define=ALLOW_FDA=FALSE.
-              // Just care running "flutter build apk" including this flag as FALSE.
-              String definedAllowFDA = const String.fromEnvironment("ALLOW_FDA", defaultValue: "TRUE");
-              final fdaAllowed = definedAllowFDA == "TRUE";
-              if(fdaAllowed) {
-                for (int i = 1; i <= 5; i++) {
-                  final fakeRoute = await mb_util.loadGeoJsonFakeRoute("assets/geojson/line/fake_route_$i.geojson");
-                  final origin = fakeRoute.coordinates.first;
-                  final annotation = await _pointAnnotationManager.create(
-                    PointAnnotationOptions(
-                      geometry: Point(coordinates: Position(origin[0], origin[1])),
-                      image: _driverMarkerImage,
-                      iconAnchor: IconAnchor.CENTER,
-                    ),
-                  );
-                  _taxis.add(AnimatedFakeDriver(
-                      routeCoords: fakeRoute.coordinates,
-                      annotation: annotation,
-                      routeDuration: Duration(milliseconds: (fakeRoute.duration * 1000).round())
-                  ));
-                }
-                // Start running fake drivers animation
-                _ticker.start();
-              }
-            },
-            onCameraChangeListener: (cameraData) async {
-              // Always update bearing 'cause fake drivers animation depends on it
-              _mapBearing = cameraData.cameraState.bearing;
-              // Return if the driver location is not being streaming. Otherwise we need to re-calculate bearing for
-              // the real driver marker. It is possible for this metric to change without significantly changing the
-              // driver location.
-              if(!_isLocationStreaming) return;
-              final bearing = mb_util.calculateBearing(
-                  _lastKnownCoords.lat, _lastKnownCoords.lng,
-                  _coords.lat, _coords.lng
-              );
-              final adjusted = (bearing - _mapBearing + 360) % 360;
-              _driverAnnotation.iconRotate = adjusted;
-              _pointAnnotationManager.update(_driverAnnotation);
-            }
-          ),
-          Positioned(
-            right: 20.0,
-            /// TODO("yapm": Avoid hardcoded space)
-            bottom: _selectedTravel == null ? 150.0 : 20.0,
-            child: Column(
-              spacing: 8.0,
-              children: [
-                // Find my location
-                FloatingActionButton(
-                  backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                  onPressed: () async {
-                    // Ask for location permission
-                    await g_util.requestLocationPermission(
-                        context: context,
-                        onPermissionGranted: () async {
-                          // Start streaming location
-                          if(!_isLocationStreaming) _startStreamingLocation();
-                          // Ease to current position (Whether the location is being streaming)
-                          _mapController.easeTo(
-                              CameraOptions(center: Point(coordinates: _coords)),
-                              MapAnimationOptions(duration: 500)
-                          );
-                        },
-                        onPermissionDenied: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Permiso de ubicación denegado")),
-                          );
-                        },
-                        onPermissionDeniedForever: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Permiso de ubicación denegado permanentemente")),
-                          );
-                        }
-                    );
-                  },
-                  child: Icon(
-                      Icons.my_location_outlined,
-                      color: Theme.of(context).iconTheme.color,
-                      size: Theme.of(context).iconTheme.size
-                  ),
-                ),
-                // Show travel info bottom sheet
-                if(_selectedTravel != null)
-                  FloatingActionButton(
-                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                      onPressed: () => showModalBottomSheet(
-                          context: context,
-                          showDragHandle: true,
-                          builder: (context) => TravelInfoSheet(travel: _selectedTravel!)
+    return NetworkAlertTemplate(
+      alertBuilder: (context, status) => customNetworkAlert(context, status, true),
+      alertPosition: Alignment.topCenter,
+      child: Material(
+        child: Stack(
+          children: [
+            MapWidget(
+              styleUri: MapboxStyles.STANDARD,
+              cameraOptions: cameraOptions,
+              onMapCreated: (controller) async {
+                // Init class's field references
+                _mapController = controller;
+                _mapBearing = await _mapController.getCameraState().then((c) => c.bearing);
+                // Update some mapbox component
+                await controller.location.updateSettings(LocationComponentSettings(enabled: false));
+                await controller.scaleBar.updateSettings(ScaleBarSettings(enabled: false));
+                // Create PAM
+                _pointAnnotationManager = await controller.annotations.createPointAnnotationManager();
+                // Load Taxi Marker
+                final assetBytes = await rootBundle.load('assets/markers/taxi/taxi_pin_x172.png');
+                _driverMarkerImage = assetBytes.buffer.asUint8List();
+                // Add Fake Drivers Animation.
+                // FDA is too heavy for the emulator.
+                // As it is a requirement of the app, it will be enabled by default.
+                // If you are working in this view or any other flow where you need to go through it, you can
+                // disable it if you want (you should).
+                // To do that set -dart-define=ALLOW_FDA=FALSE.
+                // Just care running "flutter build apk" including this flag as FALSE.
+                String definedAllowFDA = const String.fromEnvironment("ALLOW_FDA", defaultValue: "TRUE");
+                final fdaAllowed = definedAllowFDA == "TRUE";
+                if(fdaAllowed) {
+                  for (int i = 1; i <= 5; i++) {
+                    final fakeRoute = await mb_util.loadGeoJsonFakeRoute("assets/geojson/line/fake_route_$i.geojson");
+                    final origin = fakeRoute.coordinates.first;
+                    final annotation = await _pointAnnotationManager.create(
+                      PointAnnotationOptions(
+                        geometry: Point(coordinates: Position(origin[0], origin[1])),
+                        image: _driverMarkerImage,
+                        iconAnchor: IconAnchor.CENTER,
                       ),
-                      child: Icon(
-                          Icons.info_outline,
-                          color: Theme.of(context).iconTheme.color,
-                          size: Theme.of(context).iconTheme.size
-                      )
+                    );
+                    _taxis.add(AnimatedFakeDriver(
+                        routeCoords: fakeRoute.coordinates,
+                        annotation: annotation,
+                        routeDuration: Duration(milliseconds: (fakeRoute.duration * 1000).round())
+                    ));
+                  }
+                  // Start running fake drivers animation
+                  _ticker.start();
+                }
+              },
+              onCameraChangeListener: (cameraData) async {
+                // Always update bearing 'cause fake drivers animation depends on it
+                _mapBearing = cameraData.cameraState.bearing;
+                // Return if the driver location is not being streaming. Otherwise we need to re-calculate bearing for
+                // the real driver marker. It is possible for this metric to change without significantly changing the
+                // driver location.
+                if(!_isLocationStreaming) return;
+                final bearing = mb_util.calculateBearing(
+                    _lastKnownCoords.lat, _lastKnownCoords.lng,
+                    _coords.lat, _coords.lng
+                );
+                final adjusted = (bearing - _mapBearing + 360) % 360;
+                _driverAnnotation.iconRotate = adjusted;
+                _pointAnnotationManager.update(_driverAnnotation);
+              }
+            ),
+            Positioned(
+              right: 20.0,
+              /// TODO("yapm": Avoid hardcoded space)
+              bottom: _selectedTravel == null ? 150.0 : 20.0,
+              child: Column(
+                spacing: 8.0,
+                children: [
+                  // Find my location
+                  FloatingActionButton(
+                    backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                    onPressed: () async {
+                      // Ask for location permission
+                      await g_util.requestLocationPermission(
+                          context: context,
+                          onPermissionGranted: () async {
+                            // Start streaming location
+                            if(!_isLocationStreaming) _startStreamingLocation();
+                            // Ease to current position (Whether the location is being streaming)
+                            _mapController.easeTo(
+                                CameraOptions(center: Point(coordinates: _coords)),
+                                MapAnimationOptions(duration: 500)
+                            );
+                          },
+                          onPermissionDenied: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("Permiso de ubicación denegado")),
+                            );
+                          },
+                          onPermissionDeniedForever: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("Permiso de ubicación denegado permanentemente")),
+                            );
+                          }
+                      );
+                    },
+                    child: Icon(
+                        Icons.my_location_outlined,
+                        color: Theme.of(context).iconTheme.color,
+                        size: Theme.of(context).iconTheme.size
+                    ),
                   ),
-              ],
-            )
-          ),
-          if(_selectedTravel == null)
-            Align(alignment: Alignment.bottomCenter, child: AvailableTravelsSheet(onTravelSelected: _onTravelSelected))
-        ]
-      )
+                  // Show travel info bottom sheet
+                  if(_selectedTravel != null)
+                    FloatingActionButton(
+                        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                        onPressed: () => showModalBottomSheet(
+                            context: context,
+                            showDragHandle: true,
+                            builder: (context) => TravelInfoSheet(travel: _selectedTravel!)
+                        ),
+                        child: Icon(
+                            Icons.info_outline,
+                            color: Theme.of(context).iconTheme.color,
+                            size: Theme.of(context).iconTheme.size
+                        )
+                    ),
+                ],
+              )
+            ),
+            if(_selectedTravel == null)
+              Align(alignment: Alignment.bottomCenter, child: AvailableTravelsSheet(onTravelSelected: _onTravelSelected))
+          ]
+        )
+      ),
     );
   }
 }
