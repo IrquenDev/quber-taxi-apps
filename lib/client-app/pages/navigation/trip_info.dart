@@ -4,7 +4,9 @@ import 'package:quber_taxi/theme/dimensions.dart';
 
 class TripInfoBottomOverlay extends StatelessWidget {
 
-  const TripInfoBottomOverlay({super.key});
+  final num distance;
+
+  const TripInfoBottomOverlay({super.key, required this.distance});
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +38,7 @@ class TripInfoBottomOverlay extends StatelessWidget {
                         ),
                         DefaultTextStyle(
                           style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold),
-                            child: Column(children: [Text('20,3 Km'), Text('150 CUP')])
+                            child: Column(children: [Text('${distance.toStringAsFixed(2)} Km'), Text('150 CUP')])
                         )
                       ]
                   )

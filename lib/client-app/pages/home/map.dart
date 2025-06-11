@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
@@ -63,14 +64,16 @@ class _MapViewState extends State<MapView> {
                         onPermissionGranted: () async {
                           final position = await g.Geolocator.getCurrentPosition();
                           // Check if inside of Havana
-                          final isInside = isPointInPolygon(position.longitude, position.latitude, _havanaPolygon);
-                          if(!context.mounted) return;
-                          if(!isInside) {
-                            showToast(
-                                context: context,
-                                message: "Su ubicacion actual esta fuera de los limites de La"" Habana"
-                            );
-                            return;
+                          if (!kDebugMode) {
+                            final isInside = isPointInPolygon(position.longitude, position.latitude, _havanaPolygon);
+                            if(!context.mounted) return;
+                            if(!isInside) {
+                              showToast(
+                                  context: context,
+                                  message: "Su ubicacion actual esta fuera de los limites de La"" Habana"
+                              );
+                              return;
+                            }
                           }
                           _mapController!.easeTo(
                               CameraOptions(center: Point(coordinates: Position(position.longitude, position.latitude))),

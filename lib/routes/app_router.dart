@@ -53,7 +53,11 @@ final GoRouter appRouter = GoRouter(
 
     GoRoute(
         path: RoutePaths.clientNavigation,
-        builder: (context, state) => const ClientNavigation()
+        builder: (context, state) {
+          // final travel = state.extra as Travel;
+          // return ClientNavigation(originCoords: travel.originCoords);
+          return ClientNavigation();
+        }
     ),
 
     GoRoute(
