@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
 import 'package:go_router/go_router.dart';
@@ -96,16 +97,18 @@ class _SearchOriginState extends State<SearchOrigin> {
                     onPermissionGranted: () async {
                       setState(() => isLoading = true);
                       final position = await g.Geolocator.getCurrentPosition();
-                      // Check if inside of Havana
-                      final isInside = isPointInPolygon(position.longitude, position.latitude, _havanaPolygon);
-                      if(!context.mounted) return;
-                      if(!isInside) {
-                        showToast(
-                            context: context,
-                            message: "Su ubicacion actual esta fuera de los limites de La"" Habana"
-                        );
-                        setState(() => isLoading = false);
-                        return;
+                      if (!kDebugMode) {
+                        // Check if inside of Havana
+                        final isInside = isPointInPolygon(position.longitude, position.latitude, _havanaPolygon);
+                        if(!context.mounted) return;
+                        if(!isInside) {
+                          showToast(
+                              context: context,
+                              message: "Su ubicacion actual esta fuera de los limites de La"" Habana"
+                          );
+                          setState(() => isLoading = false);
+                          return;
+                        }
                       }
                       final mapboxPlace = await _mapboxService.getMapboxPlace(
                           longitude: position.longitude, latitude: position.latitude

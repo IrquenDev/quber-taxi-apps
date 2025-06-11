@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
 import 'package:go_router/go_router.dart';
@@ -59,10 +60,12 @@ class _LocationPickerState extends State<LocationPicker> {
               final lng = mapContext.point.coordinates.lng;
               final lat = mapContext.point.coordinates.lat;
               // Check if inside of Havana
-              final isInside = isPointInPolygon(lng, lat, _havanaPolygon);
-              if(!isInside) {
-                showToast(context: context, message: "Los destinos están limitados a La Habana");
-                return;
+              if (!kDebugMode) {
+                final isInside = isPointInPolygon(lng, lat, _havanaPolygon);
+                if(!isInside) {
+                  showToast(context: context, message: "Los destinos están limitados a La Habana");
+                  return;
+                }
               }
               // Return the place
               final mapboxPlace = await _mapboxService.getMapboxPlace(
@@ -83,14 +86,16 @@ class _LocationPickerState extends State<LocationPicker> {
                         onPermissionGranted: () async {
                           final position = await g.Geolocator.getCurrentPosition();
                           // Check if inside of Havana
-                          final isInside = isPointInPolygon(position.longitude, position.latitude, _havanaPolygon);
-                          if(!context.mounted) return;
-                          if(!isInside) {
-                            showToast(
-                                context: context,
-                                message: "Su ubicacion actual esta fuera de los limites de La"" Habana"
-                            );
-                            return;
+                          if (!kDebugMode) {
+                            final isInside = isPointInPolygon(position.longitude, position.latitude, _havanaPolygon);
+                            if(!context.mounted) return;
+                            if(!isInside) {
+                              showToast(
+                                  context: context,
+                                  message: "Su ubicacion actual esta fuera de los limites de La"" Habana"
+                              );
+                              return;
+                            }
                           }
                           _mapController!.easeTo(
                               CameraOptions(center: Point(coordinates: Position(position.longitude, position.latitude))),
