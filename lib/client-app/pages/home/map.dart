@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/util/geolocator.dart';
 import 'package:geolocator/geolocator.dart' as g;
 import 'package:quber_taxi/util/turf.dart';
@@ -70,7 +71,7 @@ class _MapViewState extends State<MapView> {
                             if(!isInside) {
                               showToast(
                                   context: context,
-                                  message: "Su ubicacion actual esta fuera de los limites de La"" Habana"
+                                  message: AppLocalizations.of(context)!.ubicationFailed
                               );
                               return;
                             }
@@ -80,9 +81,9 @@ class _MapViewState extends State<MapView> {
                               MapAnimationOptions(duration: 500)
                           );
                         },
-                        onPermissionDenied: () => showToast(context: context, message: "Permiso de ubicación denegado"),
+                        onPermissionDenied: () => showToast(context: context, message: AppLocalizations.of(context)!.permissionsDenied),
                         onPermissionDeniedForever: () =>
-                            showToast(context: context, message: "Permiso de ubicación denegado permanentemente")
+                            showToast(context: context, message: AppLocalizations.of(context)!.permissionDeniedPermanently)
                     );
                   },
                   child: Icon(

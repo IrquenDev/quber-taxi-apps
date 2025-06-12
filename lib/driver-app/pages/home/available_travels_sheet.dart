@@ -3,6 +3,7 @@ import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/services/travel_service.dart';
 import 'package:quber_taxi/driver-app/pages/home/trip_card.dart';
 import 'package:quber_taxi/enums/taxi_type.dart';
+import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 
 class AvailableTravelsSheet extends StatefulWidget {
@@ -100,7 +101,7 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
                                   : Icons.keyboard_double_arrow_down
                               )
                           ),
-                          Text("Seleccione un viaje", style: Theme.of(context).textTheme.titleMedium)
+                          Text(AppLocalizations.of(context)!.selectTravel, style: Theme.of(context).textTheme.titleMedium)
                         ]
                     )
                   )
@@ -144,7 +145,7 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
                                             !_isActionPending ?
                                             IconButton(
                                                 icon: const Icon(Icons.refresh),
-                                                tooltip: 'Actualizar viajes',
+                                                tooltip: AppLocalizations.of(context)!.updateTravel,
                                                 onPressed: _refreshTravels
                                             ) : ghostContainer
                                           ]
@@ -159,7 +160,7 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
                                         return const Center(child: CircularProgressIndicator());
                                       }
                                       else if(snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
-                                        return Center(child: Text("Sin viajes disponibles"),);
+                                        return Center(child: Text(AppLocalizations.of(context)!.noTravel),);
                                       }
                                       else {
                                         final travels = snapshot.data!;

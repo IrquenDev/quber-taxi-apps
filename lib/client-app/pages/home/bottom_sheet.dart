@@ -8,6 +8,7 @@ import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/services/travel_service.dart';
 import 'package:quber_taxi/enums/municipalities.dart';
 import 'package:quber_taxi/enums/taxi_type.dart';
+import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/routes/route_paths.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/util/turf.dart';
@@ -44,7 +45,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
     // Match .geojson
     final geoJsonPath = Municipalities.resolveGeoJsonRef(_destinationName!);
     if (geoJsonPath == null) {
-      showToast(context: context, message: "Municipio no reconocido: ${_destinationName!}");
+      showToast(context: context, message: "${AppLocalizations.of(context)!.unknown} ${_destinationName!}");
       return;
     }
     // Load .geojson
@@ -114,7 +115,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                                     if(canEstimateDistance) _estimateDistance();
                                   },
                                   child: Text(
-                                      _originName ?? "Seleccione el lugar de origen",
+                                      _originName ?? AppLocalizations.of(context)!.originName,
                                       style: Theme.of(context).textTheme.bodyLarge
                                   )
                               ),
@@ -125,7 +126,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                                     if(canEstimateDistance) _estimateDistance();
                                   },
                                   child: Text(
-                                      _destinationName ?? "Seleccione el municipio de destino",
+                                      _destinationName ?? AppLocalizations.of(context)!.destinationName,
                                       style: Theme.of(context).textTheme.bodyLarge
                                   )
                               )
@@ -137,7 +138,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
               // Taxi preference header
               Align(
                 alignment: Alignment.centerLeft,
-                child: Text("¿Qué tipo de vehículo prefiere?", style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                child: Text(AppLocalizations.of(context)!.askTaxi, style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.bold
                 ))
               ),
@@ -151,7 +152,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                      "¿Cuántas personas viajan?",
+                      AppLocalizations.of(context)!.howTravels,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)
                   ),
                   Row(
@@ -179,7 +180,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("¿Lleva mascota?", style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
+                  Text(AppLocalizations.of(context)!.pets, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
                   Switch(
                     value: _hasPets,
                     activeColor: Theme.of(context).colorScheme.primaryFixedDim,
@@ -192,26 +193,26 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Distancia mínima:"), Text(_minDistance != null ? '${_minDistance!.toStringAsFixed(2)} km' : "-")
+                  Text(AppLocalizations.of(context)!.minDistance), Text(_minDistance != null ? '${_minDistance!.toStringAsFixed(2)} km' : "-")
                 ]
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Distancia máxima:"),
+                  Text(AppLocalizations.of(context)!.maxDistance),
                   Text(_maxDistance != null ? '${_maxDistance!.toStringAsFixed(2)}'' km' : "-")
                 ]
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Precio mínimo:"), Text(_minPrice != null ? '${_minPrice!.toStringAsFixed(0)} CUP' : "-")
+                  Text(AppLocalizations.of(context)!.minPrice), Text(_minPrice != null ? '${_minPrice!.toStringAsFixed(0)} CUP' : "-")
                 ]
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Precio máximo que puede costar:"),
+                  Text(AppLocalizations.of(context)!.maxPrice),
                   Text(_maxPrice != null ? '${_maxPrice!.toStringAsFixed(0)} CUP' : "-")
                 ]
               ),
@@ -246,7 +247,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                         /// - This travel request should be delete or marked as CANCELED.
                       }
                     } : null,
-                    child: const Text("Pedir taxi"),
+                    child: Text(AppLocalizations.of(context)!.askTaxi),
                   )
               )
             ]
@@ -286,7 +287,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                                   children: [
                                     Row(
                                       children: [
-                                        Text("vehículo", style: Theme.of(context).textTheme.bodySmall),
+                                        Text(AppLocalizations.of(context)!.vehicle, style: Theme.of(context).textTheme.bodySmall),
                                         if (isSelected)
                                           SizedBox(width: 8.0),
                                         if (isSelected)

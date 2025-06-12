@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quber_taxi/enums/municipalities.dart';
+import 'package:quber_taxi/l10n/app_localizations.dart';
+
 
 class SearchDestination extends StatefulWidget {
   const SearchDestination({super.key});
@@ -35,7 +37,7 @@ class _SearchOriginPageState extends State<SearchDestination> {
               controller: _controller,
               onChanged: _onTextChanged,
               decoration: InputDecoration(
-                  hintText: 'Escribe una ubicación...',
+                  hintText: AppLocalizations.of(context)!.writeUbication,
                   suffixIcon: _controller.text.isNotEmpty ?
                   IconButton(icon: const Icon(Icons.clear_outlined), onPressed: () {
                     _controller.clear();

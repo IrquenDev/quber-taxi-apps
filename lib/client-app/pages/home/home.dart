@@ -4,6 +4,7 @@ import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/client-app/pages/home/bottom_sheet.dart';
 import 'package:quber_taxi/client-app/pages/home/map.dart';
 import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
+import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 
 class ClientHome extends StatefulWidget {
@@ -61,7 +62,7 @@ class _ClientHomeState extends State<ClientHome> {
           child: Row(
             spacing: _bottomAppBarHeight,
             children: [
-              Flexible(flex: 1, child: Center(child: _BottomBarItem(icon: Icons.location_on, label: 'Mapa'))),
+              Flexible(flex: 1, child: Center(child: _BottomBarItem(icon: Icons.location_on, label: AppLocalizations.of(context)!.map))),
               Flexible(flex: 1, child: Center(child: _QuberPoints())),
             ],
           ),
@@ -95,9 +96,9 @@ class _QuberPoints extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
-      children: const [
+      children:  [
         Text('56'),
-        Text('Puntos Quber')
+        Text(AppLocalizations.of(context)!.quberPoints)
       ]
     );
   }
