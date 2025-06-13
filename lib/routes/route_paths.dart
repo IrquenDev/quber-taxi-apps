@@ -16,4 +16,6 @@ class RoutePaths {
   static const String trackDriver = '/track-driver';
 
   static const String clientNavigation = '/client-navigation';
+
+  static const String driverNavigation = '/driver-navigation';
 }

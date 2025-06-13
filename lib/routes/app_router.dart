@@ -3,6 +3,7 @@ import 'package:quber_taxi/client-app/pages/home/home.dart';
 import 'package:quber_taxi/client-app/pages/home/search_destination.dart';
 import 'package:quber_taxi/client-app/pages/home/search_origin.dart';
 import 'package:quber_taxi/client-app/pages/navigation/client_navigation.dart';
+import 'package:quber_taxi/driver-app/pages/navigation/driver_navigation.dart';
 import 'package:quber_taxi/client-app/pages/search_driver.dart';
 import 'package:quber_taxi/client-app/pages/track_driver.dart';
 import 'package:quber_taxi/common/models/travel.dart';
@@ -63,6 +64,10 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
         path: RoutePaths.driverHome,
         builder: (context, state) => const DriverHome()
+    ),
+    GoRoute(
+        path: RoutePaths.driverNavigation,
+        builder: (context, state) => const DriverNavigation()
     )
   ]
 );
