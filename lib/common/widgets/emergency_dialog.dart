@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quber_taxi/client-app/pages/navigation/trip_completed.dart';
+import 'package:quber_taxi/driver-app/pages/navigation/trip_completed.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 
 class EmergencyDialog extends StatelessWidget {
@@ -65,7 +66,7 @@ class EmergencyDialog extends StatelessWidget {
                       context: context,
                       isScrollControlled: true,
                       showDragHandle: true,
-                      builder: (context) => const TripCompletedBottomSheet(),
+                      builder: (context) => const DriverTripCompleted(),
                     );
                   },
                   child: Text(
@@ -94,4 +95,3 @@ class EmergencyDialog extends StatelessWidget {
     );
   }
 }
-

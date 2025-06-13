@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:quber_taxi/client-app/pages/navigation/emergency_dialog.dart';
+import 'package:quber_taxi/common/widgets/emergency_dialog.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 
-class TripInfoBottomOverlay extends StatelessWidget {
+class ClientTripInfo extends StatelessWidget {
 
   final num distance;
 
-  const TripInfoBottomOverlay({super.key, required this.distance});
+  const ClientTripInfo({super.key, required this.distance});
 
   @override
   Widget build(BuildContext context) {

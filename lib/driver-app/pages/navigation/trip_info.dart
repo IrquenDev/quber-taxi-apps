@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:quber_taxi/driver-app/pages/navigation/emergency_dialog.dart';
+import 'package:quber_taxi/common/widgets/emergency_dialog.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 
-class TripInfoBottomOverlay extends StatefulWidget {
-  const TripInfoBottomOverlay({super.key});
+class DriverTripInfo extends StatefulWidget {
+  const DriverTripInfo({super.key});
 
   @override
-  State<TripInfoBottomOverlay> createState() => _TripInfoBottomOverlayState();
+  State<DriverTripInfo> createState() => _DriverTripInfoState();
 }
 
-class _TripInfoBottomOverlayState extends State<TripInfoBottomOverlay> {
+class _DriverTripInfoState extends State<DriverTripInfo> {
+
   bool isGuidedRouteEnabled = false;
 
   @override
@@ -17,8 +18,8 @@ class _TripInfoBottomOverlayState extends State<TripInfoBottomOverlay> {
     final dimensions = Theme.of(context).extension<DimensionExtension>()!;
     final mediaHeight = MediaQuery.of(context).size.height;
     final overlayHeight = isGuidedRouteEnabled
-        ? mediaHeight * 0.45
-        : mediaHeight * 0.35;
+        ? mediaHeight * 0.40
+        : mediaHeight * 0.30;
 
     return ClipRRect(
       borderRadius: BorderRadius.vertical(top: Radius.circular(dimensions.borderRadius)),
@@ -130,7 +131,7 @@ class _TripInfoBottomOverlayState extends State<TripInfoBottomOverlay> {
                               ),
                             ],
                           ),
-                          if (isGuidedRouteEnabled) ...[
+                          if (isGuidedRouteEnabled) ... [
                             Text('Ruta exacta', style: Theme.of
                               (context).textTheme.bodyMedium),
                             SizedBox(height: 8.0),
@@ -138,16 +139,12 @@ class _TripInfoBottomOverlayState extends State<TripInfoBottomOverlay> {
                               decoration: InputDecoration(
                                 prefixIcon: Icon(Icons.location_on_outlined),
                                 hintText: 'Seleccione la direccion de destino',
-                                suffixIcon: Icon(Icons.search),
-                                contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
+                                suffixIcon: Icon(Icons.search_outlined)
+                              )
+                            )
+                          ]
+                        ]
+                      )
                     ),
                     SizedBox(
                       width: double.infinity,
@@ -181,7 +178,7 @@ class _TripInfoBottomOverlayState extends State<TripInfoBottomOverlay> {
             // Taxi Type Image
             Positioned(
               right: 16,
-              top: 20,
+              top: isGuidedRouteEnabled ? 20.0 : 10.0,
               child: SizedBox(
                 height: 80,
                 child: Transform(
