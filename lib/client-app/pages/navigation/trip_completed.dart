@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fusion/flutter_fusion.dart' show CircleStack;
 
-class TripCompletedBottomSheet extends StatefulWidget {
-  const TripCompletedBottomSheet({super.key});
+class ClientTripCompleted extends StatefulWidget {
+  const ClientTripCompleted({super.key});
 
   @override
-  State<TripCompletedBottomSheet> createState() => _TripCompletedBottomSheetState();
+  State<ClientTripCompleted> createState() => _ClientTripCompletedState();
 }
 
-class _TripCompletedBottomSheetState extends State<TripCompletedBottomSheet> {
+class _ClientTripCompletedState extends State<ClientTripCompleted> {
 
   final TextEditingController _commentController = TextEditingController();
 

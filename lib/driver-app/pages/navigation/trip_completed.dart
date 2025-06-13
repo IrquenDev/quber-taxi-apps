@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fusion/flutter_fusion.dart' show CircleStack;
 
-class TripCompletedBottomSheet extends StatefulWidget {
-  const TripCompletedBottomSheet({super.key});
+class DriverTripCompleted extends StatefulWidget {
+  const DriverTripCompleted({super.key});
 
   @override
-  State<TripCompletedBottomSheet> createState() => _TripCompletedBottomSheetState();
+  State<DriverTripCompleted> createState() => _DriverTripCompletedState();
 }
 
-class _TripCompletedBottomSheetState extends State<TripCompletedBottomSheet> {
+class _DriverTripCompletedState extends State<DriverTripCompleted> {
 
   final double _horizontalPadding = 20.0;
   final double _highHorizontalPadding = 40.0;

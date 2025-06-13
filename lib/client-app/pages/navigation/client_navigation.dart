@@ -69,7 +69,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
                 }
             ),
             // Custom mini "sheet"
-            Align(alignment: Alignment.bottomCenter, child: TripInfoBottomOverlay(distance: _distanceInKm))
+            Align(alignment: Alignment.bottomCenter, child: ClientTripInfo(distance: _distanceInKm))
           ]
       ),
       // @Temporal
