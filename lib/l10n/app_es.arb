@@ -1,0 +1,57 @@
+{
+  "@@locale": "es",
+
+  "unknown": "Municipio no reconocido:",
+  "originName": "Seleccione el lugar de origen",
+  "destinationName": "Seleccione el municipio de destino",
+  "carPrefer": "¿Qué tipo de vehículo prefiere?",
+  "howTravels": "¿Cuántas personas viajan?",
+  "pets": "¿Lleva mascota?",
+  "minDistance": "Distancia mínima:",
+  "maxDistance": "Distancia máxima:",
+  "minPrice": "Precio mínimo:",
+  "maxPrice": "Precio máximo que puede costar:",
+  "askTaxi": "Pedir taxi",
+  "vehicle": "vehículo",
+
+  "map": "Mapa",
+  "quberPoints": "Puntos Quber",
+
+  "ubicationFailed": "Su ubicacion actual esta fuera de los limites de La Habana",
+  "permissionsDenied": "Permiso de ubicación denegado",
+  "permissionDeniedPermanently": "Permiso de ubicación denegado permanentemente",
+
+  "writeUbication": "Escribe una ubicación...",
+
+  "selectUbication": "Seleccione ubicación desde el mapa",
+  "actualUbication": "Usar mi ubicación actual",
+  "outLimits": "Su ubicacion actual esta fuera de los limites de La Habana",
+  "noResults": "Sin resultados",
+
+  "searchDrivers": "Buscando Conductores...",
+
+  "selectTravel": "Seleccione un viaje",
+  "updateTravel": "Actualizar viajes",
+  "noTravel": "Sin viajes disponibles",
+
+  "noAssignedTrip": "No se puedo asignar el viaje",
+
+  "countPeople": "Cantidad de personas que viajan:",
+  "pet": "Mascota:",
+  "typeVehicle": "Tipo de vehículo:",
+  "startTrip": "Iniciar Viaje",
+
+  "people": "personas",
+  "from": "Desde: ",
+  "until": "Hasta: "
+
+
+
+
+
+
+
+
+
+
+}

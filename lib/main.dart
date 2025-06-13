@@ -40,10 +40,10 @@ class MyApp extends StatelessWidget {
         darkTheme: theme.dark(),
         routerConfig: appRouter,
         builder: (context, child) => NetworkChecker(
-            // config: ConnectionConfig(
-            //     pingUrl: '${ApiConfig().baseUrl}/network-checker',
-            //     timeLimit: Duration(seconds: 3)
-            // ),
+            config: ConnectionConfig(
+                pingUrl: '${ApiConfig().baseUrl}/network-checker',
+                timeLimit: Duration(seconds: 3)
+            ),
             // Delegate to child whether to use a network alert and decide it style and position. To do that, wrap
             // the child in a NetworkAlertTemplate.
             alertBuilder: null, // anyway it's null by default, it's just for you knowledge.
