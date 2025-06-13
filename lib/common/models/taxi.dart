@@ -26,4 +26,12 @@ class Taxi {
         type: TaxiType.resolve(json["type"]),
     );
   }
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "plate": plate,
+    "imageUrl": imageUrl,
+    "seats": seats,
+    "type": type.apiValue
+  };
 }

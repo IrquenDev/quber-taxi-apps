@@ -38,7 +38,6 @@ class Travel {
   });
 
   factory Travel.fromJson(Map<String, dynamic> json) {
-
     return Travel(
         id: json["id"],
         originName: json["originName"],
@@ -56,4 +55,21 @@ class Travel {
         driver: json["driver"] != null ? Driver.fromJson(json["driver"]) : null
     );
   }
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "originName": originName,
+    "destinationName": destinationName,
+    "originCoords": originCoords,
+    "requiredSeats": requiredSeats,
+    "hasPets": hasPets,
+    "taxiType": taxiType.apiValue,
+    "minDistance": minDistance,
+    "maxDistance": maxDistance,
+    "minPrice": minPrice,
+    "maxPrice": maxPrice,
+    "state": state.apiValue,
+    "client": client.toJson(),
+    "driver": driver?.toJson(),
+  };
 }

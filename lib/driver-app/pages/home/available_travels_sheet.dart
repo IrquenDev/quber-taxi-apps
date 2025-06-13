@@ -31,7 +31,9 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
     /// TODO("yapmDev": Static params)
     final newTravels = await travelService.findAvailableTravels(4, TaxiType.standard);
     if(newTravels.isEmpty) {
-      _sheetController.jumpTo(0.15);
+      if(_sheetController.isAttached){
+        _sheetController.jumpTo(0.15);
+      }
     }
     setState(() {
       futureTravels = Future.value(newTravels);

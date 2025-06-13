@@ -16,6 +16,7 @@ class WebSocketService {
 
   late StompClient _client;
   final Map<String, StompUnsubscribe> _subscriptions = {};
+  final Map<String, void Function(String)> _pendingSubscriptions = {};
   bool _isConnected = false;
 
   /// Returns whether the WebSocket client is connected.
@@ -72,6 +73,7 @@ class WebSocketService {
     if (_isConnected) {
       _client.deactivate();
       _subscriptions.clear();
+      _pendingSubscriptions.clear();
       _isConnected = false;
     }
   }
@@ -82,6 +84,7 @@ class WebSocketService {
   void subscribe(String topic, void Function(String message) onMessage) {
     if (!_isConnected) {
       print('Attempted to subscribe while WebSocket is not connected.');
+      _pendingSubscriptions[topic] = onMessage;
       return;
     }
 
@@ -111,14 +114,13 @@ class WebSocketService {
   }
 
   /// Sends a message to a destination endpoint on the server.
-  ///
-  /// [destination] should begin with "/app/" or similar.
+  /// In our case (Spring API), the destination is composed of the app prefix ("/app") plus the mapped route of the
+  /// endpoint (@MessageMapper) in the WebsocketDestinationMapperController.
   void send(String destination, dynamic body) {
     if (!_isConnected) {
       print('Attempted to send while WebSocket is not connected.');
       return;
     }
-
     final encoded = jsonEncode(body);
     _client.send(destination: destination, body: encoded);
   }
@@ -126,7 +128,13 @@ class WebSocketService {
   /// Callback for when the STOMP client successfully connects.
   void _onConnect(StompFrame frame) {
     _isConnected = true;
+    _handlePendingSubscriptions();
     print('WebSocket connected.');
     // Optionally re-subscribe to previous topics here (if needed in future)
+  }
+
+  void _handlePendingSubscriptions() {
+    _pendingSubscriptions.forEach((topic,onMessage) => subscribe(topic, onMessage));
+    _pendingSubscriptions.clear();
   }
 }
