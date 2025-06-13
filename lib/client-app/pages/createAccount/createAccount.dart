@@ -185,7 +185,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => const IdentityVerificationPage(),
+                                    builder: (_) => const IdentityVerificationPage(), //Esto hay q cambiarlo, es solo de prueba
                                   ),
                                 );
                               }
