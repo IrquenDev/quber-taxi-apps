@@ -6,18 +6,21 @@ import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart' as g;
 import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/models/travel.dart';
-import 'package:quber_taxi/common/services/travel_service.dart';
+import 'package:quber_taxi/common/services/driver_service.dart';
 import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
 import 'package:quber_taxi/driver-app/pages/home/info_travel_sheet.dart';
+import 'package:quber_taxi/driver-app/pages/home/trip_notification.dart';
 import 'package:quber_taxi/util/geolocator.dart' as g_util;
 import 'package:quber_taxi/driver-app/pages/home/available_travels_sheet.dart';
 import 'package:quber_taxi/util/mapbox.dart' as mb_util;
 import 'package:quber_taxi/websocket/core/websocket_service.dart';
+import 'package:quber_taxi/websocket/impl/travel_request_handler.dart';
 
 class DriverHome extends StatefulWidget {
-  const DriverHome({super.key, this.coords});
 
   final Position? coords;
+
+  const DriverHome({super.key, this.coords});
 
   @override
   State<DriverHome> createState() => _DriverHomeState();
@@ -46,7 +49,10 @@ class _DriverHomeState extends State<DriverHome> {
   bool _isLocationStreaming = false;
   // Selected travel. If not null, we should hide the available travel sheet.
   Travel? _selectedTravel;
-  final _travelService = TravelService();
+  final _driverService = DriverService();
+  // Websocket Handler for new travel requests.
+  late final TravelRequestHandler _newTravelRequestHandler;
+  final List<Travel> _newTravels = [];
 
   void _startStreamingLocation() async {
     // Get current position
@@ -86,8 +92,9 @@ class _DriverHomeState extends State<DriverHome> {
 
   void _startSharingLocation() {
     _locationStream.listen((position) async {
+      /// TODO("yapmDev": static driver id)
       WebSocketService.instance.send(
-        "/app/travels/${_selectedTravel!.id}/location",
+        "/app/drivers/1/location",
         {"longitude": position.longitude, "latitude": position.latitude},
       );
       if(!_isLocationStreaming) _startStreamingLocation();
@@ -96,7 +103,7 @@ class _DriverHomeState extends State<DriverHome> {
 
   void _onTravelSelected(Travel travel) async {
     /// TODO("yapmDev": static driver id)
-    final response = await _travelService.assignTravelToDriver(travelId: travel.id, driverId: 3);
+    final response = await _driverService.acceptTravel(driverId: 1, travelId: travel.id);
     if(response.statusCode == 200) {
       final assetBytes = await rootBundle.load('assets/markers/route/x120/origin.png');
       final originMarkerImage = assetBytes.buffer.asUint8List();
@@ -130,9 +137,25 @@ class _DriverHomeState extends State<DriverHome> {
     }
   }
 
+  void _onNewTravel(Travel travel) {
+    if(_newTravels.isEmpty || _newTravels.length < 2) {
+      _newTravels.add(travel);
+    }
+    else {
+      _newTravels.removeLast();
+      _newTravels.insert(0, travel);
+    }
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
+    /// TODO("yapmDev": static driver id)
+    _newTravelRequestHandler = TravelRequestHandler(
+        driverId: 1,
+        onNewTravel: _onNewTravel
+    )..activate();
     _locationStream = g.Geolocator.getPositionStream().asBroadcastStream();
     _ticker = Ticker(_onTick);
   }
@@ -140,6 +163,7 @@ class _DriverHomeState extends State<DriverHome> {
   @override
   void dispose() {
     _ticker.dispose();
+    _newTravelRequestHandler.deactivate();
     super.dispose();
   }
 
@@ -157,6 +181,7 @@ class _DriverHomeState extends State<DriverHome> {
       child: Material(
         child: Stack(
           children: [
+            // Map view
             MapWidget(
               styleUri: MapboxStyles.STANDARD,
               cameraOptions: cameraOptions,
@@ -218,6 +243,7 @@ class _DriverHomeState extends State<DriverHome> {
                 _pointAnnotationManager.update(_driverAnnotation);
               }
             ),
+            // FAB group (my location + travel info)
             Positioned(
               right: 20.0,
               /// TODO("yapm": Avoid hardcoded space)
@@ -277,11 +303,44 @@ class _DriverHomeState extends State<DriverHome> {
                 ],
               )
             ),
+            // Available travels sheet
             if(_selectedTravel == null)
-              Align(alignment: Alignment.bottomCenter, child: AvailableTravelsSheet(onTravelSelected: _onTravelSelected))
+              Align(
+                  alignment: Alignment.bottomCenter,
+                  child: AvailableTravelsSheet(onTravelSelected: _onTravelSelected)
+              ),
+            // Notification area
+            Positioned(
+              top: 32,
+              right: 0.0,
+              left: 0.0,
+              child: Container(
+                margin: EdgeInsets.all(12.0),
+                child: Column(
+                  children: List.generate(_newTravels.length, (index) {
+                    return AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 400),
+                      switchInCurve: Curves.easeInOut,
+                      transitionBuilder: (child, animation) {
+                        return SlideTransition(
+                          position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero).animate(animation),
+                          child: FadeTransition(opacity: animation, child: child)
+                        );
+                      },
+                      child: TripNotification(
+                        key: ValueKey(_newTravels[index].id),
+                        travel: _newTravels[index],
+                        index: index,
+                        onDismissed: () => setState(() => _newTravels.removeAt(index)),
+                      )
+                    );
+                  })
+                )
+              )
+            )
           ]
         )
-      ),
+      )
     );
   }
 }

@@ -3,16 +3,16 @@ import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:quber_taxi/websocket/core/websocket_handler.dart';
 
 class DriverLocationHandler extends WebSocketHandler<Position> {
-  final int travelId;
+  final int driverId;
   final void Function(Position coords) onLocation;
 
   DriverLocationHandler({
-    required this.travelId,
+    required this.driverId,
     required this.onLocation,
   });
 
   @override
-  String get topic => "/topic/travels/$travelId/location";
+  String get topic => "/topic/drivers/$driverId/location";
 
   @override
   Position parseMessage(String raw) {

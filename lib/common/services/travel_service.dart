@@ -52,13 +52,4 @@ class TravelService {
     final List<dynamic> jsonList = jsonDecode(response.body);
     return jsonList.map((json) => Travel.fromJson(json)).toList();
   }
-
-  Future<http.Response> assignTravelToDriver({
-    required int travelId,
-    required int driverId,
-  }) async {
-    final url = Uri.parse("${_apiConfig.baseUrl}/$_endpoint/$travelId/assignTo?driverId=$driverId");
-    final headers = {'Content-Type': 'application/json'};
-    return await http.patch(url, headers: headers);
-  }
 }
