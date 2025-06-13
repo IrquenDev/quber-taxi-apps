@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quber_taxi/client-app/pages/createAccount/indentityVerifycation.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -18,6 +19,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+
     return Material(
       child: Stack(
         children: [
@@ -97,9 +99,17 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     SizedBox(height: 40.0),
                     // New Account
-                    Text(
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const IdentityVerificationPage()),
+                        );
+                      },
+                      child: Text(
                         "Crear cuenta",
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colorScheme.surface)
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white),
+                      ),
                     ),
                     SizedBox(height: 12.0),
                     // Forgot password

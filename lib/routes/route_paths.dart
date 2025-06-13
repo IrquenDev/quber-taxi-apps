@@ -16,4 +16,12 @@ class RoutePaths {
   static const String trackDriver = '/track-driver';
 
   static const String clientNavigation = '/client-navigation';
+
+  static const String login = '/login';
+
+  static const String identityVerification = '/identity-verification';
+
+  static const String confirmSelfie = '/confirm-selfie';
+
+  static const String createAccount = '/create-acount';
 }
