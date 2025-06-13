@@ -12,46 +12,36 @@
   "minPrice": "Precio mínimo:",
   "maxPrice": "Precio máximo que puede costar:",
   "askTaxi": "Pedir taxi",
-  "vehicle": "vehículo",
+  "vehicle": "Vehículo",
 
   "map": "Mapa",
   "quberPoints": "Puntos Quber",
 
-  "ubicationFailed": "Su ubicacion actual esta fuera de los limites de La Habana",
+  "ubicationFailed": "Su ubicación actual está fuera de los límites de La Habana",
   "permissionsDenied": "Permiso de ubicación denegado",
   "permissionDeniedPermanently": "Permiso de ubicación denegado permanentemente",
 
-  "writeUbication": "Escribe una ubicación...",
+  "writeUbication": "Escriba una ubicación...",
 
   "selectUbication": "Seleccione ubicación desde el mapa",
   "actualUbication": "Usar mi ubicación actual",
-  "outLimits": "Su ubicacion actual esta fuera de los limites de La Habana",
+  "outLimits": "Su ubicación actual está fuera de los límites de La Habana",
   "noResults": "Sin resultados",
 
-  "searchDrivers": "Buscando Conductores...",
+  "searchDrivers": "Buscando conductores...",
 
   "selectTravel": "Seleccione un viaje",
   "updateTravel": "Actualizar viajes",
   "noTravel": "Sin viajes disponibles",
 
-  "noAssignedTrip": "No se puedo asignar el viaje",
+  "noAssignedTrip": "No se pudo asignar el viaje",
 
   "countPeople": "Cantidad de personas que viajan:",
   "pet": "Mascota:",
   "typeVehicle": "Tipo de vehículo:",
-  "startTrip": "Iniciar Viaje",
+  "startTrip": "Iniciar viaje",
 
-  "people": "personas",
+  "people": "Personas",
   "from": "Desde: ",
   "until": "Hasta: "
-
-
-
-
-
-
-
-
-
-
 }
