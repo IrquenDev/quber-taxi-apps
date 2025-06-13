@@ -38,8 +38,10 @@ class _TrackDriverState extends State<TrackDriver> {
   void initState() {
     super.initState();
     _loadDriverMarkerImage();
-    _locationHandler = DriverLocationHandler(travelId: widget.travel.id, onLocation: _onDriverLocationUpdate)
-      ..activate();
+    _locationHandler = DriverLocationHandler(
+        driverId: widget.travel.driver!.id,
+        onLocation: _onDriverLocationUpdate
+    )..activate();
   }
 
   void _loadDriverMarkerImage() async {
@@ -48,7 +50,6 @@ class _TrackDriverState extends State<TrackDriver> {
   }
 
   void _onDriverLocationUpdate(Position coords) async {
-    print("RUN AT LEAST ONCE");
     // First time getting location data
     if (_driverAnnotation == null) {
       // Init coords

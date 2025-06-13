@@ -3,6 +3,7 @@ import 'package:quber_taxi/common/models/taxi.dart';
 
 @immutable
 class Driver {
+
   final int id;
   final String name;
   final String imageUrl;
@@ -12,7 +13,6 @@ class Driver {
   final DateTime paymentDate;
   final double rating;
   final Taxi taxi;
-  final List<num>? currentLocation;
 
   const Driver({
     required this.id,
@@ -23,8 +23,7 @@ class Driver {
     required this.credit,
     required this.paymentDate,
     required this.rating,
-    required this.taxi,
-    this.currentLocation,
+    required this.taxi
   });
 
   factory Driver.fromJson(Map<String, dynamic> json) {
@@ -37,10 +36,19 @@ class Driver {
       credit: (json['credit']),
       paymentDate: DateTime.parse(json['paymentDate']),
       rating: (json['rating']),
-      taxi: Taxi.fromJson(json['taxi']),
-      currentLocation: json['currentLocation'] != null
-          ? List<num>.from(json['currentLocation'].map((e) => (e as num)))
-          : null,
+      taxi: Taxi.fromJson(json['taxi'])
     );
   }
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "name": name,
+    "imageUrl": imageUrl,
+    "phone": phone,
+    "email": email,
+    "credit": credit,
+    "paymentDate": paymentDate,
+    "rating": rating,
+    "taxi": taxi.toJson()
+  };
 }

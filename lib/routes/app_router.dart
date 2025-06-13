@@ -6,8 +6,9 @@ import 'package:quber_taxi/client-app/pages/home/home.dart';
 import 'package:quber_taxi/client-app/pages/home/search_destination.dart';
 import 'package:quber_taxi/client-app/pages/home/search_origin.dart';
 import 'package:quber_taxi/client-app/pages/navigation/client_navigation.dart';
-import 'package:quber_taxi/client-app/pages/search_driver.dart';
-import 'package:quber_taxi/client-app/pages/track_driver.dart';
+import 'package:quber_taxi/driver-app/pages/navigation/driver_navigation.dart';
+import 'package:quber_taxi/client-app/pages/search_driver/search_driver.dart';
+import 'package:quber_taxi/client-app/pages/track_driver/track_driver.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/pages/login.dart';
 import 'package:quber_taxi/common/widgets/location_picker.dart';
@@ -70,6 +71,7 @@ final GoRouter appRouter = GoRouter(
     ),
 
     GoRoute(
+
       path: RoutePaths.login,
       builder: (context, state) => const LoginPage()
     ),
@@ -84,5 +86,6 @@ final GoRouter appRouter = GoRouter(
 
     GoRoute(path: RoutePaths.createAccount,
     builder: (context, state) => CreateAccountPage())
+
   ]
 );

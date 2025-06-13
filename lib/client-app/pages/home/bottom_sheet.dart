@@ -235,10 +235,15 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                           maxPrice: _maxPrice!
                       );
                       if(!context.mounted) return;
+                      // Radar animation while waiting for acceptation.
                       final updatedTravel = await context.push<Travel?>(RoutePaths.searchDriver, extra: travel.id);
                       if(!context.mounted) return;
                       if(updatedTravel != null) {
-                        context.push(RoutePaths.trackDriver, extra: updatedTravel);
+                        // Navigate to TrackDriver Screen.
+                        context.go(RoutePaths.trackDriver, extra: updatedTravel);
+                      } else {
+                        /// TODO ("yapmDev")
+                        /// - This travel request should be delete or marked as CANCELED.
                       }
                     } : null,
                     child: const Text("Pedir taxi"),

@@ -375,7 +375,7 @@ class MaterialTheme {
             backgroundColor: colorScheme.primaryContainer,
             disabledBackgroundColor: colorScheme.onSurface.withAlpha(32),
             foregroundColor: colorScheme.onPrimaryContainer,
-            disabledForegroundColor: colorScheme.onSurface.withAlpha(96),
+            disabledForegroundColor: colorScheme.onSurface.withAlpha(94),
             padding: dimensions.contentPadding,
             side: BorderSide.none,
             elevation: dimensions.elevation
