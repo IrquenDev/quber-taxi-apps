@@ -52,7 +52,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get ubicationFailed =>
-      'Su ubicacion actual esta fuera de los limites de La Habana';
+      'Su ubicación actual está fuera de los límites de La Habana';
 
   @override
   String get permissionsDenied => 'Permiso de ubicación denegado';
@@ -72,7 +72,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get outLimits =>
-      'Su ubicacion actual esta fuera de los limites de La Habana';
+      'Su ubicación actual está fuera de los límites de La Habana';
 
   @override
   String get noResults => 'Sin resultados';
@@ -90,7 +90,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get noTravel => 'Sin viajes disponibles';
 
   @override
-  String get noAssignedTrip => 'No se puedo asignar el viaje';
+  String get noAssignedTrip => 'No se pudo asignar el viaje';
 
   @override
   String get countPeople => 'Cantidad de personas que viajan:';
