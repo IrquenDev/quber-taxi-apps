@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
 import 'package:quber_taxi/common/models/travel.dart';
+import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 
 class TravelInfoSheet extends StatelessWidget {
@@ -74,9 +75,9 @@ class TravelInfoSheet extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Cantidad de personas que viajan: ${travel.requiredSeats}'),
-                      Text('Mascota: ${travel.hasPets ? 'Sí' : 'No'}'),
-                      Text('Tipo de vehículo: ${travel.taxiType.displayText}'),
+                      Text('${AppLocalizations.of(context)!.countPeople} ${travel.requiredSeats}'),
+                      Text('${AppLocalizations.of(context)!.pet} ${travel.hasPets ? 'Sí' : 'No'}'),
+                      Text('${AppLocalizations.of(context)!.typeVehicle} ${travel.taxiType.displayText}'),
                     ]
                   )
                 )
@@ -87,7 +88,7 @@ class TravelInfoSheet extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              child: Text("Iniciar Viaje"),
+              child: Text(AppLocalizations.of(context)!.startTrip),
               onPressed: () => showToast(context: context, message: "Iniciara el viaje: Dialog -> Vista de Navegacion")
             ),
           )

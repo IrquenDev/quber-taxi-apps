@@ -9,6 +9,7 @@ import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/services/driver_service.dart';
 import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
 import 'package:quber_taxi/driver-app/pages/home/info_travel_sheet.dart';
+import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/driver-app/pages/home/trip_notification.dart';
 import 'package:quber_taxi/util/geolocator.dart' as g_util;
 import 'package:quber_taxi/driver-app/pages/home/available_travels_sheet.dart';
@@ -123,7 +124,7 @@ class _DriverHomeState extends State<DriverHome> {
       setState(() => _selectedTravel = travel);
     } else {
       if(mounted) {
-        showToast(context: context, message: "No se puedo asignar el viaje");
+        showToast(context: context, message: AppLocalizations.of(context)!.noAssignedTrip);
       }
     }
   }
@@ -269,12 +270,12 @@ class _DriverHomeState extends State<DriverHome> {
                           },
                           onPermissionDenied: () {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("Permiso de ubicación denegado")),
+                               SnackBar(content: Text(AppLocalizations.of(context)!.permissionsDenied)),
                             );
                           },
                           onPermissionDeniedForever: () {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("Permiso de ubicación denegado permanentemente")),
+                              SnackBar(content: Text(AppLocalizations.of(context)!.permissionDeniedPermanently)),
                             );
                           }
                       );

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/websocket/impl/travel_accepted_handler.dart';
 
 class SearchDriver extends StatefulWidget {
@@ -74,7 +75,7 @@ class _SearchDriverState extends State<SearchDriver> with SingleTickerProviderSt
         child: Column(
           children: [
             const SizedBox(height: 40),
-            Text('Buscando Conductores...', style: Theme.of(context).textTheme.titleMedium),
+            Text(AppLocalizations.of(context)!.searchDrivers, style: Theme.of(context).textTheme.titleMedium),
             const Spacer(),
             Center(
               child: Stack(
