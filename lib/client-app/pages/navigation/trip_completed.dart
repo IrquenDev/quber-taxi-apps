@@ -114,7 +114,7 @@ class _ClientTripCompletedState extends State<ClientTripCompleted> {
                               radius: 16,
                               offset: 8,
                               prototypeBuilder: (index) =>
-                                  Image.asset('assets/images/vehicles/v1/standard.png', fit: BoxFit.cover)
+                                  Image.asset('assets/images/vehicles/mdpi/standard.png', fit: BoxFit.cover)
                             ),
                             Text(
                               '3 comentarios',

@@ -29,7 +29,7 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
 
   Future<void> _refreshTravels() async {
     /// TODO("yapmDev": Static params)
-    final newTravels = await travelService.findAvailableTravels(4, TaxiType.standard);
+    final newTravels = await travelService.findAvailableTravels(4, TaxiType.mdpiFamiliar);
     if(newTravels.isEmpty) {
       if(_sheetController.isAttached){
         _sheetController.jumpTo(0.15);
@@ -45,7 +45,7 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
     setState(() {
       _isActionPending = true;
       /// TODO("yapmDev": Static params)
-      futureTravels = travelService.findAvailableTravels(4, TaxiType.standard).whenComplete(() {
+      futureTravels = travelService.findAvailableTravels(4, TaxiType.mdpiStandard).whenComplete(() {
         if (mounted) {
           setState(() => _isActionPending = false);
         }
