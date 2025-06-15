@@ -4,14 +4,14 @@ import 'package:quber_taxi/client-app/pages/clientAccount/identityVerifcation.da
 import 'package:quber_taxi/l10n/app_localizations.dart';
 
 
-class CreateAccountPage extends StatefulWidget {
-  const CreateAccountPage({super.key});
+class CreateClientAccountPage extends StatefulWidget {
+  const CreateClientAccountPage({super.key});
 
   @override
-  State<CreateAccountPage> createState() => _CreateAccountPageState();
+  State<CreateClientAccountPage> createState() => _CreateClientAccountPage();
 }
 
-class _CreateAccountPageState extends State<CreateAccountPage> {
+class _CreateClientAccountPage extends State<CreateClientAccountPage> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();

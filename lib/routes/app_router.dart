@@ -89,6 +89,6 @@ final GoRouter appRouter = GoRouter(
     ),
 
     GoRoute(path: RoutePaths.createAccount,
-        builder: (context, state) => CreateAccountPage())
+        builder: (context, state) => CreateClientAccountPage())
   ]
 );

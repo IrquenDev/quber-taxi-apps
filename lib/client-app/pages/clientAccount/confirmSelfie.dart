@@ -99,7 +99,7 @@ class ConfirmSelfiePage extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const CreateAccountPage()),
+                        MaterialPageRoute(builder: (_) => const CreateClientAccountPage()),
                       );
                     },
                     style: ElevatedButton.styleFrom(
