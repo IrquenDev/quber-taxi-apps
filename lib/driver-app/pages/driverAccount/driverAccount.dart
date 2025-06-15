@@ -27,7 +27,7 @@ class _DriverAccountSettingPage extends State<DriverAccountSettingPage> {
           // Fondo general
           Container(color: Colors.white),
 
-          // Header amarillo (fondo fijo)
+
           Positioned(
             top: 0,
             left: 0,
