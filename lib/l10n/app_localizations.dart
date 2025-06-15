@@ -167,7 +167,7 @@ abstract class AppLocalizations {
   /// No description provided for @vehicle.
   ///
   /// In es, this message translates to:
-  /// **'vehículo'**
+  /// **'Vehículo'**
   String get vehicle;
 
   /// No description provided for @map.
@@ -185,7 +185,7 @@ abstract class AppLocalizations {
   /// No description provided for @ubicationFailed.
   ///
   /// In es, this message translates to:
-  /// **'Su ubicacion actual esta fuera de los limites de La Habana'**
+  /// **'Su ubicación actual está fuera de los límites de La Habana'**
   String get ubicationFailed;
 
   /// No description provided for @permissionsDenied.
@@ -203,7 +203,7 @@ abstract class AppLocalizations {
   /// No description provided for @writeUbication.
   ///
   /// In es, this message translates to:
-  /// **'Escribe una ubicación...'**
+  /// **'Escriba una ubicación...'**
   String get writeUbication;
 
   /// No description provided for @selectUbication.
@@ -221,7 +221,7 @@ abstract class AppLocalizations {
   /// No description provided for @outLimits.
   ///
   /// In es, this message translates to:
-  /// **'Su ubicacion actual esta fuera de los limites de La Habana'**
+  /// **'Su ubicación actual está fuera de los límites de La Habana'**
   String get outLimits;
 
   /// No description provided for @noResults.
@@ -233,7 +233,7 @@ abstract class AppLocalizations {
   /// No description provided for @searchDrivers.
   ///
   /// In es, this message translates to:
-  /// **'Buscando Conductores...'**
+  /// **'Buscando conductores...'**
   String get searchDrivers;
 
   /// No description provided for @selectTravel.
@@ -257,7 +257,7 @@ abstract class AppLocalizations {
   /// No description provided for @noAssignedTrip.
   ///
   /// In es, this message translates to:
-  /// **'No se puedo asignar el viaje'**
+  /// **'No se pudo asignar el viaje'**
   String get noAssignedTrip;
 
   /// No description provided for @countPeople.
@@ -281,13 +281,13 @@ abstract class AppLocalizations {
   /// No description provided for @startTrip.
   ///
   /// In es, this message translates to:
-  /// **'Iniciar Viaje'**
+  /// **'Iniciar viaje'**
   String get startTrip;
 
   /// No description provided for @people.
   ///
   /// In es, this message translates to:
-  /// **'personas'**
+  /// **'Personas'**
   String get people;
 
   /// No description provided for @from.
@@ -301,6 +301,102 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Hasta: '**
   String get until;
+
+  /// No description provided for @identityVerify.
+  ///
+  /// In es, this message translates to:
+  /// **'Verificación de identidad'**
+  String get identityVerify;
+
+  /// No description provided for @confirmIdentity.
+  ///
+  /// In es, this message translates to:
+  /// **'Necesitamos confirmar su identidad.'**
+  String get confirmIdentity;
+
+  /// No description provided for @noBot.
+  ///
+  /// In es, this message translates to:
+  /// **'Por favor, toma una selfie para confirmar que no eres un bot.'**
+  String get noBot;
+
+  /// No description provided for @noUsedImage.
+  ///
+  /// In es, this message translates to:
+  /// **'No usaremos esta imagen como foto de perfil ni se mostrará públicamente.'**
+  String get noUsedImage;
+
+  /// No description provided for @verificationUser.
+  ///
+  /// In es, this message translates to:
+  /// **'Este paso es parte de nuestro sistema de verificación para garantizar la seguridad de todos los usuarios.'**
+  String get verificationUser;
+
+  /// No description provided for @takeSelfie.
+  ///
+  /// In es, this message translates to:
+  /// **'Tomar Selfie'**
+  String get takeSelfie;
+
+  /// No description provided for @createAccount.
+  ///
+  /// In es, this message translates to:
+  /// **'Crear Cuenta'**
+  String get createAccount;
+
+  /// No description provided for @name.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre:'**
+  String get name;
+
+  /// No description provided for @nameAndLastName.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduzca su nombre y apellidos'**
+  String get nameAndLastName;
+
+  /// No description provided for @phoneNumber.
+  ///
+  /// In es, this message translates to:
+  /// **'Núm. teléfono:'**
+  String get phoneNumber;
+
+  /// No description provided for @password.
+  ///
+  /// In es, this message translates to:
+  /// **'Contraseña:'**
+  String get password;
+
+  /// No description provided for @passwordConfirm.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirmar contraseña:'**
+  String get passwordConfirm;
+
+  /// No description provided for @endRegistration.
+  ///
+  /// In es, this message translates to:
+  /// **'Finalizar Registro'**
+  String get endRegistration;
+
+  /// No description provided for @thanks.
+  ///
+  /// In es, this message translates to:
+  /// **'Gracias por confirmar su identidad.'**
+  String get thanks;
+
+  /// No description provided for @successConfirm.
+  ///
+  /// In es, this message translates to:
+  /// **'Hemos confirmado su identidad con éxito.'**
+  String get successConfirm;
+
+  /// No description provided for @passSecurity.
+  ///
+  /// In es, this message translates to:
+  /// **'Este paso es parte de nuestro sistema de verificación para garantizar la seguridad de todos los usuarios.'**
+  String get passSecurity;
 }
 
 class _AppLocalizationsDelegate

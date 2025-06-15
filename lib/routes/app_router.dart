@@ -1,8 +1,12 @@
 import 'package:go_router/go_router.dart';
+import 'package:quber_taxi/client-app/pages/clientAccount/confirmSelfie.dart';
+import 'package:quber_taxi/client-app/pages/clientAccount/createAccount.dart';
+import 'package:quber_taxi/client-app/pages/clientAccount/identityVerifcation.dart';
 import 'package:quber_taxi/client-app/pages/home/home.dart';
 import 'package:quber_taxi/client-app/pages/home/search_destination.dart';
 import 'package:quber_taxi/client-app/pages/home/search_origin.dart';
 import 'package:quber_taxi/client-app/pages/navigation/client_navigation.dart';
+import 'package:quber_taxi/common/pages/login.dart';
 import 'package:quber_taxi/driver-app/pages/navigation/driver_navigation.dart';
 import 'package:quber_taxi/client-app/pages/search_driver/search_driver.dart';
 import 'package:quber_taxi/client-app/pages/track_driver/track_driver.dart';
@@ -69,6 +73,22 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
         path: RoutePaths.driverNavigation,
         builder: (context, state) => const DriverNavigation()
-    )
+    ),
+    GoRoute(
+
+        path: RoutePaths.login,
+        builder: (context, state) => const LoginPage()
+    ),
+
+    GoRoute(path: RoutePaths.identityVerification,
+        builder: (context, state) => const IdentityVerificationPage()
+    ),
+
+    GoRoute(path: RoutePaths.confirmSelfie,
+        builder: (context, state) => const ConfirmSelfiePage()
+    ),
+
+    GoRoute(path: RoutePaths.createAccount,
+        builder: (context, state) => CreateAccountPage())
   ]
 );

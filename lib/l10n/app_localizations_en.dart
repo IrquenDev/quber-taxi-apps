@@ -112,4 +112,55 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get until => 'To: ';
+
+  @override
+  String get identityVerify => 'Identity Verification';
+
+  @override
+  String get confirmIdentity => 'We need to confirm your identity.';
+
+  @override
+  String get noBot => 'Please take a selfie to confirm you are not a bot.';
+
+  @override
+  String get noUsedImage =>
+      'We will not use this image as a profile picture nor will it be displayed publicly.';
+
+  @override
+  String get verificationUser =>
+      'This step is part of our verification system to ensure the safety of all users.';
+
+  @override
+  String get takeSelfie => 'Take Selfie';
+
+  @override
+  String get createAccount => 'Create Account';
+
+  @override
+  String get name => 'Name:';
+
+  @override
+  String get nameAndLastName => 'Enter your first and last name';
+
+  @override
+  String get phoneNumber => 'Phone Number:';
+
+  @override
+  String get password => 'Password:';
+
+  @override
+  String get passwordConfirm => 'Confirm Password:';
+
+  @override
+  String get endRegistration => 'Complete Registration';
+
+  @override
+  String get thanks => 'Thank you for confirming your identity.';
+
+  @override
+  String get successConfirm => 'We have successfully confirmed your identity.';
+
+  @override
+  String get passSecurity =>
+      'This step is part of our verification system to ensure the safety of all users.';
 }
