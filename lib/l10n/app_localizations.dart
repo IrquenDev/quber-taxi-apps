@@ -167,7 +167,7 @@ abstract class AppLocalizations {
   /// No description provided for @vehicle.
   ///
   /// In es, this message translates to:
-  /// **'vehículo'**
+  /// **'Vehículo'**
   String get vehicle;
 
   /// No description provided for @map.
@@ -185,7 +185,7 @@ abstract class AppLocalizations {
   /// No description provided for @ubicationFailed.
   ///
   /// In es, this message translates to:
-  /// **'Su ubicacion actual esta fuera de los limites de La Habana'**
+  /// **'Su ubicación actual está fuera de los límites de La Habana'**
   String get ubicationFailed;
 
   /// No description provided for @permissionsDenied.
@@ -203,7 +203,7 @@ abstract class AppLocalizations {
   /// No description provided for @writeUbication.
   ///
   /// In es, this message translates to:
-  /// **'Escribe una ubicación...'**
+  /// **'Escriba una ubicación...'**
   String get writeUbication;
 
   /// No description provided for @selectUbication.
@@ -221,7 +221,7 @@ abstract class AppLocalizations {
   /// No description provided for @outLimits.
   ///
   /// In es, this message translates to:
-  /// **'Su ubicacion actual esta fuera de los limites de La Habana'**
+  /// **'Su ubicación actual está fuera de los límites de La Habana'**
   String get outLimits;
 
   /// No description provided for @noResults.
@@ -233,7 +233,7 @@ abstract class AppLocalizations {
   /// No description provided for @searchDrivers.
   ///
   /// In es, this message translates to:
-  /// **'Buscando Conductores...'**
+  /// **'Buscando conductores...'**
   String get searchDrivers;
 
   /// No description provided for @selectTravel.
@@ -257,7 +257,7 @@ abstract class AppLocalizations {
   /// No description provided for @noAssignedTrip.
   ///
   /// In es, this message translates to:
-  /// **'No se puedo asignar el viaje'**
+  /// **'No se pudo asignar el viaje'**
   String get noAssignedTrip;
 
   /// No description provided for @countPeople.
@@ -281,13 +281,13 @@ abstract class AppLocalizations {
   /// No description provided for @startTrip.
   ///
   /// In es, this message translates to:
-  /// **'Iniciar Viaje'**
+  /// **'Iniciar viaje'**
   String get startTrip;
 
   /// No description provided for @people.
   ///
   /// In es, this message translates to:
-  /// **'personas'**
+  /// **'Personas'**
   String get people;
 
   /// No description provided for @from.
@@ -301,6 +301,84 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Hasta: '**
   String get until;
+
+  /// No description provided for @nameDriver.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre:'**
+  String get nameDriver;
+
+  /// No description provided for @carRegistration.
+  ///
+  /// In es, this message translates to:
+  /// **'Chapa:'**
+  String get carRegistration;
+
+  /// No description provided for @phoneNumberDriver.
+  ///
+  /// In es, this message translates to:
+  /// **'Num. teléfono:'**
+  String get phoneNumberDriver;
+
+  /// No description provided for @email.
+  ///
+  /// In es, this message translates to:
+  /// **'Correo electrónico:'**
+  String get email;
+
+  /// No description provided for @numberOfSeats.
+  ///
+  /// In es, this message translates to:
+  /// **'Número de asientos:'**
+  String get numberOfSeats;
+
+  /// No description provided for @saveInformation.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar'**
+  String get saveInformation;
+
+  /// No description provided for @myAccount.
+  ///
+  /// In es, this message translates to:
+  /// **'Mi Cuenta'**
+  String get myAccount;
+
+  /// No description provided for @balance.
+  ///
+  /// In es, this message translates to:
+  /// **'Balance:'**
+  String get balance;
+
+  /// No description provided for @valuation.
+  ///
+  /// In es, this message translates to:
+  /// **'Valoración acumulada:'**
+  String get valuation;
+
+  /// No description provided for @quberCredits.
+  ///
+  /// In es, this message translates to:
+  /// **'Crédito de Quber acumulado:'**
+  String get quberCredits;
+
+  /// No description provided for @nextPay.
+  ///
+  /// In es, this message translates to:
+  /// **'Próxima fecha de pago:'**
+  String get nextPay;
+
+  /// No description provided for @passwordConfirmDriver.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirme contraseña:'**
+  String get passwordConfirmDriver;
+
+  /// No description provided for @passwordDriver.
+  ///
+  /// In es, this message translates to:
+  /// **'Contraseña:'**
+  String get passwordDriver;
 }
 
 class _AppLocalizationsDelegate

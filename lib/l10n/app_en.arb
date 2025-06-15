@@ -43,5 +43,19 @@
 
   "people": "people",
   "from": "From: ",
-  "until": "To: "
+  "until": "To: ",
+
+  "nameDriver": "Name:",
+  "carRegistration": "License Plate:",
+  "phoneNumberDriver": "Phone Number:",
+  "email": "Email:",
+  "numberOfSeats": "Number of Seats:",
+  "saveInformation": "Save",
+  "myAccount": "My Account",
+  "balance": "Balance:",
+  "valuation": "Accumulated Rating:",
+  "quberCredits": "Accumulated Quber Credits:",
+  "nextPay": "Next Payment Date:",
+  "passwordConfirmDriver": "Confirm Password:",
+  "passwordDriver": "Password:"
 }

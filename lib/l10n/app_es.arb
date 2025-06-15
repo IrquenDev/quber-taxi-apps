@@ -43,5 +43,22 @@
 
   "people": "Personas",
   "from": "Desde: ",
-  "until": "Hasta: "
+  "until": "Hasta: ",
+
+  "nameDriver": "Nombre:",
+  "carRegistration": "Chapa:",
+  "phoneNumberDriver": "Num. teléfono:",
+  "email": "Correo electrónico:",
+  "numberOfSeats": "Número de asientos:",
+  "saveInformation": "Guardar",
+  "myAccount": "Mi Cuenta",
+  "balance": "Balance:",
+  "valuation": "Valoración acumulada:",
+  "quberCredits": "Crédito de Quber acumulado:",
+  "nextPay": "Próxima fecha de pago:",
+  "passwordConfirmDriver": "Confirme contraseña:",
+  "passwordDriver": "Contraseña:"
+
+
+
 }
