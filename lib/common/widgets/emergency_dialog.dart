@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:quber_taxi/client-app/pages/navigation/trip_completed.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class EmergencyDialog extends StatelessWidget {
 
   const EmergencyDialog({super.key});
+
+  void _launchPhoneDialer(String phoneNumber) async {
+    final Uri url = Uri(scheme: 'tel', path: phoneNumber);
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      throw 'No se pudo lanzar el marcador con el número $phoneNumber';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,16 +67,7 @@ class EmergencyDialog extends StatelessWidget {
                       ),
                       padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0)
                   ),
-                  onPressed: () {
-                    showModalBottomSheet(
-                      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                      isDismissible: false,
-                      context: context,
-                      isScrollControlled: true,
-                      showDragHandle: true,
-                      builder: (context) => const ClientTripCompleted(),
-                    );
-                  },
+                  onPressed: () => _launchPhoneDialer('106'),
                   child: Text(
                     'CONFIRMAR SOS',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
