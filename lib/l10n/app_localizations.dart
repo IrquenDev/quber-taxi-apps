@@ -167,7 +167,7 @@ abstract class AppLocalizations {
   /// No description provided for @vehicle.
   ///
   /// In es, this message translates to:
-  /// **'vehículo'**
+  /// **'Vehículo'**
   String get vehicle;
 
   /// No description provided for @map.
@@ -185,7 +185,7 @@ abstract class AppLocalizations {
   /// No description provided for @ubicationFailed.
   ///
   /// In es, this message translates to:
-  /// **'Su ubicacion actual esta fuera de los limites de La Habana'**
+  /// **'Su ubicación actual está fuera de los límites de La Habana'**
   String get ubicationFailed;
 
   /// No description provided for @permissionsDenied.
@@ -203,7 +203,7 @@ abstract class AppLocalizations {
   /// No description provided for @writeUbication.
   ///
   /// In es, this message translates to:
-  /// **'Escribe una ubicación...'**
+  /// **'Escriba una ubicación...'**
   String get writeUbication;
 
   /// No description provided for @selectUbication.
@@ -221,7 +221,7 @@ abstract class AppLocalizations {
   /// No description provided for @outLimits.
   ///
   /// In es, this message translates to:
-  /// **'Su ubicacion actual esta fuera de los limites de La Habana'**
+  /// **'Su ubicación actual está fuera de los límites de La Habana'**
   String get outLimits;
 
   /// No description provided for @noResults.
@@ -233,7 +233,7 @@ abstract class AppLocalizations {
   /// No description provided for @searchDrivers.
   ///
   /// In es, this message translates to:
-  /// **'Buscando Conductores...'**
+  /// **'Buscando conductores...'**
   String get searchDrivers;
 
   /// No description provided for @selectTravel.
@@ -257,7 +257,7 @@ abstract class AppLocalizations {
   /// No description provided for @noAssignedTrip.
   ///
   /// In es, this message translates to:
-  /// **'No se puedo asignar el viaje'**
+  /// **'No se pudo asignar el viaje'**
   String get noAssignedTrip;
 
   /// No description provided for @countPeople.
@@ -281,13 +281,13 @@ abstract class AppLocalizations {
   /// No description provided for @startTrip.
   ///
   /// In es, this message translates to:
-  /// **'Iniciar Viaje'**
+  /// **'Iniciar viaje'**
   String get startTrip;
 
   /// No description provided for @people.
   ///
   /// In es, this message translates to:
-  /// **'personas'**
+  /// **'Personas'**
   String get people;
 
   /// No description provided for @from.
@@ -301,6 +301,48 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Hasta: '**
   String get until;
+
+  /// No description provided for @driverInfoTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Información del Conductor'**
+  String get driverInfoTitle;
+
+  /// No description provided for @averageRating.
+  ///
+  /// In es, this message translates to:
+  /// **'Valoración promedio'**
+  String get averageRating;
+
+  /// No description provided for @vehiclePlate.
+  ///
+  /// In es, this message translates to:
+  /// **'Chapa del vehículo'**
+  String get vehiclePlate;
+
+  /// No description provided for @seatNumber.
+  ///
+  /// In es, this message translates to:
+  /// **'Número de asientos'**
+  String get seatNumber;
+
+  /// No description provided for @vehicleType.
+  ///
+  /// In es, this message translates to:
+  /// **'Tipo de vehículo'**
+  String get vehicleType;
+
+  /// No description provided for @acceptButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Aceptar'**
+  String get acceptButton;
+
+  /// No description provided for @familyVehicle.
+  ///
+  /// In es, this message translates to:
+  /// **'Familiar'**
+  String get familyVehicle;
 }
 
 class _AppLocalizationsDelegate

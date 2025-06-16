@@ -43,5 +43,14 @@
 
   "people": "Personas",
   "from": "Desde: ",
-  "until": "Hasta: "
+  "until": "Hasta: ",
+
+  "driverInfoTitle": "Información del Conductor",
+  "averageRating": "Valoración promedio",
+  "vehiclePlate": "Chapa del vehículo",
+  "seatNumber": "Número de asientos",
+  "vehicleType": "Tipo de vehículo",
+  "acceptButton": "Aceptar",
+  "familyVehicle": "Familiar"
+
 }

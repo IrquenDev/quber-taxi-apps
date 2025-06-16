@@ -42,7 +42,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get askTaxi => 'Pedir taxi';
 
   @override
-  String get vehicle => 'vehículo';
+  String get vehicle => 'Vehículo';
 
   @override
   String get map => 'Mapa';
@@ -62,7 +62,7 @@ class AppLocalizationsEs extends AppLocalizations {
       'Permiso de ubicación denegado permanentemente';
 
   @override
-  String get writeUbication => 'Escribe una ubicación...';
+  String get writeUbication => 'Escriba una ubicación...';
 
   @override
   String get selectUbication => 'Seleccione ubicación desde el mapa';
@@ -78,7 +78,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get noResults => 'Sin resultados';
 
   @override
-  String get searchDrivers => 'Buscando Conductores...';
+  String get searchDrivers => 'Buscando conductores...';
 
   @override
   String get selectTravel => 'Seleccione un viaje';
@@ -102,14 +102,35 @@ class AppLocalizationsEs extends AppLocalizations {
   String get typeVehicle => 'Tipo de vehículo:';
 
   @override
-  String get startTrip => 'Iniciar Viaje';
+  String get startTrip => 'Iniciar viaje';
 
   @override
-  String get people => 'personas';
+  String get people => 'Personas';
 
   @override
   String get from => 'Desde: ';
 
   @override
   String get until => 'Hasta: ';
+
+  @override
+  String get driverInfoTitle => 'Información del Conductor';
+
+  @override
+  String get averageRating => 'Valoración promedio';
+
+  @override
+  String get vehiclePlate => 'Chapa del vehículo';
+
+  @override
+  String get seatNumber => 'Número de asientos';
+
+  @override
+  String get vehicleType => 'Tipo de vehículo';
+
+  @override
+  String get acceptButton => 'Aceptar';
+
+  @override
+  String get familyVehicle => 'Familiar';
 }

@@ -3,6 +3,7 @@ import 'package:quber_taxi/client-app/pages/home/home.dart';
 import 'package:quber_taxi/client-app/pages/home/search_destination.dart';
 import 'package:quber_taxi/client-app/pages/home/search_origin.dart';
 import 'package:quber_taxi/client-app/pages/navigation/client_navigation.dart';
+import 'package:quber_taxi/driver-app/pages/infoDriver/infoDriver.dart';
 import 'package:quber_taxi/driver-app/pages/navigation/driver_navigation.dart';
 import 'package:quber_taxi/client-app/pages/search_driver/search_driver.dart';
 import 'package:quber_taxi/client-app/pages/track_driver/track_driver.dart';
@@ -14,8 +15,8 @@ import 'route_paths.dart';
 
 final GoRouter appRouter = GoRouter(
   // App start up route. You can change it for developing or testing, just remember to take it back in place.
-  initialLocation: isClientMode ? RoutePaths.clientHome : RoutePaths.driverHome,
-  routes: [
+  initialLocation: isClientMode ? RoutePaths.clientHome : RoutePaths.clientHome,
+  routes: <RouteBase>[
     GoRoute(
       path: RoutePaths.clientHome,
       builder: (context, state) => const ClientHome()
@@ -69,6 +70,9 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
         path: RoutePaths.driverNavigation,
         builder: (context, state) => const DriverNavigation()
-    )
+    ),
+    GoRoute(path: RoutePaths.infoDriver,
+    builder: (context, state) => const DriverInfoPage())
+
   ]
 );

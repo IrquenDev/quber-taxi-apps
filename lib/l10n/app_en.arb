@@ -43,5 +43,13 @@
 
   "people": "people",
   "from": "From: ",
-  "until": "To: "
+  "until": "To: ",
+
+  "driverInfoTitle": "Driver Information",
+  "averageRating": "Average Rating",
+  "vehiclePlate": "Vehicle Plate",
+  "seatNumber": "Number of Seats",
+  "vehicleType": "Vehicle Type",
+  "acceptButton": "Accept",
+  "familyVehicle": "Family"
 }
