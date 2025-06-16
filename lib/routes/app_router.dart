@@ -67,7 +67,7 @@ final GoRouter appRouter = GoRouter(
               originCoords: <num>[-82.3598, 23.1380],
               requiredSeats: 4,
               hasPets: true,
-              taxiType: TaxiType.xhdpiStandard,
+              taxiType: TaxiType.xhdpiComfort,
               minDistance: 5,
               maxDistance: 22,
               minPrice: 500,

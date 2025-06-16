@@ -20,12 +20,12 @@ enum Municipalities {
   final String geoJsonRef;
   const Municipalities(this.name, this.geoJsonRef);
 
-  static String? resolveGeoJsonRef(String name) {
+  static String resolveGeoJsonRef(String name) {
     for (final municipality in Municipalities.values) {
       if (municipality.name.toLowerCase() == name.toLowerCase()) {
         return municipality.geoJsonRef;
       }
     }
-    return null;
+    throw Exception("Unmatched municipality name");
   }
 }

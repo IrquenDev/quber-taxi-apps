@@ -31,13 +31,6 @@ class _DriverTripInfoState extends State<DriverTripInfo> {
   bool _showGuidedRoute = false;
   final _tfController = TextEditingController();
   bool _isLoading = false;
-  String? _destinationName;
-
-  @override
-  void initState() {
-    super.initState();
-    _destinationName = widget.destinationName;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -148,7 +141,7 @@ class _DriverTripInfoState extends State<DriverTripInfo> {
                                             )
                                           ),
                                           TextSpan(
-                                              text: _destinationName ?? widget.destinationName,
+                                              text: widget.destinationName,
                                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                                   overflow: TextOverflow.ellipsis
                                               )
@@ -196,7 +189,7 @@ class _DriverTripInfoState extends State<DriverTripInfo> {
                                       final query = _tfController.text;
                                       final wasSearchSuccess = await widget.onSearch(query);
                                       if(wasSearchSuccess) {
-                                        setState(() => _destinationName = query);
+                                        // you can do something here about it
                                       }
                                       setState(() => _isLoading = false);
                                     } : null,

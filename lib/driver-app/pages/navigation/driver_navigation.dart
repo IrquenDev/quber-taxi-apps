@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:quber_taxi/enums/municipalities.dart';
 import 'package:quber_taxi/util/mapbox.dart' as mb_util;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -52,11 +53,11 @@ class _DriverNavigationState extends State<DriverNavigation> {
   late final StreamSubscription<g.Position> _locationStream;
   num _distanceInKm = 0;
   // Ignore points outside of Havana
-  late turf.Polygon _havanaPolygon;
-  String? _destinationName;
+  late turf.Polygon _municipalityPolygon;
 
   Future<void> _loadHavanaGeoJson() async {
-    _havanaPolygon = await loadGeoJsonPolygon("assets/geojson/polygon/CiudadDeLaHabana.geojson");
+    final munName= Municipalities.resolveGeoJsonRef(widget.travel.destinationName);
+    _municipalityPolygon = await loadGeoJsonPolygon(munName);
   }
 
   void _startTrackingDistance() {
@@ -78,10 +79,19 @@ class _DriverNavigationState extends State<DriverNavigation> {
     setState(() => _distanceInKm += segmentDistance);
   }
 
-  void _updateTaxiMarker(g.Position newPosition) {
-    // Update geometry point
-    if(_taxiMarker != null) {
-      _taxiMarker!.geometry = Point(coordinates: Position(newPosition.longitude, newPosition.latitude));
+  void _updateTaxiMarker(g.Position newPosition) async {
+    final point = Point(coordinates: Position(newPosition.longitude, newPosition.latitude));
+    if(_taxiMarker == null) {
+      // Display marker
+      final taxiMarkerBytes = await rootBundle.load('assets/markers/taxi/taxi_pin_x172.png');
+      await _pointAnnotationManager.create(PointAnnotationOptions(
+          geometry: point,
+          image: taxiMarkerBytes.buffer.asUint8List(),
+          iconAnchor: IconAnchor.BOTTOM
+      )).then((value) => _taxiMarker = value);
+    } else {
+      // Update geometry point
+      _taxiMarker!.geometry = point;
       // Update icon rotation (orientation)
       final bearing = mb_util.calculateBearing(
           _realTimeRoute.last.lat, _realTimeRoute.last.lng,
@@ -159,15 +169,6 @@ class _DriverNavigationState extends State<DriverNavigation> {
         image: originMarkerBytes.buffer.asUint8List(),
         iconAnchor: IconAnchor.BOTTOM
     ));
-    // Display taxi marker
-    final taxiMarkerBytes = await rootBundle.load('assets/markers/taxi/taxi_pin_x172.png');
-    await _pointAnnotationManager.create(PointAnnotationOptions(
-        geometry: Point(
-            coordinates: position
-        ),
-        image: taxiMarkerBytes.buffer.asUint8List(),
-        iconAnchor: IconAnchor.BOTTOM
-    )).then((value) => _taxiMarker = value);
     // Load destination marker image
     final destinationMarkerBytes = await rootBundle.load('assets/markers/route/x120/destination.png');
     _destinationMakerImage = destinationMarkerBytes.buffer.asUint8List();
@@ -179,22 +180,12 @@ class _DriverNavigationState extends State<DriverNavigation> {
       final lng = mapContext.point.coordinates.lng;
       final lat = mapContext.point.coordinates.lat;
       // Check if inside of Havana
-      final isInside = isPointInPolygon(lng, lat, _havanaPolygon);
+      final isInside = isPointInPolygon(lng, lat, _municipalityPolygon);
       if(!isInside) {
-        showToast(context: context, message: "Los destinos están limitados a La Habana");
+        showToast(context: context, message: "Los destinos están limitados a ${widget.travel.destinationName}");
         return;
       } else {
-        final place = await _mapboxService.getMapboxPlace(longitude: lng, latitude: lat);
-        // Avoid context's gaps
-        if(!mounted) return;
-        if(place == null) {
-          showToast(context: context, message: "El lugar seleccionado no corresponde con una ubicación válida");
-        } else {
-          await _getAndDrownRoute(widget.travel.originCoords[0], widget.travel.originCoords[1], lng, lat);
-          setState(() {
-            _destinationName = place.placeName.replaceAll(RegExp(r'(,\s*)?Havana, Cuba$'), '').trim();
-          });
-        }
+        await _getAndDrownRoute(widget.travel.originCoords[0], widget.travel.originCoords[1], lng, lat);
       }
     }
   }
@@ -287,7 +278,7 @@ class _DriverNavigationState extends State<DriverNavigation> {
         ),
         bottomSheet: DriverTripInfo(
           originName: widget.travel.originName,
-          destinationName: _destinationName ?? widget.travel.destinationName,
+          destinationName: widget.travel.destinationName,
           distance: _distanceInKm,
           taxiType: widget.travel.taxiType,
           onGuidedRouteSwitched: _onGuidedRouteSwitched,
