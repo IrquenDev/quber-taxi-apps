@@ -3,13 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart' as g;
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:quber_taxi/client-app/pages/navigation/trip_info.dart';
-import 'package:quber_taxi/util/geolocator.dart';
+import 'package:quber_taxi/common/models/travel.dart';
 import 'package:turf/distance.dart' as td;
 import 'package:turf/turf.dart' as turf;
 
 class ClientNavigation extends StatefulWidget {
 
-  const ClientNavigation({super.key});
+  final Travel travel;
+
+  const ClientNavigation({super.key, required this.travel});
 
   @override
   State<ClientNavigation> createState() => _ClientNavigationState();
@@ -18,7 +20,9 @@ class ClientNavigation extends StatefulWidget {
 class _ClientNavigationState extends State<ClientNavigation> {
 
   late final MapboxMap _mapController;
-  final List _realTimeRoute = <g.Position>[];
+
+  // Real time distance calculation
+  final List<turf.Position> _realTimeRoute = [];
   late final StreamSubscription<g.Position> _locationStream;
   num _distanceInKm = 0;
 
@@ -29,12 +33,18 @@ class _ClientNavigationState extends State<ClientNavigation> {
   }
 
   void _onMove(g.Position newPosition) {
-    final last = _realTimeRoute.last;
-    final point1 = turf.Point(coordinates: turf.Position(last.longitude, last.latitude));
+    final point1 = turf.Point(coordinates: _realTimeRoute.last);
     final point2 = turf.Point(coordinates: turf.Position(newPosition.longitude, newPosition.latitude));
     final segmentDistance = td.distance(point1, point2, Unit.kilometers);
-    _realTimeRoute.add(newPosition);
+    _realTimeRoute.add(turf.Position(newPosition.longitude, newPosition.latitude));
     setState(() => _distanceInKm += segmentDistance);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _realTimeRoute.add(turf.Position(widget.travel.originCoords[0], widget.travel.originCoords[1]));
+    _startTrackingDistance();
   }
 
   @override
@@ -48,7 +58,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
 
     // Init camera options
     final cameraOptions = CameraOptions(
-      center: Point(coordinates: Position(-82.3598, 23.1380)),
+      center: Point(coordinates: Position(widget.travel.originCoords[0], widget.travel.originCoords[1])),
       pitch: 45,
       bearing: 0,
       zoom: 17,
@@ -71,27 +81,6 @@ class _ClientNavigationState extends State<ClientNavigation> {
             // Custom mini "sheet"
             Align(alignment: Alignment.bottomCenter, child: ClientTripInfo(distance: _distanceInKm))
           ]
-      ),
-      // @Temporal
-      // Just for testing
-      floatingActionButton: FloatingActionButton(
-        /// TODO("yapmDev")
-        /// - Reminder: Move this logic to initState()
-          onPressed: () async {
-            await requestLocationPermission(
-                context: context,
-                onPermissionGranted: () async{
-                  final originCoords = await g.Geolocator.getCurrentPosition();
-                  _mapController.easeTo(
-                      CameraOptions(center: Point(coordinates: Position(originCoords.longitude, originCoords.latitude))),
-                      MapAnimationOptions(duration: 500)
-                  );
-                  _realTimeRoute.add(originCoords);
-                  _startTrackingDistance();
-                }
-            );
-          },
-          child: Icon(Icons.my_location_outlined)
       )
     );
   }

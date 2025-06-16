@@ -3,12 +3,15 @@ import 'package:quber_taxi/client-app/pages/home/home.dart';
 import 'package:quber_taxi/client-app/pages/home/search_destination.dart';
 import 'package:quber_taxi/client-app/pages/home/search_origin.dart';
 import 'package:quber_taxi/client-app/pages/navigation/client_navigation.dart';
+import 'package:quber_taxi/common/models/client.dart';
 import 'package:quber_taxi/driver-app/pages/navigation/driver_navigation.dart';
 import 'package:quber_taxi/client-app/pages/search_driver/search_driver.dart';
 import 'package:quber_taxi/client-app/pages/track_driver/track_driver.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/widgets/location_picker.dart';
 import 'package:quber_taxi/driver-app/pages/home/home.dart';
+import 'package:quber_taxi/enums/taxi_type.dart';
+import 'package:quber_taxi/enums/travel_state.dart';
 import 'package:quber_taxi/util/runtime.dart';
 import 'route_paths.dart';
 
@@ -56,8 +59,23 @@ final GoRouter appRouter = GoRouter(
         path: RoutePaths.clientNavigation,
         builder: (context, state) {
           // final travel = state.extra as Travel;
-          // return ClientNavigation(originCoords: travel.originCoords);
-          return ClientNavigation();
+          // @Demo
+          final travel = Travel(
+              id: 1,
+              originName: "Parque de la Fraternidad",
+              destinationName: "Playa",
+              originCoords: <num>[-82.3598, 23.1380],
+              requiredSeats: 4,
+              hasPets: true,
+              taxiType: TaxiType.xhdpiStandard,
+              minDistance: 5,
+              maxDistance: 22,
+              minPrice: 500,
+              maxPrice: 3500,
+              state: TravelState.inProgress,
+              client: Client(id: 1, name: "Yosmel Pérez", phone: 56285623.toString())
+          );
+          return ClientNavigation(travel: travel);
         }
     ),
 
@@ -68,7 +86,26 @@ final GoRouter appRouter = GoRouter(
 
     GoRoute(
         path: RoutePaths.driverNavigation,
-        builder: (context, state) => const DriverNavigation()
+        builder: (context, state) {
+          // final travel = state.extra as Travel;
+          // @Demo
+          final travel = Travel(
+              id: 1,
+              originName: "Parque de la Fraternidad",
+              destinationName: "Playa",
+              originCoords: <num>[-82.3598, 23.1380],
+              requiredSeats: 4,
+              hasPets: true,
+              taxiType: TaxiType.xhdpiComfort,
+              minDistance: 5,
+              maxDistance: 22,
+              minPrice: 500,
+              maxPrice: 3500,
+              state: TravelState.inProgress,
+              client: Client(id: 1, name: "Yosmel Pérez", phone: 56285623.toString())
+          );
+          return DriverNavigation(travel: travel);
+        }
     )
   ]
 );

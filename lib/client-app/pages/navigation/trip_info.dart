@@ -136,7 +136,7 @@ class ClientTripInfo extends StatelessWidget {
                 child: Transform(
                     alignment: Alignment.center,
                     transform: Matrix4.identity()..scale(-1.0, 1.0),
-                    child: Image.asset('assets/images/vehicles/v3/standard.png')
+                    child: Image.asset('assets/images/vehicles/xhdpi/standard.png')
                 )
               )
             )

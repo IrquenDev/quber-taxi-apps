@@ -99,9 +99,9 @@ flutter:
     - assets/icons/discounts/x48/
     - assets/icons/discounts/x72/
     - assets/icons/
-    - assets/images/vehicles/v1/
-    - assets/images/vehicles/v2/
-    - assets/images/vehicles/v3/
+    - assets/images/vehicles/mdpi/
+    - assets/images/vehicles/hdpi/
+    - assets/images/vehicles/xhdpi/
     - assets/images/
     - assets/markers/route/x60/
     - assets/markers/route/x120/
