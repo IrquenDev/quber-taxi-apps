@@ -7,6 +7,7 @@ import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/models/mapbox_place.dart';
 import 'package:quber_taxi/common/services/mapbox_service.dart';
 import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
+import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/routes/route_paths.dart';
 import 'package:quber_taxi/util/geolocator.dart';
 import 'package:geolocator/geolocator.dart' as g;
@@ -66,7 +67,7 @@ class _SearchOriginState extends State<SearchOrigin> {
               controller: _controller,
               onChanged: _onTextChanged,
               decoration: InputDecoration(
-                  hintText: 'Escribe una ubicación...',
+                  hintText: AppLocalizations.of(context)!.writeUbication,
                   suffixIcon: _controller.text.isNotEmpty ?
                     IconButton(icon: const Icon(Icons.clear_outlined), onPressed: () {
                       _controller.clear();
@@ -79,7 +80,7 @@ class _SearchOriginState extends State<SearchOrigin> {
             children: [
               ListTile(
                   leading: Icon(Icons.map_outlined),
-                  title: Text("Seleccione ubicación desde el mapa"),
+                  title: Text(AppLocalizations.of(context)!.selectUbication),
                   onTap: () async {
                     final mapboxPlace = await context.push<MapboxPlace>(RoutePaths.locationPicker);
                     if(mapboxPlace != null) {
@@ -90,7 +91,7 @@ class _SearchOriginState extends State<SearchOrigin> {
               ),
               ListTile(
                   leading: Icon(Icons.location_on_outlined),
-                  title: Text("Usar mi ubicación actual"),
+                  title: Text(AppLocalizations.of(context)!.actualUbication),
                   onTap: () async {
                     await requestLocationPermission(
                     context: context,
@@ -104,7 +105,7 @@ class _SearchOriginState extends State<SearchOrigin> {
                         if(!isInside) {
                           showToast(
                               context: context,
-                              message: "Su ubicacion actual esta fuera de los limites de La"" Habana"
+                              message: AppLocalizations.of(context)!.ubicationFailed
                           );
                           setState(() => isLoading = false);
                           return;
@@ -117,9 +118,9 @@ class _SearchOriginState extends State<SearchOrigin> {
                       if(!context.mounted) return;
                       context.pop(mapboxPlace);
                     },
-                    onPermissionDenied: () => showToast(context: context, message: "Permiso de ubicación denegado"),
+                    onPermissionDenied: () => showToast(context: context, message: AppLocalizations.of(context)!.permissionsDenied),
                     onPermissionDeniedForever: () =>
-                        showToast(context: context, message: "Permiso de ubicación denegado permanentemente")
+                        showToast(context: context, message: AppLocalizations.of(context)!.permissionDeniedPermanently)
                     );
                   }),
               if(_suggestions.isNotEmpty)
@@ -138,7 +139,7 @@ class _SearchOriginState extends State<SearchOrigin> {
                     )
                 ),
               if(_suggestions.isEmpty && _controller.text.isNotEmpty)
-                Padding(padding: const EdgeInsets.all(20.0), child: Text("Sin resultados"),
+                Padding(padding: const EdgeInsets.all(20.0), child: Text(AppLocalizations.of(context)!.noResults),
                 ),
               if(isLoading)
                 CircularProgressIndicator()

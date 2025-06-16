@@ -3,6 +3,7 @@ import 'package:flutter_fusion/flutter_fusion.dart';
 import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/driver-app/pages/home/dialogs/confirm_dialog.dart';
+import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/util/geolocator.dart' as g_util;
 
@@ -35,16 +36,16 @@ class TripCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             spacing: 4.0,
             children: [
-              _buildIconLabelRow(context, Icons.my_location_outlined, "Desde: ", travel.originName),
-              _buildIconLabelRow(context, Icons.location_on_outlined, "Hasta: ", travel.destinationName),
+              _buildIconLabelRow(context, Icons.my_location_outlined, AppLocalizations.of(context)!.from, travel.originName),
+              _buildIconLabelRow(context, Icons.location_on_outlined, AppLocalizations.of(context)!.until, travel.destinationName),
             ],
           ),
           children: [
-            _buildInfoRow(Icons.straighten, 'Distancia Mínima: ${travel.minDistance} km'),
-            _buildInfoRow(Icons.straighten, 'Distancia Máxima: ${travel.maxDistance} km'),
-            _buildInfoRow(Icons.attach_money, 'Precio mínimo: ${travel.minPrice.toStringAsFixed(0)} CUP'),
-            _buildInfoRow(Icons.money, 'Precio máximo: ${travel.maxPrice.toStringAsFixed(0)} CUP'),
-            _buildInfoRow(Icons.people, '${travel.requiredSeats} personas'),
+            _buildInfoRow(Icons.straighten, '${AppLocalizations.of(context)!.minDistance} ${travel.minDistance} km'),
+            _buildInfoRow(Icons.straighten, '${AppLocalizations.of(context)!.maxDistance} ${travel.maxDistance} km'),
+            _buildInfoRow(Icons.attach_money, '${AppLocalizations.of(context)!.minPrice} ${travel.minPrice.toStringAsFixed(0)} CUP'),
+            _buildInfoRow(Icons.money, '${AppLocalizations.of(context)!.maxPrice} ${travel.maxPrice.toStringAsFixed(0)} CUP'),
+            _buildInfoRow(Icons.people, '${travel.requiredSeats} ${AppLocalizations.of(context)!.people}'),
             _buildInfoRow(Icons.pets, travel.hasPets ? 'Con mascota' : 'Sin mascota'),
             const SizedBox(height: 12),
             Align(

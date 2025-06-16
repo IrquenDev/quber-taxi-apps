@@ -1,0 +1,47 @@
+{
+  "@@locale": "en",
+
+  "unknown": "Unrecognized municipality:",
+  "originName": "Select the origin location",
+  "destinationName": "Select the destination municipality",
+  "carPrefer": "What type of vehicle do you prefer?",
+  "howTravels": "How many people are traveling?",
+  "pets": "Are you bringing a pet?",
+  "minDistance": "Minimum distance:",
+  "maxDistance": "Maximum distance:",
+  "minPrice": "Minimum price:",
+  "maxPrice": "Maximum price you can pay:",
+  "askTaxi": "Request a taxi",
+  "vehicle": "vehicle",
+
+  "map": "Map",
+  "quberPoints": "Quber Points",
+
+  "ubicationFailed": "Your current location is outside the limits of Havana",
+  "permissionsDenied": "Location permission denied",
+  "permissionDeniedPermanently": "Location permission permanently denied",
+
+  "writeUbication": "Enter a location...",
+
+  "selectUbication": "Select location from map",
+  "actualUbication": "Use my current location",
+  "outLimits": "Your current location is outside the limits of Havana",
+  "noResults": "No results found",
+
+  "searchDrivers": "Searching for Drivers...",
+
+  "selectTravel": "Select a trip",
+  "updateTravel": "Update trips",
+  "noTravel": "No trips available",
+
+  "noAssignedTrip": "The trip could not be assigned",
+
+  "countPeople": "Number of people traveling:",
+  "pet": "Pet:",
+  "typeVehicle": "Type of vehicle:",
+  "startTrip": "Start Trip",
+
+  "people": "people",
+  "from": "From: ",
+  "until": "To: "
+}
