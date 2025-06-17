@@ -17,5 +17,7 @@ class RoutePaths {
 
   static const String clientNavigation = '/client-navigation';
 
+  static const String quberReviews = '/quber-reviews';
+
   static const String driverNavigation = '/driver-navigation';
 }

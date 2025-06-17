@@ -43,5 +43,11 @@
 
   "people": "Personas",
   "from": "Desde: ",
-  "until": "Hasta: "
+  "until": "Hasta: ",
+
+  "noReviews": "Aún sin reseñas del conductor",
+  "reviewSctHeader": "Tu opinión nos ayuda a mejorar",
+  "reviewTooltip": "(Califica el viaje de 1 a 5 estrellas)",
+  "reviewTextHint": "Ayúdanos a mejorar dejando tu opinión",
+  "tripCompleted": "Viaje Finalizado"
 }

@@ -33,7 +33,7 @@ class _DriverNavigationState extends State<DriverNavigation> {
   late final MapboxMap _mapController;
   late double _mapBearing;
   // Markers
-  late PointAnnotationManager _pointAnnotationManager;
+  PointAnnotationManager? _pointAnnotationManager;
   late Uint8List _destinationMakerImage;
   PointAnnotation? _destinationMarker;
   PointAnnotation? _taxiMarker;
@@ -80,27 +80,29 @@ class _DriverNavigationState extends State<DriverNavigation> {
   }
 
   void _updateTaxiMarker(g.Position newPosition) async {
-    final point = Point(coordinates: Position(newPosition.longitude, newPosition.latitude));
-    if(_taxiMarker == null) {
-      // Display marker
-      final taxiMarkerBytes = await rootBundle.load('assets/markers/taxi/taxi_pin_x172.png');
-      await _pointAnnotationManager.create(PointAnnotationOptions(
-          geometry: point,
-          image: taxiMarkerBytes.buffer.asUint8List(),
-          iconAnchor: IconAnchor.BOTTOM
-      )).then((value) => _taxiMarker = value);
-    } else {
-      // Update geometry point
-      _taxiMarker!.geometry = point;
-      // Update icon rotation (orientation)
-      final bearing = mb_util.calculateBearing(
-          _realTimeRoute.last.lat, _realTimeRoute.last.lng,
-          newPosition.latitude, newPosition.longitude
-      );
-      final adjustedBearing = (bearing - _mapBearing + 360) % 360;
-      _taxiMarker!.iconRotate = adjustedBearing;
-      // Then update marker
-      _pointAnnotationManager.update(_taxiMarker!);
+    if(_pointAnnotationManager != null) {
+      final point = Point(coordinates: Position(newPosition.longitude, newPosition.latitude));
+      if(_taxiMarker == null) {
+        // Display marker
+        final taxiMarkerBytes = await rootBundle.load('assets/markers/taxi/taxi_pin_x172.png');
+        await _pointAnnotationManager!.create(PointAnnotationOptions(
+            geometry: point,
+            image: taxiMarkerBytes.buffer.asUint8List(),
+            iconAnchor: IconAnchor.BOTTOM
+        )).then((value) => _taxiMarker = value);
+      } else {
+        // Update geometry point
+        _taxiMarker!.geometry = point;
+        // Update icon rotation (orientation)
+        final bearing = mb_util.calculateBearing(
+            _realTimeRoute.last.lat, _realTimeRoute.last.lng,
+            newPosition.latitude, newPosition.longitude
+        );
+        final adjustedBearing = (bearing - _mapBearing + 360) % 360;
+        _taxiMarker!.iconRotate = adjustedBearing;
+        // Then update marker
+        _pointAnnotationManager!.update(_taxiMarker!);
+      }
     }
   }
 
@@ -114,7 +116,7 @@ class _DriverNavigationState extends State<DriverNavigation> {
     // Create or update destination marker
     final point = Point(coordinates: Position(destinationLng, destinationLat));
     if(_destinationMarker == null) {
-      _pointAnnotationManager.create(PointAnnotationOptions(
+      _pointAnnotationManager!.create(PointAnnotationOptions(
           geometry: point,
           image: _destinationMakerImage,
           iconAnchor: IconAnchor.BOTTOM
@@ -122,7 +124,7 @@ class _DriverNavigationState extends State<DriverNavigation> {
     }
     else {
       _destinationMarker!.geometry = point;
-      _pointAnnotationManager.update(_destinationMarker!);
+      _pointAnnotationManager!.update(_destinationMarker!);
     }
     // Drowning the rute
     if(!_isRouteDrawn) {
@@ -162,7 +164,7 @@ class _DriverNavigationState extends State<DriverNavigation> {
     final position = Position(widget.travel.originCoords[0], widget.travel.originCoords[1]);
     // Display origin marker
     final originMarkerBytes = await rootBundle.load('assets/markers/route/x120/origin.png');
-    await _pointAnnotationManager.create(PointAnnotationOptions(
+    await _pointAnnotationManager!.create(PointAnnotationOptions(
         geometry: Point(
             coordinates: position
         ),
@@ -199,7 +201,7 @@ class _DriverNavigationState extends State<DriverNavigation> {
       );
       final adjustedBearing = (bearing - _mapBearing + 360) % 360;
       _taxiMarker!.iconRotate = adjustedBearing;
-      _pointAnnotationManager.update(_taxiMarker!);
+      _pointAnnotationManager!.update(_taxiMarker!);
     }
   }
 
@@ -236,7 +238,7 @@ class _DriverNavigationState extends State<DriverNavigation> {
     if(!isEnabled && _isRouteDrawn) {
       await _mapController.style.removeStyleLayer("line-layer");
       await _mapController.style.removeStyleSource("sourceId");
-      await _pointAnnotationManager.delete(_destinationMarker!);
+      await _pointAnnotationManager!.delete(_destinationMarker!);
       _destinationMarker = null;
       _isRouteDrawn = false;
     }

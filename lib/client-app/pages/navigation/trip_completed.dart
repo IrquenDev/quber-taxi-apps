@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fusion/flutter_fusion.dart' show CircleStack;
+import 'package:flutter_fusion/flutter_fusion.dart' show CircleStack, showToast;
+import 'package:go_router/go_router.dart';
+import 'package:network_checker/network_checker.dart';
+import 'package:quber_taxi/common/models/review.dart';
+import 'package:quber_taxi/common/models/travel.dart';
+import 'package:quber_taxi/common/services/review_service.dart';
+import 'package:quber_taxi/l10n/app_localizations.dart';
+import 'package:quber_taxi/routes/route_paths.dart';
 
 class ClientTripCompleted extends StatefulWidget {
-  const ClientTripCompleted({super.key});
+
+  final Travel travel;
+
+  const ClientTripCompleted({super.key, required this.travel});
 
   @override
   State<ClientTripCompleted> createState() => _ClientTripCompletedState();
@@ -11,14 +21,36 @@ class ClientTripCompleted extends StatefulWidget {
 class _ClientTripCompletedState extends State<ClientTripCompleted> {
 
   final TextEditingController _commentController = TextEditingController();
-
+  final _reviewService = ReviewService();
   final double _horizontalPadding = 20.0;
   final double _highHorizontalPadding = 40.0;
+  int _rating = 0;
+  bool get _canSubmitReview => _rating != 0 && _commentController.text.isNotEmpty;
+  late Future<List<Review>> _futureReviews;
 
-  int selectedRating = 0;
+  Future<void> _refreshReviews() async {
+    final newReviews = await _reviewService.findAll();
+    setState(() {
+      _futureReviews = Future.value(newReviews);
+    });
+  }
+
+  void _loadTravels() {
+    setState(() {
+      _futureReviews = _reviewService.findAll();
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTravels();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context)!;
+    final isConnected = NetworkScope.of(context).value == ConnectionStatus.online;
     return Container(
       color: Theme.of(context).colorScheme.surface,
       child: SingleChildScrollView(
@@ -44,7 +76,7 @@ class _ClientTripCompletedState extends State<ClientTripCompleted> {
                       ),
                       // Title
                       Text(
-                          'Viaje Finalizado',
+                          loc.tripCompleted,
                           style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)
                       ),
                       // Timestamp
@@ -71,57 +103,100 @@ class _ClientTripCompletedState extends State<ClientTripCompleted> {
                     spacing: 8.0,
                     children: [
                       Text(
-                        'Tu opinión nos ayuda a mejorar',
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.bold
-                        )
+                        loc.reviewSctHeader,
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)
                       ),
-                      Text(
-                          '(Califica el viaje con 1 a 5 estrellas)',
-                          style: Theme.of(context).textTheme.bodySmall
-                      ),
+                      Text(loc.reviewTooltip, style: Theme.of(context).textTheme.bodySmall),
                       // Rating
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: List.generate(5, (index) {
                           return IconButton(
                             icon: Icon(
-                              index < selectedRating ? Icons.star : Icons.star_border,
+                              index < _rating ? Icons.star : Icons.star_border,
                               color: Theme.of(context).colorScheme.primaryContainer
                             ),
-                            onPressed: () {
-                              setState(() => selectedRating = index + 1);
-                            }
+                            onPressed: () => setState(() => _rating = index + 1)
                           );
                         }),
                       ),
                       TextField(
                         controller: _commentController,
                         decoration: InputDecoration(
-                          hintText: 'Ayúdanos a mejorar dejando tu opinión',
-                          suffixIcon: IconButton(icon: const Icon(Icons.send), onPressed: () {})
+                          hintText: loc.reviewTextHint,
+                          suffixIcon: IconButton(
+                              icon: const Icon(Icons.send_outlined),
+                              onPressed: _canSubmitReview && isConnected ? () async {
+                                final response = await _reviewService.submitReview(
+                                  comment: _commentController.text,
+                                  rating: _rating,
+                                  clientId: widget.travel.client.id,
+                                  driverId: widget.travel.driver!.id,
+                                );
+                                if(!context.mounted) return;
+                                if(response.statusCode != 200) {
+                                  showToast(context: context, message: "No se pudo guardar tu valoración");
+                                } else {
+                                  showToast(context: context, message: "Gracias por tu tiempo");
+                                  _commentController.clear();
+                                  _refreshReviews(); // update comments count message
+                                }
+                              }  : null
+                          )
                         )
                       ),
                       // Comment history
-                      Padding(
-                        padding: EdgeInsets.only(left: _horizontalPadding),
-                        child: Row(
-                          spacing: 20.0,
-                          children: [
-                            // People who commented
-                            CircleStack(
-                              count: 4,
-                              radius: 16,
-                              offset: 8,
-                              prototypeBuilder: (index) =>
-                                  Image.asset('assets/images/vehicles/mdpi/standard.png', fit: BoxFit.cover)
-                            ),
-                            Text(
-                              '3 comentarios',
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
-                            )
-                          ]
-                        )
+                      FutureBuilder(
+                          future: _futureReviews,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return const Center(child: CircularProgressIndicator());
+                            }
+                            else if(snapshot.hasError) {
+                              return Center(child: Text("No se pudieron cargar las reseñas"));
+                            }
+                            else if(!snapshot.hasData || snapshot.data!.isEmpty) {
+                              return Center(child: Text(loc.noReviews));
+                            }
+                            else {
+                              final data = snapshot.data;
+                              final commentsCount = data!.length;
+                              return Padding(
+                                  padding: EdgeInsets.only(left: _horizontalPadding),
+                                  child: Row(
+                                      spacing: 20.0,
+                                      children: [
+                                        // People who commented
+                                        CircleStack(
+                                            count: commentsCount <= 4 ? commentsCount : 4,
+                                            radius: 16,
+                                            offset: 8,
+                                            /// TODO("yapmDev")
+                                            /// - Display client images properly
+                                            // First, we need to do a little work on the REST API side to provide
+                                            // images as static files. On the Flutter side, the relevant models and
+                                            // services are ready.
+                                            prototypeBuilder: (index) => Image.asset(
+                                                'assets/images/vehicles/mdpi/standard.png', fit: BoxFit.cover
+                                            )
+                                        ),
+                                        GestureDetector(
+                                          onTap: commentsCount != 0 ? ()=> context.push(
+                                              RoutePaths.quberReviews,
+                                              extra: data
+                                          ) : null,
+                                          child: Text(
+                                            '$commentsCount comentarios',
+                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                fontWeight: FontWeight.bold
+                                            )
+                                          ),
+                                        )
+                                      ]
+                                  )
+                              );
+                            }
+                          }
                       )
                     ]
                   ),

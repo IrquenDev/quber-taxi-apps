@@ -298,6 +298,36 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Hasta: '**
   String get until;
+
+  /// No description provided for @noReviews.
+  ///
+  /// In es, this message translates to:
+  /// **'Aún sin reseñas del conductor'**
+  String get noReviews;
+
+  /// No description provided for @reviewSctHeader.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu opinión nos ayuda a mejorar'**
+  String get reviewSctHeader;
+
+  /// No description provided for @reviewTooltip.
+  ///
+  /// In es, this message translates to:
+  /// **'(Califica el viaje de 1 a 5 estrellas)'**
+  String get reviewTooltip;
+
+  /// No description provided for @reviewTextHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Ayúdanos a mejorar dejando tu opinión'**
+  String get reviewTextHint;
+
+  /// No description provided for @tripCompleted.
+  ///
+  /// In es, this message translates to:
+  /// **'Viaje Finalizado'**
+  String get tripCompleted;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
