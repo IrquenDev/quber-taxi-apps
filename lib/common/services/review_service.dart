@@ -23,8 +23,8 @@ class ReviewService {
     }));
   }
 
-  Future<List<Review>> findAllReviewsByDriver(int driverId) async {
-    final url = Uri.parse('${_apiConfig.baseUrl}/$_endpoint/$driverId');
+  Future<List<Review>> findAll() async {
+    final url = Uri.parse('${_apiConfig.baseUrl}/$_endpoint');
     final response = await http.get(url);
     if (response.body.trim().isEmpty) {
       return [];

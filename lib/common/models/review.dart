@@ -40,14 +40,20 @@ class Review {
 class ClientReview {
 
   final int id;
+  final String name;
   final String imageUrl;
 
   const ClientReview({
     required this.id,
+    required this.name,
     required this.imageUrl
   });
 
-  factory ClientReview.fromJson(Map<String, dynamic> json) => ClientReview(id: json['id'], imageUrl: json['imageUrl']);
+  factory ClientReview.fromJson(Map<String, dynamic> json) => ClientReview(
+      id: json['id'],
+      name: json['name'],
+      imageUrl: json['imageUrl']
+  );
 
-  Map<String, dynamic> toJson() => {"id": id, "imageUrl": imageUrl};
+  Map<String, dynamic> toJson() => {"id": id, "name": name, "imageUrl": imageUrl};
 }

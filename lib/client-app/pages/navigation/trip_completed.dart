@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fusion/flutter_fusion.dart' show CircleStack, showToast;
+import 'package:go_router/go_router.dart';
 import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/models/review.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/services/review_service.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
+import 'package:quber_taxi/routes/route_paths.dart';
 
 class ClientTripCompleted extends StatefulWidget {
 
@@ -27,7 +29,7 @@ class _ClientTripCompletedState extends State<ClientTripCompleted> {
   late Future<List<Review>> _futureReviews;
 
   Future<void> _refreshReviews() async {
-    final newReviews = await _reviewService.findAllReviewsByDriver(widget.travel.driver!.id);
+    final newReviews = await _reviewService.findAll();
     setState(() {
       _futureReviews = Future.value(newReviews);
     });
@@ -35,7 +37,7 @@ class _ClientTripCompletedState extends State<ClientTripCompleted> {
 
   void _loadTravels() {
     setState(() {
-      _futureReviews = _reviewService.findAllReviewsByDriver(widget.travel.driver!.id);
+      _futureReviews = _reviewService.findAll();
     });
   }
 
@@ -150,7 +152,10 @@ class _ClientTripCompletedState extends State<ClientTripCompleted> {
                             if (snapshot.connectionState == ConnectionState.waiting) {
                               return const Center(child: CircularProgressIndicator());
                             }
-                            else if(snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
+                            else if(snapshot.hasError) {
+                              return Center(child: Text("No se pudieron cargar las reseñas"));
+                            }
+                            else if(!snapshot.hasData || snapshot.data!.isEmpty) {
                               return Center(child: Text(loc.noReviews));
                             }
                             else {
@@ -175,11 +180,17 @@ class _ClientTripCompletedState extends State<ClientTripCompleted> {
                                                 'assets/images/vehicles/mdpi/standard.png', fit: BoxFit.cover
                                             )
                                         ),
-                                        Text(
-                                          '$commentsCount comentarios',
-                                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                              fontWeight: FontWeight.bold
-                                          )
+                                        GestureDetector(
+                                          onTap: commentsCount != 0 ? ()=> context.push(
+                                              RoutePaths.quberReviews,
+                                              extra: data
+                                          ) : null,
+                                          child: Text(
+                                            '$commentsCount comentarios',
+                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                fontWeight: FontWeight.bold
+                                            )
+                                          ),
                                         )
                                       ]
                                   )
