@@ -11,8 +11,9 @@ import 'package:quber_taxi/routes/route_paths.dart';
 class ClientTripCompleted extends StatefulWidget {
 
   final Travel travel;
-
-  const ClientTripCompleted({super.key, required this.travel});
+  final int duration;
+  final num distance;
+  const ClientTripCompleted({super.key, required this.travel, required this.duration, required this.distance});
 
   @override
   State<ClientTripCompleted> createState() => _ClientTripCompletedState();
@@ -205,11 +206,11 @@ class _ClientTripCompletedState extends State<ClientTripCompleted> {
                     spacing: 8.0,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const TripDetailRow(label: 'Precio del Viaje', text: '1150 CUP'),
-                      const TripDetailRow(label: 'Tiempo del Recorrido', text: '35 minutos'),
-                      const TripDetailRow(label: 'Distancia Recorrida', text: '50 Km'),
-                      const TripDetailRow(label: 'Origen', text: 'Calle 25 entre Paseo y 2. Vedado'),
-                      const TripDetailRow(label: 'Destino', text: 'Calle 31 entre 43 y 45. Playa'),
+                      TripDetailRow(label: 'Precio del Viaje', text: '${(widget.distance * 100).toStringAsFixed(0)} CUP'),
+                      TripDetailRow(label: 'Tiempo Transcurrido', text: '${widget.duration.toStringAsFixed(0)} minutos'),
+                      TripDetailRow(label: 'Distancia Recorrida', text: '${widget.distance.toStringAsFixed(0)} Km'),
+                      TripDetailRow(label: 'Origen', text: widget.travel.originName),
+                      TripDetailRow(label: 'Destino', text: widget.travel.destinationName),
                     ]
                   )
                 ]
