@@ -34,6 +34,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
   final List<turf.Position> _realTimeRoute = [];
   late final StreamSubscription<g.Position> _locationStream;
   num _distanceInKm = 0;
+  Stopwatch? _stopwatch;
 
   void _startTrackingDistance() {
     _locationStream = g.Geolocator.getPositionStream(
@@ -42,6 +43,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
   }
 
   void _onMove(g.Position newPosition) {
+    _stopwatch ??= Stopwatch()..start();
     _calcRealTimeDistance(newPosition);
     _updateTaxiMarker(newPosition);
     _realTimeRoute.add(turf.Position(newPosition.longitude, newPosition.latitude));
@@ -114,6 +116,22 @@ class _ClientNavigationState extends State<ClientNavigation> {
     }
   }
 
+  void _showTripCompletedBottomSheet() {
+    _stopwatch?.stop();
+    showModalBottomSheet(
+        context: context,
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+        isDismissible: false,
+        isScrollControlled: true,
+        showDragHandle: true,
+        builder: (context) => ClientTripCompleted(
+            travel: widget.travel,
+            duration: _stopwatch?.elapsed.inMinutes ?? 0,
+            distance: _distanceInKm,
+        )
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -150,16 +168,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
         ),
         // @Temporal: Just for demo, in this view, the ClientTripCompleted sheet will be reactive.
         floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            showModalBottomSheet(
-                context: context,
-                backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                isDismissible: false,
-                isScrollControlled: true,
-                showDragHandle: true,
-                builder: (context) => ClientTripCompleted(travel: widget.travel)
-            );
-          },
+          onPressed: _showTripCompletedBottomSheet,
           child: Icon(Icons.question_mark_outlined),
         ),
         bottomSheet: ClientTripInfo(

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:quber_taxi/driver-app/pages/navigation/trip_completed.dart';
 import 'package:quber_taxi/enums/municipalities.dart';
 import 'package:quber_taxi/util/mapbox.dart' as mb_util;
 import 'package:flutter/material.dart';
@@ -52,6 +53,7 @@ class _DriverNavigationState extends State<DriverNavigation> {
   final List<turf.Position> _realTimeRoute = [];
   late final StreamSubscription<g.Position> _locationStream;
   num _distanceInKm = 0;
+  Stopwatch? _stopwatch;
   // Ignore points outside of Havana
   late turf.Polygon _municipalityPolygon;
 
@@ -67,6 +69,7 @@ class _DriverNavigationState extends State<DriverNavigation> {
   }
 
   void _onMove(g.Position newPosition) {
+    _stopwatch ??= Stopwatch()..start();
     _calcRealTimeDistance(newPosition);
     _updateTaxiMarker(newPosition);
     _realTimeRoute.add(turf.Position(newPosition.longitude, newPosition.latitude));
@@ -245,6 +248,22 @@ class _DriverNavigationState extends State<DriverNavigation> {
     setState(() => _isGuidedRouteEnabled = isEnabled);
   }
 
+  void _showTripCompletedBottomSheet() {
+    _stopwatch?.stop();
+    showModalBottomSheet(
+        context: context,
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+        isDismissible: false,
+        isScrollControlled: true,
+        showDragHandle: true,
+        builder: (context) => DriverTripCompleted(
+          travel: widget.travel,
+          duration: _stopwatch?.elapsed.inMinutes ?? 0,
+          distance: _distanceInKm,
+        )
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -277,6 +296,11 @@ class _DriverNavigationState extends State<DriverNavigation> {
           onMapCreated: _onMapCreated,
           onLongTapListener: _onLongTapListener,
           onCameraChangeListener: _onCameraChangeListener
+        ),
+        // @Temporal: Just for demo, in this view, the ClientTripCompleted sheet will be reactive.
+        floatingActionButton: FloatingActionButton(
+          onPressed: _showTripCompletedBottomSheet,
+          child: Icon(Icons.question_mark_outlined),
         ),
         bottomSheet: DriverTripInfo(
           originName: widget.travel.originName,
