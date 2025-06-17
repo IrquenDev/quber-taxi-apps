@@ -1,8 +1,16 @@
 enum TaxiType {
 
-  standard("Estándar", "assets/images/vehicles/v1/standard.png", "STANDARD"),
-  familiar("Familiar", "assets/images/vehicles/v1/familiar.png", "FAMILIAR"),
-  comfort("Confort", "assets/images/vehicles/v1/comfort.png", "COMFORT");
+  mdpiStandard("Estándar", "assets/images/vehicles/mdpi/standard.png", "STANDARD"),
+  hdpiStandard("Estándar", "assets/images/vehicles/hdpi/standard.png", "STANDARD"),
+  xhdpiStandard("Estándar", "assets/images/vehicles/xhdpi/standard.png", "STANDARD"),
+
+  mdpiFamiliar("Familiar", "assets/images/vehicles/mdpi/familiar.png", "FAMILIAR"),
+  hdpiFamiliar("Familiar", "assets/images/vehicles/hdpi/familiar.png", "FAMILIAR"),
+  xhdpiFamiliar("Familiar", "assets/images/vehicles/xhdpi/familiar.png", "FAMILIAR"),
+
+  mdpiComfort("Confort", "assets/images/vehicles/mdpi/comfort.png", "COMFORT"),
+  hdpiComfort("Confort", "assets/images/vehicles/hdpi/comfort.png", "COMFORT"),
+  xhdpiComfort("Confort", "assets/images/vehicles/xhdpi/comfort.png", "COMFORT");
 
   final String displayText;
   final String assetRef;

@@ -1,12 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:quber_taxi/common/widgets/emergency_dialog.dart';
+import 'package:quber_taxi/enums/taxi_type.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 
 class ClientTripInfo extends StatelessWidget {
 
   final num distance;
+  final String originName;
+  final String destinationName;
+  final TaxiType taxiType;
 
-  const ClientTripInfo({super.key, required this.distance});
+  const ClientTripInfo({
+    super.key,
+    required this.distance,
+    required this.originName,
+    required this.destinationName,
+    required this.taxiType
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +48,12 @@ class ClientTripInfo extends StatelessWidget {
                         ),
                         DefaultTextStyle(
                           style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold),
-                            child: Column(children: [Text('${distance.toStringAsFixed(2)} Km'), Text('150 CUP')])
+                            child: Column(
+                                children: [
+                                  Text('${distance.toStringAsFixed(0)} Km'),
+                                  Text('${(distance * 100).toStringAsFixed(0)} CUP')
+                                ]
+                            )
                         )
                       ]
                   )
@@ -78,9 +93,11 @@ class ClientTripInfo extends StatelessWidget {
                                       children: [
                                         TextSpan(
                                             text: 'Desde: ',
-                                            style: Theme.of(context).textTheme.bodyMedium!
-                                                .copyWith(fontWeight: FontWeight.bold)),
-                                        TextSpan(text: 'Calle 25 entre Paseo y 2. Vedado')
+                                            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                                                fontWeight: FontWeight.bold
+                                            )
+                                        ),
+                                        TextSpan(text: originName)
                                       ]
                                   )
                               ),
@@ -89,9 +106,11 @@ class ClientTripInfo extends StatelessWidget {
                                       children: [
                                         TextSpan(
                                             text: 'Hasta: ',
-                                            style: Theme.of(context).textTheme.bodyMedium!
-                                                .copyWith(fontWeight: FontWeight.bold)),
-                                        TextSpan(text: 'Playa')
+                                            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                                                fontWeight: FontWeight.bold
+                                            )
+                                        ),
+                                        TextSpan(text: destinationName)
                                       ]
                                   )
                               )
@@ -136,7 +155,7 @@ class ClientTripInfo extends StatelessWidget {
                 child: Transform(
                     alignment: Alignment.center,
                     transform: Matrix4.identity()..scale(-1.0, 1.0),
-                    child: Image.asset('assets/images/vehicles/v3/standard.png')
+                    child: Image.asset(taxiType.assetRef)
                 )
               )
             )
