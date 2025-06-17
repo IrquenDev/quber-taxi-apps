@@ -416,7 +416,6 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                         // Ver todos los conductores con borde superior
                         Container(
                           decoration: BoxDecoration(
-
                           ),
                           child: InkWell(
                             onTap: () {
