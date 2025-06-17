@@ -114,35 +114,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String get until => 'To: ';
 
   @override
-  String get adminSettingsTitle => 'Ajustes del Administrador';
+  String get adminSettingsTitle => 'Admin Settings';
 
   @override
-  String get pricesSectionTitle => 'Precios';
+  String get pricesSectionTitle => 'Prices';
 
   @override
-  String get driverCreditPercentage => 'Porciento de crédito para conductores:';
+  String get driverCreditPercentage => 'Driver credit percentage:';
 
   @override
-  String get tripPricePerKm => 'Precio de viaje por KM:';
+  String get tripPricePerKm => 'Trip price per KM:';
 
   @override
-  String get saveButtonPanel => 'Guardar';
+  String get saveButtonPanel => 'Save';
 
   @override
-  String get passwordsSectionTitle => 'Contraseñas';
+  String get passwordsSectionTitle => 'Passwords';
 
   @override
-  String get newPassword => 'Nueva contraseña:';
+  String get newPassword => 'New password:';
 
   @override
-  String get confirmPassword => 'Confirme contraseña:';
+  String get confirmPassword => 'Confirm password:';
 
   @override
-  String get otherActionsTitle => 'Otras acciones';
+  String get otherActionsTitle => 'Other Actions';
 
   @override
-  String get viewAllTrips => 'Ver todos los viajes';
+  String get viewAllTrips => 'View all trips';
 
   @override
-  String get viewAllDrivers => 'Ver todos los conductores';
+  String get viewAllDrivers => 'View all drivers';
 }
