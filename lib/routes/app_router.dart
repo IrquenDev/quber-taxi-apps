@@ -4,6 +4,8 @@ import 'package:quber_taxi/client-app/pages/home/search_destination.dart';
 import 'package:quber_taxi/client-app/pages/home/search_origin.dart';
 import 'package:quber_taxi/client-app/pages/navigation/client_navigation.dart';
 import 'package:quber_taxi/common/models/client.dart';
+import 'package:quber_taxi/common/models/driver.dart';
+import 'package:quber_taxi/common/models/taxi.dart';
 import 'package:quber_taxi/driver-app/pages/navigation/driver_navigation.dart';
 import 'package:quber_taxi/client-app/pages/search_driver/search_driver.dart';
 import 'package:quber_taxi/client-app/pages/track_driver/track_driver.dart';
@@ -73,7 +75,11 @@ final GoRouter appRouter = GoRouter(
               minPrice: 500,
               maxPrice: 3500,
               state: TravelState.inProgress,
-              client: Client(id: 1, name: "Yosmel Pérez", phone: 56285623.toString())
+              client: Client(id: 1, name: "Yosmel Pérez", phone: 56285623.toString()),
+              driver: Driver(id: 1, name: "Juan", imageUrl: "", phone: "", email: "", credit: 0.0,
+                  paymentDate: DateTime.now(), rating: 0.0,
+                  taxi: Taxi(id: 1, plate: "", imageUrl: "", seats: 4, type: TaxiType.mdpiStandard)
+              )
           );
           return ClientNavigation(travel: travel);
         }

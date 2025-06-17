@@ -1,5 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:network_checker/network_checker.dart';
+import 'package:quber_taxi/client-app/pages/navigation/trip_completed.dart';
+import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
 import 'package:quber_taxi/util/mapbox.dart' as mb_util;
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart' as g;
@@ -25,7 +28,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
   late final MapboxMap _mapController;
   late double _mapBearing;
   // Markers
-  late PointAnnotationManager _pointAnnotationManager;
+  PointAnnotationManager? _pointAnnotationManager;
   PointAnnotation? _taxiMarker;
   // Real time distance calculation
   final List<turf.Position> _realTimeRoute = [];
@@ -52,27 +55,29 @@ class _ClientNavigationState extends State<ClientNavigation> {
   }
 
   void _updateTaxiMarker(g.Position newPosition) async {
-    final point = Point(coordinates: Position(newPosition.longitude, newPosition.latitude));
-    if(_taxiMarker == null) {
-      // Display marker
-      final taxiMarkerBytes = await rootBundle.load('assets/markers/taxi/taxi_pin_x172.png');
-      await _pointAnnotationManager.create(PointAnnotationOptions(
-          geometry: point,
-          image: taxiMarkerBytes.buffer.asUint8List(),
-          iconAnchor: IconAnchor.BOTTOM
-      )).then((value) => _taxiMarker = value);
-    } else {
-      // Update geometry point
-      _taxiMarker!.geometry = point;
-      // Update icon rotation (orientation)
-      final bearing = mb_util.calculateBearing(
-          _realTimeRoute.last.lat, _realTimeRoute.last.lng,
-          newPosition.latitude, newPosition.longitude
-      );
-      final adjustedBearing = (bearing - _mapBearing + 360) % 360;
-      _taxiMarker!.iconRotate = adjustedBearing;
-      // Then update marker
-      _pointAnnotationManager.update(_taxiMarker!);
+    if(_pointAnnotationManager != null) {
+      final point = Point(coordinates: Position(newPosition.longitude, newPosition.latitude));
+      if(_taxiMarker == null) {
+        // Display marker
+        final taxiMarkerBytes = await rootBundle.load('assets/markers/taxi/taxi_pin_x172.png');
+        await _pointAnnotationManager!.create(PointAnnotationOptions(
+            geometry: point,
+            image: taxiMarkerBytes.buffer.asUint8List(),
+            iconAnchor: IconAnchor.BOTTOM
+        )).then((value) => _taxiMarker = value);
+      } else {
+        // Update geometry point
+        _taxiMarker!.geometry = point;
+        // Update icon rotation (orientation)
+        final bearing = mb_util.calculateBearing(
+            _realTimeRoute.last.lat, _realTimeRoute.last.lng,
+            newPosition.latitude, newPosition.longitude
+        );
+        final adjustedBearing = (bearing - _mapBearing + 360) % 360;
+        _taxiMarker!.iconRotate = adjustedBearing;
+        // Then update marker
+        _pointAnnotationManager!.update(_taxiMarker!);
+      }
     }
   }
 
@@ -87,7 +92,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
     final position = Position(widget.travel.originCoords[0], widget.travel.originCoords[1]);
     // Display origin marker
     final originMarkerBytes = await rootBundle.load('assets/markers/route/x120/origin.png');
-    await _pointAnnotationManager.create(PointAnnotationOptions(
+    await _pointAnnotationManager!.create(PointAnnotationOptions(
         geometry: Point(
             coordinates: position
         ),
@@ -105,7 +110,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
       );
       final adjustedBearing = (bearing - _mapBearing + 360) % 360;
       _taxiMarker!.iconRotate = adjustedBearing;
-      _pointAnnotationManager.update(_taxiMarker!);
+      _pointAnnotationManager!.update(_taxiMarker!);
     }
   }
 
@@ -131,18 +136,37 @@ class _ClientNavigationState extends State<ClientNavigation> {
       bearing: 0,
       zoom: 17,
     );
-    return Scaffold(
-      body: MapWidget(
-        styleUri: MapboxStyles.STANDARD,
-        cameraOptions: cameraOptions,
-        onMapCreated: _onMapCreated,
-        onCameraChangeListener: _onCameraChangeListener,
-      ),
-      bottomSheet: ClientTripInfo(
-        distance: _distanceInKm,
-        originName: widget.travel.originName,
-        destinationName: widget.travel.destinationName,
-        taxiType: widget.travel.taxiType
+    return NetworkAlertTemplate(
+      alertBuilder: (context, status) => customNetworkAlert(context, status),
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        extendBody: true,
+        body: MapWidget(
+          styleUri: MapboxStyles.STANDARD,
+          cameraOptions: cameraOptions,
+          onMapCreated: _onMapCreated,
+          onCameraChangeListener: _onCameraChangeListener,
+        ),
+        // @Temporal: Just for demo, in this view, the ClientTripCompleted sheet will be reactive.
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            showModalBottomSheet(
+                context: context,
+                backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                isDismissible: false,
+                isScrollControlled: true,
+                showDragHandle: true,
+                builder: (context) => ClientTripCompleted(travel: widget.travel)
+            );
+          },
+          child: Icon(Icons.question_mark_outlined),
+        ),
+        bottomSheet: ClientTripInfo(
+          distance: _distanceInKm,
+          originName: widget.travel.originName,
+          destinationName: widget.travel.destinationName,
+          taxiType: widget.travel.taxiType
+        )
       )
     );
   }
