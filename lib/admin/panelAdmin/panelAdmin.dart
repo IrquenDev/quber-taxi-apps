@@ -447,14 +447,15 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                       ],
                     ),
                   ),
+                  SizedBox(height: 100),
 
-                  SizedBox(height: 20),
                 ],
               ),
             ),
           ),
         ],
       ),
+
     );
   }
 
