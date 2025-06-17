@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:quber_taxi/admin/panelAdmin/panelAdmin.dart';
 import 'package:quber_taxi/client-app/pages/home/home.dart';
 import 'package:quber_taxi/client-app/pages/home/search_destination.dart';
 import 'package:quber_taxi/client-app/pages/home/search_origin.dart';
@@ -17,7 +18,7 @@ import 'route_paths.dart';
 
 final GoRouter appRouter = GoRouter(
   // App start up route. You can change it for developing or testing, just remember to take it back in place.
-  initialLocation: isClientMode ? RoutePaths.clientHome : RoutePaths.driverHome,
+  initialLocation: isClientMode ? RoutePaths.clientHome : RoutePaths.clientHome,
   routes: [
     GoRoute(
       path: RoutePaths.clientHome,
@@ -106,6 +107,8 @@ final GoRouter appRouter = GoRouter(
           );
           return DriverNavigation(travel: travel);
         }
-    )
+    ),
+    GoRoute(path: RoutePaths.panelAdmin,
+    builder: (context, state) => const AdminSettingsPage())
   ]
 );

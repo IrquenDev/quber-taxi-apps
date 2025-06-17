@@ -18,4 +18,6 @@ class RoutePaths {
   static const String clientNavigation = '/client-navigation';
 
   static const String driverNavigation = '/driver-navigation';
+
+  static const String panelAdmin = '/panel-admin';
 }

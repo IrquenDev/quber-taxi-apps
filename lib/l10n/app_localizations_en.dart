@@ -1,3 +1,5 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -49,13 +51,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get quberPoints => 'Quber Points';
 
   @override
-  String get ubicationFailed => 'Your current location is outside the limits of Havana';
+  String get ubicationFailed =>
+      'Your current location is outside the limits of Havana';
 
   @override
   String get permissionsDenied => 'Location permission denied';
 
   @override
-  String get permissionDeniedPermanently => 'Location permission permanently denied';
+  String get permissionDeniedPermanently =>
+      'Location permission permanently denied';
 
   @override
   String get writeUbication => 'Enter a location...';
@@ -67,7 +71,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get actualUbication => 'Use my current location';
 
   @override
-  String get outLimits => 'Your current location is outside the limits of Havana';
+  String get outLimits =>
+      'Your current location is outside the limits of Havana';
 
   @override
   String get noResults => 'No results found';
@@ -107,4 +112,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get until => 'To: ';
+
+  @override
+  String get adminSettingsTitle => 'Ajustes del Administrador';
+
+  @override
+  String get pricesSectionTitle => 'Precios';
+
+  @override
+  String get driverCreditPercentage => 'Porciento de crédito para conductores:';
+
+  @override
+  String get tripPricePerKm => 'Precio de viaje por KM:';
+
+  @override
+  String get saveButtonPanel => 'Guardar';
+
+  @override
+  String get passwordsSectionTitle => 'Contraseñas';
+
+  @override
+  String get newPassword => 'Nueva contraseña:';
+
+  @override
+  String get confirmPassword => 'Confirme contraseña:';
+
+  @override
+  String get otherActionsTitle => 'Otras acciones';
+
+  @override
+  String get viewAllTrips => 'Ver todos los viajes';
+
+  @override
+  String get viewAllDrivers => 'Ver todos los conductores';
 }

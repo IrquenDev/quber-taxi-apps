@@ -345,55 +345,57 @@ class MaterialTheme {
     return theme(darkHighContrastScheme());
   }
 
-  ThemeData theme(ColorScheme colorScheme) => ThemeData(
-    useMaterial3: true,
-    brightness: colorScheme.brightness,
-    colorScheme: colorScheme,
-    textTheme: textTheme.apply(
-      bodyColor: colorScheme.onSurface,
-      displayColor: colorScheme.onSurface,
-    ),
-    scaffoldBackgroundColor: colorScheme.surface,
-    canvasColor: colorScheme.surface,
-    iconTheme: IconThemeData(
-        color: colorScheme.onSurface,
-        size: iconSize
-    ),
-    inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: colorScheme.surfaceContainerHighest,
-        contentPadding: dimensions.contentPadding,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(dimensions.borderRadius),
-          borderSide: BorderSide.none,
-        ),
-        hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
-        suffixIconColor: colorScheme.onSurface
-    ),
-    elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-            backgroundColor: colorScheme.primaryContainer,
-            disabledBackgroundColor: colorScheme.onSurface.withAlpha(32),
-            foregroundColor: colorScheme.onPrimaryContainer,
-            disabledForegroundColor: colorScheme.onSurface.withAlpha(94),
-            padding: dimensions.contentPadding,
-            side: BorderSide.none,
-            elevation: dimensions.elevation
-        )
-    ),
-    outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          backgroundColor: colorScheme.primaryContainer,
-          disabledBackgroundColor: colorScheme.onSurface.withAlpha(32),
-          foregroundColor: colorScheme.onPrimaryContainer,
-          disabledForegroundColor: colorScheme.onSurface.withAlpha(96),
-          padding: dimensions.contentPadding,
-          side: BorderSide.none,
-          elevation: dimensions.elevation,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(dimensions.borderRadius * 0.5))),
-        )
-    ),
-    dividerColor: colorScheme.outlineVariant,
-    extensions: <ThemeExtension<dynamic>>[dimensions]
-  );
+  ThemeData theme(ColorScheme colorScheme) =>
+      ThemeData(
+          useMaterial3: true,
+          brightness: colorScheme.brightness,
+          colorScheme: colorScheme,
+          textTheme: textTheme.apply(
+            bodyColor: colorScheme.onSurface,
+            displayColor: colorScheme.onSurface,
+          ),
+          scaffoldBackgroundColor: colorScheme.surface,
+          canvasColor: colorScheme.surface,
+          iconTheme: IconThemeData(
+              color: colorScheme.onSurface,
+              size: iconSize
+          ),
+          inputDecorationTheme: InputDecorationTheme(
+              filled: true,
+              fillColor: colorScheme.surfaceContainerHighest,
+              contentPadding: dimensions.contentPadding,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(dimensions.borderRadius),
+                borderSide: BorderSide.none,
+              ),
+              hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
+              suffixIconColor: colorScheme.onSurface
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: colorScheme.primaryContainer,
+                  disabledBackgroundColor: colorScheme.onSurface.withAlpha(32),
+                  foregroundColor: colorScheme.onPrimaryContainer,
+                  disabledForegroundColor: colorScheme.onSurface.withAlpha(94),
+                  padding: dimensions.contentPadding,
+                  side: BorderSide.none,
+                  elevation: dimensions.elevation
+              )
+          ),
+          outlinedButtonTheme: OutlinedButtonThemeData(
+              style: OutlinedButton.styleFrom(
+                backgroundColor: colorScheme.primaryContainer,
+                disabledBackgroundColor: colorScheme.onSurface.withAlpha(32),
+                foregroundColor: colorScheme.onPrimaryContainer,
+                disabledForegroundColor: colorScheme.onSurface.withAlpha(96),
+                padding: dimensions.contentPadding,
+                side: BorderSide.none,
+                elevation: dimensions.elevation,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(
+                    Radius.circular(dimensions.borderRadius * 0.5))),
+              )
+          ),
+          dividerColor: colorScheme.outlineVariant,
+          extensions: <ThemeExtension<dynamic>>[dimensions]
+      );
 }

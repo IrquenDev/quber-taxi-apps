@@ -43,5 +43,19 @@
 
   "people": "Personas",
   "from": "Desde: ",
-  "until": "Hasta: "
+  "until": "Hasta: ",
+
+  "adminSettingsTitle": "Ajustes del Administrador",
+  "pricesSectionTitle": "Precios",
+  "driverCreditPercentage": "Porciento de crédito para conductores:",
+  "tripPricePerKm": "Precio de viaje por KM:",
+  "saveButtonPanel": "Guardar",
+  "passwordsSectionTitle": "Contraseñas",
+  "newPassword": "Nueva contraseña:",
+  "confirmPassword": "Confirme contraseña:",
+  "otherActionsTitle": "Otras acciones",
+  "viewAllTrips": "Ver todos los viajes",
+  "viewAllDrivers": "Ver todos los conductores"
+
+
 }
