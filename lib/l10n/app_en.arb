@@ -43,5 +43,18 @@
 
   "people": "people",
   "from": "From: ",
-  "until": "To: "
+  "until": "To: ",
+
+  "welcomeTitle": "Welcome\nto Quber",
+  "enterEmail": "Enter your email",
+  "enterPassword": "Enter your password",
+  "invalidEmail": "Enter a valid email",
+  "requiredField": "Required field",
+  "requiredEmail": "Please enter your email",
+  "loginButton": "Log in",
+  "forgotPassword": "Forgot password",
+  "createAccountLogin": "Create account",
+  "recoverPassword": "Recover Password",
+  "recoverPasswordDescription": "Please enter your email address. We’ll send you a link to reset your password.",
+  "sendButton": "Send"
 }

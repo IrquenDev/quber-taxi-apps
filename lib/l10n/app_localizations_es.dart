@@ -1,3 +1,5 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -49,13 +51,15 @@ class AppLocalizationsEs extends AppLocalizations {
   String get quberPoints => 'Puntos Quber';
 
   @override
-  String get ubicationFailed => 'Su ubicación actual está fuera de los límites de La Habana';
+  String get ubicationFailed =>
+      'Su ubicación actual está fuera de los límites de La Habana';
 
   @override
   String get permissionsDenied => 'Permiso de ubicación denegado';
 
   @override
-  String get permissionDeniedPermanently => 'Permiso de ubicación denegado permanentemente';
+  String get permissionDeniedPermanently =>
+      'Permiso de ubicación denegado permanentemente';
 
   @override
   String get writeUbication => 'Escriba una ubicación...';
@@ -67,7 +71,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get actualUbication => 'Usar mi ubicación actual';
 
   @override
-  String get outLimits => 'Su ubicación actual está fuera de los límites de La Habana';
+  String get outLimits =>
+      'Su ubicación actual está fuera de los límites de La Habana';
 
   @override
   String get noResults => 'Sin resultados';
@@ -107,4 +112,41 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get until => 'Hasta: ';
+
+  @override
+  String get welcomeTitle => 'Bienvenido\na Quber';
+
+  @override
+  String get enterEmail => 'Introduzca su correo';
+
+  @override
+  String get enterPassword => 'Introduzca su contraseña';
+
+  @override
+  String get invalidEmail => 'Ingrese un correo válido';
+
+  @override
+  String get requiredField => 'Campo requerido';
+
+  @override
+  String get requiredEmail => 'Por favor ingrese su correo';
+
+  @override
+  String get loginButton => 'Iniciar sesión';
+
+  @override
+  String get forgotPassword => 'Olvidé mi contraseña';
+
+  @override
+  String get createAccountLogin => 'Crear cuenta';
+
+  @override
+  String get recoverPassword => 'Recuperar Contraseña';
+
+  @override
+  String get recoverPasswordDescription =>
+      'Por favor, introduzca su correo electrónico. Le enviaremos un enlace para restablecer su contraseña.';
+
+  @override
+  String get sendButton => 'Enviar';
 }
