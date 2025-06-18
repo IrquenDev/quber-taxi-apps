@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fusion/flutter_fusion.dart' show CircleStack;
+import 'package:quber_taxi/common/models/travel.dart';
 
 class DriverTripCompleted extends StatefulWidget {
-  const DriverTripCompleted({super.key});
+
+  final Travel travel;
+  final int duration;
+  final num distance;
+  const DriverTripCompleted({super.key, required this.travel, required this.duration, required this.distance});
 
   @override
   State<DriverTripCompleted> createState() => _DriverTripCompletedState();
@@ -43,7 +48,9 @@ class _DriverTripCompletedState extends State<DriverTripCompleted> {
                                 // Title
                                 Text(
                                     'Viaje Finalizado',
-                                    style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)
+                                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                        fontWeight: FontWeight.bold
+                                    )
                                 ),
                                 // Timestamp
                                 Padding(
@@ -54,7 +61,9 @@ class _DriverTripCompletedState extends State<DriverTripCompleted> {
                                         children: [
                                           Text(
                                               'Fecha',
-                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)
+                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                  fontWeight: FontWeight.bold
+                                              )
                                           ),
                                           Text('Martes, 20 de mayo de 2025'),
                                         ]
@@ -68,11 +77,20 @@ class _DriverTripCompletedState extends State<DriverTripCompleted> {
                               spacing: 8.0,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const TripDetailRow(label: 'Precio del Viaje', text: '1150 CUP'),
-                                const TripDetailRow(label: 'Tiempo del Recorrido', text: '35 minutos'),
-                                const TripDetailRow(label: 'Distancia Recorrida', text: '50 Km'),
-                                const TripDetailRow(label: 'Origen', text: 'Calle 25 entre Paseo y 2. Vedado'),
-                                const TripDetailRow(label: 'Destino', text: 'Calle 31 entre 43 y 45. Playa'),
+                                TripDetailRow(
+                                    label: 'Precio del Viaje',
+                                    text: '${(widget.distance * 100).toStringAsFixed(0)} CUP'
+                                ),
+                                TripDetailRow(
+                                    label: 'Tiempo Transcurrido',
+                                    text: '${widget.duration.toStringAsFixed(0)} minutos'
+                                ),
+                                TripDetailRow(
+                                    label: 'Distancia Recorrida',
+                                    text: '${widget.distance.toStringAsFixed(0)} Km'
+                                ),
+                                TripDetailRow(label: 'Origen', text: widget.travel.originName),
+                                TripDetailRow(label: 'Destino', text: widget.travel.destinationName),
                                 const TripDetailRow(label: 'Comisión para Quber', text: '90 CUP'),
                               ]
                           )

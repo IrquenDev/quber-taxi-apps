@@ -57,4 +57,9 @@
   "recoverPassword": "Recover Password",
   "recoverPasswordDescription": "Please enter your email address. We’ll send you a link to reset your password.",
   "sendButton": "Send"
+  "noReviews": "No driver reviews yet",
+  "reviewSctHeader": "Your opinion helps us improve",
+  "reviewTooltip": "(Rate the trip from 1 to 5 stars)",
+  "reviewTextHint": "Help us improve by leaving your opinion",
+  "tripCompleted": "Trip completed"
 }

@@ -45,7 +45,6 @@
   "from": "Desde: ",
   "until": "Hasta: ",
 
-
   "welcomeTitle": "Bienvenido\na Quber",
   "enterEmail": "Introduzca su correo",
   "enterPassword": "Introduzca su contraseña",
@@ -59,5 +58,9 @@
   "recoverPasswordDescription": "Por favor, introduzca su correo electrónico. Le enviaremos un enlace para restablecer su contraseña.",
   "sendButton": "Enviar"
 
-
+  "noReviews": "Aún sin reseñas del conductor",
+  "reviewSctHeader": "Tu opinión nos ayuda a mejorar",
+  "reviewTooltip": "(Califica el viaje de 1 a 5 estrellas)",
+  "reviewTextHint": "Ayúdanos a mejorar dejando tu opinión",
+  "tripCompleted": "Viaje Finalizado"
 }

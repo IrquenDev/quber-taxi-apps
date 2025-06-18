@@ -149,4 +149,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sendButton => 'Send';
+
+  String get noReviews => 'No driver reviews yet';
+
+  @override
+  String get reviewSctHeader => 'Your opinion helps us improve';
+
+  @override
+  String get reviewTooltip => '(Rate the trip from 1 to 5 stars)';
+
+  @override
+  String get reviewTextHint => 'Help us improve by leaving your opinion';
+
+  @override
+  String get tripCompleted => 'Trip completed';
 }
