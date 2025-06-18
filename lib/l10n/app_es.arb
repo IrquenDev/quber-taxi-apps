@@ -45,6 +45,19 @@
   "from": "Desde: ",
   "until": "Hasta: ",
 
+  "welcomeTitle": "Bienvenido\na Quber",
+  "enterEmail": "Introduzca su correo",
+  "enterPassword": "Introduzca su contraseña",
+  "invalidEmail": "Ingrese un correo válido",
+  "requiredField": "Campo requerido",
+  "requiredEmail": "Por favor ingrese su correo",
+  "loginButton": "Iniciar sesión",
+  "forgotPassword": "Olvidé mi contraseña",
+  "createAccountLogin": "Crear cuenta",
+  "recoverPassword": "Recuperar Contraseña",
+  "recoverPasswordDescription": "Por favor, introduzca su correo electrónico. Le enviaremos un enlace para restablecer su contraseña.",
+  "sendButton": "Enviar"
+
   "noReviews": "Aún sin reseñas del conductor",
   "reviewSctHeader": "Tu opinión nos ayuda a mejorar",
   "reviewTooltip": "(Califica el viaje de 1 a 5 estrellas)",

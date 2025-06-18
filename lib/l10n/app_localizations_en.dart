@@ -1,3 +1,5 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -49,13 +51,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get quberPoints => 'Quber Points';
 
   @override
-  String get ubicationFailed => 'Your current location is outside the limits of Havana';
+  String get ubicationFailed =>
+      'Your current location is outside the limits of Havana';
 
   @override
   String get permissionsDenied => 'Location permission denied';
 
   @override
-  String get permissionDeniedPermanently => 'Location permission permanently denied';
+  String get permissionDeniedPermanently =>
+      'Location permission permanently denied';
 
   @override
   String get writeUbication => 'Enter a location...';
@@ -67,7 +71,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get actualUbication => 'Use my current location';
 
   @override
-  String get outLimits => 'Your current location is outside the limits of Havana';
+  String get outLimits =>
+      'Your current location is outside the limits of Havana';
 
   @override
   String get noResults => 'No results found';
@@ -109,6 +114,42 @@ class AppLocalizationsEn extends AppLocalizations {
   String get until => 'To: ';
 
   @override
+  String get welcomeTitle => 'Welcome\nto Quber';
+
+  @override
+  String get enterEmail => 'Enter your email';
+
+  @override
+  String get enterPassword => 'Enter your password';
+
+  @override
+  String get invalidEmail => 'Enter a valid email';
+
+  @override
+  String get requiredField => 'Required field';
+
+  @override
+  String get requiredEmail => 'Please enter your email';
+
+  @override
+  String get loginButton => 'Log in';
+
+  @override
+  String get forgotPassword => 'Forgot password';
+
+  @override
+  String get createAccountLogin => 'Create account';
+
+  @override
+  String get recoverPassword => 'Recover Password';
+
+  @override
+  String get recoverPasswordDescription =>
+      'Please enter your email address. We’ll send you a link to reset your password.';
+
+  @override
+  String get sendButton => 'Send';
+
   String get noReviews => 'No driver reviews yet';
 
   @override

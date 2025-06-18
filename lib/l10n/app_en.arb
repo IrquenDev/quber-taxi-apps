@@ -45,6 +45,18 @@
   "from": "From: ",
   "until": "To: ",
 
+  "welcomeTitle": "Welcome\nto Quber",
+  "enterEmail": "Enter your email",
+  "enterPassword": "Enter your password",
+  "invalidEmail": "Enter a valid email",
+  "requiredField": "Required field",
+  "requiredEmail": "Please enter your email",
+  "loginButton": "Log in",
+  "forgotPassword": "Forgot password",
+  "createAccountLogin": "Create account",
+  "recoverPassword": "Recover Password",
+  "recoverPasswordDescription": "Please enter your email address. We’ll send you a link to reset your password.",
+  "sendButton": "Send"
   "noReviews": "No driver reviews yet",
   "reviewSctHeader": "Your opinion helps us improve",
   "reviewTooltip": "(Rate the trip from 1 to 5 stars)",
