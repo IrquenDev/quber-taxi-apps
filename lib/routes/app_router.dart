@@ -9,6 +9,7 @@ import 'package:quber_taxi/common/models/driver.dart';
 import 'package:quber_taxi/common/models/review.dart';
 import 'package:quber_taxi/common/models/taxi.dart';
 import 'package:quber_taxi/driver-app/pages/navigation/driver_navigation.dart';
+import 'package:quber_taxi/driver-app/pages/create_account/verification_page.dart';
 import 'package:quber_taxi/client-app/pages/search_driver/search_driver.dart';
 import 'package:quber_taxi/client-app/pages/track_driver/track_driver.dart';
 import 'package:quber_taxi/common/models/travel.dart';
@@ -21,7 +22,7 @@ import 'route_paths.dart';
 
 final GoRouter appRouter = GoRouter(
   // App start up route. You can change it for developing or testing, just remember to take it back in place.
-  initialLocation: isClientMode ? RoutePaths.clientHome : RoutePaths.driverHome,
+  initialLocation: isClientMode ? RoutePaths.clientHome : RoutePaths.driverCreateAccount,
   routes: [
     GoRoute(
       path: RoutePaths.clientHome,
@@ -122,6 +123,10 @@ final GoRouter appRouter = GoRouter(
           );
           return DriverNavigation(travel: travel);
         }
+    ),
+    GoRoute(
+        path: RoutePaths.driverCreateAccount,
+        builder: (context, state) => const VerificationIdentityPage()
     )
   ]
 );
