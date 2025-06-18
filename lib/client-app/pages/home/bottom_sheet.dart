@@ -34,7 +34,8 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
   List<num>? _originCoords;
   String? _destinationName;
   int _passengerCount = 1;
-  TaxiType _selectedVehicle = TaxiType.standard;
+  TaxiType _selectedVehicle = TaxiType.mdpiStandard;
+  final List<TaxiType> _taxiTypeList = [TaxiType.mdpiStandard, TaxiType.mdpiFamiliar, TaxiType.mdpiComfort];
   bool _hasPets = false;
   num? _minDistance, _maxDistance;
   num? _minPrice, _maxPrice;
@@ -145,7 +146,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
               // Available taxis list view
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: List.generate(TaxiType.values.length, (index) => Flexible(child: _vehicleItemBuilder(index))),
+                children: List.generate(_taxiTypeList.length, (index) => Flexible(child: _vehicleItemBuilder(index))),
               ),
               // Seats selection
               Row(
@@ -257,7 +258,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
 
   Widget _vehicleItemBuilder(int index) {
 
-    final vehicle = TaxiType.values[index];
+    final vehicle = _taxiTypeList[index];
     final isSelected = _selectedVehicle == vehicle;
     final dimensions = Theme.of(context).extension<DimensionExtension>()!;
 

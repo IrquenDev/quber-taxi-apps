@@ -1,5 +1,3 @@
-// ignore: unused_import
-import 'package:intl/intl.dart' as intl;
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -51,15 +49,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get quberPoints => 'Quber Points';
 
   @override
-  String get ubicationFailed =>
-      'Your current location is outside the limits of Havana';
+  String get ubicationFailed => 'Your current location is outside the limits of Havana';
 
   @override
   String get permissionsDenied => 'Location permission denied';
 
   @override
-  String get permissionDeniedPermanently =>
-      'Location permission permanently denied';
+  String get permissionDeniedPermanently => 'Location permission permanently denied';
 
   @override
   String get writeUbication => 'Enter a location...';
@@ -71,8 +67,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get actualUbication => 'Use my current location';
 
   @override
-  String get outLimits =>
-      'Your current location is outside the limits of Havana';
+  String get outLimits => 'Your current location is outside the limits of Havana';
 
   @override
   String get noResults => 'No results found';
@@ -114,6 +109,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get until => 'To: ';
 
   @override
+
   String get identityVerify => 'Identity Verification';
 
   @override
@@ -163,4 +159,5 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get passSecurity =>
       'This step is part of our verification system to ensure the safety of all users.';
+
 }
