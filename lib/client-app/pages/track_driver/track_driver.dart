@@ -93,7 +93,7 @@ class _TrackDriverState extends State<TrackDriver> {
     final center = Point(coordinates: Position(originCoords[0], originCoords[1]));
 
     return NetworkAlertTemplate(
-      alertBuilder: (context, status) => customNetworkAlert(context, status, true),
+      alertBuilder: (_, status) => CustomNetworkAlert(status: status, useTopSafeArea: true),
       alertPosition: Alignment.topCenter,
       child: MapWidget(
         styleUri: MapboxStyles.STANDARD,

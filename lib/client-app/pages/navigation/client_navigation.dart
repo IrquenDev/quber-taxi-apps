@@ -155,7 +155,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
       zoom: 17,
     );
     return NetworkAlertTemplate(
-      alertBuilder: (context, status) => SafeArea(top: true, child: customNetworkAlert(context, status)),
+        alertBuilder: (_, status) => CustomNetworkAlert(status: status, useTopSafeArea: true),
       alertPosition: Alignment.topCenter,
       child: Scaffold(
         resizeToAvoidBottomInset: true,

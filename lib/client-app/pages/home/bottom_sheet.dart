@@ -78,7 +78,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final isConnected = NetworkScope.of(context).value == ConnectionStatus.online;
+    final isConnected = NetworkScope.statusOf(context) == ConnectionStatus.online;
     return Padding(
         padding: EdgeInsets.only(left: 16.0, right: 16.0, bottom: 32.0),
         child: Column(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/services/travel_service.dart';
 import 'package:quber_taxi/driver-app/pages/home/trip_card.dart';
@@ -30,7 +31,7 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
 
   Future<void> _refreshTravels() async {
     /// TODO("yapmDev": Static params)
-    final newTravels = await travelService.findAvailableTravels(4, TaxiType.mdpiFamiliar);
+    final newTravels = await travelService.findAvailableTravels(4, TaxiType.mdpiStandard);
     if(newTravels.isEmpty) {
       if(_sheetController.isAttached){
         _sheetController.jumpTo(0.15);
@@ -70,6 +71,7 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
   @override
   Widget build(BuildContext context) {
     final dimensions = Theme.of(context).extension<DimensionExtension>()!;
+    final isConnected = NetworkScope.statusOf(context) == ConnectionStatus.online;
     return DraggableScrollableSheet(
       controller: _sheetController,
       initialChildSize: 0.15,
@@ -101,7 +103,8 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
                                   : Icons.keyboard_double_arrow_down
                               )
                           ),
-                          Text(AppLocalizations.of(context)!.selectTravel, style: Theme.of(context).textTheme.titleMedium)
+                          Text(AppLocalizations.of(context)!.selectTravel, style: Theme.of(context).textTheme
+                              .titleMedium)
                         ]
                     )
                   )
@@ -146,7 +149,7 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
                                             IconButton(
                                                 icon: const Icon(Icons.refresh),
                                                 tooltip: AppLocalizations.of(context)!.updateTravel,
-                                                onPressed: _refreshTravels
+                                                onPressed: isConnected ? _refreshTravels : null
                                             ) : ghostContainer
                                           ]
                                       ),
