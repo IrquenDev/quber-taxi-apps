@@ -499,6 +499,48 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Este paso es parte de nuestro sistema de verificación para garantizar la seguridad de todos los usuarios.'**
   String get passSecurity;
+
+  /// No description provided for @driverInfoTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Información del Conductor'**
+  String get driverInfoTitle;
+
+  /// No description provided for @averageRating.
+  ///
+  /// In es, this message translates to:
+  /// **'Valoración promedio'**
+  String get averageRating;
+
+  /// No description provided for @vehiclePlate.
+  ///
+  /// In es, this message translates to:
+  /// **'Chapa del vehículo'**
+  String get vehiclePlate;
+
+  /// No description provided for @seatNumber.
+  ///
+  /// In es, this message translates to:
+  /// **'Número de asientos'**
+  String get seatNumber;
+
+  /// No description provided for @vehicleType.
+  ///
+  /// In es, this message translates to:
+  /// **'Tipo de vehículo'**
+  String get vehicleType;
+
+  /// No description provided for @acceptButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Aceptar'**
+  String get acceptButton;
+
+  /// No description provided for @familyVehicle.
+  ///
+  /// In es, this message translates to:
+  /// **'Familiar'**
+  String get familyVehicle;
 }
 
 class _AppLocalizationsDelegate

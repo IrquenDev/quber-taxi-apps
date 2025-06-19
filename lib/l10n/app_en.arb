@@ -80,5 +80,13 @@
 
     "thanks": "Thank you for confirming your identity.",
     "successConfirm": "We have successfully confirmed your identity.",
-    "passSecurity": "This step is part of our verification system to ensure the safety of all users."
+    "passSecurity": "This step is part of our verification system to ensure the safety of all users.",
+
+    "driverInfoTitle": "Driver Information",
+    "averageRating": "Average Rating",
+    "vehiclePlate": "Vehicle Plate",
+    "seatNumber": "Number of Seats",
+    "vehicleType": "Vehicle Type",
+    "acceptButton": "Accept",
+    "familyVehicle": "Family"
 }

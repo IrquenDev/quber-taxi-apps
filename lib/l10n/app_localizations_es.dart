@@ -216,4 +216,25 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get passSecurity =>
       'Este paso es parte de nuestro sistema de verificación para garantizar la seguridad de todos los usuarios.';
+
+  @override
+  String get driverInfoTitle => 'Información del Conductor';
+
+  @override
+  String get averageRating => 'Valoración promedio';
+
+  @override
+  String get vehiclePlate => 'Chapa del vehículo';
+
+  @override
+  String get seatNumber => 'Número de asientos';
+
+  @override
+  String get vehicleType => 'Tipo de vehículo';
+
+  @override
+  String get acceptButton => 'Aceptar';
+
+  @override
+  String get familyVehicle => 'Familiar';
 }
