@@ -26,4 +26,6 @@ class RoutePaths {
   static const String confirmSelfie = '/confirm-selfie';
 
   static const String createAccount = '/create-acount';
+
+  static const String infoDriver = '/info-driver';
 }
