@@ -1,3 +1,5 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -49,13 +51,15 @@ class AppLocalizationsEs extends AppLocalizations {
   String get quberPoints => 'Puntos Quber';
 
   @override
-  String get ubicationFailed => 'Su ubicación actual está fuera de los límites de La Habana';
+  String get ubicationFailed =>
+      'Su ubicación actual está fuera de los límites de La Habana';
 
   @override
   String get permissionsDenied => 'Permiso de ubicación denegado';
 
   @override
-  String get permissionDeniedPermanently => 'Permiso de ubicación denegado permanentemente';
+  String get permissionDeniedPermanently =>
+      'Permiso de ubicación denegado permanentemente';
 
   @override
   String get writeUbication => 'Escriba una ubicación...';
@@ -67,7 +71,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get actualUbication => 'Usar mi ubicación actual';
 
   @override
-  String get outLimits => 'Su ubicación actual está fuera de los límites de La Habana';
+  String get outLimits =>
+      'Su ubicación actual está fuera de los límites de La Habana';
 
   @override
   String get noResults => 'Sin resultados';
@@ -139,7 +144,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get recoverPassword => 'Recuperar Contraseña';
 
   @override
-  String get recoverPasswordDescription => 'Por favor, introduzca su correo electrónico. Le enviaremos un enlace para restablecer su contraseña.';
+  String get recoverPasswordDescription =>
+      'Por favor, introduzca su correo electrónico. Le enviaremos un enlace para restablecer su contraseña.';
 
   @override
   String get sendButton => 'Enviar';
@@ -158,4 +164,56 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get tripCompleted => 'Viaje Finalizado';
+
+  @override
+  String get identityVerify => 'Verificación de identidad';
+
+  @override
+  String get confirmIdentity => 'Necesitamos confirmar su identidad.';
+
+  @override
+  String get noBot =>
+      'Por favor, toma una selfie para confirmar que no eres un bot.';
+
+  @override
+  String get noUsedImage =>
+      'No usaremos esta imagen como foto de perfil ni se mostrará públicamente.';
+
+  @override
+  String get verificationUser =>
+      'Este paso es parte de nuestro sistema de verificación para garantizar la seguridad de todos los usuarios.';
+
+  @override
+  String get takeSelfie => 'Tomar Selfie';
+
+  @override
+  String get createAccount => 'Crear Cuenta';
+
+  @override
+  String get name => 'Nombre:';
+
+  @override
+  String get nameAndLastName => 'Introduzca su nombre y apellidos';
+
+  @override
+  String get phoneNumber => 'Núm. teléfono:';
+
+  @override
+  String get password => 'Contraseña:';
+
+  @override
+  String get passwordConfirm => 'Confirmar contraseña:';
+
+  @override
+  String get endRegistration => 'Finalizar Registro';
+
+  @override
+  String get thanks => 'Gracias por confirmar su identidad.';
+
+  @override
+  String get successConfirm => 'Hemos confirmado su identidad con éxito.';
+
+  @override
+  String get passSecurity =>
+      'Este paso es parte de nuestro sistema de verificación para garantizar la seguridad de todos los usuarios.';
 }

@@ -1,3 +1,5 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -49,13 +51,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get quberPoints => 'Quber Points';
 
   @override
-  String get ubicationFailed => 'Your current location is outside the limits of Havana';
+  String get ubicationFailed =>
+      'Your current location is outside the limits of Havana';
 
   @override
   String get permissionsDenied => 'Location permission denied';
 
   @override
-  String get permissionDeniedPermanently => 'Location permission permanently denied';
+  String get permissionDeniedPermanently =>
+      'Location permission permanently denied';
 
   @override
   String get writeUbication => 'Enter a location...';
@@ -67,7 +71,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get actualUbication => 'Use my current location';
 
   @override
-  String get outLimits => 'Your current location is outside the limits of Havana';
+  String get outLimits =>
+      'Your current location is outside the limits of Havana';
 
   @override
   String get noResults => 'No results found';
@@ -139,7 +144,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recoverPassword => 'Recover Password';
 
   @override
-  String get recoverPasswordDescription => 'Please enter your email address. We’ll send you a link to reset your password.';
+  String get recoverPasswordDescription =>
+      'Please enter your email address. We’ll send you a link to reset your password.';
 
   @override
   String get sendButton => 'Send';
@@ -158,4 +164,55 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tripCompleted => 'Trip completed';
+
+  @override
+  String get identityVerify => 'Identity Verification';
+
+  @override
+  String get confirmIdentity => 'We need to confirm your identity.';
+
+  @override
+  String get noBot => 'Please take a selfie to confirm you are not a bot.';
+
+  @override
+  String get noUsedImage =>
+      'We will not use this image as a profile picture nor will it be displayed publicly.';
+
+  @override
+  String get verificationUser =>
+      'This step is part of our verification system to ensure the safety of all users.';
+
+  @override
+  String get takeSelfie => 'Take Selfie';
+
+  @override
+  String get createAccount => 'Create Account';
+
+  @override
+  String get name => 'Name:';
+
+  @override
+  String get nameAndLastName => 'Enter your first and last name';
+
+  @override
+  String get phoneNumber => 'Phone Number:';
+
+  @override
+  String get password => 'Password:';
+
+  @override
+  String get passwordConfirm => 'Confirm Password:';
+
+  @override
+  String get endRegistration => 'Complete Registration';
+
+  @override
+  String get thanks => 'Thank you for confirming your identity.';
+
+  @override
+  String get successConfirm => 'We have successfully confirmed your identity.';
+
+  @override
+  String get passSecurity =>
+      'This step is part of our verification system to ensure the safety of all users.';
 }
