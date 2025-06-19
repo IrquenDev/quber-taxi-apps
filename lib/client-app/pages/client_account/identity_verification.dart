@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:quber_taxi/client-app/pages/clientAccount/confirmSelfie.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
+
+import 'confirm_selfie.dart';
 
 
 class IdentityVerificationPage extends StatelessWidget {
