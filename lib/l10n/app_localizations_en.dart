@@ -150,6 +150,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get sendButton => 'Send';
 
+  @override
   String get noReviews => 'No driver reviews yet';
 
   @override

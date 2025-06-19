@@ -301,7 +301,7 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Hasta: '**
   String get until;
-    
+
   /// No description provided for @welcomeTitle.
   ///
   /// In es, this message translates to:

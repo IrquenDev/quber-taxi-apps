@@ -149,7 +149,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get sendButton => 'Enviar';
-  
+
   @override
   String get noReviews => 'Aún sin reseñas del conductor';
 
@@ -164,5 +164,4 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get tripCompleted => 'Viaje Finalizado';
-
 }
