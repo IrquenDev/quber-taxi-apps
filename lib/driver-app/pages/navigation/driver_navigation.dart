@@ -59,7 +59,7 @@ class _DriverNavigationState extends State<DriverNavigation> {
 
   Future<void> _loadHavanaGeoJson() async {
     final munName= Municipalities.resolveGeoJsonRef(widget.travel.destinationName);
-    _municipalityPolygon = await loadGeoJsonPolygon(munName);
+    _municipalityPolygon = await loadGeoJsonPolygon(munName!);
   }
 
   void _startTrackingDistance() {

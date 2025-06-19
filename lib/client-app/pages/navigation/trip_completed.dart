@@ -51,7 +51,7 @@ class _ClientTripCompletedState extends State<ClientTripCompleted> {
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
-    final isConnected = NetworkScope.of(context).value == ConnectionStatus.online;
+    final isConnected = NetworkScope.statusOf(context) == ConnectionStatus.online;
     return Container(
       color: Theme.of(context).colorScheme.surface,
       child: SingleChildScrollView(

@@ -16,7 +16,7 @@ class TripCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isConnected = NetworkScope.of(context).value == ConnectionStatus.online;
+    final isConnected = NetworkScope.statusOf(context) == ConnectionStatus.online;
     final dimensions = Theme.of(context).extension<DimensionExtension>()!;
     return Card(
       elevation: dimensions.elevation,

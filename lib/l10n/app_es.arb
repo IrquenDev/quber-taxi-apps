@@ -56,7 +56,7 @@
   "createAccountLogin": "Crear cuenta",
   "recoverPassword": "Recuperar Contraseña",
   "recoverPasswordDescription": "Por favor, introduzca su correo electrónico. Le enviaremos un enlace para restablecer su contraseña.",
-  "sendButton": "Enviar"
+  "sendButton": "Enviar",
 
   "noReviews": "Aún sin reseñas del conductor",
   "reviewSctHeader": "Tu opinión nos ayuda a mejorar",
