@@ -177,7 +177,7 @@ class _DriverHomeState extends State<DriverHome> {
       zoom: 17,
     );
     return NetworkAlertTemplate(
-      alertBuilder: (context, status) => customNetworkAlert(context, status, true),
+      alertBuilder: (_, status) => CustomNetworkAlert(status: status, useTopSafeArea: true),
       alertPosition: Alignment.topCenter,
       child: Material(
         child: Stack(

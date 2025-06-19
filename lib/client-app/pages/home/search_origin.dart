@@ -60,7 +60,7 @@ class _SearchOriginState extends State<SearchOrigin> {
   @override
   Widget build(BuildContext context) {
     return NetworkAlertTemplate(
-      alertBuilder: (context, status) => customNetworkAlert(context, status),
+      alertBuilder: (_, status) => CustomNetworkAlert(status: status),
       child: Scaffold(
         appBar: AppBar(
             title: TextField(
