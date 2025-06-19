@@ -299,7 +299,9 @@ abstract class AppLocalizations {
   /// **'Hasta: '**
   String get until;
 
+
   /// No description provided for @identityVerify.
+
   ///
   /// In es, this message translates to:
   /// **'Verificación de identidad'**

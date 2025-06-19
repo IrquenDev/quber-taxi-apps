@@ -110,6 +110,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
 
+
   String get identityVerify => 'Verificación de identidad';
 
   @override
