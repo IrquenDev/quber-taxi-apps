@@ -17,6 +17,9 @@ import 'package:quber_taxi/driver-app/pages/home/home.dart';
 import 'package:quber_taxi/enums/taxi_type.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
 import 'package:quber_taxi/util/runtime.dart';
+import '../client-app/pages/client_account/confirm_selfie.dart';
+import '../client-app/pages/client_account/create_account.dart';
+import '../client-app/pages/client_account/identity_verification.dart';
 import 'route_paths.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -122,6 +125,18 @@ final GoRouter appRouter = GoRouter(
           );
           return DriverNavigation(travel: travel);
         }
-    )
+    ),
+
+
+    GoRoute(path: RoutePaths.identityVerification,
+        builder: (context, state) => const IdentityVerificationPage()
+    ),
+
+    GoRoute(path: RoutePaths.confirmSelfie,
+        builder: (context, state) => const ConfirmSelfiePage()
+    ),
+
+    GoRoute(path: RoutePaths.createAccount,
+        builder: (context, state) => CreateClientAccountPage())
   ]
 );

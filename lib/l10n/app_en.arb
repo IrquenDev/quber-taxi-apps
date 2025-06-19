@@ -61,5 +61,24 @@
   "reviewSctHeader": "Your opinion helps us improve",
   "reviewTooltip": "(Rate the trip from 1 to 5 stars)",
   "reviewTextHint": "Help us improve by leaving your opinion",
-  "tripCompleted": "Trip completed"
+  "tripCompleted": "Trip completed",
+
+   "identityVerify": "Identity Verification",
+    "confirmIdentity": "We need to confirm your identity.",
+    "noBot": "Please take a selfie to confirm you are not a bot.",
+    "noUsedImage": "We will not use this image as a profile picture nor will it be displayed publicly.",
+    "verificationUser": "This step is part of our verification system to ensure the safety of all users.",
+    "takeSelfie": "Take Selfie",
+
+    "createAccount": "Create Account",
+    "name": "Name:",
+    "nameAndLastName": "Enter your first and last name",
+    "phoneNumber": "Phone Number:",
+    "password": "Password:",
+    "passwordConfirm": "Confirm Password:",
+    "endRegistration": "Complete Registration",
+
+    "thanks": "Thank you for confirming your identity.",
+    "successConfirm": "We have successfully confirmed your identity.",
+    "passSecurity": "This step is part of our verification system to ensure the safety of all users."
 }
