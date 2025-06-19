@@ -20,6 +20,7 @@ import 'package:quber_taxi/util/runtime.dart';
 import '../client-app/pages/client_account/confirm_selfie.dart';
 import '../client-app/pages/client_account/create_account.dart';
 import '../client-app/pages/client_account/identity_verification.dart';
+import '../driver-app/pages/info-driver/info_driver.dart';
 import 'route_paths.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -137,6 +138,10 @@ final GoRouter appRouter = GoRouter(
     ),
 
     GoRoute(path: RoutePaths.createAccount,
-        builder: (context, state) => CreateClientAccountPage())
+        builder: (context, state) => CreateClientAccountPage()),
+
+    GoRoute(path: RoutePaths.infoDriver,
+        builder: (context, state) => const DriverInfoPage())
+
   ]
 );
