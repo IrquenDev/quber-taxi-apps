@@ -607,6 +607,84 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Ver todos los conductores'**
   String get viewAllDrivers;
+
+  /// No description provided for @nameDriver.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre:'**
+  String get nameDriver;
+
+  /// No description provided for @carRegistration.
+  ///
+  /// In es, this message translates to:
+  /// **'Chapa:'**
+  String get carRegistration;
+
+  /// No description provided for @phoneNumberDriver.
+  ///
+  /// In es, this message translates to:
+  /// **'Num. teléfono:'**
+  String get phoneNumberDriver;
+
+  /// No description provided for @email.
+  ///
+  /// In es, this message translates to:
+  /// **'Correo electrónico:'**
+  String get email;
+
+  /// No description provided for @numberOfSeats.
+  ///
+  /// In es, this message translates to:
+  /// **'Número de asientos:'**
+  String get numberOfSeats;
+
+  /// No description provided for @saveInformation.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar'**
+  String get saveInformation;
+
+  /// No description provided for @myAccount.
+  ///
+  /// In es, this message translates to:
+  /// **'Mi Cuenta'**
+  String get myAccount;
+
+  /// No description provided for @balance.
+  ///
+  /// In es, this message translates to:
+  /// **'Balance:'**
+  String get balance;
+
+  /// No description provided for @valuation.
+  ///
+  /// In es, this message translates to:
+  /// **'Valoración acumulada:'**
+  String get valuation;
+
+  /// No description provided for @quberCredits.
+  ///
+  /// In es, this message translates to:
+  /// **'Crédito de Quber acumulado:'**
+  String get quberCredits;
+
+  /// No description provided for @nextPay.
+  ///
+  /// In es, this message translates to:
+  /// **'Próxima fecha de pago:'**
+  String get nextPay;
+
+  /// No description provided for @passwordConfirmDriver.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirme contraseña:'**
+  String get passwordConfirmDriver;
+
+  /// No description provided for @passwordDriver.
+  ///
+  /// In es, this message translates to:
+  /// **'Contraseña:'**
+  String get passwordDriver;
 }
 
 class _AppLocalizationsDelegate

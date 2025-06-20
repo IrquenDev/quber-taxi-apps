@@ -101,7 +101,22 @@
   "confirmPassword": "Confirme contraseña:",
   "otherActionsTitle": "Otras acciones",
   "viewAllTrips": "Ver todos los viajes",
-  "viewAllDrivers": "Ver todos los conductores"
+  "viewAllDrivers": "Ver todos los conductores",
+
+
+  "nameDriver": "Nombre:",
+  "carRegistration": "Chapa:",
+  "phoneNumberDriver": "Num. teléfono:",
+  "email": "Correo electrónico:",
+  "numberOfSeats": "Número de asientos:",
+  "saveInformation": "Guardar",
+  "myAccount": "Mi Cuenta",
+  "balance": "Balance:",
+  "valuation": "Valoración acumulada:",
+  "quberCredits": "Crédito de Quber acumulado:",
+  "nextPay": "Próxima fecha de pago:",
+  "passwordConfirmDriver": "Confirme contraseña:",
+  "passwordDriver": "Contraseña:"
 
 
 }

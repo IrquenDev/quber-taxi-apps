@@ -270,4 +270,43 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get viewAllDrivers => 'Ver todos los conductores';
+
+  @override
+  String get nameDriver => 'Nombre:';
+
+  @override
+  String get carRegistration => 'Chapa:';
+
+  @override
+  String get phoneNumberDriver => 'Num. teléfono:';
+
+  @override
+  String get email => 'Correo electrónico:';
+
+  @override
+  String get numberOfSeats => 'Número de asientos:';
+
+  @override
+  String get saveInformation => 'Guardar';
+
+  @override
+  String get myAccount => 'Mi Cuenta';
+
+  @override
+  String get balance => 'Balance:';
+
+  @override
+  String get valuation => 'Valoración acumulada:';
+
+  @override
+  String get quberCredits => 'Crédito de Quber acumulado:';
+
+  @override
+  String get nextPay => 'Próxima fecha de pago:';
+
+  @override
+  String get passwordConfirmDriver => 'Confirme contraseña:';
+
+  @override
+  String get passwordDriver => 'Contraseña:';
 }
