@@ -236,4 +236,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get familyVehicle => 'Family';
+
+  @override
+  String get adminSettingsTitle => 'Admin Settings';
+
+  @override
+  String get pricesSectionTitle => 'Prices';
+
+  @override
+  String get driverCreditPercentage => 'Driver credit percentage:';
+
+  @override
+  String get tripPricePerKm => 'Trip price per KM:';
+
+  @override
+  String get saveButtonPanel => 'Save';
+
+  @override
+  String get passwordsSectionTitle => 'Passwords';
+
+  @override
+  String get newPassword => 'New password:';
+
+  @override
+  String get confirmPassword => 'Confirm password:';
+
+  @override
+  String get otherActionsTitle => 'Other Actions';
+
+  @override
+  String get viewAllTrips => 'View all trips';
+
+  @override
+  String get viewAllDrivers => 'View all drivers';
 }

@@ -541,6 +541,72 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Familiar'**
   String get familyVehicle;
+
+  /// No description provided for @adminSettingsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Ajustes del Administrador'**
+  String get adminSettingsTitle;
+
+  /// No description provided for @pricesSectionTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Precios'**
+  String get pricesSectionTitle;
+
+  /// No description provided for @driverCreditPercentage.
+  ///
+  /// In es, this message translates to:
+  /// **'Porciento de crédito para conductores:'**
+  String get driverCreditPercentage;
+
+  /// No description provided for @tripPricePerKm.
+  ///
+  /// In es, this message translates to:
+  /// **'Precio de viaje por KM:'**
+  String get tripPricePerKm;
+
+  /// No description provided for @saveButtonPanel.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar'**
+  String get saveButtonPanel;
+
+  /// No description provided for @passwordsSectionTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Contraseñas'**
+  String get passwordsSectionTitle;
+
+  /// No description provided for @newPassword.
+  ///
+  /// In es, this message translates to:
+  /// **'Nueva contraseña:'**
+  String get newPassword;
+
+  /// No description provided for @confirmPassword.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirme contraseña:'**
+  String get confirmPassword;
+
+  /// No description provided for @otherActionsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Otras acciones'**
+  String get otherActionsTitle;
+
+  /// No description provided for @viewAllTrips.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver todos los viajes'**
+  String get viewAllTrips;
+
+  /// No description provided for @viewAllDrivers.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver todos los conductores'**
+  String get viewAllDrivers;
 }
 
 class _AppLocalizationsDelegate
