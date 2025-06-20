@@ -88,5 +88,17 @@
     "seatNumber": "Number of Seats",
     "vehicleType": "Vehicle Type",
     "acceptButton": "Accept",
-    "familyVehicle": "Family"
+    "familyVehicle": "Family",
+
+    "adminSettingsTitle": "Admin Settings",
+    "pricesSectionTitle": "Prices",
+    "driverCreditPercentage": "Driver credit percentage:",
+    "tripPricePerKm": "Trip price per KM:",
+    "saveButtonPanel": "Save",
+    "passwordsSectionTitle": "Passwords",
+    "newPassword": "New password:",
+    "confirmPassword": "Confirm password:",
+    "otherActionsTitle": "Other Actions",
+    "viewAllTrips": "View all trips",
+    "viewAllDrivers": "View all drivers"
 }
