@@ -21,6 +21,7 @@ import '../client-app/pages/client_account/confirm_selfie.dart';
 import '../client-app/pages/client_account/create_account.dart';
 import '../client-app/pages/client_account/identity_verification.dart';
 import '../driver-app/pages/admin_panel/admin_panel.dart';
+import '../driver-app/pages/driver_account/driver_account.dart';
 import '../driver-app/pages/info-driver/info_driver.dart';
 import 'route_paths.dart';
 
@@ -145,7 +146,10 @@ final GoRouter appRouter = GoRouter(
         builder: (context, state) => const DriverInfoPage()),
 
     GoRoute(path: RoutePaths.panelAdmin,
-        builder: (context, state) => const AdminSettingsPage())
+        builder: (context, state) => const AdminSettingsPage()),
+
+    GoRoute(path: RoutePaths.driverAccount,
+        builder: (context, state) => const DriverAccountSettingPage()),
 
   ]
 );
