@@ -88,5 +88,31 @@
     "seatNumber": "Number of Seats",
     "vehicleType": "Vehicle Type",
     "acceptButton": "Accept",
-    "familyVehicle": "Family"
+    "familyVehicle": "Family",
+
+    "adminSettingsTitle": "Admin Settings",
+    "pricesSectionTitle": "Prices",
+    "driverCreditPercentage": "Driver credit percentage:",
+    "tripPricePerKm": "Trip price per KM:",
+    "saveButtonPanel": "Save",
+    "passwordsSectionTitle": "Passwords",
+    "newPassword": "New password:",
+    "confirmPassword": "Confirm password:",
+    "otherActionsTitle": "Other Actions",
+    "viewAllTrips": "View all trips",
+    "viewAllDrivers": "View all drivers",
+
+    "nameDriver": "Name:",
+    "carRegistration": "License Plate:",
+    "phoneNumberDriver": "Phone Number:",
+    "email": "Email:",
+    "numberOfSeats": "Number of Seats:",
+    "saveInformation": "Save",
+    "myAccount": "My Account",
+    "balance": "Balance:",
+    "valuation": "Accumulated Rating:",
+    "quberCredits": "Accumulated Quber Credits:",
+    "nextPay": "Next Payment Date:",
+    "passwordConfirmDriver": "Confirm Password:",
+    "passwordDriver": "Password:"
 }

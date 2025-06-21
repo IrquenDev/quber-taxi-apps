@@ -538,6 +538,150 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Familiar'**
   String get familyVehicle;
+
+  /// No description provided for @adminSettingsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Ajustes del Administrador'**
+  String get adminSettingsTitle;
+
+  /// No description provided for @pricesSectionTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Precios'**
+  String get pricesSectionTitle;
+
+  /// No description provided for @driverCreditPercentage.
+  ///
+  /// In es, this message translates to:
+  /// **'Porciento de crédito para conductores:'**
+  String get driverCreditPercentage;
+
+  /// No description provided for @tripPricePerKm.
+  ///
+  /// In es, this message translates to:
+  /// **'Precio de viaje por KM:'**
+  String get tripPricePerKm;
+
+  /// No description provided for @saveButtonPanel.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar'**
+  String get saveButtonPanel;
+
+  /// No description provided for @passwordsSectionTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Contraseñas'**
+  String get passwordsSectionTitle;
+
+  /// No description provided for @newPassword.
+  ///
+  /// In es, this message translates to:
+  /// **'Nueva contraseña:'**
+  String get newPassword;
+
+  /// No description provided for @confirmPassword.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirme contraseña:'**
+  String get confirmPassword;
+
+  /// No description provided for @otherActionsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Otras acciones'**
+  String get otherActionsTitle;
+
+  /// No description provided for @viewAllTrips.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver todos los viajes'**
+  String get viewAllTrips;
+
+  /// No description provided for @viewAllDrivers.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver todos los conductores'**
+  String get viewAllDrivers;
+
+  /// No description provided for @nameDriver.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre:'**
+  String get nameDriver;
+
+  /// No description provided for @carRegistration.
+  ///
+  /// In es, this message translates to:
+  /// **'Chapa:'**
+  String get carRegistration;
+
+  /// No description provided for @phoneNumberDriver.
+  ///
+  /// In es, this message translates to:
+  /// **'Num. teléfono:'**
+  String get phoneNumberDriver;
+
+  /// No description provided for @email.
+  ///
+  /// In es, this message translates to:
+  /// **'Correo electrónico:'**
+  String get email;
+
+  /// No description provided for @numberOfSeats.
+  ///
+  /// In es, this message translates to:
+  /// **'Número de asientos:'**
+  String get numberOfSeats;
+
+  /// No description provided for @saveInformation.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar'**
+  String get saveInformation;
+
+  /// No description provided for @myAccount.
+  ///
+  /// In es, this message translates to:
+  /// **'Mi Cuenta'**
+  String get myAccount;
+
+  /// No description provided for @balance.
+  ///
+  /// In es, this message translates to:
+  /// **'Balance:'**
+  String get balance;
+
+  /// No description provided for @valuation.
+  ///
+  /// In es, this message translates to:
+  /// **'Valoración acumulada:'**
+  String get valuation;
+
+  /// No description provided for @quberCredits.
+  ///
+  /// In es, this message translates to:
+  /// **'Crédito de Quber acumulado:'**
+  String get quberCredits;
+
+  /// No description provided for @nextPay.
+  ///
+  /// In es, this message translates to:
+  /// **'Próxima fecha de pago:'**
+  String get nextPay;
+
+  /// No description provided for @passwordConfirmDriver.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirme contraseña:'**
+  String get passwordConfirmDriver;
+
+  /// No description provided for @passwordDriver.
+  ///
+  /// In es, this message translates to:
+  /// **'Contraseña:'**
+  String get passwordDriver;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
