@@ -8,7 +8,7 @@ class Driver {
   final String name;
   final String imageUrl;
   final String phone;
-  final String email;
+  final bool isAvailable;
   final double credit;
   final DateTime paymentDate;
   final double rating;
@@ -19,7 +19,7 @@ class Driver {
     required this.name,
     required this.imageUrl,
     required this.phone,
-    required this.email,
+    required this.isAvailable,
     required this.credit,
     required this.paymentDate,
     required this.rating,
@@ -32,7 +32,7 @@ class Driver {
       name: json['name'],
       imageUrl: json['imageUrl'],
       phone: json['phone'],
-      email: json['email'],
+      isAvailable: json['available'],
       credit: (json['credit']),
       paymentDate: DateTime.parse(json['paymentDate']),
       rating: (json['rating']),
@@ -45,7 +45,7 @@ class Driver {
     "name": name,
     "imageUrl": imageUrl,
     "phone": phone,
-    "email": email,
+    "available": isAvailable,
     "credit": credit,
     "paymentDate": paymentDate,
     "rating": rating,

@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart' as g;
 import 'package:network_checker/network_checker.dart';
@@ -11,11 +14,13 @@ import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
 import 'package:quber_taxi/driver-app/pages/home/info_travel_sheet.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/driver-app/pages/home/trip_notification.dart';
+import 'package:quber_taxi/routes/route_paths.dart';
 import 'package:quber_taxi/util/geolocator.dart' as g_util;
 import 'package:quber_taxi/driver-app/pages/home/available_travels_sheet.dart';
 import 'package:quber_taxi/util/mapbox.dart' as mb_util;
 import 'package:quber_taxi/websocket/core/websocket_service.dart';
 import 'package:quber_taxi/websocket/impl/travel_request_handler.dart';
+import 'package:quber_taxi/websocket/impl/travel_state_handler.dart';
 
 class DriverHome extends StatefulWidget {
 
@@ -44,16 +49,20 @@ class _DriverHomeState extends State<DriverHome> {
   late final PointAnnotation _driverAnnotation;
   late final Uint8List _driverMarkerImage;
   // Driver location streaming
-  late final Stream<g.Position> _locationStream;
+  late final Stream<g.Position> _locationBroadcast;
+  StreamSubscription<g.Position>? _locationStreamSubscription;
+  StreamSubscription<g.Position>? _locationShareSubscription;
   late Position _coords;
   late Position _lastKnownCoords;
   bool _isLocationStreaming = false;
   // Selected travel. If not null, we should hide the available travel sheet.
   Travel? _selectedTravel;
   final _driverService = DriverService();
-  // Websocket Handler for new travel requests.
+  // Handling new travel requests
   late final TravelRequestHandler _newTravelRequestHandler;
   final List<Travel> _newTravels = [];
+  // Websocket for travel state changed (Here we must wait for the client to accept the pickup confirmation).
+  TravelStateHandler? _travelStateHandler;
 
   void _startStreamingLocation() async {
     // Get current position
@@ -72,7 +81,7 @@ class _DriverHomeState extends State<DriverHome> {
     ).then((annotation) {
       _driverAnnotation = annotation;
       // Listen for real location updates
-      _locationStream.listen((position) async {
+      _locationStreamSubscription = _locationBroadcast.listen((position) async {
         // Update coords
         final coords = Position(position.longitude, position.latitude);
         _lastKnownCoords = _coords;
@@ -92,7 +101,7 @@ class _DriverHomeState extends State<DriverHome> {
   }
 
   void _startSharingLocation() {
-    _locationStream.listen((position) async {
+    _locationShareSubscription = _locationBroadcast.listen((position) async {
       /// TODO("yapmDev": static driver id)
       WebSocketService.instance.send(
         "/app/drivers/1/location",
@@ -157,7 +166,7 @@ class _DriverHomeState extends State<DriverHome> {
         driverId: 1,
         onNewTravel: _onNewTravel
     )..activate();
-    _locationStream = g.Geolocator.getPositionStream().asBroadcastStream();
+    _locationBroadcast = g.Geolocator.getPositionStream().asBroadcastStream();
     _ticker = Ticker(_onTick);
   }
 
@@ -165,6 +174,11 @@ class _DriverHomeState extends State<DriverHome> {
   void dispose() {
     _ticker.dispose();
     _newTravelRequestHandler.deactivate();
+    _travelStateHandler?.deactivate();
+    _locationShareSubscription?.cancel();
+    _locationStreamSubscription?.cancel();
+    _pointAnnotationManager.deleteAll();
+    _mapController.annotations.removeAnnotationManager(_pointAnnotationManager);
     super.dispose();
   }
 
@@ -293,15 +307,23 @@ class _DriverHomeState extends State<DriverHome> {
                         onPressed: () => showModalBottomSheet(
                             context: context,
                             showDragHandle: true,
-                            builder: (context) => TravelInfoSheet(travel: _selectedTravel!)
+                            builder: (_) => TravelInfoSheet(
+                              travel: _selectedTravel!,
+                              onPickUpConfirmationRequest: () {
+                                  _travelStateHandler = TravelStateHandler(
+                                      travelId: _selectedTravel!.id,
+                                      onMessage: (travel) => context.go(RoutePaths.driverNavigation, extra: travel)
+                                  )..activate();
+                              }
+                            )
                         ),
                         child: Icon(
                             Icons.info_outline,
                             color: Theme.of(context).iconTheme.color,
                             size: Theme.of(context).iconTheme.size
                         )
-                    ),
-                ],
+                    )
+                ]
               )
             ),
             // Available travels sheet
