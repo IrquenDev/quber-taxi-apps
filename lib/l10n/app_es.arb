@@ -116,7 +116,8 @@
   "quberCredits": "Crédito de Quber acumulado:",
   "nextPay": "Próxima fecha de pago:",
   "passwordConfirmDriver": "Confirme contraseña:",
-  "passwordDriver": "Contraseña:"
+  "passwordDriver": "Contraseña:",
+  "goBack": "Regresar"
 
 
 }

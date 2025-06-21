@@ -299,4 +299,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get passwordDriver => 'Password:';
+
+  @override
+  String get goBack => 'Go Back';
 }
