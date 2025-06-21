@@ -65,7 +65,9 @@ dependencies:
   # navigation and routing
   go_router: ^15.1.3
 
-  intl: 0.20.2
+  # Do not use the semantic compatibility operator (^).
+  intl: 0.19.0
+
   flutter_localizations:
     sdk: flutter
 

@@ -14,6 +14,7 @@ import 'package:quber_taxi/driver-app/pages/navigation/trip_info.dart';
 import 'package:quber_taxi/enums/mapbox_place_type.dart';
 import 'package:quber_taxi/util/mapbox.dart';
 import 'package:quber_taxi/util/turf.dart';
+import 'package:quber_taxi/websocket/core/websocket_service.dart';
 import 'package:turf/distance.dart' as td;
 import 'package:turf/turf.dart' as turf;
 
@@ -299,7 +300,7 @@ class _DriverNavigationState extends State<DriverNavigation> {
         ),
         // @Temporal: Just for demo, in this view, the ClientTripCompleted sheet will be reactive.
         floatingActionButton: FloatingActionButton(
-          onPressed: _showTripCompletedBottomSheet,
+          onPressed: (){},
           child: Icon(Icons.question_mark_outlined),
         ),
         bottomSheet: DriverTripInfo(
@@ -309,7 +310,7 @@ class _DriverNavigationState extends State<DriverNavigation> {
           taxiType: widget.travel.taxiType,
           onGuidedRouteSwitched: _onGuidedRouteSwitched,
           onSearch: _onSearch
-      )
+        )
     );
   }
 }

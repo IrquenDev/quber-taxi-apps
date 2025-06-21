@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/config/api_config.dart';
 import 'package:quber_taxi/enums/taxi_type.dart';
+import 'package:quber_taxi/enums/travel_state.dart';
 
 class TravelService {
 
@@ -51,5 +52,11 @@ class TravelService {
     }
     final List<dynamic> jsonList = jsonDecode(response.body);
     return jsonList.map((json) => Travel.fromJson(json)).toList();
+  }
+
+  Future<http.Response> changeState({required int travelId, required TravelState state}) async {
+    final url = Uri.parse("${_apiConfig.baseUrl}/$_endpoint/$travelId?state=${state.apiValue}");
+    final headers = {'Content-Type': 'application/json'};
+    return await http.patch(url, headers: headers);
   }
 }

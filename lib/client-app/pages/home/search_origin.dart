@@ -25,6 +25,7 @@ class _SearchOriginState extends State<SearchOrigin> {
 
   final _controller = TextEditingController();
   final _mapboxService = MapboxService();
+  late bool isConnected;
 
   List<MapboxPlace> _suggestions = [];
   Timer? _debounce;
@@ -46,6 +47,12 @@ class _SearchOriginState extends State<SearchOrigin> {
     _loadHavanaGeoJson();
   }
 
+  @override
+  void didChangeDependencies() {
+    isConnected = NetworkScope.statusOf(context) == ConnectionStatus.online;
+    super.didChangeDependencies();
+  }
+
   Future<void> _loadHavanaGeoJson() async {
     _havanaPolygon = await loadGeoJsonPolygon("assets/geojson/polygon/CiudadDeLaHabana.geojson");
   }
@@ -65,7 +72,7 @@ class _SearchOriginState extends State<SearchOrigin> {
         appBar: AppBar(
             title: TextField(
               controller: _controller,
-              onChanged: _onTextChanged,
+              onChanged: isConnected ? _onTextChanged : null,
               decoration: InputDecoration(
                   hintText: AppLocalizations.of(context)!.writeUbication,
                   suffixIcon: _controller.text.isNotEmpty ?
