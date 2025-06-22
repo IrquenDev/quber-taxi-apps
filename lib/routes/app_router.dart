@@ -16,6 +16,8 @@ import 'package:quber_taxi/driver-app/pages/home/home.dart';
 import 'package:quber_taxi/driver-app/pages/info-driver/info_driver.dart';
 import 'package:quber_taxi/driver-app/pages/navigation/driver_navigation.dart';
 import 'package:quber_taxi/util/runtime.dart';
+import '../driver-app/pages/admin_panel/admin_panel.dart';
+import '../driver-app/pages/driver_account/driver_account.dart';
 import 'route_paths.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -99,8 +101,12 @@ final GoRouter appRouter = GoRouter(
         builder: (context, state) => CreateClientAccountPage()
     ),
 
-    GoRoute(path: RoutePaths.infoDriver,
-        builder: (context, state) => const DriverInfoPage()
+    GoRoute(
+        path: RoutePaths.infoDriver,
+        builder: (context, state) {
+          final driverId = state.extra as int;
+          return DriverInfoPage(driverId: driverId);
+        }
     ),
 
     GoRoute(path: RoutePaths.panelAdmin,
