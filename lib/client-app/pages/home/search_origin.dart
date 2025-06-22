@@ -32,6 +32,7 @@ class _SearchOriginState extends State<SearchOrigin> {
   bool isLoading = false;
 
   void _onTextChanged(String query) {
+    if(query.isEmpty) return;
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () async {
       final suggestions = await _mapboxService.fetchSuggestions(query);
