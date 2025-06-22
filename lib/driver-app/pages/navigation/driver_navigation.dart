@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:quber_taxi/driver-app/pages/navigation/trip_completed.dart';
 import 'package:quber_taxi/enums/municipalities.dart';
+import 'package:quber_taxi/enums/travel_state.dart';
 import 'package:quber_taxi/util/mapbox.dart' as mb_util;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,6 +15,8 @@ import 'package:quber_taxi/driver-app/pages/navigation/trip_info.dart';
 import 'package:quber_taxi/enums/mapbox_place_type.dart';
 import 'package:quber_taxi/util/mapbox.dart';
 import 'package:quber_taxi/util/turf.dart';
+import 'package:quber_taxi/websocket/core/websocket_service.dart';
+import 'package:quber_taxi/websocket/impl/travel_state_handler.dart';
 import 'package:turf/distance.dart' as td;
 import 'package:turf/turf.dart' as turf;
 
@@ -56,10 +59,13 @@ class _DriverNavigationState extends State<DriverNavigation> {
   Stopwatch? _stopwatch;
   // Ignore points outside of Havana
   late turf.Polygon _municipalityPolygon;
+  // Websocket for travel state changed (Here we must wait for the client to accept the finish confirmation or
+  // trigger it be himself).
+  late final TravelStateHandler _travelStateHandler;
 
   Future<void> _loadHavanaGeoJson() async {
     final munName= Municipalities.resolveGeoJsonRef(widget.travel.destinationName);
-    _municipalityPolygon = await loadGeoJsonPolygon(munName);
+    _municipalityPolygon = await loadGeoJsonPolygon(munName!);
   }
 
   void _startTrackingDistance() {
@@ -270,11 +276,17 @@ class _DriverNavigationState extends State<DriverNavigation> {
     _loadHavanaGeoJson();
     _realTimeRoute.add(turf.Position(widget.travel.originCoords[0], widget.travel.originCoords[1]));
     _startTrackingDistance();
+    _travelStateHandler = TravelStateHandler(
+        state: TravelState.completed,
+        travelId: widget.travel.id,
+        onMessage: (_) => _showTripCompletedBottomSheet()
+    )..activate();
   }
 
   @override
   void dispose() {
     _locationStream.cancel();
+    _travelStateHandler.deactivate();
     super.dispose();
   }
 
@@ -297,10 +309,13 @@ class _DriverNavigationState extends State<DriverNavigation> {
           onLongTapListener: _onLongTapListener,
           onCameraChangeListener: _onCameraChangeListener
         ),
-        // @Temporal: Just for demo, in this view, the ClientTripCompleted sheet will be reactive.
         floatingActionButton: FloatingActionButton(
-          onPressed: _showTripCompletedBottomSheet,
-          child: Icon(Icons.question_mark_outlined),
+          onPressed: () {
+            WebSocketService.instance.send(
+                "/app/travels/${widget.travel.id}/finish-confirmation", null // no body needed
+            );
+          },
+          child: Icon(Icons.done_outline),
         ),
         bottomSheet: DriverTripInfo(
           originName: widget.travel.originName,
@@ -309,7 +324,7 @@ class _DriverNavigationState extends State<DriverNavigation> {
           taxiType: widget.travel.taxiType,
           onGuidedRouteSwitched: _onGuidedRouteSwitched,
           onSearch: _onSearch
-      )
+        )
     );
   }
 }

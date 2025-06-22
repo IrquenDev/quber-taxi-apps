@@ -26,7 +26,7 @@ class _ClientHomeState extends State<ClientHome> {
   Widget build(BuildContext context) {
     final borderRadius = Theme.of(context).extension<DimensionExtension>()!.borderRadius;
     return NetworkAlertTemplate(
-      alertBuilder: (context, status) => customNetworkAlert(context, status, true),
+      alertBuilder: (_, status) => CustomNetworkAlert(status: status, useTopSafeArea: true),
       alertPosition: Alignment.topCenter,
       child: Scaffold(
         resizeToAvoidBottomInset: false,

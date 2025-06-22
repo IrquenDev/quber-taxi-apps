@@ -1,21 +1,27 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
-import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart' as g;
+import 'package:go_router/go_router.dart';
+import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/services/driver_service.dart';
 import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
-import 'package:quber_taxi/driver-app/pages/home/info_travel_sheet.dart';
-import 'package:quber_taxi/l10n/app_localizations.dart';
-import 'package:quber_taxi/driver-app/pages/home/trip_notification.dart';
-import 'package:quber_taxi/util/geolocator.dart' as g_util;
 import 'package:quber_taxi/driver-app/pages/home/available_travels_sheet.dart';
+import 'package:quber_taxi/driver-app/pages/home/info_travel_sheet.dart';
+import 'package:quber_taxi/driver-app/pages/home/trip_notification.dart';
+import 'package:quber_taxi/enums/travel_state.dart';
+import 'package:quber_taxi/l10n/app_localizations.dart';
+import 'package:quber_taxi/routes/route_paths.dart';
+import 'package:quber_taxi/util/geolocator.dart' as g_util;
 import 'package:quber_taxi/util/mapbox.dart' as mb_util;
 import 'package:quber_taxi/websocket/core/websocket_service.dart';
 import 'package:quber_taxi/websocket/impl/travel_request_handler.dart';
+import 'package:quber_taxi/websocket/impl/travel_state_handler.dart';
 
 class DriverHome extends StatefulWidget {
 
@@ -40,20 +46,24 @@ class _DriverHomeState extends State<DriverHome> {
   Duration _lastUpdate = Duration.zero;
   late final List<AnimatedFakeDriver> _taxis = [];
   // Point annotation (markers) control
-  late final PointAnnotationManager _pointAnnotationManager;
-  late final PointAnnotation _driverAnnotation;
+  PointAnnotationManager? _pointAnnotationManager;
+  PointAnnotation? _driverAnnotation;
   late final Uint8List _driverMarkerImage;
   // Driver location streaming
-  late final Stream<g.Position> _locationStream;
+  late final Stream<g.Position> _locationBroadcast;
+  StreamSubscription<g.Position>? _locationStreamSubscription;
+  StreamSubscription<g.Position>? _locationShareSubscription;
   late Position _coords;
   late Position _lastKnownCoords;
   bool _isLocationStreaming = false;
   // Selected travel. If not null, we should hide the available travel sheet.
   Travel? _selectedTravel;
   final _driverService = DriverService();
-  // Websocket Handler for new travel requests.
+  // Handling new travel requests
   late final TravelRequestHandler _newTravelRequestHandler;
   final List<Travel> _newTravels = [];
+  // Websocket for travel state changed (Here we must wait for the client to accept the pickup confirmation).
+  TravelStateHandler? _travelStateHandler;
 
   void _startStreamingLocation() async {
     // Get current position
@@ -63,16 +73,16 @@ class _DriverHomeState extends State<DriverHome> {
     _coords = coords;
     _lastKnownCoords = coords;
     // Add driver marker to map
-    await _pointAnnotationManager.create(
+    await _pointAnnotationManager?.create(
       PointAnnotationOptions(
         geometry: Point(coordinates: coords),
         image: _driverMarkerImage,
         iconAnchor: IconAnchor.CENTER,
       ),
     ).then((annotation) {
-      _driverAnnotation = annotation;
+      _driverAnnotation ??= annotation;
       // Listen for real location updates
-      _locationStream.listen((position) async {
+      _locationStreamSubscription = _locationBroadcast.listen((position) async {
         // Update coords
         final coords = Position(position.longitude, position.latitude);
         _lastKnownCoords = _coords;
@@ -83,16 +93,16 @@ class _DriverHomeState extends State<DriverHome> {
             coords.lat, coords.lng
         );
         final adjustedBearing = (bearing - _mapBearing + 360) % 360;
-        _driverAnnotation.iconRotate = adjustedBearing;
-        _driverAnnotation.geometry = Point(coordinates: coords);
-        _pointAnnotationManager.update(_driverAnnotation);
+        _driverAnnotation!.iconRotate = adjustedBearing;
+        _driverAnnotation!.geometry = Point(coordinates: coords);
+        _pointAnnotationManager?.update(_driverAnnotation!);
       });
     });
     _isLocationStreaming = true;
   }
 
   void _startSharingLocation() {
-    _locationStream.listen((position) async {
+    _locationShareSubscription = _locationBroadcast.listen((position) async {
       /// TODO("yapmDev": static driver id)
       WebSocketService.instance.send(
         "/app/drivers/1/location",
@@ -109,7 +119,7 @@ class _DriverHomeState extends State<DriverHome> {
       final assetBytes = await rootBundle.load('assets/markers/route/x120/origin.png');
       final originMarkerImage = assetBytes.buffer.asUint8List();
       final originCoords = Position(travel.originCoords[0], travel.originCoords[1]);
-      await _pointAnnotationManager.create(
+      await _pointAnnotationManager?.create(
         PointAnnotationOptions(
           geometry: Point(coordinates: originCoords),
           image: originMarkerImage,
@@ -134,7 +144,7 @@ class _DriverHomeState extends State<DriverHome> {
     _lastUpdate = elapsed;
     for (final taxi in _taxis) {
       taxi.updatePosition(elapsed, _mapBearing);
-      _pointAnnotationManager.update(taxi.annotation);
+      _pointAnnotationManager?.update(taxi.annotation);
     }
   }
 
@@ -157,14 +167,18 @@ class _DriverHomeState extends State<DriverHome> {
         driverId: 1,
         onNewTravel: _onNewTravel
     )..activate();
-    _locationStream = g.Geolocator.getPositionStream().asBroadcastStream();
+    _locationBroadcast = g.Geolocator.getPositionStream().asBroadcastStream();
     _ticker = Ticker(_onTick);
   }
 
   @override
   void dispose() {
-    _ticker.dispose();
+    _travelStateHandler?.deactivate();
     _newTravelRequestHandler.deactivate();
+    _ticker.dispose();
+    _locationShareSubscription?.cancel();
+    _locationStreamSubscription?.cancel();
+    _pointAnnotationManager?.deleteAll();
     super.dispose();
   }
 
@@ -177,7 +191,7 @@ class _DriverHomeState extends State<DriverHome> {
       zoom: 17,
     );
     return NetworkAlertTemplate(
-      alertBuilder: (context, status) => customNetworkAlert(context, status, true),
+      alertBuilder: (_, status) => CustomNetworkAlert(status: status, useTopSafeArea: true),
       alertPosition: Alignment.topCenter,
       child: Material(
         child: Stack(
@@ -211,7 +225,7 @@ class _DriverHomeState extends State<DriverHome> {
                   for (int i = 1; i <= 5; i++) {
                     final fakeRoute = await mb_util.loadGeoJsonFakeRoute("assets/geojson/line/fake_route_$i.geojson");
                     final origin = fakeRoute.coordinates.first;
-                    final annotation = await _pointAnnotationManager.create(
+                    final annotation = await _pointAnnotationManager?.create(
                       PointAnnotationOptions(
                         geometry: Point(coordinates: Position(origin[0], origin[1])),
                         image: _driverMarkerImage,
@@ -220,7 +234,7 @@ class _DriverHomeState extends State<DriverHome> {
                     );
                     _taxis.add(AnimatedFakeDriver(
                         routeCoords: fakeRoute.coordinates,
-                        annotation: annotation,
+                        annotation: annotation!,
                         routeDuration: Duration(milliseconds: (fakeRoute.duration * 1000).round())
                     ));
                   }
@@ -240,8 +254,8 @@ class _DriverHomeState extends State<DriverHome> {
                     _coords.lat, _coords.lng
                 );
                 final adjusted = (bearing - _mapBearing + 360) % 360;
-                _driverAnnotation.iconRotate = adjusted;
-                _pointAnnotationManager.update(_driverAnnotation);
+                _driverAnnotation?.iconRotate = adjusted;
+                _pointAnnotationManager?.update(_driverAnnotation!);
               }
             ),
             // FAB group (my location + travel info)
@@ -293,15 +307,24 @@ class _DriverHomeState extends State<DriverHome> {
                         onPressed: () => showModalBottomSheet(
                             context: context,
                             showDragHandle: true,
-                            builder: (context) => TravelInfoSheet(travel: _selectedTravel!)
+                            builder: (sheetContext) => TravelInfoSheet(
+                              travel: _selectedTravel!,
+                              onPickUpConfirmationRequest: () {
+                                  _travelStateHandler = TravelStateHandler(
+                                      state: TravelState.inProgress,
+                                      travelId: _selectedTravel!.id,
+                                      onMessage: (travel) => sheetContext.go(RoutePaths.driverNavigation, extra: travel)
+                                  )..activate();
+                              }
+                            )
                         ),
                         child: Icon(
                             Icons.info_outline,
                             color: Theme.of(context).iconTheme.color,
                             size: Theme.of(context).iconTheme.size
                         )
-                    ),
-                ],
+                    )
+                ]
               )
             ),
             // Available travels sheet

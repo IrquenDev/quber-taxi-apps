@@ -299,6 +299,78 @@ abstract class AppLocalizations {
   /// **'Hasta: '**
   String get until;
 
+  /// No description provided for @welcomeTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Bienvenido\na Quber'**
+  String get welcomeTitle;
+
+  /// No description provided for @enterEmail.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduzca su correo'**
+  String get enterEmail;
+
+  /// No description provided for @enterPassword.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduzca su contraseña'**
+  String get enterPassword;
+
+  /// No description provided for @invalidEmail.
+  ///
+  /// In es, this message translates to:
+  /// **'Ingrese un correo válido'**
+  String get invalidEmail;
+
+  /// No description provided for @requiredField.
+  ///
+  /// In es, this message translates to:
+  /// **'Campo requerido'**
+  String get requiredField;
+
+  /// No description provided for @requiredEmail.
+  ///
+  /// In es, this message translates to:
+  /// **'Por favor ingrese su correo'**
+  String get requiredEmail;
+
+  /// No description provided for @loginButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Iniciar sesión'**
+  String get loginButton;
+
+  /// No description provided for @forgotPassword.
+  ///
+  /// In es, this message translates to:
+  /// **'Olvidé mi contraseña'**
+  String get forgotPassword;
+
+  /// No description provided for @createAccountLogin.
+  ///
+  /// In es, this message translates to:
+  /// **'Crear cuenta'**
+  String get createAccountLogin;
+
+  /// No description provided for @recoverPassword.
+  ///
+  /// In es, this message translates to:
+  /// **'Recuperar Contraseña'**
+  String get recoverPassword;
+
+  /// No description provided for @recoverPasswordDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Por favor, introduzca su correo electrónico. Le enviaremos un enlace para restablecer su contraseña.'**
+  String get recoverPasswordDescription;
+
+  /// No description provided for @sendButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Enviar'**
+  String get sendButton;
+
   /// No description provided for @noReviews.
   ///
   /// In es, this message translates to:
@@ -328,6 +400,294 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Viaje Finalizado'**
   String get tripCompleted;
+
+  /// No description provided for @identityVerify.
+  ///
+  /// In es, this message translates to:
+  /// **'Verificación de identidad'**
+  String get identityVerify;
+
+  /// No description provided for @confirmIdentity.
+  ///
+  /// In es, this message translates to:
+  /// **'Necesitamos confirmar su identidad.'**
+  String get confirmIdentity;
+
+  /// No description provided for @noBot.
+  ///
+  /// In es, this message translates to:
+  /// **'Por favor, toma una selfie para confirmar que no eres un bot.'**
+  String get noBot;
+
+  /// No description provided for @noUsedImage.
+  ///
+  /// In es, this message translates to:
+  /// **'No usaremos esta imagen como foto de perfil ni se mostrará públicamente.'**
+  String get noUsedImage;
+
+  /// No description provided for @verificationUser.
+  ///
+  /// In es, this message translates to:
+  /// **'Este paso es parte de nuestro sistema de verificación para garantizar la seguridad de todos los usuarios.'**
+  String get verificationUser;
+
+  /// No description provided for @takeSelfie.
+  ///
+  /// In es, this message translates to:
+  /// **'Tomar Selfie'**
+  String get takeSelfie;
+
+  /// No description provided for @createAccount.
+  ///
+  /// In es, this message translates to:
+  /// **'Crear Cuenta'**
+  String get createAccount;
+
+  /// No description provided for @name.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre:'**
+  String get name;
+
+  /// No description provided for @nameAndLastName.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduzca su nombre y apellidos'**
+  String get nameAndLastName;
+
+  /// No description provided for @phoneNumber.
+  ///
+  /// In es, this message translates to:
+  /// **'Núm. teléfono:'**
+  String get phoneNumber;
+
+  /// No description provided for @password.
+  ///
+  /// In es, this message translates to:
+  /// **'Contraseña:'**
+  String get password;
+
+  /// No description provided for @passwordConfirm.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirmar contraseña:'**
+  String get passwordConfirm;
+
+  /// No description provided for @endRegistration.
+  ///
+  /// In es, this message translates to:
+  /// **'Finalizar Registro'**
+  String get endRegistration;
+
+  /// No description provided for @thanks.
+  ///
+  /// In es, this message translates to:
+  /// **'Gracias por confirmar su identidad.'**
+  String get thanks;
+
+  /// No description provided for @successConfirm.
+  ///
+  /// In es, this message translates to:
+  /// **'Hemos confirmado su identidad con éxito.'**
+  String get successConfirm;
+
+  /// No description provided for @passSecurity.
+  ///
+  /// In es, this message translates to:
+  /// **'Este paso es parte de nuestro sistema de verificación para garantizar la seguridad de todos los usuarios.'**
+  String get passSecurity;
+
+  /// No description provided for @driverInfoTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Información del Conductor'**
+  String get driverInfoTitle;
+
+  /// No description provided for @averageRating.
+  ///
+  /// In es, this message translates to:
+  /// **'Valoración promedio'**
+  String get averageRating;
+
+  /// No description provided for @vehiclePlate.
+  ///
+  /// In es, this message translates to:
+  /// **'Chapa del vehículo'**
+  String get vehiclePlate;
+
+  /// No description provided for @seatNumber.
+  ///
+  /// In es, this message translates to:
+  /// **'Número de asientos'**
+  String get seatNumber;
+
+  /// No description provided for @vehicleType.
+  ///
+  /// In es, this message translates to:
+  /// **'Tipo de vehículo'**
+  String get vehicleType;
+
+  /// No description provided for @acceptButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Aceptar'**
+  String get acceptButton;
+
+  /// No description provided for @familyVehicle.
+  ///
+  /// In es, this message translates to:
+  /// **'Familiar'**
+  String get familyVehicle;
+
+  /// No description provided for @adminSettingsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Ajustes del Administrador'**
+  String get adminSettingsTitle;
+
+  /// No description provided for @pricesSectionTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Precios'**
+  String get pricesSectionTitle;
+
+  /// No description provided for @driverCreditPercentage.
+  ///
+  /// In es, this message translates to:
+  /// **'Porciento de crédito para conductores:'**
+  String get driverCreditPercentage;
+
+  /// No description provided for @tripPricePerKm.
+  ///
+  /// In es, this message translates to:
+  /// **'Precio de viaje por KM:'**
+  String get tripPricePerKm;
+
+  /// No description provided for @saveButtonPanel.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar'**
+  String get saveButtonPanel;
+
+  /// No description provided for @passwordsSectionTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Contraseñas'**
+  String get passwordsSectionTitle;
+
+  /// No description provided for @newPassword.
+  ///
+  /// In es, this message translates to:
+  /// **'Nueva contraseña:'**
+  String get newPassword;
+
+  /// No description provided for @confirmPassword.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirme contraseña:'**
+  String get confirmPassword;
+
+  /// No description provided for @otherActionsTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Otras acciones'**
+  String get otherActionsTitle;
+
+  /// No description provided for @viewAllTrips.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver todos los viajes'**
+  String get viewAllTrips;
+
+  /// No description provided for @viewAllDrivers.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver todos los conductores'**
+  String get viewAllDrivers;
+
+  /// No description provided for @nameDriver.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre:'**
+  String get nameDriver;
+
+  /// No description provided for @carRegistration.
+  ///
+  /// In es, this message translates to:
+  /// **'Chapa:'**
+  String get carRegistration;
+
+  /// No description provided for @phoneNumberDriver.
+  ///
+  /// In es, this message translates to:
+  /// **'Num. teléfono:'**
+  String get phoneNumberDriver;
+
+  /// No description provided for @email.
+  ///
+  /// In es, this message translates to:
+  /// **'Correo electrónico:'**
+  String get email;
+
+  /// No description provided for @numberOfSeats.
+  ///
+  /// In es, this message translates to:
+  /// **'Número de asientos:'**
+  String get numberOfSeats;
+
+  /// No description provided for @saveInformation.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar'**
+  String get saveInformation;
+
+  /// No description provided for @myAccount.
+  ///
+  /// In es, this message translates to:
+  /// **'Mi Cuenta'**
+  String get myAccount;
+
+  /// No description provided for @balance.
+  ///
+  /// In es, this message translates to:
+  /// **'Balance:'**
+  String get balance;
+
+  /// No description provided for @valuation.
+  ///
+  /// In es, this message translates to:
+  /// **'Valoración acumulada:'**
+  String get valuation;
+
+  /// No description provided for @quberCredits.
+  ///
+  /// In es, this message translates to:
+  /// **'Crédito de Quber acumulado:'**
+  String get quberCredits;
+
+  /// No description provided for @nextPay.
+  ///
+  /// In es, this message translates to:
+  /// **'Próxima fecha de pago:'**
+  String get nextPay;
+
+  /// No description provided for @passwordConfirmDriver.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirme contraseña:'**
+  String get passwordConfirmDriver;
+
+  /// No description provided for @passwordDriver.
+  ///
+  /// In es, this message translates to:
+  /// **'Contraseña:'**
+  String get passwordDriver;
+
+  /// No description provided for @goBack.
+  ///
+  /// In es, this message translates to:
+  /// **'Regresar'**
+  String get goBack;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

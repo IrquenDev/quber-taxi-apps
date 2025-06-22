@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_fusion/flutter_fusion.dart';
+import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
+import 'package:quber_taxi/websocket/core/websocket_service.dart';
 
 class TravelInfoSheet extends StatelessWidget {
 
   final Travel travel;
+  final void Function() onPickUpConfirmationRequest;
 
-  const TravelInfoSheet({super.key, required this.travel});
+  const TravelInfoSheet({super.key, required this.travel, required this.onPickUpConfirmationRequest});
 
   @override
   Widget build(BuildContext context) {
+    final isConnected = NetworkScope.statusOf(context) == ConnectionStatus.online;
     final dimension = Theme.of(context).extension<DimensionExtension>()!;
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0, right: 12.0, left: 12.0),
@@ -88,9 +91,14 @@ class TravelInfoSheet extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              child: Text(AppLocalizations.of(context)!.startTrip),
-              onPressed: () => showToast(context: context, message: "Iniciara el viaje: Dialog -> Vista de Navegacion")
-            ),
+              onPressed: isConnected ? () {
+                WebSocketService.instance.send(
+                    "/app/travels/${travel.id}/pick-up-confirmation", null // no body needed
+                );
+                onPickUpConfirmationRequest.call();
+              } : null,
+              child: Text(AppLocalizations.of(context)!.startTrip)
+            )
           )
         ]
       )

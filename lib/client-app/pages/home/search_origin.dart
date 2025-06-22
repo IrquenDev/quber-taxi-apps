@@ -25,12 +25,14 @@ class _SearchOriginState extends State<SearchOrigin> {
 
   final _controller = TextEditingController();
   final _mapboxService = MapboxService();
+  late bool isConnected;
 
   List<MapboxPlace> _suggestions = [];
   Timer? _debounce;
   bool isLoading = false;
 
   void _onTextChanged(String query) {
+    if(query.isEmpty) return;
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () async {
       final suggestions = await _mapboxService.fetchSuggestions(query);
@@ -44,6 +46,12 @@ class _SearchOriginState extends State<SearchOrigin> {
   void initState() {
     super.initState();
     _loadHavanaGeoJson();
+  }
+
+  @override
+  void didChangeDependencies() {
+    isConnected = NetworkScope.statusOf(context) == ConnectionStatus.online;
+    super.didChangeDependencies();
   }
 
   Future<void> _loadHavanaGeoJson() async {
@@ -60,12 +68,12 @@ class _SearchOriginState extends State<SearchOrigin> {
   @override
   Widget build(BuildContext context) {
     return NetworkAlertTemplate(
-      alertBuilder: (context, status) => customNetworkAlert(context, status),
+      alertBuilder: (_, status) => CustomNetworkAlert(status: status),
       child: Scaffold(
         appBar: AppBar(
             title: TextField(
               controller: _controller,
-              onChanged: _onTextChanged,
+              onChanged: isConnected ? _onTextChanged : null,
               decoration: InputDecoration(
                   hintText: AppLocalizations.of(context)!.writeUbication,
                   suffixIcon: _controller.text.isNotEmpty ?

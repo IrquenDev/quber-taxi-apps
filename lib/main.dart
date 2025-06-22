@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:network_checker/network_checker.dart';
-
 import 'package:quber_taxi/config/api_config.dart';
 import 'package:quber_taxi/config/build_config.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
@@ -9,19 +9,22 @@ import 'package:quber_taxi/routes/app_router.dart';
 import 'package:quber_taxi/theme/theme.dart';
 import 'package:quber_taxi/websocket/core/websocket_service.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   BuildConfig.loadConfig();
   MapboxOptions.setAccessToken(ApiConfig().mapboxAccessToken);
   WebSocketService.instance.connect(baseUrl: ApiConfig().baseUrl);
+  // @Temporal
+  // Avoid exception during development
+  // TODO("yapmDev")
+  // - Probably will be needed it, when the app have to redirect to continue to the current navigation status
+  // (depending on the trip status (if applicable))
+  await Geolocator.requestPermission();
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +52,6 @@ class MyApp extends StatelessWidget {
             alertBuilder: null, // anyway it's null by default, it's just for you knowledge.
             child: child!
         )
-      // home: ClientNavigation(),
     );
   }
 }

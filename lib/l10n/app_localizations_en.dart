@@ -111,6 +111,42 @@ class AppLocalizationsEn extends AppLocalizations {
   String get until => 'To: ';
 
   @override
+  String get welcomeTitle => 'Welcome\nto Quber';
+
+  @override
+  String get enterEmail => 'Enter your email';
+
+  @override
+  String get enterPassword => 'Enter your password';
+
+  @override
+  String get invalidEmail => 'Enter a valid email';
+
+  @override
+  String get requiredField => 'Required field';
+
+  @override
+  String get requiredEmail => 'Please enter your email';
+
+  @override
+  String get loginButton => 'Log in';
+
+  @override
+  String get forgotPassword => 'Forgot password';
+
+  @override
+  String get createAccountLogin => 'Create account';
+
+  @override
+  String get recoverPassword => 'Recover Password';
+
+  @override
+  String get recoverPasswordDescription => 'Please enter your email address. We’ll send you a link to reset your password.';
+
+  @override
+  String get sendButton => 'Send';
+
+  @override
   String get noReviews => 'No driver reviews yet';
 
   @override
@@ -124,4 +160,148 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tripCompleted => 'Trip completed';
+
+  @override
+  String get identityVerify => 'Identity Verification';
+
+  @override
+  String get confirmIdentity => 'We need to confirm your identity.';
+
+  @override
+  String get noBot => 'Please take a selfie to confirm you are not a bot.';
+
+  @override
+  String get noUsedImage => 'We will not use this image as a profile picture nor will it be displayed publicly.';
+
+  @override
+  String get verificationUser => 'This step is part of our verification system to ensure the safety of all users.';
+
+  @override
+  String get takeSelfie => 'Take Selfie';
+
+  @override
+  String get createAccount => 'Create Account';
+
+  @override
+  String get name => 'Name:';
+
+  @override
+  String get nameAndLastName => 'Enter your first and last name';
+
+  @override
+  String get phoneNumber => 'Phone Number:';
+
+  @override
+  String get password => 'Password:';
+
+  @override
+  String get passwordConfirm => 'Confirm Password:';
+
+  @override
+  String get endRegistration => 'Complete Registration';
+
+  @override
+  String get thanks => 'Thank you for confirming your identity.';
+
+  @override
+  String get successConfirm => 'We have successfully confirmed your identity.';
+
+  @override
+  String get passSecurity => 'This step is part of our verification system to ensure the safety of all users.';
+
+  @override
+  String get driverInfoTitle => 'Driver Information';
+
+  @override
+  String get averageRating => 'Average Rating';
+
+  @override
+  String get vehiclePlate => 'Vehicle Plate';
+
+  @override
+  String get seatNumber => 'Number of Seats';
+
+  @override
+  String get vehicleType => 'Vehicle Type';
+
+  @override
+  String get acceptButton => 'Accept';
+
+  @override
+  String get familyVehicle => 'Family';
+
+  @override
+  String get adminSettingsTitle => 'Admin Settings';
+
+  @override
+  String get pricesSectionTitle => 'Prices';
+
+  @override
+  String get driverCreditPercentage => 'Driver credit percentage:';
+
+  @override
+  String get tripPricePerKm => 'Trip price per KM:';
+
+  @override
+  String get saveButtonPanel => 'Save';
+
+  @override
+  String get passwordsSectionTitle => 'Passwords';
+
+  @override
+  String get newPassword => 'New password:';
+
+  @override
+  String get confirmPassword => 'Confirm password:';
+
+  @override
+  String get otherActionsTitle => 'Other Actions';
+
+  @override
+  String get viewAllTrips => 'View all trips';
+
+  @override
+  String get viewAllDrivers => 'View all drivers';
+
+  @override
+  String get nameDriver => 'Name:';
+
+  @override
+  String get carRegistration => 'License Plate:';
+
+  @override
+  String get phoneNumberDriver => 'Phone Number:';
+
+  @override
+  String get email => 'Email:';
+
+  @override
+  String get numberOfSeats => 'Number of Seats:';
+
+  @override
+  String get saveInformation => 'Save';
+
+  @override
+  String get myAccount => 'My Account';
+
+  @override
+  String get balance => 'Balance:';
+
+  @override
+  String get valuation => 'Accumulated Rating:';
+
+  @override
+  String get quberCredits => 'Accumulated Quber Credits:';
+
+  @override
+  String get nextPay => 'Next Payment Date:';
+
+  @override
+  String get passwordConfirmDriver => 'Confirm Password:';
+
+  @override
+  String get passwordDriver => 'Password:';
+
+  @override
+  String get goBack => 'Go Back';
 }
