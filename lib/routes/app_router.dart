@@ -99,8 +99,12 @@ final GoRouter appRouter = GoRouter(
         builder: (context, state) => CreateClientAccountPage()
     ),
 
-    GoRoute(path: RoutePaths.infoDriver,
-        builder: (context, state) => const DriverInfoPage()
+    GoRoute(
+        path: RoutePaths.infoDriver,
+        builder: (context, state) {
+          final driverId = state.extra as int;
+          return DriverInfoPage(driverId: driverId);
+        }
     ),
 
     GoRoute(path: RoutePaths.panelAdmin,
