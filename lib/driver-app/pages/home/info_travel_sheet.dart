@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
@@ -96,7 +95,6 @@ class TravelInfoSheet extends StatelessWidget {
                 WebSocketService.instance.send(
                     "/app/travels/${travel.id}/pick-up-confirmation", null // no body needed
                 );
-                context.pop();
                 onPickUpConfirmationRequest.call();
               } : null,
               child: Text(AppLocalizations.of(context)!.startTrip)

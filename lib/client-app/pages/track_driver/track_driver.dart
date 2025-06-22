@@ -28,7 +28,7 @@ class _TrackDriverState extends State<TrackDriver> {
   late final MapboxMap _mapController;
   late double _mapBearing;
   // Markers
-  late final PointAnnotationManager _pointAnnotationManager;
+  PointAnnotationManager? _pointAnnotationManager;
   PointAnnotation? _driverAnnotation;
   late final Uint8List _driverMarkerImage;
   // Driver location streaming
@@ -51,7 +51,7 @@ class _TrackDriverState extends State<TrackDriver> {
       _coords = coords;
       _lastKnownCoords = coords;
       // Set the marker
-      _driverAnnotation = await _pointAnnotationManager.create(
+      _driverAnnotation = await _pointAnnotationManager?.create(
         PointAnnotationOptions(
           geometry: Point(coordinates: coords),
           image: _driverMarkerImage,
@@ -71,7 +71,7 @@ class _TrackDriverState extends State<TrackDriver> {
       // Update the marker
       _driverAnnotation!.iconRotate = adjustedBearing;
       _driverAnnotation!.geometry = Point(coordinates: coords);
-      _pointAnnotationManager.update(_driverAnnotation!);
+      _pointAnnotationManager?.update(_driverAnnotation!);
     }
   }
 
@@ -87,7 +87,7 @@ class _TrackDriverState extends State<TrackDriver> {
     // Display origin marker
     final originCoords = widget.travel.originCoords;
     final originMarkerBytes = await rootBundle.load('assets/markers/route/x120/origin.png');
-    await _pointAnnotationManager.create(PointAnnotationOptions(
+    await _pointAnnotationManager?.create(PointAnnotationOptions(
         geometry: Point(coordinates: Position(originCoords[0], originCoords[1])),
         image: originMarkerBytes.buffer.asUint8List(),
         iconAnchor: IconAnchor.BOTTOM
@@ -103,7 +103,7 @@ class _TrackDriverState extends State<TrackDriver> {
       );
       final adjustedBearing = (bearing - _mapBearing + 360) % 360;
       _driverAnnotation!.iconRotate = adjustedBearing;
-      _pointAnnotationManager.update(_driverAnnotation!);
+      _pointAnnotationManager?.update(_driverAnnotation!);
     }
   }
 

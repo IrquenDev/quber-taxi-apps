@@ -2,13 +2,17 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/client-app/pages/navigation/trip_completed.dart';
+import 'package:quber_taxi/common/services/travel_service.dart';
 import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
+import 'package:quber_taxi/driver-app/pages/home/dialogs/confirm_dialog.dart';
+import 'package:quber_taxi/enums/travel_state.dart';
 import 'package:quber_taxi/util/mapbox.dart' as mb_util;
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart' as g;
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:quber_taxi/client-app/pages/navigation/trip_info.dart';
 import 'package:quber_taxi/common/models/travel.dart';
+import 'package:quber_taxi/websocket/impl/finish_confirmation_handler.dart';
 import 'package:turf/distance.dart' as td;
 import 'package:turf/turf.dart' as turf;
 
@@ -35,6 +39,8 @@ class _ClientNavigationState extends State<ClientNavigation> {
   late final StreamSubscription<g.Position> _locationStream;
   num _distanceInKm = 0;
   Stopwatch? _stopwatch;
+  late final FinishConfirmationHandler _confirmationHandler;
+  final _travelService = TravelService();
 
   void _startTrackingDistance() {
     _locationStream = g.Geolocator.getPositionStream(
@@ -116,37 +122,64 @@ class _ClientNavigationState extends State<ClientNavigation> {
     }
   }
 
-  void _showTripCompletedBottomSheet() {
-    _stopwatch?.stop();
-    showModalBottomSheet(
-        context: context,
-        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-        isDismissible: false,
-        isScrollControlled: true,
-        showDragHandle: true,
-        builder: (context) => ClientTripCompleted(
+  void _markTravelAsCompleted() async {
+    final response = await _travelService.changeState(
+        travelId: widget.travel.id, state: TravelState.completed
+    );
+    if(response.statusCode == 200) {
+      _stopwatch?.stop();
+      if(!mounted) return;
+      showModalBottomSheet(
+          context: context,
+          backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+          isDismissible: false,
+          isScrollControlled: true,
+          showDragHandle: true,
+          builder: (context) => ClientTripCompleted(
             travel: widget.travel,
             duration: _stopwatch?.elapsed.inMinutes ?? 0,
             distance: _distanceInKm,
-        )
-    );
+          )
+      );
+    }
   }
 
   @override
   void initState() {
     super.initState();
+    _confirmationHandler = FinishConfirmationHandler(
+        travelId: widget.travel.id,
+        onConfirmationRequested: () async {
+          // ConfirmDialog
+          final result = await showDialog<bool>(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) =>
+              const ConfirmDialog(
+                  title: 'Confirmación de finalización',
+                  message: "El conductor ha notificado que se ha llegado al destino. Acepte solo si esto es correcto"
+              )
+          );
+          // Handle result
+          if(result == true) {
+            _markTravelAsCompleted();
+          }
+        }
+    )..activate();
     _realTimeRoute.add(turf.Position(widget.travel.originCoords[0], widget.travel.originCoords[1]));
     _startTrackingDistance();
   }
 
   @override
   void dispose() {
+    _confirmationHandler.deactivate();
     _locationStream.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final isConnected = NetworkScope.statusOf(context) == ConnectionStatus.online;
     // Init camera options
     final cameraOptions = CameraOptions(
       center: Point(coordinates: Position(widget.travel.originCoords[0], widget.travel.originCoords[1])),
@@ -155,7 +188,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
       zoom: 17,
     );
     return NetworkAlertTemplate(
-        alertBuilder: (_, status) => CustomNetworkAlert(status: status, useTopSafeArea: true),
+      alertBuilder: (_, status) => CustomNetworkAlert(status: status, useTopSafeArea: true),
       alertPosition: Alignment.topCenter,
       child: Scaffold(
         resizeToAvoidBottomInset: true,
@@ -166,10 +199,24 @@ class _ClientNavigationState extends State<ClientNavigation> {
           onMapCreated: _onMapCreated,
           onCameraChangeListener: _onCameraChangeListener,
         ),
-        // @Temporal: Just for demo, in this view, the ClientTripCompleted sheet will be reactive.
         floatingActionButton: FloatingActionButton(
-          onPressed: _showTripCompletedBottomSheet,
-          child: Icon(Icons.question_mark_outlined),
+          onPressed: isConnected ? () async {
+            // Confirmation dialog
+            final result = await showDialog<bool>(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => const ConfirmDialog(
+                    title: 'Confirmación de finalización',
+                    message: "Se le notificará inmediatamente al conductor que desea terminar el viaje. Acepte solo "
+                        "si esto es correcto."
+                )
+            );
+            // Handle result
+            if(result == true) {
+              _markTravelAsCompleted();
+            }
+          } : null,
+          child: Icon(Icons.done_outline)
         ),
         bottomSheet: ClientTripInfo(
           distance: _distanceInKm,

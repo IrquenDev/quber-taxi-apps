@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:quber_taxi/enums/travel_state.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/websocket/impl/travel_state_handler.dart';
 
@@ -27,6 +28,7 @@ class _SearchDriverState extends State<SearchDriver> with SingleTickerProviderSt
     _controller = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat(); // infinity loop
     // connect to websocket in order to see if any driver took the trip
     _handler = TravelStateHandler(
+      state: TravelState.accepted,
       travelId: widget.travelId,
       onMessage: (travel) => context.pop(travel)
     )..activate();
