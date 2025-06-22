@@ -20,6 +20,8 @@ class RoutePaths {
   static const String quberReviews = '/quber-reviews';
 
   static const String driverNavigation = '/driver-navigation';
+
+  static const String driverCreateAccount = '/driver-create-account';
   
   static const String identityVerification = '/identity-verification';
 
