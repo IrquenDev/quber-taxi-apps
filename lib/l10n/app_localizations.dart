@@ -682,6 +682,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Contraseña:'**
   String get passwordDriver;
+
+  /// No description provided for @goBack.
+  ///
+  /// In es, this message translates to:
+  /// **'Regresar'**
+  String get goBack;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
