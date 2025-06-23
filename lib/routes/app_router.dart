@@ -7,12 +7,6 @@ import 'package:quber_taxi/client-app/pages/home/search_destination.dart';
 import 'package:quber_taxi/client-app/pages/home/search_origin.dart';
 import 'package:quber_taxi/client-app/pages/navigation/client_navigation.dart';
 import 'package:quber_taxi/client-app/pages/navigation/quber_reviews.dart';
-import 'package:quber_taxi/common/models/client.dart';
-import 'package:quber_taxi/common/models/driver.dart';
-import 'package:quber_taxi/common/models/review.dart';
-import 'package:quber_taxi/common/models/taxi.dart';
-import 'package:quber_taxi/driver-app/pages/navigation/driver_navigation.dart';
-import 'package:quber_taxi/driver-app/pages/create_account/verification_page.dart';
 import 'package:quber_taxi/client-app/pages/search_driver/search_driver.dart';
 import 'package:quber_taxi/client-app/pages/track_driver/track_driver.dart';
 import 'package:quber_taxi/common/models/review.dart';
@@ -20,6 +14,7 @@ import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/pages/location_picker/location_picker.dart';
 import 'package:quber_taxi/common/pages/login/login.dart';
 import 'package:quber_taxi/driver-app/pages/admin_panel/admin_panel.dart';
+import 'package:quber_taxi/driver-app/pages/create_account/verification_page.dart';
 import 'package:quber_taxi/driver-app/pages/driver_account/driver_account.dart';
 import 'package:quber_taxi/driver-app/pages/home/home.dart';
 import 'package:quber_taxi/driver-app/pages/info-driver/info_driver.dart';
@@ -107,6 +102,7 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
         path: RoutePaths.driverCreateAccount,
         builder: (context, state) => const VerificationIdentityPage()
+    ),
 
     GoRoute(path: RoutePaths.identityVerification,
         builder: (context, state) => const IdentityVerificationPage()
@@ -137,24 +133,3 @@ final GoRouter appRouter = GoRouter(
     )
   ]
 );
-
-// @Demo
-// final travel = Travel(
-//     id: 1,
-//     originName: "Parque de la Fraternidad",
-//     destinationName: "Playa",
-//     originCoords: <num>[-82.3598, 23.1380],
-//     requiredSeats: 4,
-//     hasPets: true,
-//     taxiType: TaxiType.xhdpiComfort,
-//     minDistance: 5,
-//     maxDistance: 22,
-//     minPrice: 500,
-//     maxPrice: 3500,
-//     state: TravelState.inProgress,
-//     client: Client(id: 1, name: "Yosmel Pérez", phone: 56285623.toString()),
-//     driver: Driver(id: 1, name: "Juan", imageUrl: "", phone: "", isAvailable: false, credit: 0.0,
-//         paymentDate: DateTime.now(), rating: 0.0,
-//         taxi: Taxi(id: 1, plate: "", imageUrl: "", seats: 4, type: TaxiType.mdpiStandard)
-//     )
-// );
