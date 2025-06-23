@@ -172,9 +172,9 @@ class _ClientTripCompletedState extends State<ClientTripCompleted> {
                                             count: commentsCount <= 4 ? commentsCount : 4,
                                             radius: 16,
                                             offset: 8,
-                                            /// TODO("yapmDev")
-                                            /// - Display client images properly
-                                            // First, we need to do a little work on the REST API side to provide
+                                            // TODO("yapmDev": @Reminder)
+                                            // - Display client images properly
+                                            // - First, we need to do a little work on the REST API side to provide
                                             // images as static files. On the Flutter side, the relevant models and
                                             // services are ready.
                                             prototypeBuilder: (index) => Image.asset(

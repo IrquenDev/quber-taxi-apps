@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:network_checker/network_checker.dart';
-import 'package:quber_taxi/client-app/pages/home/bottom_sheet.dart';
+import 'package:quber_taxi/client-app/pages/home/request_travel_sheet.dart';
 import 'package:quber_taxi/client-app/pages/home/map.dart';
 import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
@@ -62,12 +62,20 @@ class _ClientHomeState extends State<ClientHome> {
           child: Row(
             spacing: _bottomAppBarHeight,
             children: [
-              Flexible(flex: 1, child: Center(child: _BottomBarItem(icon: Icons.location_on, label: AppLocalizations.of(context)!.map))),
+              Flexible(
+                  flex: 1,
+                  child: Center(
+                      child: _BottomBarItem(
+                          icon: Icons.location_on,
+                          label: AppLocalizations.of(context)!.map
+                      )
+                  )
+              ),
               Flexible(flex: 1, child: Center(child: _QuberPoints())),
-            ],
-          ),
-        ),
-      ),
+            ]
+          )
+        )
+      )
     );
   }
 }

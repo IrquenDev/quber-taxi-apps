@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:network_checker/network_checker.dart';
 
-/// TODO("yapmDev")
-/// - Adjust text, styles etc
+// TODO("yapmDev": @Reminder)
+// - Adjust text, styles etc
 class CustomNetworkAlert extends StatelessWidget {
   final ConnectionStatus status;
   final bool useTopSafeArea;

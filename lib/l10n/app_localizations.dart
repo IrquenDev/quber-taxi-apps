@@ -305,11 +305,11 @@ abstract class AppLocalizations {
   /// **'Bienvenido\na Quber'**
   String get welcomeTitle;
 
-  /// No description provided for @enterEmail.
+  /// No description provided for @enterPhoneNumber.
   ///
   /// In es, this message translates to:
-  /// **'Introduzca su correo'**
-  String get enterEmail;
+  /// **'Introduzca su número de teléfono'**
+  String get enterPhoneNumber;
 
   /// No description provided for @enterPassword.
   ///

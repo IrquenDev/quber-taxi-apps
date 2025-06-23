@@ -11,6 +11,7 @@ import 'package:quber_taxi/enums/taxi_type.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/routes/route_paths.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
+import 'package:quber_taxi/util/runtime.dart';
 import 'package:quber_taxi/util/turf.dart';
 import 'package:turf/turf.dart' as turf;
 
@@ -60,8 +61,8 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
     setState(() {
       _minDistance = entryPoint.distance;
       _maxDistance = entryPoint.distance + farthestPoint.distance;
-      ///TODO("yapmDev")
-      /// - Check real price for distance.
+      // TODO("yapmDev": @Reminder)
+      //  - Check real price for distance.
       _minPrice = _minDistance! * 100;
       _maxPrice = _maxDistance! * 100;
     });
@@ -223,8 +224,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                   child: ElevatedButton(
                     onPressed: canEstimateDistance && isConnected ? () async {
                       Travel travel = await _travelService.requestNewTravel(
-                          /// TODO("yapmDev": static client id)
-                          clientId: 1,
+                          clientId: userInLogged.id,
                           originName: _originName!,
                           destinationName: _destinationName!,
                           originCoords: _originCoords!,
@@ -244,8 +244,8 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                         // Navigate to TrackDriver Screen.
                         context.go(RoutePaths.trackDriver, extra: updatedTravel);
                       } else {
-                        /// TODO ("yapmDev")
-                        /// - This travel request should be delete or marked as CANCELED.
+                        // TODO ("yapmDev": @Reminder)
+                        // - This travel request should be delete or marked as CANCELED.
                       }
                     } : null,
                     child: Text(AppLocalizations.of(context)!.askTaxi),
