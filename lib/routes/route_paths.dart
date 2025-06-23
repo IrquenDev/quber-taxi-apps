@@ -1,6 +1,8 @@
 
 class RoutePaths {
 
+  static const String login = '/login';
+
   static const String clientHome = '/client-home';
 
   static const String driverHome = '/driver-home';

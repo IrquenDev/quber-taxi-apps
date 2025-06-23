@@ -1,39 +1,47 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:quber_taxi/config/api_config.dart';
+import 'package:quber_taxi/common/models/client.dart';
 import 'package:quber_taxi/common/models/driver.dart';
+import 'package:quber_taxi/config/api_config.dart';
 
 class AccountService {
 
-  final _apiConfig = ApiConfig();
-  final _endpoint = "account";
+  final _endpoint = "${ApiConfig().baseUrl}/account";
+  final headers = {'Content-Type': 'application/json'};
 
-  Future<http.Response> acceptTravel({required int driverId, required int travelId}) async {
-    final url = Uri.parse("${_apiConfig.baseUrl}/$_endpoint/$driverId?travelId=$travelId");
-    final headers = {'Content-Type': 'application/json'};
-    return await http.patch(url, headers: headers);
+  Future<http.Response> registerClient(Map<String, dynamic> clientData) async {
+    final url = Uri.parse("$_endpoint/register/client");
+    final body = jsonEncode(clientData);
+    return await http.post(url, headers: headers, body: body);
+  }
+
+  Future<http.Response> registerDriver(Map<String, dynamic> driverData) async {
+    final url = Uri.parse("$_endpoint/register/driver");
+    final body = jsonEncode(driverData);
+    return await http.post(url, headers: headers, body: body);
+  }
+
+  Future<http.Response> deleteClient(int id) async {
+    final url = Uri.parse("$_endpoint/delete/client/$id");
+    return await http.delete(url);
+  }
+
+  Future<http.Response> deleteDriver(int id) async {
+    final url = Uri.parse("$_endpoint/delete/driver/$id");
+    return await http.delete(url);
+  }
+
+  Future<Client> getClientById(int id) async {
+    final url = Uri.parse("$_endpoint/client/$id");
+    final response =  await http.get(url);
+    final json = jsonDecode(response.body);
+    return Client.fromJson(json);
   }
 
   Future<Driver> getDriverById(int id) async {
-    final url = Uri.parse("${_apiConfig.baseUrl}/$_endpoint/driver/$id");
-    final headers = {'Content-Type': 'application/json'};
-    final response = await http.get(url, headers: headers);
-
-    if (response.statusCode == 200) {
-      final json = jsonDecode(response.body);
-      return Driver.fromJson(json);
-    } else {
-      throw DriverNotFoundException('Driver with id $id not found. Status code: ${response.statusCode}');
-    }
+    final url = Uri.parse("$_endpoint/driver/$id");
+    final response =  await http.get(url);
+    final json = jsonDecode(response.body);
+    return Driver.fromJson(json);
   }
-
-}
-
-
-class DriverNotFoundException implements Exception {
-  final String message;
-  DriverNotFoundException([this.message = 'Driver not found']);
-
-  @override
-  String toString() => 'DriverNotFoundException: $message';
 }

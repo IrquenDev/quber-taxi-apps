@@ -114,7 +114,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get welcomeTitle => 'Welcome\nto Quber';
 
   @override
-  String get enterEmail => 'Enter your email';
+  String get enterPhoneNumber => 'Enter your phone number';
 
   @override
   String get enterPassword => 'Enter your password';

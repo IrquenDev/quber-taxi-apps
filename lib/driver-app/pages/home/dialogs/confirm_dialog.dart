@@ -11,8 +11,8 @@ class ConfirmDialog extends StatelessWidget {
     super.key,
     required this.title,
     required this.message,
-    /// TODO("yapmDev")
-    /// - Add to loc
+    // TODO("yapmDev": @Reminder)
+    // - Add to localizations
     this.cancelText = 'Cancelar',
     this.acceptText = 'Aceptar',
   });

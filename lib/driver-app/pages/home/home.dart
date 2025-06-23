@@ -19,6 +19,7 @@ import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/routes/route_paths.dart';
 import 'package:quber_taxi/util/geolocator.dart' as g_util;
 import 'package:quber_taxi/util/mapbox.dart' as mb_util;
+import 'package:quber_taxi/util/runtime.dart';
 import 'package:quber_taxi/websocket/core/websocket_service.dart';
 import 'package:quber_taxi/websocket/impl/travel_request_handler.dart';
 import 'package:quber_taxi/websocket/impl/travel_state_handler.dart';
@@ -103,9 +104,8 @@ class _DriverHomeState extends State<DriverHome> {
 
   void _startSharingLocation() {
     _locationShareSubscription = _locationBroadcast.listen((position) async {
-      /// TODO("yapmDev": static driver id)
       WebSocketService.instance.send(
-        "/app/drivers/1/location",
+        "/app/drivers/${userInLogged.id}/location",
         {"longitude": position.longitude, "latitude": position.latitude},
       );
       if(!_isLocationStreaming) _startStreamingLocation();
@@ -113,8 +113,7 @@ class _DriverHomeState extends State<DriverHome> {
   }
 
   void _onTravelSelected(Travel travel) async {
-    /// TODO("yapmDev": static driver id)
-    final response = await _driverService.acceptTravel(driverId: 1, travelId: travel.id);
+    final response = await _driverService.acceptTravel(driverId: userInLogged.id, travelId: travel.id);
     if(response.statusCode == 200) {
       final assetBytes = await rootBundle.load('assets/markers/route/x120/origin.png');
       final originMarkerImage = assetBytes.buffer.asUint8List();
@@ -162,9 +161,8 @@ class _DriverHomeState extends State<DriverHome> {
   @override
   void initState() {
     super.initState();
-    /// TODO("yapmDev": static driver id)
     _newTravelRequestHandler = TravelRequestHandler(
-        driverId: 1,
+        driverId: userInLogged.id,
         onNewTravel: _onNewTravel
     )..activate();
     _locationBroadcast = g.Geolocator.getPositionStream().asBroadcastStream();
@@ -261,7 +259,8 @@ class _DriverHomeState extends State<DriverHome> {
             // FAB group (my location + travel info)
             Positioned(
               right: 20.0,
-              /// TODO("yapm": Avoid hardcoded space)
+              // TODO("yapm": @Reminder)
+              // - Avoid hardcoded space
               bottom: _selectedTravel == null ? 150.0 : 20.0,
               child: Column(
                 spacing: 8.0,

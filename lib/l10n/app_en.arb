@@ -46,7 +46,7 @@
   "until": "To: ",
 
   "welcomeTitle": "Welcome\nto Quber",
-  "enterEmail": "Enter your email",
+  "enterPhoneNumber": "Enter your phone number",
   "enterPassword": "Enter your password",
   "invalidEmail": "Enter a valid email",
   "requiredField": "Required field",

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:quber_taxi/common/widgets/emergency_dialog.dart';
+import 'package:quber_taxi/common/pages/sos/emergency_dialog.dart';
 import 'package:quber_taxi/enums/taxi_type.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 
