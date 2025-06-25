@@ -115,5 +115,11 @@
     "nextPay": "Next Payment Date:",
     "passwordConfirmDriver": "Confirm Password:",
     "passwordDriver": "Password:",
-    "goBack": "Go Back"
+    "goBack": "Go Back",
+
+    "aboutUsTitle": "About Us",
+    "companyDescription": "Microenterprise - Taxi Agency",
+    "companyAboutText": "Quber is a microenterprise dedicated to providing transportation services through an organized taxi network, focused on offering safe, punctual and quality service. The company is committed to customer satisfaction and the well-being of its drivers, promoting a reliable, accessible mobility experience centered on respect, responsibility and efficiency.",
+    "contactAddress": "10th Street between Linea and 23rd"
+
 }
