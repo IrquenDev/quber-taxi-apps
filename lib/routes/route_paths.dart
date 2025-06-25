@@ -36,4 +36,6 @@ class RoutePaths {
   static const String panelAdmin = '/panel-admin';
 
   static const String driverAccount = '/driver-account';
+
+  static const String driverList = '/driver-list';
 }
