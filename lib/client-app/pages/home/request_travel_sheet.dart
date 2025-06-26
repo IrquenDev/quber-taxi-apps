@@ -224,7 +224,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                   child: ElevatedButton(
                     onPressed: canEstimateDistance && isConnected ? () async {
                       Travel travel = await _travelService.requestNewTravel(
-                          clientId: userInLogged.id,
+                          clientId: loggedInUser.id,
                           originName: _originName!,
                           destinationName: _destinationName!,
                           originCoords: _originCoords!,
