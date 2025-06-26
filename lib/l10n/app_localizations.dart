@@ -710,6 +710,71 @@ abstract class AppLocalizations {
   /// **'Irquen, fundada por tres estudiantes y construida como una familia de amigos, hoy es una empresa de software con bases firmes y visión de futuro. Su propósito es hacer que la digitalización sea rápida y accesible para todos. Su misión es llevar la tecnología a cada rincón, crecer, optimizar y expandirse. Su visión es superar límites, encontrar soluciones y crear lo que aún no existe.'**
   String get aboutText;
 
+  /// No description provided for @contactAddress.
+  ///
+  /// In es, this message translates to:
+  /// **'Calle 10 entre Línea y 23'**
+  String get contactAddress;
+
+  /// No description provided for @tripsPageTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Viajes'**
+  String get tripsPageTitle;
+
+  /// No description provided for @tripPrice.
+  ///
+  /// In es, this message translates to:
+  /// **'Precio del viaje: '**
+  String get tripPrice;
+
+  /// No description provided for @tripDuration.
+  ///
+  /// In es, this message translates to:
+  /// **'Duración del viaje: '**
+  String get tripDuration;
+
+  /// No description provided for @clientSectionTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Cliente:'**
+  String get clientSectionTitle;
+
+  /// No description provided for @clientName.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre: '**
+  String get clientName;
+
+  /// No description provided for @clientPhone.
+  ///
+  /// In es, this message translates to:
+  /// **'Teléfono: '**
+  String get clientPhone;
+
+  /// No description provided for @driverSectionTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Conductor:'**
+  String get driverSectionTitle;
+
+  /// No description provided for @driverName.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre: '**
+  String get driverName;
+
+  /// No description provided for @driverPhone.
+  ///
+  /// In es, this message translates to:
+  /// **'Teléfono: '**
+  String get driverPhone;
+
+  /// No description provided for @driverPlate.
+  ///
+  /// In es, this message translates to:
+  /// **'Chapa: '**
+  String get driverPlate;
 }
 
 class _AppLocalizationsDelegate

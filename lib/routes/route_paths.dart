@@ -37,6 +37,9 @@ class RoutePaths {
 
   static const String driverAccount = '/driver-account';
 
+  static const String aboutUs = '/about-us';
+
+  static const String tripList = '/trip-list';
 
   static const String aboutDev = '/about-dev';
 

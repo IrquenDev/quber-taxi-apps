@@ -324,4 +324,36 @@ class AppLocalizationsEs extends AppLocalizations {
   String get aboutText =>
       'Irquen, fundada por tres estudiantes y construida como una familia de amigos, hoy es una empresa de software con bases firmes y visión de futuro. Su propósito es hacer que la digitalización sea rápida y accesible para todos. Su misión es llevar la tecnología a cada rincón, crecer, optimizar y expandirse. Su visión es superar límites, encontrar soluciones y crear lo que aún no existe.';
 
+  @override
+  String get contactAddress => 'Calle 10 entre Línea y 23';
+
+  @override
+  String get tripsPageTitle => 'Viajes';
+
+  @override
+  String get tripPrice => 'Precio del viaje: ';
+
+  @override
+  String get tripDuration => 'Duración del viaje: ';
+
+  @override
+  String get clientSectionTitle => 'Cliente:';
+
+  @override
+  String get clientName => 'Nombre: ';
+
+  @override
+  String get clientPhone => 'Teléfono: ';
+
+  @override
+  String get driverSectionTitle => 'Conductor:';
+
+  @override
+  String get driverName => 'Nombre: ';
+
+  @override
+  String get driverPhone => 'Teléfono: ';
+
+  @override
+  String get driverPlate => 'Chapa: ';
 }
