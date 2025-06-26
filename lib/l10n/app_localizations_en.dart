@@ -313,15 +313,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get goBack => 'Go Back';
 
   @override
-  String get aboutUsTitle => 'About Us';
+
+  String get aboutDeveloperTitle => 'About Developer';
 
   @override
-  String get companyDescription => 'Microenterprise - Taxi Agency';
+  String get softwareCompany => 'Software company';
 
   @override
-  String get companyAboutText =>
-      'Quber is a microenterprise dedicated to providing transportation services through an organized taxi network, focused on offering safe, punctual and quality service. The company is committed to customer satisfaction and the well-being of its drivers, promoting a reliable, accessible mobility experience centered on respect, responsibility and efficiency.';
+  String get aboutText =>
+      'Irquen, founded by three students and built as a family of friends, is now a software company with strong foundations and future vision. Our purpose is to make digitalization fast and accessible for everyone. Our mission is to bring technology to every corner, grow, optimize and expand. Our vision is to push boundaries, find solutions and create what doesn\'t exist yet.';
 
-  @override
-  String get contactAddress => '10th Street between Linea and 23rd';
 }

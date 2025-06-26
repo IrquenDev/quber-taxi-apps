@@ -692,29 +692,24 @@ abstract class AppLocalizations {
   /// **'Regresar'**
   String get goBack;
 
-  /// No description provided for @aboutUsTitle.
+  /// No description provided for @aboutDeveloperTitle.
   ///
   /// In es, this message translates to:
-  /// **'Acerca de Nosotros'**
-  String get aboutUsTitle;
+  /// **'Acerca del Desarrollador'**
+  String get aboutDeveloperTitle;
 
-  /// No description provided for @companyDescription.
+  /// No description provided for @softwareCompany.
   ///
   /// In es, this message translates to:
-  /// **'Mipyme - Agencia de Taxi'**
-  String get companyDescription;
+  /// **'Empresa de software'**
+  String get softwareCompany;
 
-  /// No description provided for @companyAboutText.
+  /// No description provided for @aboutText.
   ///
   /// In es, this message translates to:
-  /// **'Quber es una Mipyme dedicada a ofrecer servicios de transporte a través de una red organizada de taxis, enfocada en brindar un servicio seguro, puntual y de calidad. La empresa se compromete con la satisfacción del cliente y el bienestar de sus conductores, promoviendo una experiencia de movilidad confiable, accesible, centrada en el respeto, la responsabilidad y la eficiencia.'**
-  String get companyAboutText;
+  /// **'Irquen, fundada por tres estudiantes y construida como una familia de amigos, hoy es una empresa de software con bases firmes y visión de futuro. Su propósito es hacer que la digitalización sea rápida y accesible para todos. Su misión es llevar la tecnología a cada rincón, crecer, optimizar y expandirse. Su visión es superar límites, encontrar soluciones y crear lo que aún no existe.'**
+  String get aboutText;
 
-  /// No description provided for @contactAddress.
-  ///
-  /// In es, this message translates to:
-  /// **'Calle 10 entre Línea y 23'**
-  String get contactAddress;
 }
 
 class _AppLocalizationsDelegate
