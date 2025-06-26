@@ -49,13 +49,15 @@ class AppLocalizationsEs extends AppLocalizations {
   String get quberPoints => 'Puntos Quber';
 
   @override
-  String get ubicationFailed => 'Su ubicación actual está fuera de los límites de La Habana';
+  String get ubicationFailed =>
+      'Su ubicación actual está fuera de los límites de La Habana';
 
   @override
   String get permissionsDenied => 'Permiso de ubicación denegado';
 
   @override
-  String get permissionDeniedPermanently => 'Permiso de ubicación denegado permanentemente';
+  String get permissionDeniedPermanently =>
+      'Permiso de ubicación denegado permanentemente';
 
   @override
   String get writeUbication => 'Escriba una ubicación...';
@@ -67,7 +69,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get actualUbication => 'Usar mi ubicación actual';
 
   @override
-  String get outLimits => 'Su ubicación actual está fuera de los límites de La Habana';
+  String get outLimits =>
+      'Su ubicación actual está fuera de los límites de La Habana';
 
   @override
   String get noResults => 'Sin resultados';
@@ -139,7 +142,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get recoverPassword => 'Recuperar Contraseña';
 
   @override
-  String get recoverPasswordDescription => 'Por favor, introduzca su correo electrónico. Le enviaremos un enlace para restablecer su contraseña.';
+  String get recoverPasswordDescription =>
+      'Por favor, introduzca su correo electrónico. Le enviaremos un enlace para restablecer su contraseña.';
 
   @override
   String get sendButton => 'Enviar';
@@ -166,13 +170,16 @@ class AppLocalizationsEs extends AppLocalizations {
   String get confirmIdentity => 'Necesitamos confirmar su identidad.';
 
   @override
-  String get noBot => 'Por favor, toma una selfie para confirmar que no eres un bot.';
+  String get noBot =>
+      'Por favor, toma una selfie para confirmar que no eres un bot.';
 
   @override
-  String get noUsedImage => 'No usaremos esta imagen como foto de perfil ni se mostrará públicamente.';
+  String get noUsedImage =>
+      'No usaremos esta imagen como foto de perfil ni se mostrará públicamente.';
 
   @override
-  String get verificationUser => 'Este paso es parte de nuestro sistema de verificación para garantizar la seguridad de todos los usuarios.';
+  String get verificationUser =>
+      'Este paso es parte de nuestro sistema de verificación para garantizar la seguridad de todos los usuarios.';
 
   @override
   String get takeSelfie => 'Tomar Selfie';
@@ -205,7 +212,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get successConfirm => 'Hemos confirmado su identidad con éxito.';
 
   @override
-  String get passSecurity => 'Este paso es parte de nuestro sistema de verificación para garantizar la seguridad de todos los usuarios.';
+  String get passSecurity =>
+      'Este paso es parte de nuestro sistema de verificación para garantizar la seguridad de todos los usuarios.';
 
   @override
   String get driverInfoTitle => 'Información del Conductor';
@@ -302,4 +310,17 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get goBack => 'Regresar';
+
+  @override
+  String get aboutUsTitle => 'Acerca de Nosotros';
+
+  @override
+  String get companyDescription => 'Mipyme - Agencia de Taxi';
+
+  @override
+  String get companyAboutText =>
+      'Quber es una Mipyme dedicada a ofrecer servicios de transporte a través de una red organizada de taxis, enfocada en brindar un servicio seguro, puntual y de calidad. La empresa se compromete con la satisfacción del cliente y el bienestar de sus conductores, promoviendo una experiencia de movilidad confiable, accesible, centrada en el respeto, la responsabilidad y la eficiencia.';
+
+  @override
+  String get contactAddress => 'Calle 10 entre Línea y 23';
 }

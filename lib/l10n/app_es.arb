@@ -117,7 +117,12 @@
   "nextPay": "Próxima fecha de pago:",
   "passwordConfirmDriver": "Confirme contraseña:",
   "passwordDriver": "Contraseña:",
-  "goBack": "Regresar"
+  "goBack": "Regresar",
+
+  "aboutUsTitle": "Acerca de Nosotros",
+  "companyDescription": "Mipyme - Agencia de Taxi",
+  "companyAboutText": "Quber es una Mipyme dedicada a ofrecer servicios de transporte a través de una red organizada de taxis, enfocada en brindar un servicio seguro, puntual y de calidad. La empresa se compromete con la satisfacción del cliente y el bienestar de sus conductores, promoviendo una experiencia de movilidad confiable, accesible, centrada en el respeto, la responsabilidad y la eficiencia.",
+  "contactAddress": "Calle 10 entre Línea y 23"
 
 
 }
