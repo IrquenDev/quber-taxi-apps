@@ -13,6 +13,7 @@ import 'package:quber_taxi/common/models/review.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 
 import 'package:quber_taxi/common/pages/about_dev/about_dev.dart';
+import 'package:quber_taxi/common/pages/about_us/about_us.dart';
 
 import 'package:quber_taxi/common/pages/location_picker/location_picker.dart';
 import 'package:quber_taxi/common/pages/login/login.dart';
@@ -136,7 +137,7 @@ final GoRouter appRouter = GoRouter(
     ),
 
     GoRoute(path: RoutePaths.aboutDev,
-    builder: (context, state) => const AboutDevPage())
+    builder: (context, state) => const AboutDevPage()),
 
     GoRoute(path: RoutePaths.aboutUs,
     builder: (context, state) => const AboutUsPage()),

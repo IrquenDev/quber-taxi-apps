@@ -692,23 +692,23 @@ abstract class AppLocalizations {
   /// **'Regresar'**
   String get goBack;
 
-  /// No description provided for @aboutDeveloperTitle.
+  /// No description provided for @aboutUsTitle.
   ///
   /// In es, this message translates to:
-  /// **'Acerca del Desarrollador'**
-  String get aboutDeveloperTitle;
+  /// **'Acerca de Nosotros'**
+  String get aboutUsTitle;
 
-  /// No description provided for @softwareCompany.
+  /// No description provided for @companyDescription.
   ///
   /// In es, this message translates to:
-  /// **'Empresa de software'**
-  String get softwareCompany;
+  /// **'Mipyme - Agencia de Taxi'**
+  String get companyDescription;
 
-  /// No description provided for @aboutText.
+  /// No description provided for @companyAboutText.
   ///
   /// In es, this message translates to:
-  /// **'Irquen, fundada por tres estudiantes y construida como una familia de amigos, hoy es una empresa de software con bases firmes y visión de futuro. Su propósito es hacer que la digitalización sea rápida y accesible para todos. Su misión es llevar la tecnología a cada rincón, crecer, optimizar y expandirse. Su visión es superar límites, encontrar soluciones y crear lo que aún no existe.'**
-  String get aboutText;
+  /// **'Quber es una Mipyme dedicada a ofrecer servicios de transporte a través de una red organizada de taxis, enfocada en brindar un servicio seguro, puntual y de calidad. La empresa se compromete con la satisfacción del cliente y el bienestar de sus conductores, promoviendo una experiencia de movilidad confiable, accesible, centrada en el respeto, la responsabilidad y la eficiencia.'**
+  String get companyAboutText;
 
   /// No description provided for @contactAddress.
   ///
@@ -775,6 +775,24 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Chapa: '**
   String get driverPlate;
+
+  /// No description provided for @aboutDeveloperTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Acerca del Desarrollador'**
+  String get aboutDeveloperTitle;
+
+  /// No description provided for @softwareCompany.
+  ///
+  /// In es, this message translates to:
+  /// **'Empresa de software'**
+  String get softwareCompany;
+
+  /// No description provided for @aboutText.
+  ///
+  /// In es, this message translates to:
+  /// **'Irquen, fundada por tres estudiantes y construida como una familia de amigos, hoy es una empresa de software con bases firmes y visión de futuro. Su propósito es hacer que la digitalización sea rápida y accesible para todos. Su misión es llevar la tecnología a cada rincón, crecer, optimizar y expandirse. Su visión es superar límites, encontrar soluciones y crear lo que aún no existe.'**
+  String get aboutText;
 }
 
 class _AppLocalizationsDelegate
