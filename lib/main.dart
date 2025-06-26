@@ -2,16 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:network_checker/network_checker.dart';
-import 'package:quber_taxi/common/services/account_service.dart';
-import 'package:quber_taxi/common/services/auth_service.dart';
 import 'package:quber_taxi/config/api_config.dart';
 import 'package:quber_taxi/config/build_config.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/routes/app_router.dart';
+import 'package:quber_taxi/storage/prefs_manager.dart';
 import 'package:quber_taxi/theme/theme.dart';
-import 'package:quber_taxi/util/runtime.dart' as runtime;
 import 'package:quber_taxi/websocket/core/websocket_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
 
@@ -21,37 +18,15 @@ void main() async {
   // Loads and dispatches any configuration related with the running args.
   BuildConfig.loadConfig();
 
+  // Prepares shared preferences I/O.
+  await SharedPrefsManager.init();
+
   // Configures mapbox access token, need it for any request on Geocoding or Directions APIs.
   MapboxOptions.setAccessToken(ApiConfig().mapboxAccessToken);
 
   // Try opening a websocket connection. Although it's not a Future, this operation is asynchronous (it takes time,
   // so in our case we keep it  open from here and then subscribe to the different topics).
   WebSocketService.instance.connect(baseUrl: ApiConfig().baseUrl);
-
-  // TODO("yapmDev": @Temporal)
-  // This is a functional solution, but as I say, "unconventional." What happens if there's no connection at this
-  // initial point? We know the answer. No feedback can be given or anything can be done about it.
-  //
-  // IF YOU'RE ONLY PROTOTYPING THE UI (NO API CONNECTIONS, RUNTIME, ETC.), COMMENT OUT THIS SECTION SO YOU DON'T
-  // GET STUCK WAITING FOR A TIMEOUT AND THEN AN ERROR.
-  // ADDITIONALLY, CHANGE THE INITIAL ROUTE IN routes/app_router.dart.
-  // JUST REMEMBER TO LEAVE EVERYTHING IN ITS PLACE.
-  //
-  // Check if session active.
-  final isSessionOk = await AuthService().isSessionActive();
-  if(isSessionOk) {
-    // Set isSessionOk runtime access
-    runtime.isSessionOk = isSessionOk;
-    // Set userInLogged runtime access
-    final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getInt("userId")!;
-    if(runtime.isClientMode) {
-      runtime.userInLogged = await AccountService().getClientById(userId);
-    }
-    else {
-      runtime.userInLogged = await AccountService().getDriverById(userId);
-    }
-  }
 
   // TODO("yapmDev": @Reminder)
   // - Probably will be needed it, when the app have to redirect to continue to the current navigation status

@@ -26,9 +26,8 @@ import 'route_paths.dart';
 final GoRouter appRouter = GoRouter(
 
   // App start up route. You can change it for developing or testing, just remember to take it back in place.
-  initialLocation: runtime.isSessionOk ?? false
-      ? runtime.isClientMode ? RoutePaths.clientHome : RoutePaths.clientHome
-      : RoutePaths.login,
+  initialLocation: runtime.isSessionOk
+      ? runtime.isClientMode ? RoutePaths.clientHome : RoutePaths.driverHome,
   
   routes: [
     GoRoute(
