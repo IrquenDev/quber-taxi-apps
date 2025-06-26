@@ -709,6 +709,7 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Irquen, fundada por tres estudiantes y construida como una familia de amigos, hoy es una empresa de software con bases firmes y visión de futuro. Su propósito es hacer que la digitalización sea rápida y accesible para todos. Su misión es llevar la tecnología a cada rincón, crecer, optimizar y expandirse. Su visión es superar límites, encontrar soluciones y crear lo que aún no existe.'**
   String get aboutText;
+
 }
 
 class _AppLocalizationsDelegate

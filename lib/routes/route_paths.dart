@@ -37,5 +37,7 @@ class RoutePaths {
 
   static const String driverAccount = '/driver-account';
 
+
   static const String aboutDev = '/about-dev';
+
 }

@@ -313,6 +313,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get goBack => 'Go Back';
 
   @override
+
   String get aboutDeveloperTitle => 'About Developer';
 
   @override
@@ -321,4 +322,5 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get aboutText =>
       'Irquen, founded by three students and built as a family of friends, is now a software company with strong foundations and future vision. Our purpose is to make digitalization fast and accessible for everyone. Our mission is to bring technology to every corner, grow, optimize and expand. Our vision is to push boundaries, find solutions and create what doesn\'t exist yet.';
+
 }
