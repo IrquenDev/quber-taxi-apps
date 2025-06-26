@@ -27,7 +27,7 @@ final GoRouter appRouter = GoRouter(
 
   // App start up route. You can change it for developing or testing, just remember to take it back in place.
   initialLocation: runtime.isSessionOk
-      ? runtime.isClientMode ? RoutePaths.clientHome : RoutePaths.driverHome,
+      ? runtime.isClientMode ? RoutePaths.clientHome : RoutePaths.driverHome : RoutePaths.login,
   
   routes: [
     GoRoute(
