@@ -43,4 +43,5 @@ class RoutePaths {
 
   static const String aboutDev = '/about-dev';
 
+  static const String clientSetting = '/client-setting';
 }
