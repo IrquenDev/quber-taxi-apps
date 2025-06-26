@@ -13,9 +13,11 @@ import 'package:quber_taxi/common/models/review.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 
 import 'package:quber_taxi/common/pages/about_dev/about_dev.dart';
+import 'package:quber_taxi/common/pages/about_us/about_us.dart';
 
 import 'package:quber_taxi/common/pages/location_picker/location_picker.dart';
 import 'package:quber_taxi/common/pages/login/login.dart';
+import 'package:quber_taxi/common/pages/trip/trip_list.dart';
 import 'package:quber_taxi/driver-app/pages/admin_panel/admin_panel.dart';
 import 'package:quber_taxi/driver-app/pages/create_account/verification_page.dart';
 import 'package:quber_taxi/driver-app/pages/driver_account/driver_account.dart';
@@ -28,11 +30,8 @@ import 'route_paths.dart';
 final GoRouter appRouter = GoRouter(
 
   // App start up route. You can change it for developing or testing, just remember to take it back in place.
-
   initialLocation: runtime.isSessionOk ?? false
-      ? runtime.isClientMode ? RoutePaths.clientHome : RoutePaths.clientHome
-      : RoutePaths.login,
-
+      ? runtime.isClientMode ? RoutePaths.clientHome : RoutePaths.driverHome : RoutePaths.login,
   
   routes: [
     GoRoute(
@@ -138,7 +137,12 @@ final GoRouter appRouter = GoRouter(
     ),
 
     GoRoute(path: RoutePaths.aboutDev,
-    builder: (context, state) => const AboutDevPage())
+    builder: (context, state) => const AboutDevPage()),
 
+    GoRoute(path: RoutePaths.aboutUs,
+    builder: (context, state) => const AboutUsPage()),
+
+    GoRoute(path: RoutePaths.tripList,
+    builder: (context, state) => const TripsPage())
   ]
 );

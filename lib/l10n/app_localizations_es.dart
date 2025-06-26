@@ -314,7 +314,49 @@ class AppLocalizationsEs extends AppLocalizations {
   String get goBack => 'Regresar';
 
   @override
+  String get aboutUsTitle => 'Acerca de Nosotros';
 
+  @override
+  String get companyDescription => 'Mipyme - Agencia de Taxi';
+
+  @override
+  String get companyAboutText =>
+      'Quber es una Mipyme dedicada a ofrecer servicios de transporte a través de una red organizada de taxis, enfocada en brindar un servicio seguro, puntual y de calidad. La empresa se compromete con la satisfacción del cliente y el bienestar de sus conductores, promoviendo una experiencia de movilidad confiable, accesible, centrada en el respeto, la responsabilidad y la eficiencia.';
+
+  @override
+  String get contactAddress => 'Calle 10 entre Línea y 23';
+
+  @override
+  String get tripsPageTitle => 'Viajes';
+
+  @override
+  String get tripPrice => 'Precio del viaje: ';
+
+  @override
+  String get tripDuration => 'Duración del viaje: ';
+
+  @override
+  String get clientSectionTitle => 'Cliente:';
+
+  @override
+  String get clientName => 'Nombre: ';
+
+  @override
+  String get clientPhone => 'Teléfono: ';
+
+  @override
+  String get driverSectionTitle => 'Conductor:';
+
+  @override
+  String get driverName => 'Nombre: ';
+
+  @override
+  String get driverPhone => 'Teléfono: ';
+
+  @override
+  String get driverPlate => 'Chapa: ';
+
+  @override
   String get aboutDeveloperTitle => 'Acerca del Desarrollador';
 
   @override
@@ -323,5 +365,4 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get aboutText =>
       'Irquen, fundada por tres estudiantes y construida como una familia de amigos, hoy es una empresa de software con bases firmes y visión de futuro. Su propósito es hacer que la digitalización sea rápida y accesible para todos. Su misión es llevar la tecnología a cada rincón, crecer, optimizar y expandirse. Su visión es superar límites, encontrar soluciones y crear lo que aún no existe.';
-
 }
