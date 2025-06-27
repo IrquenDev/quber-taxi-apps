@@ -319,6 +319,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get companyDescription => 'Microenterprise - Taxi Agency';
 
   @override
+  String get companyAdress =>
+      '4th Street / Central and Market, Martín Pérez Neighborhood, San Miguel del Padrón';
+
+  @override
   String get companyAboutText =>
       'Quber is a microenterprise dedicated to providing transportation services through an organized taxi network, focused on offering safe, punctual and quality service. The company is committed to customer satisfaction and the well-being of its drivers, promoting a reliable, accessible mobility experience centered on respect, responsibility and efficiency.';
 

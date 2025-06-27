@@ -317,11 +317,15 @@ class AppLocalizationsEs extends AppLocalizations {
   String get aboutUsTitle => 'Acerca de Nosotros';
 
   @override
-  String get companyDescription => 'Mipyme - Agencia de Taxi';
+  String get companyDescription => 'Empresa - Agencia de Taxi';
+
+  @override
+  String get companyAdress =>
+      'Calle 4ta / Central y Mercado, Reparto Martín Pérez, San Miguel del Padrón';
 
   @override
   String get companyAboutText =>
-      'Quber es una Mipyme dedicada a ofrecer servicios de transporte a través de una red organizada de taxis, enfocada en brindar un servicio seguro, puntual y de calidad. La empresa se compromete con la satisfacción del cliente y el bienestar de sus conductores, promoviendo una experiencia de movilidad confiable, accesible, centrada en el respeto, la responsabilidad y la eficiencia.';
+      'Quber es una Empresa dedicada a ofrecer servicios de transporte a través de una red organizada de taxis, enfocada en brindar un servicio seguro, puntual y de calidad. La empresa se compromete con la satisfacción del cliente y el bienestar de sus conductores, promoviendo una experiencia de movilidad confiable, accesible, centrada en el respeto, la responsabilidad y la eficiencia.';
 
   @override
   String get contactAddress => 'Calle 10 entre Línea y 23';
