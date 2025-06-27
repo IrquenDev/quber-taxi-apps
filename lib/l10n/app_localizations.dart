@@ -647,7 +647,7 @@ abstract class AppLocalizations {
   /// No description provided for @myAccount.
   ///
   /// In es, this message translates to:
-  /// **'Mi Cuenta'**
+  /// **'Ajustes'**
   String get myAccount;
 
   /// No description provided for @balance.

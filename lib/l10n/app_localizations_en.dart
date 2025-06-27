@@ -289,7 +289,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saveInformation => 'Save';
 
   @override
-  String get myAccount => 'My Account';
+  String get myAccount => 'Settings';
 
   @override
   String get balance => 'Balance:';

@@ -290,7 +290,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get saveInformation => 'Guardar';
 
   @override
-  String get myAccount => 'Mi Cuenta';
+  String get myAccount => 'Ajustes';
 
   @override
   String get balance => 'Balance:';
