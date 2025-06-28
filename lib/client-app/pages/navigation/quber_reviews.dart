@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:quber_taxi/common/models/review.dart';
 
-class QuberReviews extends StatelessWidget {
+class QuberReviewsPage extends StatelessWidget {
 
   final List<Review> reviews;
 
-  const QuberReviews({super.key, required this.reviews});
+  const QuberReviewsPage({super.key, required this.reviews});
 
   @override
   Widget build(BuildContext context) {

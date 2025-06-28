@@ -3,14 +3,14 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 
-class AdminSettingsPage extends StatefulWidget {
-  const AdminSettingsPage({super.key});
+class AdminHome extends StatefulWidget {
+  const AdminHome({super.key});
 
   @override
-  _AdminSettingsPageState createState() => _AdminSettingsPageState();
+  _AdminHomeState createState() => _AdminHomeState();
 }
 
-class _AdminSettingsPageState extends State<AdminSettingsPage> {
+class _AdminHomeState extends State<AdminHome> {
   final TextEditingController _percentageController = TextEditingController(text: '10%');
   final TextEditingController _priceController = TextEditingController(text: '50 CUP');
   final TextEditingController _newPasswordController = TextEditingController();
