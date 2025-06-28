@@ -5,17 +5,17 @@ import 'package:quber_taxi/enums/travel_state.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/websocket/impl/travel_state_handler.dart';
 
-class SearchDriver extends StatefulWidget {
+class SearchDriverPage extends StatefulWidget {
 
-  const SearchDriver({super.key, required this.travelId});
+  const SearchDriverPage({super.key, required this.travelId});
 
   final int travelId;
 
   @override
-  State<SearchDriver> createState() => _SearchDriverState();
+  State<SearchDriverPage> createState() => _SearchDriverPageState();
 }
 
-class _SearchDriverState extends State<SearchDriver> with SingleTickerProviderStateMixin {
+class _SearchDriverPageState extends State<SearchDriverPage> with SingleTickerProviderStateMixin {
 
   late AnimationController _controller;
   late final Timer _timeoutTimer;

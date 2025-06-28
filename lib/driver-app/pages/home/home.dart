@@ -24,17 +24,17 @@ import 'package:quber_taxi/websocket/core/websocket_service.dart';
 import 'package:quber_taxi/websocket/impl/travel_request_handler.dart';
 import 'package:quber_taxi/websocket/impl/travel_state_handler.dart';
 
-class DriverHome extends StatefulWidget {
+class DriverHomePage extends StatefulWidget {
 
   final Position? coords;
 
-  const DriverHome({super.key, this.coords});
+  const DriverHomePage({super.key, this.coords});
 
   @override
-  State<DriverHome> createState() => _DriverHomeState();
+  State<DriverHomePage> createState() => _DriverHomePageState();
 }
 
-class _DriverHomeState extends State<DriverHome> {
+class _DriverHomePageState extends State<DriverHomePage> {
 
   // Mapbox controller instance
   late MapboxMap _mapController;

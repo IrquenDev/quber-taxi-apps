@@ -8,6 +8,9 @@ bool get isClientMode => BuildConfig.appProfile == AppProfile.client;
 /// Check if the app is running as driver profile.
 bool get isDriverMode => BuildConfig.appProfile == AppProfile.driver;
 
+/// Check if the app is running as driver profile.
+bool get isAdminMode => BuildConfig.appProfile == AppProfile.admin;
+
 /// Indicates whether there is an active session. If `false`, the user should be automatically redirected to login.
 bool get isSessionOk => SessionManager.instance.isSessionOk();
 
