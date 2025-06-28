@@ -108,21 +108,17 @@ class AboutUsPage extends StatelessWidget {
                                 children: [
                                   _buildContactRow(
                                     context,
-                                    imagePath: 'assets/icons/mail.svg',
+                                    imagePath: 'assets/icons/location_on.svg',
                                     text: AppLocalizations.of(context)!.companyAdress,
                                   ),
                                   const SizedBox(height: 6),
                                   _buildContactRow(
                                     context,
                                     imagePath: 'assets/icons/phone.svg',
-                                    text: '+5355555555',
+                                    text: '+53 52417814',
                                   ),
                                   const SizedBox(height: 6),
-                                  _buildContactRow(
-                                    context,
-                                    imagePath: 'assets/icons/location_on.svg',
-                                    text: AppLocalizations.of(context)!.contactAddress,
-                                  ),
+
                                 ],
                               ),
                             ),
