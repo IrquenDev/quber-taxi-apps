@@ -500,11 +500,11 @@ abstract class AppLocalizations {
   /// **'Compruebe su conexión a Internet e intente de nuevo'**
   String get checkYourInternetConnection;
 
-  /// No description provided for @nowCanAskForTaxi.
+  /// No description provided for @nowCanAskForTrip.
   ///
   /// In es, this message translates to:
-  /// **'¡Ya puede ir a por su taxi!'**
-  String get nowCanAskForTaxi;
+  /// **'¡Ya puede ir a por su trip!'**
+  String get nowCanAskForTrip;
 
   /// No description provided for @thanks.
   ///

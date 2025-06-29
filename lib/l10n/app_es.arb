@@ -81,7 +81,7 @@
   "accountCreatedSuccess": "Cuenta creada satisfactoriamente",
   "errorCreatingAccount": "Ocurrió un error al crear la cuenta",
   "checkYourInternetConnection": "Compruebe su conexión a Internet e intente de nuevo",
-  "nowCanAskForTaxi": "¡Ya puede ir a por su taxi!",
+  "nowCanAskForTrip": "¡Ya puede ir a por su trip!",
 
   "thanks": "Gracias por confirmar su identidad.",
   "successConfirm": "Hemos confirmado su identidad con éxito.",

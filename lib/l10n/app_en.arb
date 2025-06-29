@@ -80,7 +80,7 @@
     "accountCreatedSuccess": "Account successfully created",
     "errorCreatingAccount": "An error occurred while creating the account",
     "checkYourInternetConnection": "Check your Internet connection and try again",
-    "nowCanAskForTaxi": "You can now go get your taxi",
+    "nowCanAskForTrip": "You can now go get your trip",
 
     "thanks": "Thank you for confirming your identity.",
     "successConfirm": "We have successfully confirmed your identity.",
