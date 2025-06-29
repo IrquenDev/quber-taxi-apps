@@ -805,6 +805,42 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Irquen, fundada por tres estudiantes y construida como una familia de amigos, hoy es una empresa de software con bases firmes y visión de futuro. Su propósito es hacer que la digitalización sea rápida y accesible para todos. Su misión es llevar la tecnología a cada rincón, crecer, optimizar y expandirse. Su visión es superar límites, encontrar soluciones y crear lo que aún no existe.'**
   String get aboutText;
+
+  /// No description provided for @identityVerificationTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Verificación de identidad'**
+  String get identityVerificationTitle;
+
+  /// No description provided for @confirmIdentityHeader.
+  ///
+  /// In es, this message translates to:
+  /// **'Necesitamos confirmar su identidad'**
+  String get confirmIdentityHeader;
+
+  /// No description provided for @takeSelfieInstruction.
+  ///
+  /// In es, this message translates to:
+  /// **'Por favor, toma una selfie para confirmar que no eres un bot.'**
+  String get takeSelfieInstruction;
+
+  /// No description provided for @selfieUsageNote.
+  ///
+  /// In es, this message translates to:
+  /// **'No usaremos esta imagen como foto de perfil ni se mostrará públicamente.'**
+  String get selfieUsageNote;
+
+  /// No description provided for @verificationPurpose.
+  ///
+  /// In es, this message translates to:
+  /// **'Este paso es parte de nuestro proceso de verificación para garantizar la seguridad de todos los usuarios.'**
+  String get verificationPurpose;
+
+  /// No description provided for @takeSelfieButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Tomar Selfie'**
+  String get takeSelfieButton;
 }
 
 class _AppLocalizationsDelegate

@@ -137,7 +137,12 @@
 
     "aboutDeveloperTitle": "About Developer",
     "softwareCompany": "Software company",
-    "aboutText": "Irquen, founded by three students and built as a family of friends, is now a software company with strong foundations and future vision. Our purpose is to make digitalization fast and accessible for everyone. Our mission is to bring technology to every corner, grow, optimize and expand. Our vision is to push boundaries, find solutions and create what doesn't exist yet."
+    "aboutText": "Irquen, founded by three students and built as a family of friends, is now a software company with strong foundations and future vision. Our purpose is to make digitalization fast and accessible for everyone. Our mission is to bring technology to every corner, grow, optimize and expand. Our vision is to push boundaries, find solutions and create what doesn't exist yet.",
 
-
+    "identityVerificationTitle": "Identity Verification",
+    "confirmIdentityHeader": "We need to confirm your identity",
+    "takeSelfieInstruction": "Please take a selfie to confirm you're not a bot.",
+    "selfieUsageNote": "We won't use this image as a profile picture or display it publicly.",
+    "verificationPurpose": "This step is part of our verification process to ensure the safety of all users.",
+    "takeSelfieButton": "Take Selfie"
 }

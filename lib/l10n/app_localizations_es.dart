@@ -372,4 +372,25 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get aboutText =>
       'Irquen, fundada por tres estudiantes y construida como una familia de amigos, hoy es una empresa de software con bases firmes y visión de futuro. Su propósito es hacer que la digitalización sea rápida y accesible para todos. Su misión es llevar la tecnología a cada rincón, crecer, optimizar y expandirse. Su visión es superar límites, encontrar soluciones y crear lo que aún no existe.';
+
+  @override
+  String get identityVerificationTitle => 'Verificación de identidad';
+
+  @override
+  String get confirmIdentityHeader => 'Necesitamos confirmar su identidad';
+
+  @override
+  String get takeSelfieInstruction =>
+      'Por favor, toma una selfie para confirmar que no eres un bot.';
+
+  @override
+  String get selfieUsageNote =>
+      'No usaremos esta imagen como foto de perfil ni se mostrará públicamente.';
+
+  @override
+  String get verificationPurpose =>
+      'Este paso es parte de nuestro proceso de verificación para garantizar la seguridad de todos los usuarios.';
+
+  @override
+  String get takeSelfieButton => 'Tomar Selfie';
 }

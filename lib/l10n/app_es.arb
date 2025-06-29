@@ -139,8 +139,13 @@
 
   "aboutDeveloperTitle": "Acerca del Desarrollador",
   "softwareCompany": "Empresa de software",
-  "aboutText": "Irquen, fundada por tres estudiantes y construida como una familia de amigos, hoy es una empresa de software con bases firmes y visión de futuro. Su propósito es hacer que la digitalización sea rápida y accesible para todos. Su misión es llevar la tecnología a cada rincón, crecer, optimizar y expandirse. Su visión es superar límites, encontrar soluciones y crear lo que aún no existe."
+  "aboutText": "Irquen, fundada por tres estudiantes y construida como una familia de amigos, hoy es una empresa de software con bases firmes y visión de futuro. Su propósito es hacer que la digitalización sea rápida y accesible para todos. Su misión es llevar la tecnología a cada rincón, crecer, optimizar y expandirse. Su visión es superar límites, encontrar soluciones y crear lo que aún no existe.",
 
-
+  "identityVerificationTitle": "Verificación de identidad",
+  "confirmIdentityHeader": "Necesitamos confirmar su identidad",
+  "takeSelfieInstruction": "Por favor, toma una selfie para confirmar que no eres un bot.",
+  "selfieUsageNote": "No usaremos esta imagen como foto de perfil ni se mostrará públicamente.",
+  "verificationPurpose": "Este paso es parte de nuestro proceso de verificación para garantizar la seguridad de todos los usuarios.",
+  "takeSelfieButton": "Tomar Selfie"
 
 }

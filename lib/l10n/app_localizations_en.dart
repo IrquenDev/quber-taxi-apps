@@ -371,4 +371,25 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get aboutText =>
       'Irquen, founded by three students and built as a family of friends, is now a software company with strong foundations and future vision. Our purpose is to make digitalization fast and accessible for everyone. Our mission is to bring technology to every corner, grow, optimize and expand. Our vision is to push boundaries, find solutions and create what doesn\'t exist yet.';
+
+  @override
+  String get identityVerificationTitle => 'Identity Verification';
+
+  @override
+  String get confirmIdentityHeader => 'We need to confirm your identity';
+
+  @override
+  String get takeSelfieInstruction =>
+      'Please take a selfie to confirm you\'re not a bot.';
+
+  @override
+  String get selfieUsageNote =>
+      'We won\'t use this image as a profile picture or display it publicly.';
+
+  @override
+  String get verificationPurpose =>
+      'This step is part of our verification process to ensure the safety of all users.';
+
+  @override
+  String get takeSelfieButton => 'Take Selfie';
 }
