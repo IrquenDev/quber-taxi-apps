@@ -28,10 +28,9 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
       backgroundColor: theme.colorScheme.surface,
       body: Stack(
         children: [
-          // Fondo general
           Container(color: theme.colorScheme.surface),
 
-          // Header curvado amarillo
+
           Positioned(
             top: -120,
             left: 0,
@@ -71,7 +70,6 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
             ),
           ),
 
-          // Contenido con las tarjetas
           Positioned.fill(
             top: 110,
             child: SingleChildScrollView(
@@ -81,7 +79,6 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                 children: [
                   SizedBox(height: 20),
 
-                  // Sección de Precios
                   Container(
                     width: double.infinity,
                     margin: EdgeInsets.symmetric(horizontal: 0),
@@ -103,7 +100,6 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                         ),
                         SizedBox(height: 20),
 
-                        // Porcentaje de crédito
                         Text(
                           AppLocalizations.of(context)!.driverCreditPercentage,
                           style: theme.textTheme.bodyMedium?.copyWith(
@@ -139,7 +135,6 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                         ),
                         SizedBox(height: 20),
 
-                        // Precio de viaje por KM
                         Text(
                           AppLocalizations.of(context)!.tripPricePerKm,
                           style: theme.textTheme.bodyMedium?.copyWith(
@@ -175,12 +170,12 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                         ),
                         SizedBox(height: 20),
 
-                        // Botón Guardar (aligned to right)
+
                         Align(
                           alignment: Alignment.centerRight,
                           child: ElevatedButton(
                             onPressed: () {
-                              // Acción para guardar precios
+
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: theme.colorScheme.primaryContainer,
@@ -206,7 +201,7 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
 
                   SizedBox(height: 20),
 
-                  // Sección de Contraseñas
+
                   Container(
                     width: double.infinity,
                     margin: EdgeInsets.symmetric(horizontal: 0),
@@ -228,7 +223,7 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                         ),
                         SizedBox(height: 20),
 
-                        // Nueva contraseña
+
                         Text(
                           AppLocalizations.of(context)!.newPassword,
                           style: theme.textTheme.bodyMedium?.copyWith(
@@ -275,7 +270,7 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                         ),
                         SizedBox(height: 20),
 
-                        // Confirme contraseña
+
                         Text(
                           AppLocalizations.of(context)!.confirmPassword,
                           style: theme.textTheme.bodyMedium?.copyWith(
@@ -322,12 +317,10 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                         ),
                         SizedBox(height: 20),
 
-                        // Botón Guardar (aligned to right)
                         Align(
                           alignment: Alignment.centerRight,
                           child: ElevatedButton(
                             onPressed: () {
-                              // Acción para guardar contraseñas
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: theme.colorScheme.primaryContainer,
@@ -352,7 +345,6 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
 
                   SizedBox(height: 20),
 
-                  // Sección de Otras acciones
                   Container(
                     width: double.infinity,
                     margin: EdgeInsets.symmetric(horizontal: 0),
@@ -374,7 +366,6 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                           ),
                         ),
 
-                        // Ver todos los viajes con borde inferior
                         Container(
                           decoration: BoxDecoration(
                             border: Border(
@@ -386,13 +377,11 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                           ),
                           child: InkWell(
                             onTap: () {
-                              // Acción para ver todos los viajes
                             },
                             child: Padding(
                               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                               child: Row(
                                 children: [
-                                  // Reemplaza esto con tu SVG
                                   SvgPicture.asset(
                                     'assets/icons/location_on_black.svg',
                                     width: 24,
@@ -413,19 +402,18 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                           ),
                         ),
 
-                        // Ver todos los conductores con borde superior
                         Container(
                           decoration: BoxDecoration(
                           ),
                           child: InkWell(
                             onTap: () {
-                              // Acción para ver todos los conductores
+
                             },
                             child: Padding(
                               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                               child: Row(
                                 children: [
-                                  // Reemplaza esto con tu SVG
+
                                   SvgPicture.asset(
                                     'assets/icons/group.svg',
                                     width: 24,
