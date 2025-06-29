@@ -214,6 +214,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get errorCreatingAccount => 'Ocurrió un error al crear la cuenta';
 
   @override
+  String get checkYourInternetConnection =>
+      'Compruebe su conexión a Internet e intente de nuevo';
+
+  @override
+  String get nowCanAskForTaxi => '¡Ya puede ir a por su taxi!';
+
+  @override
   String get thanks => 'Gracias por confirmar su identidad.';
 
   @override

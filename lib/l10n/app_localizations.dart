@@ -494,6 +494,18 @@ abstract class AppLocalizations {
   /// **'Ocurrió un error al crear la cuenta'**
   String get errorCreatingAccount;
 
+  /// No description provided for @checkYourInternetConnection.
+  ///
+  /// In es, this message translates to:
+  /// **'Compruebe su conexión a Internet e intente de nuevo'**
+  String get checkYourInternetConnection;
+
+  /// No description provided for @nowCanAskForTaxi.
+  ///
+  /// In es, this message translates to:
+  /// **'¡Ya puede ir a por su taxi!'**
+  String get nowCanAskForTaxi;
+
   /// No description provided for @thanks.
   ///
   /// In es, this message translates to:

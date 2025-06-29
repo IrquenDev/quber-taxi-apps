@@ -214,6 +214,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'An error occurred while creating the account';
 
   @override
+  String get checkYourInternetConnection =>
+      'Check your Internet connection and try again';
+
+  @override
+  String get nowCanAskForTaxi => 'You can now go get your taxi';
+
+  @override
   String get thanks => 'Thank you for confirming your identity.';
 
   @override
