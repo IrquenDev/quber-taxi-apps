@@ -170,6 +170,12 @@ abstract class AppLocalizations {
   /// **'Vehículo'**
   String get vehicle;
 
+  /// No description provided for @settingsHome.
+  ///
+  /// In es, this message translates to:
+  /// **'Ajustes'**
+  String get settingsHome;
+
   /// No description provided for @map.
   ///
   /// In es, this message translates to:

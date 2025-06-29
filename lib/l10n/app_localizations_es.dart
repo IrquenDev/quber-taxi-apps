@@ -45,6 +45,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get vehicle => 'Vehículo';
 
   @override
+  String get settingsHome => 'Ajustes';
+
+  @override
   String get map => 'Mapa';
 
   @override

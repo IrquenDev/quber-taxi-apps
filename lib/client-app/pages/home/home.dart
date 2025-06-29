@@ -67,11 +67,11 @@ class _ClientHomePageState extends State<ClientHomePage> {
               const SizedBox(width: 24,),
               _BottomBarItem(
                 icon: Icons.local_taxi_outlined,
-                label: 'Pedir Taxi',
+                label: AppLocalizations.of(context)!.askTaxi,
               ),
               _BottomBarItem(
                 icon: Icons.settings_outlined,
-                label: 'Ajustes',
+                label: AppLocalizations.of(context)!.settingsHome,
               ),
               _QuberPoints(),
             ],
@@ -123,7 +123,7 @@ class _QuberPoints extends StatelessWidget {
           ),
         ),
         Text(
-          'Puntos Quber',
+          AppLocalizations.of(context)!.quberPoints,
           style: TextStyle(
             fontSize: 16,
               fontWeight: FontWeight.bold
