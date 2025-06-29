@@ -35,53 +35,54 @@ class _ClientHomePageState extends State<ClientHomePage> {
         floatingActionButton: FloatingActionButton(
           shape: CircleBorder(),
           backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-            onPressed: () {
-              showModalBottomSheet(
+          onPressed: () {
+            showModalBottomSheet(
                 backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                isDismissible: false,
-                context: context,
-                isScrollControlled: true,
-                showDragHandle: true,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(borderRadius)),
-                ),
-                builder: (context) => RequestTravelSheet()
-              );
-            },
-            child: Icon(
-              Icons.local_taxi,
-              color: Theme.of(context).iconTheme.color,
-              size: Theme.of(context).iconTheme.size
-          )
+            isDismissible: false,
+            context: context,
+            isScrollControlled: true,
+            showDragHandle: true,
+            shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(borderRadius)),
+            ),
+            builder: (context) => RequestTravelSheet(),
+            );
+          },
+          child: Icon(
+            Icons.location_on,
+            color: Theme.of(context).iconTheme.color,
+            size: Theme.of(context).iconTheme.size,
+          ),
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButtonLocation: FloatingActionButtonLocation.startDocked,
         bottomNavigationBar: BottomAppBar(
+          height: _bottomAppBarHeight,
+          padding: EdgeInsets.zero,
           shape: const CircularNotchedRectangle(),
           notchMargin: 12.0,
           color: Theme.of(context).colorScheme.primaryContainer,
           child: Row(
-            spacing: _bottomAppBarHeight,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Flexible(
-                  flex: 1,
-                  child: Center(
-                      child: _BottomBarItem(
-                          icon: Icons.location_on,
-                          label: AppLocalizations.of(context)!.map
-                      )
-                  )
+              const SizedBox(width: 24,),
+              _BottomBarItem(
+                icon: Icons.local_taxi_outlined,
+                label: 'Pedir Taxi',
               ),
-              Flexible(flex: 1, child: Center(child: _QuberPoints())),
-            ]
-          )
-        )
-      )
+              _BottomBarItem(
+                icon: Icons.settings_outlined,
+                label: 'Ajustes',
+              ),
+              _QuberPoints(),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
 
 class _BottomBarItem extends StatelessWidget {
-
   final IconData icon;
   final String label;
 
@@ -91,10 +92,18 @@ class _BottomBarItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(icon),
-        Text(label)
-      ]
+        const SizedBox(height: 10,),
+        Icon(icon, size: 26,),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold
+          ),
+        ),
+      ],
     );
   }
 }
@@ -104,10 +113,23 @@ class _QuberPoints extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
-      children:  [
-        Text('56'),
-        Text(AppLocalizations.of(context)!.quberPoints)
-      ]
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          '56',
+          style: TextStyle(
+            fontSize: 30,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Text(
+          'Puntos Quber',
+          style: TextStyle(
+            fontSize: 16,
+              fontWeight: FontWeight.bold
+          ),
+        ),
+      ],
     );
   }
 }
