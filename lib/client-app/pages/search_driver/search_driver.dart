@@ -75,8 +75,12 @@ class _SearchDriverPageState extends State<SearchDriverPage> with SingleTickerPr
       body: SafeArea(
         child: Column(
           children: [
-            const SizedBox(height: 40),
-            Text(AppLocalizations.of(context)!.searchDrivers, style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 30,),
+            Text(AppLocalizations.of(context)!.searchDrivers, style: TextStyle(
+              color: Theme.of(context).colorScheme.shadow,
+              fontSize: 20,
+              fontWeight: FontWeight.bold
+            )),
             const Spacer(),
             Center(
               child: Stack(
