@@ -75,12 +75,14 @@ class _SearchOriginPageState extends State<SearchOriginPage> {
               controller: _controller,
               onChanged: isConnected ? _onTextChanged : null,
               decoration: InputDecoration(
-                  hintText: AppLocalizations.of(context)!.writeUbication,
+                icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.shadow),
+                fillColor: Theme.of(context).colorScheme.surface,
+                hintText: AppLocalizations.of(context)!.writeUbication,
                   suffixIcon: _controller.text.isNotEmpty ?
                     IconButton(icon: const Icon(Icons.clear_outlined), onPressed: () {
                       _controller.clear();
                       setState(() => _suggestions = []);
-                    }) : null
+                    }) : null,
               )
             )
         ),
