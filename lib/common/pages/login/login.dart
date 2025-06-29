@@ -166,8 +166,7 @@ class _LoginPageState extends State<LoginPage> {
                           // Create New Account
                           TextButton(
                             onPressed: () {
-                              // TODO("yapmDev": @Reminder)
-                              // - Go to create account (depends on app profile)
+                              context.go(RoutePaths.identityVerification);
                             },
                             child: Text(
                               localization.createAccountLogin,
