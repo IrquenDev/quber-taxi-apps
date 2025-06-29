@@ -1,4 +1,6 @@
 import 'package:go_router/go_router.dart';
+import 'package:quber_taxi/admin-app/pages/admin_panel/admin_panel.dart';
+import 'package:quber_taxi/admin-app/trip/trip_list.dart';
 import 'package:quber_taxi/client-app/pages/client_account/confirm_selfie.dart';
 import 'package:quber_taxi/client-app/pages/client_account/create_account.dart';
 import 'package:quber_taxi/client-app/pages/client_account/identity_verification.dart';
@@ -15,10 +17,8 @@ import 'package:quber_taxi/common/pages/about_dev/about_dev.dart';
 import 'package:quber_taxi/common/pages/about_us/about_us.dart';
 import 'package:quber_taxi/common/pages/location_picker/location_picker.dart';
 import 'package:quber_taxi/common/pages/login/login.dart';
-import 'package:quber_taxi/common/pages/trip/trip_list.dart';
 import 'package:quber_taxi/config/app_profile.dart';
 import 'package:quber_taxi/config/build_config.dart';
-import 'package:quber_taxi/driver-app/pages/admin_panel/admin_panel.dart';
 import 'package:quber_taxi/driver-app/pages/create_account/verification_page.dart';
 import 'package:quber_taxi/driver-app/pages/driver_account/driver_account.dart';
 import 'package:quber_taxi/driver-app/pages/home/home.dart';
@@ -134,7 +134,7 @@ final GoRouter appRouter = GoRouter(
 
     GoRoute(
         path: RoutePaths.adminHome,
-        builder: (context, state) => const AdminHome()
+        builder: (context, state) => const AdminHomePage()
     ),
 
     GoRoute(
