@@ -77,6 +77,8 @@
     "password": "Password:",
     "passwordConfirm": "Confirm Password:",
     "endRegistration": "Complete Registration",
+    "accountCreatedSuccess": "Account successfully created",
+    "errorCreatingAccount": "An error occurred while creating the account",
 
     "thanks": "Thank you for confirming your identity.",
     "successConfirm": "We have successfully confirmed your identity.",

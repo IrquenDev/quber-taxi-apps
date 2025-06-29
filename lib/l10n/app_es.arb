@@ -78,6 +78,8 @@
   "password": "Contraseña:",
   "passwordConfirm": "Confirmar contraseña:",
   "endRegistration": "Finalizar Registro",
+  "accountCreatedSuccess": "Cuenta creada satisfactoriamente",
+  "errorCreatingAccount": "Ocurrió un error al crear la cuenta",
 
   "thanks": "Gracias por confirmar su identidad.",
   "successConfirm": "Hemos confirmado su identidad con éxito.",

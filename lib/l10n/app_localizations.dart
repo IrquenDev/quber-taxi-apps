@@ -482,6 +482,18 @@ abstract class AppLocalizations {
   /// **'Finalizar Registro'**
   String get endRegistration;
 
+  /// No description provided for @accountCreatedSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Cuenta creada satisfactoriamente'**
+  String get accountCreatedSuccess;
+
+  /// No description provided for @errorCreatingAccount.
+  ///
+  /// In es, this message translates to:
+  /// **'Ocurrió un error al crear la cuenta'**
+  String get errorCreatingAccount;
+
   /// No description provided for @thanks.
   ///
   /// In es, this message translates to:

@@ -208,6 +208,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get endRegistration => 'Finalizar Registro';
 
   @override
+  String get accountCreatedSuccess => 'Cuenta creada satisfactoriamente';
+
+  @override
+  String get errorCreatingAccount => 'Ocurrió un error al crear la cuenta';
+
+  @override
   String get thanks => 'Gracias por confirmar su identidad.';
 
   @override
