@@ -5,17 +5,17 @@ import 'package:quber_taxi/enums/travel_state.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/websocket/impl/travel_state_handler.dart';
 
-class SearchDriver extends StatefulWidget {
+class SearchDriverPage extends StatefulWidget {
 
-  const SearchDriver({super.key, required this.travelId});
+  const SearchDriverPage({super.key, required this.travelId});
 
   final int travelId;
 
   @override
-  State<SearchDriver> createState() => _SearchDriverState();
+  State<SearchDriverPage> createState() => _SearchDriverPageState();
 }
 
-class _SearchDriverState extends State<SearchDriver> with SingleTickerProviderStateMixin {
+class _SearchDriverPageState extends State<SearchDriverPage> with SingleTickerProviderStateMixin {
 
   late AnimationController _controller;
   late final Timer _timeoutTimer;
@@ -26,7 +26,7 @@ class _SearchDriverState extends State<SearchDriver> with SingleTickerProviderSt
     super.initState();
     // handling radar animation
     _controller = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat(); // infinity loop
-    // connect to websocket in order to see if any driver took the trip
+    // connect to websocket in order to see if any driver took the trip_list
     _handler = TravelStateHandler(
       state: TravelState.accepted,
       travelId: widget.travelId,

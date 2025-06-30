@@ -20,17 +20,17 @@ import 'package:quber_taxi/websocket/impl/travel_state_handler.dart';
 import 'package:turf/distance.dart' as td;
 import 'package:turf/turf.dart' as turf;
 
-class DriverNavigation extends StatefulWidget {
+class DriverNavigationPage extends StatefulWidget {
 
   final Travel travel;
 
-  const DriverNavigation({super.key, required this.travel});
+  const DriverNavigationPage({super.key, required this.travel});
 
   @override
-  State<DriverNavigation> createState() => _DriverNavigationState();
+  State<DriverNavigationPage> createState() => _DriverNavigationPageState();
 }
 
-class _DriverNavigationState extends State<DriverNavigation> {
+class _DriverNavigationPageState extends State<DriverNavigationPage> {
 
   // Map functionalities
   final _mapboxService = MapboxService();
