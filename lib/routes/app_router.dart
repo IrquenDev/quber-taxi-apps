@@ -24,17 +24,16 @@ import 'package:quber_taxi/driver-app/pages/driver_account/driver_account.dart';
 import 'package:quber_taxi/driver-app/pages/home/home.dart';
 import 'package:quber_taxi/driver-app/pages/info-driver/info_driver.dart';
 import 'package:quber_taxi/driver-app/pages/navigation/driver_navigation.dart';
+import 'package:quber_taxi/client-app/pages/account-setting/account_setting.dart';
 import 'package:quber_taxi/util/runtime.dart' as runtime;
 import 'route_paths.dart';
 
 final GoRouter appRouter = GoRouter(
-
-  // // App start up route. You can change it for developing or testing, just remember to take it back in place.
-  // initialLocation: runtime.isSessionOk
-  //     ? _resolveInitialLocation(BuildConfig.appProfile)
-  //     : RoutePaths.login,
-
-  initialLocation: RoutePaths.tripList,
+  
+  // App start up route. You can change it for developing or testing, just remember to take it back in place.
+  initialLocation: runtime.isSessionOk
+      ? runtime.isClientMode ? RoutePaths.clientSetting : RoutePaths.driverHome:
+  RoutePaths.clientSetting,
   
   routes: [
     GoRoute(
@@ -154,10 +153,12 @@ final GoRouter appRouter = GoRouter(
         builder: (context, state) => const AboutUsPage()
     ),
 
-    GoRoute(
-        path: RoutePaths.tripList,
-        builder: (context, state) => const TripsPage()
-    )
+    GoRoute(path: RoutePaths.clientSetting,
+        builder: (context, state) => const AccountSettingPage()
+    ),
+
+    GoRoute(path: RoutePaths.tripList,
+    builder: (context, state) => const TripsPage())
   ]
 );
 
