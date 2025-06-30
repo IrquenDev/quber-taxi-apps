@@ -180,7 +180,6 @@ class _LoginPageState extends State<LoginPage> {
                                 style: textTheme.bodyMedium?.copyWith(color: Colors.white, fontSize: 16)
                             )
                           ),
-                          // Create New Account
                           TextButton(
                             style: TextButton.styleFrom(
                               padding: EdgeInsets.zero,
