@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:network_checker/network_checker.dart';
+import 'package:quber_taxi/common/models/driver.dart';
+import 'package:quber_taxi/common/models/taxi.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/services/travel_service.dart';
 import 'package:quber_taxi/driver-app/pages/home/trip_card.dart';
-import 'package:quber_taxi/enums/taxi_type.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
+import 'package:quber_taxi/util/runtime.dart';
 
 class AvailableTravelsSheet extends StatefulWidget {
 
@@ -23,15 +25,15 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
   final travelService = TravelService();
   // Just for simplify alignment
   final ghostContainer = Container(width: 40, color: Colors.transparent);
-
-  late Future<List<Travel>> futureTravels;
-
   double _currentSize = 0.15;
   bool _isActionPending = true;
 
+  late Future<List<Travel>> futureTravels;
+  late final Taxi taxi;
+
   Future<void> _refreshTravels() async {
-    /// TODO("yapmDev": Static params)
-    final newTravels = await travelService.findAvailableTravels(4, TaxiType.mdpiStandard);
+
+    final newTravels = await travelService.fetchAvailableTravels(taxi.seats, taxi.type);
     if(newTravels.isEmpty) {
       if(_sheetController.isAttached){
         _sheetController.jumpTo(0.15);
@@ -46,8 +48,7 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
   void _loadTravels() {
     setState(() {
       _isActionPending = true;
-      /// TODO("yapmDev": Static params)
-      futureTravels = travelService.findAvailableTravels(4, TaxiType.mdpiStandard).whenComplete(() {
+      futureTravels = travelService.fetchAvailableTravels(taxi.seats, taxi.type).whenComplete(() {
         if (mounted) {
           setState(() => _isActionPending = false);
         }
@@ -58,6 +59,7 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
   @override
   void initState() {
     super.initState();
+    taxi = Driver.fromJson(loggedInUser).taxi;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _sheetController.addListener(() {
         setState(() {

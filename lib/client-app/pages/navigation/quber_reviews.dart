@@ -39,17 +39,17 @@ class QuberReviewsPage extends StatelessWidget {
             spacing: 8.0,
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(5, (index) {
-                  return Icon(
-                      index < review.rating ? Icons.star : Icons.star_border,
-                      size: Theme.of(context).iconTheme.size! * 0.5,
-                      color: Theme.of(context).colorScheme.primaryContainer
-                  );
-                })
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(5, (index) {
+                    return Icon(
+                        index < review.rating ? Icons.star : Icons.star_border,
+                        size: Theme.of(context).iconTheme.size! * 0.5,
+                        color: Theme.of(context).colorScheme.primaryContainer
+                    );
+                  })
               ),
               Text(
-                  DateFormat("d 'de' MMMM 'de' y", 'es_ES').format(review.timestamp),
+                DateFormat("d 'de' MMMM 'de' y", 'es_ES').format(review.timestamp),
                 style: Theme.of(context).textTheme.bodySmall,
               )
             ]
