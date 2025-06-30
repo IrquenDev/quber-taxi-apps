@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 
-import 'identity_verification.dart';
+import '../../../common/pages/face_id_confirm/identity_verification.dart';
 
 
 class CreateClientAccountPage extends StatefulWidget {
@@ -188,7 +188,7 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => const IdentityVerificationPage(), //Esto hay q cambiarlo, es solo de prueba
+                                    builder: (_) => const RequestFaceIdPage(), //Esto hay q cambiarlo, es solo de prueba
                                   ),
                                 );
                               }

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 
-import 'confirm_selfie.dart';
+import 'confirmed_selfie.dart';
 
 
-class IdentityVerificationPage extends StatelessWidget {
-  const IdentityVerificationPage({super.key});
+class RequestFaceIdPage extends StatelessWidget {
+  const RequestFaceIdPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +111,7 @@ class IdentityVerificationPage extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const ConfirmSelfiePage()),
+                        MaterialPageRoute(builder: (_) => const FaceIdConfirmed()),
                       );
                     },
                     style: ElevatedButton.styleFrom(

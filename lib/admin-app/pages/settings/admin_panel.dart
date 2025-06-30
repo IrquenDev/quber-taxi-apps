@@ -7,18 +7,18 @@ import 'package:quber_taxi/common/models/admin.dart';
 import 'package:quber_taxi/common/models/quber_config.dart';
 import 'package:quber_taxi/common/services/admin_service.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
-import 'package:quber_taxi/routes/route_paths.dart';
+import 'package:quber_taxi/navigation/routes/admin_routes.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/util/runtime.dart' as runtime;
 
-class AdminHomePage extends StatefulWidget {
-  const AdminHomePage({super.key});
+class AdminSettingsPage extends StatefulWidget {
+  const AdminSettingsPage({super.key});
 
   @override
-  State<AdminHomePage> createState() => _AdminHomePageState();
+  State<AdminSettingsPage> createState() => _AdminSettingsPageState();
 }
 
-class _AdminHomePageState extends State<AdminHomePage> {
+class _AdminSettingsPageState extends State<AdminSettingsPage> {
 
   final TextEditingController _newPasswordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
@@ -405,7 +405,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                                       ),
                                     ),
                                     child: InkWell(
-                                      onTap: () => context.push(RoutePaths.tripList),
+                                      onTap: () => context.push(AdminRoutes.tripsList),
                                       child: Padding(
                                         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                                         child: Row(

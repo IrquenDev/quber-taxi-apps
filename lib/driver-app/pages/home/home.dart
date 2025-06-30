@@ -16,7 +16,7 @@ import 'package:quber_taxi/driver-app/pages/home/info_travel_sheet.dart';
 import 'package:quber_taxi/driver-app/pages/home/trip_notification.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
-import 'package:quber_taxi/routes/route_paths.dart';
+import 'package:quber_taxi/navigation/routes/driver_routes.dart';
 import 'package:quber_taxi/util/geolocator.dart' as g_util;
 import 'package:quber_taxi/util/mapbox.dart' as mb_util;
 import 'package:quber_taxi/util/runtime.dart';
@@ -312,7 +312,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
                                   _travelStateHandler = TravelStateHandler(
                                       state: TravelState.inProgress,
                                       travelId: _selectedTravel!.id,
-                                      onMessage: (travel) => sheetContext.go(RoutePaths.driverNavigation, extra: travel)
+                                      onMessage: (travel) => sheetContext.go(DriverRoutes.navigation, extra:
+                                      travel)
                                   )..activate();
                               }
                             )

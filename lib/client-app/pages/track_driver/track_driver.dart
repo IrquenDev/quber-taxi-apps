@@ -8,7 +8,7 @@ import 'package:quber_taxi/common/services/travel_service.dart';
 import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
 import 'package:quber_taxi/driver-app/pages/home/dialogs/confirm_dialog.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
-import 'package:quber_taxi/routes/route_paths.dart';
+import 'package:quber_taxi/navigation/routes/client_routes.dart';
 import 'package:quber_taxi/websocket/impl/driver_location_handler.dart';
 import 'package:quber_taxi/util/mapbox.dart' as mb_util;
 import 'package:quber_taxi/websocket/impl/pickup_confirmation_handler.dart';
@@ -138,7 +138,7 @@ class _TrackDriverPageState extends State<TrackDriverPage> {
             if(!mounted) return;
             if(response.statusCode == 200) {
               // Navigate to ClientNavigation passing the corresponding travel
-              context.go(RoutePaths.clientNavigation, extra: widget.travel);
+              context.go(ClientRoutes.navigation, extra: widget.travel);
             }
           }
         }

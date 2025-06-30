@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 
-class DriverAccountSettingPage extends StatefulWidget {
-  const DriverAccountSettingPage({super.key});
+class DriverSettingsPage extends StatefulWidget {
+  const DriverSettingsPage({super.key});
 
   @override
-  State<DriverAccountSettingPage> createState() => _DriverAccountSettingPage();
+  State<DriverSettingsPage> createState() => _DriverAccountSettingPage();
 }
 
-class _DriverAccountSettingPage extends State<DriverAccountSettingPage> {
+class _DriverAccountSettingPage extends State<DriverSettingsPage> {
   final _formKey = GlobalKey<FormState>();
   final _passwordFormKey = GlobalKey<FormState>();
   final _passwordController = TextEditingController();
