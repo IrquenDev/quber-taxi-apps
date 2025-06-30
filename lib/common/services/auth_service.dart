@@ -1,6 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:quber_taxi/common/models/admin.dart';
+import 'package:quber_taxi/common/models/client.dart';
+import 'package:quber_taxi/common/models/driver.dart';
 import 'package:quber_taxi/config/api_config.dart';
+import 'package:quber_taxi/storage/session_manger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
@@ -21,17 +25,9 @@ class AuthService {
     final url = Uri.parse("$_endpoint/login/client?phone=$phone&password=$password");
     final response = await http.post(url);
     if (response.statusCode == 200) {
-      final prefs = await SharedPreferences.getInstance();
-      final setCookie = response.headers['set-cookie'];
-      if (setCookie != null) {
-        final sessionId = RegExp(r'JSESSIONID=([^;]+)').firstMatch(setCookie)?.group(1);
-        if (sessionId != null) {
-          await prefs.setString('sessionId', sessionId);
-        }
-      }
       final json = jsonDecode(response.body);
-      final userId = json['clientId'];
-      await prefs.setInt('userId', userId);
+      final client = Client.fromJson(json);
+      SessionManager.instance.save(client);
     }
     return response;
   }
@@ -40,24 +36,22 @@ class AuthService {
     final url = Uri.parse("$_endpoint/login/driver?phone=$phone&password=$password");
     final response = await http.post(url);
     if (response.statusCode == 200) {
-      final prefs = await SharedPreferences.getInstance();
-      final setCookie = response.headers['set-cookie'];
-      if (setCookie != null) {
-        final sessionId = RegExp(r'JSESSIONID=([^;]+)').firstMatch(setCookie)?.group(1);
-        if (sessionId != null) {
-          await prefs.setString('sessionId', sessionId);
-        }
-      }
       final json = jsonDecode(response.body);
-      final userId = json['driverId'];
-      await prefs.setInt('userId', userId);
+      final driver = Driver.fromJson(json);
+      SessionManager.instance.save(driver);
     }
     return response;
   }
 
-  Future<http.Response> logout() async {
-    final url = Uri.parse("$_endpoint/logout");
-    return await http.post(url);
+  Future<http.Response> loginAdmin(String phone, String password) async {
+    final url = Uri.parse("$_endpoint/login/admin?phone=$phone&password=$password");
+    final response = await http.post(url);
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      final admin = Admin.fromJson(json);
+      SessionManager.instance.save(admin);
+    }
+    return response;
   }
 
   Future<http.Response> requestPasswordReset(String phone) async {

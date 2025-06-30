@@ -4,14 +4,14 @@ import 'package:quber_taxi/enums/municipalities.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 
 
-class SearchDestination extends StatefulWidget {
-  const SearchDestination({super.key});
+class SearchDestinationPage extends StatefulWidget {
+  const SearchDestinationPage({super.key});
 
   @override
-  State<SearchDestination> createState() => _SearchOriginPageState();
+  State<SearchDestinationPage> createState() => _SearchOriginPageState();
 }
 
-class _SearchOriginPageState extends State<SearchDestination> {
+class _SearchOriginPageState extends State<SearchDestinationPage> {
 
   final _controller = TextEditingController();
 

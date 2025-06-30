@@ -117,7 +117,28 @@
   "nextPay": "Próxima fecha de pago:",
   "passwordConfirmDriver": "Confirme contraseña:",
   "passwordDriver": "Contraseña:",
-  "goBack": "Regresar"
+  "goBack": "Regresar",
+
+  "aboutUsTitle": "Acerca de Nosotros",
+  "companyDescription": "Mipyme - Agencia de Taxi",
+  "companyAboutText": "Quber es una Mipyme dedicada a ofrecer servicios de transporte a través de una red organizada de taxis, enfocada en brindar un servicio seguro, puntual y de calidad. La empresa se compromete con la satisfacción del cliente y el bienestar de sus conductores, promoviendo una experiencia de movilidad confiable, accesible, centrada en el respeto, la responsabilidad y la eficiencia.",
+  "contactAddress": "Calle 10 entre Línea y 23",
+
+  "tripsPageTitle": "Viajes",
+  "tripPrice": "Precio del viaje: ",
+  "tripDuration": "Duración del viaje: ",
+  "clientSectionTitle": "Cliente:",
+  "clientName": "Nombre: ",
+  "clientPhone": "Teléfono: ",
+  "driverSectionTitle": "Conductor:",
+  "driverName": "Nombre: ",
+  "driverPhone": "Teléfono: ",
+  "driverPlate": "Chapa: ",
+
+  "aboutDeveloperTitle": "Acerca del Desarrollador",
+  "softwareCompany": "Empresa de software",
+  "aboutText": "Irquen, fundada por tres estudiantes y construida como una familia de amigos, hoy es una empresa de software con bases firmes y visión de futuro. Su propósito es hacer que la digitalización sea rápida y accesible para todos. Su misión es llevar la tecnología a cada rincón, crecer, optimizar y expandirse. Su visión es superar límites, encontrar soluciones y crear lo que aún no existe."
+
 
 
 }

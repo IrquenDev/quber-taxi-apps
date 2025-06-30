@@ -14,14 +14,14 @@ import 'package:geolocator/geolocator.dart' as g;
 import 'package:quber_taxi/util/turf.dart';
 import 'package:turf/turf.dart' as turf;
 
-class SearchOrigin extends StatefulWidget {
-  const SearchOrigin({super.key});
+class SearchOriginPage extends StatefulWidget {
+  const SearchOriginPage({super.key});
 
   @override
-  State<SearchOrigin> createState() => _SearchOriginState();
+  State<SearchOriginPage> createState() => _SearchOriginPageState();
 }
 
-class _SearchOriginState extends State<SearchOrigin> {
+class _SearchOriginPageState extends State<SearchOriginPage> {
 
   final _controller = TextEditingController();
   final _mapboxService = MapboxService();

@@ -3,14 +3,12 @@ import 'package:flutter_fusion/flutter_fusion.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:network_checker/network_checker.dart';
-import 'package:quber_taxi/common/services/account_service.dart';
 import 'package:quber_taxi/common/services/auth_service.dart';
 import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/routes/route_paths.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/util/runtime.dart' as runtime;
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -126,28 +124,17 @@ class _LoginPageState extends State<LoginPage> {
                                   if(runtime.isClientMode) {
                                     response = await _authService.loginClient(phone, password);
                                     route = RoutePaths.clientHome;
-                                  } else {
+                                  } else if(runtime.isDriverMode) {
                                     response = await _authService.loginDriver(phone, password);
                                     route = RoutePaths.driverHome;
+                                  } else {
+                                    response = await _authService.loginAdmin(phone, password);
+                                    route = RoutePaths.adminHome;
                                   }
                                   // Handle response
                                   if(!context.mounted) return;
                                   switch (response.statusCode) {
-                                    case 200: {
-                                      // Get userId (Previously stored by the corresponding login method)
-                                      final prefs = await SharedPreferences.getInstance();
-                                      final userId = prefs.getInt("userId")!;
-                                      // Set userInLogged runtime access
-                                      if(runtime.isClientMode) {
-                                        runtime.userInLogged = await AccountService().getClientById(userId);
-                                      }
-                                      else {
-                                        runtime.userInLogged = await AccountService().getDriverById(userId);
-                                      }
-                                      // Then navigate
-                                      if(!context.mounted) return;
-                                      context.go(route);
-                                    }
+                                    case 200: context.go(route);
                                     case 401: showToast(context: context, message: "Credenciales Incorrrectas");
                                     case 404: showToast(context: context, message: "El número de teléfono no se "
                                         "encuentra "

@@ -13,16 +13,16 @@ import 'package:quber_taxi/websocket/impl/driver_location_handler.dart';
 import 'package:quber_taxi/util/mapbox.dart' as mb_util;
 import 'package:quber_taxi/websocket/impl/pickup_confirmation_handler.dart';
 
-class TrackDriver extends StatefulWidget {
+class TrackDriverPage extends StatefulWidget {
   final Travel travel;
 
-  const TrackDriver({super.key, required this.travel});
+  const TrackDriverPage({super.key, required this.travel});
 
   @override
-  State<TrackDriver> createState() => _TrackDriverState();
+  State<TrackDriverPage> createState() => _TrackDriverPageState();
 }
 
-class _TrackDriverState extends State<TrackDriver> {
+class _TrackDriverPageState extends State<TrackDriverPage> {
 
   // Map
   late final MapboxMap _mapController;

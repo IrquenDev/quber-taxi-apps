@@ -24,17 +24,17 @@ import 'package:quber_taxi/websocket/core/websocket_service.dart';
 import 'package:quber_taxi/websocket/impl/travel_request_handler.dart';
 import 'package:quber_taxi/websocket/impl/travel_state_handler.dart';
 
-class DriverHome extends StatefulWidget {
+class DriverHomePage extends StatefulWidget {
 
   final Position? coords;
 
-  const DriverHome({super.key, this.coords});
+  const DriverHomePage({super.key, this.coords});
 
   @override
-  State<DriverHome> createState() => _DriverHomeState();
+  State<DriverHomePage> createState() => _DriverHomePageState();
 }
 
-class _DriverHomeState extends State<DriverHome> {
+class _DriverHomePageState extends State<DriverHomePage> {
 
   // Mapbox controller instance
   late MapboxMap _mapController;
@@ -105,7 +105,7 @@ class _DriverHomeState extends State<DriverHome> {
   void _startSharingLocation() {
     _locationShareSubscription = _locationBroadcast.listen((position) async {
       WebSocketService.instance.send(
-        "/app/drivers/${userInLogged.id}/location",
+        "/app/drivers/${loggedInUser.id}/location",
         {"longitude": position.longitude, "latitude": position.latitude},
       );
       if(!_isLocationStreaming) _startStreamingLocation();
@@ -113,7 +113,7 @@ class _DriverHomeState extends State<DriverHome> {
   }
 
   void _onTravelSelected(Travel travel) async {
-    final response = await _driverService.acceptTravel(driverId: userInLogged.id, travelId: travel.id);
+    final response = await _driverService.acceptTravel(driverId: loggedInUser.id, travelId: travel.id);
     if(response.statusCode == 200) {
       final assetBytes = await rootBundle.load('assets/markers/route/x120/origin.png');
       final originMarkerImage = assetBytes.buffer.asUint8List();
@@ -162,7 +162,7 @@ class _DriverHomeState extends State<DriverHome> {
   void initState() {
     super.initState();
     _newTravelRequestHandler = TravelRequestHandler(
-        driverId: userInLogged.id,
+        driverId: loggedInUser.id,
         onNewTravel: _onNewTravel
     )..activate();
     _locationBroadcast = g.Geolocator.getPositionStream().asBroadcastStream();

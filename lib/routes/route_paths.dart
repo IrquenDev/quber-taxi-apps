@@ -33,9 +33,15 @@ class RoutePaths {
 
   static const String infoDriver = '/info-driver';
 
-  static const String panelAdmin = '/panel-admin';
+  static const String adminHome = '/panel-admin';
 
   static const String driverAccount = '/driver-account';
+  
+  static const String aboutUs = '/about-us';
 
-  static const String driverList = '/driver-list';
+  static const String tripList = '/trip_list-list';
+
+  static const String aboutDev = '/about-dev';
+
+  static const String clientSetting = '/client-setting';
 }
