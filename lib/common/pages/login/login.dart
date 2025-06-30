@@ -6,7 +6,9 @@ import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/services/auth_service.dart';
 import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
-import 'package:quber_taxi/routes/route_paths.dart';
+import 'package:quber_taxi/navigation/routes/admin_routes.dart';
+import 'package:quber_taxi/navigation/routes/client_routes.dart';
+import 'package:quber_taxi/navigation/routes/driver_routes.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/util/runtime.dart' as runtime;
 
@@ -123,13 +125,13 @@ class _LoginPageState extends State<LoginPage> {
                                   // route.
                                   if(runtime.isClientMode) {
                                     response = await _authService.loginClient(phone, password);
-                                    route = RoutePaths.clientHome;
+                                    route = ClientRoutes.home;
                                   } else if(runtime.isDriverMode) {
                                     response = await _authService.loginDriver(phone, password);
-                                    route = RoutePaths.driverHome;
+                                    route = DriverRoutes.home;
                                   } else {
                                     response = await _authService.loginAdmin(phone, password);
-                                    route = RoutePaths.adminHome;
+                                    route = AdminRoutes.settings;
                                   }
                                   // Handle response
                                   if(!context.mounted) return;
@@ -187,87 +189,4 @@ class _LoginPageState extends State<LoginPage> {
       )
     );
   }
-
-  // Widget _buildForgotPassword() {
-  //   return Stack(
-  //     children: [
-  //       Container(
-  //         padding: EdgeInsets.all(30),
-  //         margin: EdgeInsets.only(top: 40),
-  //         decoration: BoxDecoration(
-  //           color: Colors.white.withOpacity(0.8),
-  //           borderRadius: BorderRadius.circular(12),
-  //         ),
-  //         child: Column(
-  //           mainAxisSize: MainAxisSize.min,
-  //           children: [
-  //             Padding(
-  //               padding: EdgeInsets.only(top: 8, bottom: 16, right: 60),
-  //               child: Text(
-  //                 AppLocalizations.of(context)!.recoverPassword,
-  //                 style: TextStyle(
-  //                   fontSize: 22,
-  //                   fontWeight: FontWeight.bold,
-  //                   color: Colors.black87,
-  //                 ),
-  //               ),
-  //             ),
-  //             Text(
-  //               AppLocalizations.of(context)!.recoverPasswordDescription,
-  //               style: TextStyle(
-  //                 color: Colors.black87,
-  //                 fontWeight: FontWeight.bold,
-  //                 fontSize: 15,
-  //               ),
-  //               textAlign: TextAlign.center,
-  //             ),
-  //             SizedBox(height: 20),
-  //             TextFormField(
-  //               controller: _emailController,
-  //               style: TextStyle(color: Colors.black87),
-  //               decoration: InputDecoration(
-  //                 hintText: AppLocalizations.of(context)!.enterPhoneNumber,
-  //                 hintStyle: TextStyle(color: Colors.grey[600]),
-  //                 border: OutlineInputBorder(
-  //                   borderSide: BorderSide(color: Colors.grey[300]!),
-  //                 ),
-  //                 enabledBorder: OutlineInputBorder(
-  //                   borderSide: BorderSide(color: Colors.grey[300]!),
-  //                 ),
-  //                 focusedBorder: OutlineInputBorder(
-  //                   borderSide: BorderSide(color: Colors.white54),
-  //                 ),
-  //                 fillColor: Colors.white,
-  //               ),
-  //             ),
-  //             SizedBox(height: 20),
-  //             SizedBox(
-  //               width: double.infinity,
-  //               child: ElevatedButton(
-  //                 style: ElevatedButton.styleFrom(
-  //                   shape: RoundedRectangleBorder(
-  //                     borderRadius: BorderRadius.circular(8),
-  //                   ),
-  //                   foregroundColor: Theme.of(context).colorScheme.secondary,
-  //                   backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-  //                   textStyle: TextStyle(fontWeight: FontWeight.bold),
-  //                 ),
-  //                 onPressed: () {},
-  //                 child: Text(AppLocalizations.of(context)!.sendButton),
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //       Positioned(
-  //         top: 35,
-  //         right: 0,
-  //         child: IconButton(
-  //           icon: Icon(Icons.close, color: Colors.grey[600]),
-  //           onPressed: () => setState(() => _currentScreen = 0),
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
 }

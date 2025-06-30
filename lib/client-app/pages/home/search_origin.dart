@@ -8,7 +8,7 @@ import 'package:quber_taxi/common/models/mapbox_place.dart';
 import 'package:quber_taxi/common/services/mapbox_service.dart';
 import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
-import 'package:quber_taxi/routes/route_paths.dart';
+import 'package:quber_taxi/navigation/routes/common_routes.dart';
 import 'package:quber_taxi/util/geolocator.dart';
 import 'package:geolocator/geolocator.dart' as g;
 import 'package:quber_taxi/util/turf.dart';
@@ -90,7 +90,7 @@ class _SearchOriginPageState extends State<SearchOriginPage> {
                   leading: Icon(Icons.map_outlined),
                   title: Text(AppLocalizations.of(context)!.selectUbication),
                   onTap: () async {
-                    final mapboxPlace = await context.push<MapboxPlace>(RoutePaths.locationPicker);
+                    final mapboxPlace = await context.push<MapboxPlace>(CommonRoutes.locationPicker);
                     if(mapboxPlace != null) {
                       if(!context.mounted) return;
                       context.pop(mapboxPlace);

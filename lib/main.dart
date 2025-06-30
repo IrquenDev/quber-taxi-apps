@@ -5,7 +5,7 @@ import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/config/api_config.dart';
 import 'package:quber_taxi/config/build_config.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
-import 'package:quber_taxi/routes/app_router.dart';
+import 'package:quber_taxi/navigation/app_router.dart';
 import 'package:quber_taxi/storage/prefs_manager.dart';
 import 'package:quber_taxi/theme/theme.dart';
 import 'package:quber_taxi/websocket/core/websocket_service.dart';
@@ -30,7 +30,7 @@ void main() async {
 
   // TODO("yapmDev": @Reminder)
   // - Probably will be needed it, when the app have to redirect to continue to the current navigation status
-  // (depending on the trip_list status (if applicable)).
+  // (depending on the trips_list status (if applicable)).
   //
   // Request user location permission to avoid exception during development.
   await Geolocator.requestPermission();

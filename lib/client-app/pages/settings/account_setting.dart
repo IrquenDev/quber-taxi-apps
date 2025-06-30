@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 
-class AccountSettingPage extends StatefulWidget {
-  const AccountSettingPage({super.key});
+class ClientSettingsPage extends StatefulWidget {
+  const ClientSettingsPage({super.key});
 
   @override
-  State<AccountSettingPage> createState() => _AccountSettingPageState();
+  State<ClientSettingsPage> createState() => _ClientSettingsPageState();
 }
 
-class _AccountSettingPageState extends State<AccountSettingPage> {
+class _ClientSettingsPageState extends State<ClientSettingsPage> {
   bool passwordVisible = false;
   bool confirmPasswordVisible = false;
 

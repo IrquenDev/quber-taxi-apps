@@ -9,7 +9,7 @@ import 'package:quber_taxi/common/services/travel_service.dart';
 import 'package:quber_taxi/enums/municipalities.dart';
 import 'package:quber_taxi/enums/taxi_type.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
-import 'package:quber_taxi/routes/route_paths.dart';
+import 'package:quber_taxi/navigation/routes/client_routes.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/util/runtime.dart';
 import 'package:quber_taxi/util/turf.dart';
@@ -109,7 +109,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                             children: [
                               GestureDetector(
                                   onTap: () async {
-                                    final mapboxPlace = await context.push<MapboxPlace>(RoutePaths.searchOrigin);
+                                    final mapboxPlace = await context.push<MapboxPlace>(ClientRoutes.searchOrigin);
                                     setState(() {
                                       _originName = mapboxPlace?.placeName;
                                       _originCoords = mapboxPlace?.coordinates;
@@ -124,7 +124,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                               Divider(height: 1),
                               GestureDetector(
                                   onTap: () async {
-                                    _destinationName = await context.push<String>(RoutePaths.searchDestination);
+                                    _destinationName = await context.push<String>(ClientRoutes.searchDestination);
                                     if(canEstimateDistance) _estimateDistance();
                                   },
                                   child: Text(
@@ -238,11 +238,11 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                       );
                       if(!context.mounted) return;
                       // Radar animation while waiting for acceptation.
-                      final updatedTravel = await context.push<Travel?>(RoutePaths.searchDriver, extra: travel.id);
+                      final updatedTravel = await context.push<Travel?>(ClientRoutes.searchDriver, extra: travel.id);
                       if(!context.mounted) return;
                       if(updatedTravel != null) {
                         // Navigate to TrackDriver Screen.
-                        context.go(RoutePaths.trackDriver, extra: updatedTravel);
+                        context.go(ClientRoutes.trackDriver, extra: updatedTravel);
                       } else {
                         // TODO ("yapmDev": @Reminder)
                         // - This travel request should be delete or marked as CANCELED.

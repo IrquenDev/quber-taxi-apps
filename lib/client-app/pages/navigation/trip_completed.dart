@@ -6,7 +6,7 @@ import 'package:quber_taxi/common/models/review.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/services/review_service.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
-import 'package:quber_taxi/routes/route_paths.dart';
+import 'package:quber_taxi/navigation/routes/client_routes.dart';
 
 class ClientTripCompleted extends StatefulWidget {
 
@@ -183,7 +183,7 @@ class _ClientTripCompletedState extends State<ClientTripCompleted> {
                                         ),
                                         GestureDetector(
                                           onTap: commentsCount != 0 ? ()=> context.push(
-                                              RoutePaths.quberReviews,
+                                              ClientRoutes.quberReviews,
                                               extra: data
                                           ) : null,
                                           child: Text(

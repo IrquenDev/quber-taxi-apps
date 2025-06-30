@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 
-class CreateAccount extends StatefulWidget {
-  const CreateAccount({super.key});
+class CreateDriverAccountPage extends StatefulWidget {
+  const CreateDriverAccountPage({super.key});
 
   @override
-  State<CreateAccount> createState() => _CreateAccountState();
+  State<CreateDriverAccountPage> createState() => _CreateDriverAccountPageState();
 }
 
-class _CreateAccountState extends State<CreateAccount> {
+class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
   int selectedVehicle = 0;
   List<bool> isExpanded = [true, false, false];
   bool passwordVisible = false;

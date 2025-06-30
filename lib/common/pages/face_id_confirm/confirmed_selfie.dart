@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:quber_taxi/client-app/pages/create_account/create_account.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 
-import 'create_account.dart';
-
-
-class ConfirmSelfiePage extends StatelessWidget {
-  const ConfirmSelfiePage({super.key});
+class FaceIdConfirmed extends StatelessWidget {
+  const FaceIdConfirmed({super.key});
 
   @override
   Widget build(BuildContext context) {
