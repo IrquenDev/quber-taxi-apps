@@ -26,7 +26,7 @@ class _SearchDriverPageState extends State<SearchDriverPage> with SingleTickerPr
     super.initState();
     // handling radar animation
     _controller = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat(); // infinity loop
-    // connect to websocket in order to see if any driver took the trip
+    // connect to websocket in order to see if any driver took the trip_list
     _handler = TravelStateHandler(
       state: TravelState.accepted,
       travelId: widget.travelId,

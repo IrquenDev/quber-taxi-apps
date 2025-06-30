@@ -1,6 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:quber_taxi/admin-app/pages/admin_panel/admin_panel.dart';
-import 'package:quber_taxi/admin-app/trip/trip_list.dart';
+import 'package:quber_taxi/admin-app/pages/trip_list/trip_list.dart';
 import 'package:quber_taxi/client-app/pages/client_account/confirm_selfie.dart';
 import 'package:quber_taxi/client-app/pages/client_account/create_account.dart';
 import 'package:quber_taxi/client-app/pages/client_account/identity_verification.dart';
@@ -29,10 +29,12 @@ import 'route_paths.dart';
 
 final GoRouter appRouter = GoRouter(
 
-  // App start up route. You can change it for developing or testing, just remember to take it back in place.
-  initialLocation: runtime.isSessionOk
-      ? _resolveInitialLocation(BuildConfig.appProfile)
-      : RoutePaths.login,
+  // // App start up route. You can change it for developing or testing, just remember to take it back in place.
+  // initialLocation: runtime.isSessionOk
+  //     ? _resolveInitialLocation(BuildConfig.appProfile)
+  //     : RoutePaths.login,
+
+  initialLocation: RoutePaths.tripList,
   
   routes: [
     GoRoute(

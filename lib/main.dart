@@ -30,7 +30,7 @@ void main() async {
 
   // TODO("yapmDev": @Reminder)
   // - Probably will be needed it, when the app have to redirect to continue to the current navigation status
-  // (depending on the trip status (if applicable)).
+  // (depending on the trip_list status (if applicable)).
   //
   // Request user location permission to avoid exception during development.
   await Geolocator.requestPermission();

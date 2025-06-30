@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:quber_taxi/common/models/client.dart';
 import 'package:quber_taxi/common/models/driver.dart';
 import 'package:quber_taxi/enums/taxi_type.dart';
@@ -19,6 +20,10 @@ class Travel {
   final TravelState state;
   final Client client;
   final Driver? driver;
+  final int? finalDistance;
+  final int? finalDuration;
+  final double? finalPrice;
+  final DateTime? endDate;
 
   Travel({
     required this.id,
@@ -34,7 +39,11 @@ class Travel {
     required this.maxPrice,
     required this.state,
     required this.client,
-    this.driver
+    this.driver,
+    this.finalDistance,
+    this.finalPrice,
+    this.finalDuration,
+    this.endDate
   });
 
   factory Travel.fromJson(Map<String, dynamic> json) {
@@ -52,7 +61,13 @@ class Travel {
         maxPrice: json["maxPrice"],
         state: TravelState.resolve(json["state"]),
         client: Client.fromJson(json["client"]),
-        driver: json["driver"] != null ? Driver.fromJson(json["driver"]) : null
+        driver: json["driver"] != null ? Driver.fromJson(json["driver"]) : null,
+        finalDuration: json["finalDuration"],
+        finalPrice: json["finalPrice"],
+        finalDistance: json["finalDistance"],
+        endDate: json['endDate'] != null
+          ? DateFormat("yyyy-MM-dd-HH:mm").parse(json['endDate'])
+          : null
     );
   }
 
@@ -71,5 +86,9 @@ class Travel {
     "state": state.apiValue,
     "client": client.toJson(),
     "driver": driver?.toJson(),
+    "finalPrice": finalPrice,
+    "finalDistance": finalDistance,
+    "finalDuration": finalDuration,
+    "endDate": endDate
   };
 }
