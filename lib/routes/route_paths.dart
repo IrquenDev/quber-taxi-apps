@@ -36,7 +36,7 @@ class RoutePaths {
   static const String adminHome = '/panel-admin';
 
   static const String driverAccount = '/driver-account';
-
+  
   static const String aboutUs = '/about-us';
 
   static const String tripList = '/trip_list-list';
