@@ -152,6 +152,30 @@
     "thankYouForVerification": "Gracias por confirmar su identidad",
     "identityConfirmedSuccessfully": "Hemos confirmado su identidad con éxito.",
     "verificationBenefits": "Este proceso nos ayuda a proteger su cuenta y a mantener nuestra comunidad segura para todos los usuarios.",
-    "createAccountButton": "Crear Cuenta"
+    "createAccountButton": "Crear Cuenta",
+
+      "createAccountTitle": "Crear Cuenta",
+      "nameLabel": "Nombre:",
+      "nameHint": "Introduzca su nombre y apellidos",
+      "plateLabel": "Chapa:",
+      "plateHint": "Escriba la chapa de su vehículo",
+      "phoneLabel": "Núm. de teléfono:",
+      "phoneHint": "Ej: 5566XXXX",
+      "seatsLabel": "Número de asientos:",
+      "seatsHint": "Ej: 4",
+      "licenseLabel": "Licencia de conducción",
+      "attachButton": "Adjuntar",
+      "vehicleTypeLabel": "Seleccione su tipo de vehículo:",
+      "standardVehicle": "Estándar",
+      "standardDescription": "Vehículo compacto con transmisión manual, ideal para traslados cortos. Cuenta con 5 asientos y espacio limitado para equipaje.",
+      "familyVehicle": "Familiar",
+      "familyDescription": "Vehículo espacioso ideal para familias y traslados grupales. Ofrece amplio espacio y confort.",
+      "comfortVehicle": "Confort",
+      "comfortDescription": "Vehículo cómodo con características premium, perfecto para traslados ejecutivos.",
+      "passwordLabel": "Contraseña",
+      "passwordHint": "Introduzca la contraseña deseada",
+      "confirmPasswordLabel": "Confirmar contraseña:",
+      "confirmPasswordHint": "Vuelva a introducir su contraseña",
+      "finishButton": "Finalizar registro"
 
 }

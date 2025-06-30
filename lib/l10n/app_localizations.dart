@@ -871,6 +871,138 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Crear Cuenta'**
   String get createAccountButton;
+
+  /// No description provided for @createAccountTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Crear Cuenta'**
+  String get createAccountTitle;
+
+  /// No description provided for @nameLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre:'**
+  String get nameLabel;
+
+  /// No description provided for @nameHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduzca su nombre y apellidos'**
+  String get nameHint;
+
+  /// No description provided for @plateLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Chapa:'**
+  String get plateLabel;
+
+  /// No description provided for @plateHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Escriba la chapa de su vehículo'**
+  String get plateHint;
+
+  /// No description provided for @phoneLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Núm. de teléfono:'**
+  String get phoneLabel;
+
+  /// No description provided for @phoneHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Ej: 5566XXXX'**
+  String get phoneHint;
+
+  /// No description provided for @seatsLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Número de asientos:'**
+  String get seatsLabel;
+
+  /// No description provided for @seatsHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Ej: 4'**
+  String get seatsHint;
+
+  /// No description provided for @licenseLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Licencia de conducción'**
+  String get licenseLabel;
+
+  /// No description provided for @attachButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Adjuntar'**
+  String get attachButton;
+
+  /// No description provided for @vehicleTypeLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Seleccione su tipo de vehículo:'**
+  String get vehicleTypeLabel;
+
+  /// No description provided for @standardVehicle.
+  ///
+  /// In es, this message translates to:
+  /// **'Estándar'**
+  String get standardVehicle;
+
+  /// No description provided for @standardDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Vehículo compacto con transmisión manual, ideal para traslados cortos. Cuenta con 5 asientos y espacio limitado para equipaje.'**
+  String get standardDescription;
+
+  /// No description provided for @familyDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Vehículo espacioso ideal para familias y traslados grupales. Ofrece amplio espacio y confort.'**
+  String get familyDescription;
+
+  /// No description provided for @comfortVehicle.
+  ///
+  /// In es, this message translates to:
+  /// **'Confort'**
+  String get comfortVehicle;
+
+  /// No description provided for @comfortDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Vehículo cómodo con características premium, perfecto para traslados ejecutivos.'**
+  String get comfortDescription;
+
+  /// No description provided for @passwordLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Contraseña'**
+  String get passwordLabel;
+
+  /// No description provided for @passwordHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduzca la contraseña deseada'**
+  String get passwordHint;
+
+  /// No description provided for @confirmPasswordLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirmar contraseña:'**
+  String get confirmPasswordLabel;
+
+  /// No description provided for @confirmPasswordHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Vuelva a introducir su contraseña'**
+  String get confirmPasswordHint;
+
+  /// No description provided for @finishButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Finalizar registro'**
+  String get finishButton;
 }
 
 class _AppLocalizationsDelegate

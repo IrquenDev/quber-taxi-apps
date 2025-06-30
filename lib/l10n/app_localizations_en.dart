@@ -410,4 +410,73 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get createAccountButton => 'Create Account';
+
+  @override
+  String get createAccountTitle => 'Create Account';
+
+  @override
+  String get nameLabel => 'Name:';
+
+  @override
+  String get nameHint => 'Enter your full name';
+
+  @override
+  String get plateLabel => 'License Plate:';
+
+  @override
+  String get plateHint => 'Enter your vehicle license plate number';
+
+  @override
+  String get phoneLabel => 'Phone Number:';
+
+  @override
+  String get phoneHint => 'Example: 5566XXXX';
+
+  @override
+  String get seatsLabel => 'Number of Seats:';
+
+  @override
+  String get seatsHint => 'Example: 4';
+
+  @override
+  String get licenseLabel => 'Driver\'s License';
+
+  @override
+  String get attachButton => 'Attach';
+
+  @override
+  String get vehicleTypeLabel => 'Select your vehicle type:';
+
+  @override
+  String get standardVehicle => 'Standard';
+
+  @override
+  String get standardDescription =>
+      'Compact vehicle with manual transmission, ideal for short trips. Has 5 seats and limited luggage space.';
+
+  @override
+  String get familyDescription =>
+      'Spacious vehicle ideal for families and group transfers. Features ample space and comfort.';
+
+  @override
+  String get comfortVehicle => 'Comfort';
+
+  @override
+  String get comfortDescription =>
+      'Comfortable vehicle with premium features, perfect for executive transfers.';
+
+  @override
+  String get passwordLabel => 'Password';
+
+  @override
+  String get passwordHint => 'Enter your desired password';
+
+  @override
+  String get confirmPasswordLabel => 'Confirm Password:';
+
+  @override
+  String get confirmPasswordHint => 'Re-enter your password';
+
+  @override
+  String get finishButton => 'Complete Registration';
 }

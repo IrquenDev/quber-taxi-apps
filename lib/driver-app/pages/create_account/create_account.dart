@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 
 class CreateDriverAccountPage extends StatefulWidget {
@@ -61,8 +63,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                 ),
                 IconButton(
                   icon: Icon(expanded ? Icons.expand_less : Icons.expand_more),
-                  onPressed: () =>
-                      setState(() => isExpanded[index] = !expanded),
+                  onPressed: () => setState(() => isExpanded[index] = !expanded),
                 ),
               ],
             ),
@@ -70,10 +71,8 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
               const SizedBox(height: 10),
               Text(
                 description,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(color: Theme.of(context).colorScheme.secondary),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.secondary),
               ),
             ],
           ],
@@ -84,184 +83,244 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
 
   @override
   Widget build(BuildContext context) {
-    final backgroundColor = Theme.of(context).colorScheme.surface;
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final dimensions = Theme.of(context).extension<DimensionExtension>()!;
 
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: colorScheme.surface,
       body: Stack(
         children: [
-          SingleChildScrollView(
-            padding: const EdgeInsets.only(top: 160, bottom: 80),
-            child: Column(
-              children: [
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
-                  padding: const EdgeInsets.fromLTRB(16, 60, 16, 16),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainerLowest,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Column(
-                    children: [
-                      Stack(
-                        alignment: Alignment.bottomRight,
-                        children: [
-                          CircleAvatar(
-                            radius: 60,
-                            backgroundColor: Theme.of(context)
-                                .colorScheme
-                                .surface,
-                            child: const Icon(Icons.local_taxi,
-                                size: 50, color: Colors.grey),
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            right: 0,
-                            child: CircleAvatar(
-                              radius: 18,
-                              backgroundColor: Theme.of(context)
-                                  .colorScheme
-                                  .surface,
-                              child: Icon(Icons.add_a_photo,
-                                  color: Colors.grey[700]),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 24),
-                      _buildTextField(
-                          'Nombre:', 'Introduzca su nombre y apellidos'),
-                      _buildTextField(
-                          'Chapa:', 'Escriba la chapa de su vehículo'),
-                      _buildTextField('Num. teléfono:', 'Ej: 5566XXXX'),
-                      _buildTextField('Número de asientos:', 'Ej: 4'),
-                    ],
-                  ),
-                ),
+          Container(color: Colors.white),
 
-                const SizedBox(height: 16),
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainerLowest,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Licencia de conducción',
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Theme.of(context).colorScheme.secondary),
-                      ),
-                      TextButton(
-                          onPressed: () {}, child: Text('Adjuntar',style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.secondary),
-                      )),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainerLowest,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Seleccione su tipo de vehículo:',
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: Theme.of(context).colorScheme.secondary),
-                      ),
-                      const SizedBox(height: 12),
-                      _vehicleCard(
-                        index: 0,
-                        name: 'Estándar',
-                        description:
-                            'Vehículo compacto con transmisión manual, ideal para traslados cortos. Cuenta con 5 asientos y espacio limitado para equipaje.',
-                        imageAsset: 'assets/images/vehicles/xhdpi/standard.png',
-                      ),
-                      _vehicleCard(
-                        index: 1,
-                        name: 'Familiar',
-                        description:
-                            'Vehículo espacioso ideal para familias y traslados grupales. Cuenta con amplio espacio y confort.',
-                        imageAsset: 'assets/images/vehicles/xhdpi/familiar.png',
-                      ),
-                      _vehicleCard(
-                        index: 2,
-                        name: 'Confort',
-                        description:
-                            'Vehículo cómodo con características premium, perfecto para traslados ejecutivos.',
-                        imageAsset: 'assets/images/vehicles/xhdpi/comfort.png',
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainerLowest,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Column(
-                    children: [
-                      _buildPasswordField('Contraseña', passwordVisible,
-                          (v) => setState(() => passwordVisible = v)),
-                      const SizedBox(height: 12),
-                      _buildPasswordField(
-                          'Confirme contraseña:',
-                          confirmPasswordVisible,
-                          (v) => setState(() => confirmPasswordVisible = v)),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-
+          // Header
           Positioned(
-            top: 0,
+            top: -40,
             left: 0,
             right: 0,
             child: Container(
-              height: 140,
+              height: 220,
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primaryContainer,
-                borderRadius: BorderRadius.vertical(bottom: Radius.circular
-    (Theme.of(context).extension<DimensionExtension>()!.borderRadius)),
+                color: colorScheme.primaryContainer,
+                borderRadius: BorderRadius.vertical(
+                    bottom: Radius.circular(dimensions.borderRadius)),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black26,
+                    color: Colors.black.withOpacity(0.2),
                     blurRadius: 6,
-                    offset: Offset(0, 2),
+                    offset: const Offset(0, 2),
                   ),
                 ],
               ),
               child: SafeArea(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Row(
                     children: [
-                      Icon(Icons.menu),
-                      SizedBox(width: 8),
-                      Text('Crear Cuenta',
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-    fontWeight: FontWeight.bold,
-    color: Theme.of(context).colorScheme.secondary),),
+                      Icon(Icons.arrow_back, color: colorScheme.onPrimaryContainer),
+                      const SizedBox(width: 8),
+                      Text(
+                        AppLocalizations.of(context)!.createAccountTitle,
+                        style: textTheme.titleLarge?.copyWith(
+                            fontSize: 26,
+                            fontWeight: FontWeight.bold,
+                            color: colorScheme.onPrimaryContainer),
+                      ),
                     ],
                   ),
                 ),
+              ),
+            ),
+          ),
+
+          Positioned(
+            top: 120,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                children: [
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.only(top: 60, bottom: 16, left: 16, right: 16),
+                    decoration: BoxDecoration(
+                      color: colorScheme.surfaceContainerLowest,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 10,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Positioned(
+                          top: -50,
+                          left: 0,
+                          right: 0,
+                          child: Center(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.2),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 5),
+                                  ),
+                                ],
+                              ),
+                              child: Stack(
+                                alignment: Alignment.bottomRight,
+                                children: [
+                                  CircleAvatar(
+                                    radius: 60,
+                                    backgroundColor: colorScheme.onPrimary,
+                                    child: SvgPicture.asset(
+                                      "assets/icons/taxi.svg",
+                                      width: 80,
+                                      height: 80,
+                                    ),
+                                  ),
+                                  Positioned(
+                                    bottom: 0,
+                                    right: 0,
+                                    child: CircleAvatar(
+                                      radius: 18,
+                                      backgroundColor: colorScheme.surface,
+                                      child: SvgPicture.asset(
+                                        "assets/icons/camera.svg",
+                                        fit: BoxFit.scaleDown,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        Column(
+                          children: [
+                            const SizedBox(height: 70), // Espacio para el avatar
+                            _buildTextField(AppLocalizations.of(context)!.nameLabel, AppLocalizations.of(context)!.nameHint,),
+                            _buildTextField(AppLocalizations.of(context)!.plateLabel, AppLocalizations.of(context)!.plateHint,),
+                            _buildTextField(AppLocalizations.of(context)!.phoneLabel, AppLocalizations.of(context)!.phoneHint,),
+                            _buildTextField(AppLocalizations.of(context)!.seatsLabel,AppLocalizations.of(context)!.seatsHint,),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    decoration: BoxDecoration(
+                      color: colorScheme.surfaceContainerLowest,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                        AppLocalizations.of(context)!.licenseLabel,
+                          style: textTheme.bodyLarge?.copyWith(
+                            fontSize: 18,
+                              color: colorScheme.secondary),
+                        ),
+                        TextButton(
+                          style: TextButton.styleFrom(
+                            side: BorderSide(
+                              color: Colors.black,
+                              width: 1.0,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          ),
+                          onPressed: () {},
+                          child: Text(
+                              AppLocalizations.of(context)!.attachButton,
+                            style: textTheme.bodyLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.secondary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: colorScheme.surfaceContainerLowest,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                        AppLocalizations.of(context)!.vehicleTypeLabel,,
+                          style: textTheme.bodyLarge?.copyWith(
+                            fontSize: 18,
+                              color: colorScheme.secondary),
+                        ),
+                        const SizedBox(height: 12),
+                        _vehicleCard(
+                          index: 0,
+                          name: AppLocalizations.of(context)!.standardVehicle,
+                          description:
+                          AppLocalizations.of(context)!.standardDescription,
+                          imageAsset: 'assets/images/vehicles/xhdpi/standard.png',
+                        ),
+                        _vehicleCard(
+                          index: 1,
+                          name: AppLocalizations.of(context)!.familyVehicle,
+                          description:
+                          AppLocalizations.of(context)!.familyDescription,
+                          imageAsset: 'assets/images/vehicles/xhdpi/familiar.png',
+                        ),
+                        _vehicleCard(
+                          index: 2,
+                          name: AppLocalizations.of(context)!.comfortVehicle,
+                          description:
+                            AppLocalizations.of(context)!.comfortDescription,
+                          imageAsset: 'assets/images/vehicles/xhdpi/comfort.png',
+                        ),
+                      ],
+                    ),
+                  ),
+
+
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: colorScheme.surfaceContainerLowest,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Column(
+                      children: [
+                        _buildPasswordField(AppLocalizations.of(context)!.passwordLabel, passwordVisible,
+                                (v) => setState(() => passwordVisible = v)),
+                        const SizedBox(height: 12),
+                        _buildPasswordField(
+    AppLocalizations.of(context)!.confirmPasswordLabel,
+                            confirmPasswordVisible,
+                                (v) => setState(() => confirmPasswordVisible = v)),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -271,15 +330,17 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
         height: 56,
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-            shape:
-                const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+            backgroundColor: colorScheme.primaryContainer,
+            shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.zero),
           ),
           onPressed: () {},
-          child: Text('Finalizar registro',
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.secondary)),
+          child: Text(
+    AppLocalizations.of(context)!.finishButton,
+            style: textTheme.bodyLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onPrimaryContainer),
+          ),
         ),
       ),
     );
@@ -291,16 +352,28 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.normal,
+                fontSize: 18,
+                color: Colors.black),
+          ),
           const SizedBox(height: 6),
           TextField(
             decoration: InputDecoration(
               hintText: hint,
-              fillColor: Theme.of(context).colorScheme.surfaceContainerLowest,
-              border:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              filled: true,
+              fillColor: Theme.of(context).colorScheme.onPrimary,
+              contentPadding: const EdgeInsets.symmetric(
+                  vertical: 12, horizontal: 16),
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(
+                      color: Colors.white54,
+                      width: 0.1
+                  )
+              ),
             ),
           ),
         ],
@@ -313,19 +386,32 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label),
+        Text(
+          label,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: Colors.grey.shade700),
+        ),
         const SizedBox(height: 6),
         TextField(
           obscureText: !visible,
           decoration: InputDecoration(
-            hintText: 'Introduzca la contraseña deseada',
-            fillColor: Theme.of(context).colorScheme.surfaceContainerLowest,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            filled: true,
+            fillColor: Theme.of(context).colorScheme.onPrimary,
             suffixIcon: IconButton(
-              icon: Icon(visible ? Icons.visibility : Icons.visibility_off),
+              icon: Icon(
+                visible ? Icons.visibility : Icons.visibility_off,
+                color: Colors.grey.shade600,
+              ),
               onPressed: () => onToggle(!visible),
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.surfaceDim,
+                width: 1,
+              ),
             ),
           ),
         ),

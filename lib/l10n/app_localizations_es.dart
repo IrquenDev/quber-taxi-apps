@@ -410,4 +410,73 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get createAccountButton => 'Crear Cuenta';
+
+  @override
+  String get createAccountTitle => 'Crear Cuenta';
+
+  @override
+  String get nameLabel => 'Nombre:';
+
+  @override
+  String get nameHint => 'Introduzca su nombre y apellidos';
+
+  @override
+  String get plateLabel => 'Chapa:';
+
+  @override
+  String get plateHint => 'Escriba la chapa de su vehículo';
+
+  @override
+  String get phoneLabel => 'Núm. de teléfono:';
+
+  @override
+  String get phoneHint => 'Ej: 5566XXXX';
+
+  @override
+  String get seatsLabel => 'Número de asientos:';
+
+  @override
+  String get seatsHint => 'Ej: 4';
+
+  @override
+  String get licenseLabel => 'Licencia de conducción';
+
+  @override
+  String get attachButton => 'Adjuntar';
+
+  @override
+  String get vehicleTypeLabel => 'Seleccione su tipo de vehículo:';
+
+  @override
+  String get standardVehicle => 'Estándar';
+
+  @override
+  String get standardDescription =>
+      'Vehículo compacto con transmisión manual, ideal para traslados cortos. Cuenta con 5 asientos y espacio limitado para equipaje.';
+
+  @override
+  String get familyDescription =>
+      'Vehículo espacioso ideal para familias y traslados grupales. Ofrece amplio espacio y confort.';
+
+  @override
+  String get comfortVehicle => 'Confort';
+
+  @override
+  String get comfortDescription =>
+      'Vehículo cómodo con características premium, perfecto para traslados ejecutivos.';
+
+  @override
+  String get passwordLabel => 'Contraseña';
+
+  @override
+  String get passwordHint => 'Introduzca la contraseña deseada';
+
+  @override
+  String get confirmPasswordLabel => 'Confirmar contraseña:';
+
+  @override
+  String get confirmPasswordHint => 'Vuelva a introducir su contraseña';
+
+  @override
+  String get finishButton => 'Finalizar registro';
 }
