@@ -19,7 +19,6 @@ class RequestFaceIdPage extends StatelessWidget {
         children: [
           Column(
             children: [
-              // Header amarillo usando primary del colorScheme
               Container(
                 width: double.infinity,
                 height: 200,
@@ -39,13 +38,13 @@ class RequestFaceIdPage extends StatelessWidget {
                 ),
                 child: SafeArea(
                   child: Padding(
-                    padding: const EdgeInsets.only(left: 60.0, bottom: 90),
+                    padding: const EdgeInsets.only(left: 20.0, bottom: 90),
                     child: Row(
                       children: [
-                        Icon(Icons.menu, color: colorScheme.shadow),
+                        Icon(Icons.arrow_back, color: colorScheme.shadow),
                         const SizedBox(width: 8),
                         Text(
-                          AppLocalizations.of(context)!.confirmIdentity,
+                          AppLocalizations.of(context)!.identityVerify,
                           style: textTheme.headlineSmall?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: colorScheme.shadow,
@@ -60,7 +59,7 @@ class RequestFaceIdPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 32.0),
                 child: Text(
-                  AppLocalizations.of(context)!.identityVerify,
+                  AppLocalizations.of(context)!.confirmIdentity,
                   textAlign: TextAlign.center,
                   style: textTheme.headlineMedium?.copyWith(
                     color: colorScheme.onSurface,
@@ -134,7 +133,6 @@ class RequestFaceIdPage extends StatelessWidget {
             ],
           ),
 
-          // Cámara superpuesta
           Positioned(
             top: 110,
             left: 0,

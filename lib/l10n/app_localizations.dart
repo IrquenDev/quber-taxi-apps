@@ -841,6 +841,36 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Tomar Selfie'**
   String get takeSelfieButton;
+
+  /// No description provided for @identityVerificationHeader.
+  ///
+  /// In es, this message translates to:
+  /// **'Verificación de identidad'**
+  String get identityVerificationHeader;
+
+  /// No description provided for @thankYouForVerification.
+  ///
+  /// In es, this message translates to:
+  /// **'Gracias por confirmar su identidad'**
+  String get thankYouForVerification;
+
+  /// No description provided for @identityConfirmedSuccessfully.
+  ///
+  /// In es, this message translates to:
+  /// **'Hemos confirmado su identidad con éxito.'**
+  String get identityConfirmedSuccessfully;
+
+  /// No description provided for @verificationBenefits.
+  ///
+  /// In es, this message translates to:
+  /// **'Este proceso nos ayuda a proteger su cuenta y a mantener nuestra comunidad segura para todos los usuarios.'**
+  String get verificationBenefits;
+
+  /// No description provided for @createAccountButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Crear Cuenta'**
+  String get createAccountButton;
 }
 
 class _AppLocalizationsDelegate

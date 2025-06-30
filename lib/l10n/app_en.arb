@@ -144,5 +144,11 @@
     "takeSelfieInstruction": "Please take a selfie to confirm you're not a bot.",
     "selfieUsageNote": "We won't use this image as a profile picture or display it publicly.",
     "verificationPurpose": "This step is part of our verification process to ensure the safety of all users.",
-    "takeSelfieButton": "Take Selfie"
+    "takeSelfieButton": "Take Selfie",
+
+      "identityVerificationHeader": "Identity Verification",
+      "thankYouForVerification": "Thank you for confirming your identity",
+      "identityConfirmedSuccessfully": "We have successfully confirmed your identity.",
+      "verificationBenefits": "This process helps us protect your account and maintain a safe community for all users.",
+      "createAccountButton": "Create Account"
 }

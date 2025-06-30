@@ -392,4 +392,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get takeSelfieButton => 'Take Selfie';
+
+  @override
+  String get identityVerificationHeader => 'Identity Verification';
+
+  @override
+  String get thankYouForVerification =>
+      'Thank you for confirming your identity';
+
+  @override
+  String get identityConfirmedSuccessfully =>
+      'We have successfully confirmed your identity.';
+
+  @override
+  String get verificationBenefits =>
+      'This process helps us protect your account and maintain a safe community for all users.';
+
+  @override
+  String get createAccountButton => 'Create Account';
 }
