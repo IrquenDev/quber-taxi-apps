@@ -269,7 +269,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                        AppLocalizations.of(context)!.vehicleTypeLabel,,
+                        AppLocalizations.of(context)!.vehicleTypeLabel,
                           style: textTheme.bodyLarge?.copyWith(
                             fontSize: 18,
                               color: colorScheme.secondary),
