@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:quber_taxi/common/models/admin.dart';
 import 'package:quber_taxi/common/models/client.dart';
 import 'package:quber_taxi/common/models/driver.dart';
 import 'package:quber_taxi/config/api_config.dart';
@@ -42,9 +43,15 @@ class AuthService {
     return response;
   }
 
-  Future<http.Response> logout() async {
-    final url = Uri.parse("$_endpoint/logout");
-    return await http.post(url);
+  Future<http.Response> loginAdmin(String phone, String password) async {
+    final url = Uri.parse("$_endpoint/login/admin?phone=$phone&password=$password");
+    final response = await http.post(url);
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      final admin = Admin.fromJson(json);
+      SessionManager.instance.save(admin);
+    }
+    return response;
   }
 
   Future<http.Response> requestPasswordReset(String phone) async {

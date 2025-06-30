@@ -1,4 +1,6 @@
 import 'package:go_router/go_router.dart';
+import 'package:quber_taxi/admin-app/pages/admin_panel/admin_panel.dart';
+import 'package:quber_taxi/admin-app/pages/trip_list/trip_list.dart';
 import 'package:quber_taxi/client-app/pages/client_account/confirm_selfie.dart';
 import 'package:quber_taxi/client-app/pages/client_account/create_account.dart';
 import 'package:quber_taxi/client-app/pages/client_account/identity_verification.dart';
@@ -15,8 +17,8 @@ import 'package:quber_taxi/common/pages/about_dev/about_dev.dart';
 import 'package:quber_taxi/common/pages/about_us/about_us.dart';
 import 'package:quber_taxi/common/pages/location_picker/location_picker.dart';
 import 'package:quber_taxi/common/pages/login/login.dart';
-import 'package:quber_taxi/common/pages/trip/trip_list.dart';
-import 'package:quber_taxi/driver-app/pages/admin_panel/admin_panel.dart';
+import 'package:quber_taxi/config/app_profile.dart';
+import 'package:quber_taxi/config/build_config.dart';
 import 'package:quber_taxi/driver-app/pages/create_account/verification_page.dart';
 import 'package:quber_taxi/driver-app/pages/driver_account/driver_account.dart';
 import 'package:quber_taxi/driver-app/pages/home/home.dart';
@@ -27,7 +29,7 @@ import 'package:quber_taxi/util/runtime.dart' as runtime;
 import 'route_paths.dart';
 
 final GoRouter appRouter = GoRouter(
-
+  
   // App start up route. You can change it for developing or testing, just remember to take it back in place.
   initialLocation: runtime.isSessionOk
       ? runtime.isClientMode ? RoutePaths.clientSetting : RoutePaths.driverHome:
@@ -41,17 +43,17 @@ final GoRouter appRouter = GoRouter(
 
     GoRoute(
       path: RoutePaths.clientHome,
-      builder: (context, state) => ClientHome()
+      builder: (context, state) => ClientHomePage()
     ),
 
     GoRoute(
         path: RoutePaths.searchOrigin,
-        builder: (context, state) => const SearchOrigin()
+        builder: (context, state) => const SearchOriginPage()
     ),
 
     GoRoute(
         path: RoutePaths.searchDestination,
-        builder: (context, state) => const SearchDestination()
+        builder: (context, state) => const SearchDestinationPage()
     ),
 
     GoRoute(
@@ -63,7 +65,7 @@ final GoRouter appRouter = GoRouter(
         path: RoutePaths.searchDriver,
         builder: (context, state) {
             final travelId = state.extra as int;
-            return SearchDriver(travelId: travelId);
+            return SearchDriverPage(travelId: travelId);
         }
     ),
 
@@ -71,7 +73,7 @@ final GoRouter appRouter = GoRouter(
         path: RoutePaths.trackDriver,
         builder: (context, state) {
           final travel = state.extra as Travel;
-          return TrackDriver(travel: travel);
+          return TrackDriverPage(travel: travel);
         }
     ),
 
@@ -87,32 +89,35 @@ final GoRouter appRouter = GoRouter(
         path: RoutePaths.quberReviews,
         builder: (context, state) {
           final reviews = state.extra as List<Review>;
-          return QuberReviews(reviews: reviews);
+          return QuberReviewsPage(reviews: reviews);
         }
     ),
 
     GoRoute(
         path: RoutePaths.driverHome,
-        builder: (context, state) => DriverHome()
+        builder: (context, state) => DriverHomePage()
     ),
 
     GoRoute(
         path: RoutePaths.driverNavigation,
         builder: (context, state) {
           final travel = state.extra as Travel;
-          return DriverNavigation(travel: travel);
+          return DriverNavigationPage(travel: travel);
         }
     ),
+
     GoRoute(
         path: RoutePaths.driverCreateAccount,
         builder: (context, state) => const VerificationIdentityPage()
     ),
 
-    GoRoute(path: RoutePaths.identityVerification,
+    GoRoute(
+        path: RoutePaths.identityVerification,
         builder: (context, state) => const IdentityVerificationPage()
     ),
 
-    GoRoute(path: RoutePaths.confirmSelfie,
+    GoRoute(
+        path: RoutePaths.confirmSelfie,
         builder: (context, state) => const ConfirmSelfiePage()
     ),
 
@@ -128,19 +133,25 @@ final GoRouter appRouter = GoRouter(
         }
     ),
 
-    GoRoute(path: RoutePaths.panelAdmin,
-        builder: (context, state) => const AdminSettingsPage()
+    GoRoute(
+        path: RoutePaths.adminHome,
+        builder: (context, state) => const AdminHomePage()
     ),
 
-    GoRoute(path: RoutePaths.driverAccount,
+    GoRoute(
+        path: RoutePaths.driverAccount,
         builder: (context, state) => const DriverAccountSettingPage()
     ),
 
-    GoRoute(path: RoutePaths.aboutDev,
-    builder: (context, state) => const AboutDevPage()),
+    GoRoute(
+        path: RoutePaths.aboutDev,
+        builder: (context, state) => const AboutDevPage()
+    ),
 
-    GoRoute(path: RoutePaths.aboutUs,
-    builder: (context, state) => const AboutUsPage()),
+    GoRoute(
+        path: RoutePaths.aboutUs,
+        builder: (context, state) => const AboutUsPage()
+    ),
 
     GoRoute(path: RoutePaths.clientSetting,
         builder: (context, state) => const AccountSettingPage()
@@ -150,3 +161,11 @@ final GoRouter appRouter = GoRouter(
     builder: (context, state) => const TripsPage())
   ]
 );
+
+String _resolveInitialLocation(AppProfile profile) {
+  return switch (profile) {
+    AppProfile.client => RoutePaths.clientHome,
+    AppProfile.driver => RoutePaths.driverHome,
+    AppProfile.admin => RoutePaths.adminHome
+  };
+}

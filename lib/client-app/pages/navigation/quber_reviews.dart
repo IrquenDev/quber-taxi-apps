@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:quber_taxi/common/models/review.dart';
 
-class QuberReviews extends StatelessWidget {
+class QuberReviewsPage extends StatelessWidget {
 
   final List<Review> reviews;
 
-  const QuberReviews({super.key, required this.reviews});
+  const QuberReviewsPage({super.key, required this.reviews});
 
   @override
   Widget build(BuildContext context) {
@@ -39,17 +39,17 @@ class QuberReviews extends StatelessWidget {
             spacing: 8.0,
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(5, (index) {
-                  return Icon(
-                      index < review.rating ? Icons.star : Icons.star_border,
-                      size: Theme.of(context).iconTheme.size! * 0.5,
-                      color: Theme.of(context).colorScheme.primaryContainer
-                  );
-                })
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(5, (index) {
+                    return Icon(
+                        index < review.rating ? Icons.star : Icons.star_border,
+                        size: Theme.of(context).iconTheme.size! * 0.5,
+                        color: Theme.of(context).colorScheme.primaryContainer
+                    );
+                  })
               ),
               Text(
-                  DateFormat("d 'de' MMMM 'de' y", 'es_ES').format(review.timestamp),
+                DateFormat("d 'de' MMMM 'de' y", 'es_ES').format(review.timestamp),
                 style: Theme.of(context).textTheme.bodySmall,
               )
             ]

@@ -124,9 +124,12 @@ class _LoginPageState extends State<LoginPage> {
                                   if(runtime.isClientMode) {
                                     response = await _authService.loginClient(phone, password);
                                     route = RoutePaths.clientHome;
-                                  } else {
+                                  } else if(runtime.isDriverMode) {
                                     response = await _authService.loginDriver(phone, password);
                                     route = RoutePaths.driverHome;
+                                  } else {
+                                    response = await _authService.loginAdmin(phone, password);
+                                    route = RoutePaths.adminHome;
                                   }
                                   // Handle response
                                   if(!context.mounted) return;

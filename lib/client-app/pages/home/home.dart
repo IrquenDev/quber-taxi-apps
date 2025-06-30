@@ -7,17 +7,17 @@ import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 
-class ClientHome extends StatefulWidget {
+class ClientHomePage extends StatefulWidget {
 
-  const ClientHome({super.key, this.position});
+  const ClientHomePage({super.key, this.position});
 
   final Position? position;
 
   @override
-  State<ClientHome> createState() => _ClientHomeState();
+  State<ClientHomePage> createState() => _ClientHomePageState();
 }
 
-class _ClientHomeState extends State<ClientHome> {
+class _ClientHomePageState extends State<ClientHomePage> {
 
   // Default m3  BottomAppBar height. The length of the curved space under a centered FAB coincides with this value.
   final _bottomAppBarHeight = 80.0;

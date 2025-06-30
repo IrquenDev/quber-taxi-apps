@@ -44,10 +44,22 @@ class TravelService {
     return Travel.fromJson(jsonDecode(response.body));
   }
 
-  Future<List<Travel>> findAvailableTravels(int seats, TaxiType type) async {
+  Future<List<Travel>> fetchAvailableTravels(int seats, TaxiType type) async {
     final url = Uri.parse('${_apiConfig.baseUrl}/$_endpoint?seats=$seats&type=${type.apiValue}');
     final response = await http.get(url);
     if (response.body.trim().isEmpty) {
+      return [];
+    }
+    final List<dynamic> jsonList = jsonDecode(response.body);
+    return jsonList.map((json) => Travel.fromJson(json)).toList();
+  }
+
+  Future<List<Travel>> fetchAllCompletedTravels() async {
+    final url = Uri.parse('${_apiConfig.baseUrl}/$_endpoint/state/${TravelState.completed.apiValue}');
+    final response = await http.get(url);
+    print(response.body);
+    if (response.body.trim().isEmpty) {
+      print("empty ??");
       return [];
     }
     final List<dynamic> jsonList = jsonDecode(response.body);
