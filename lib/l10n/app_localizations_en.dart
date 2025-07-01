@@ -221,7 +221,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Check your Internet connection and try again';
 
   @override
-  String get nowCanAskForTaxi => 'You can now go get your taxi';
+  String get nowCanAskForTaxi => 'You can now go get your trip';
 
   @override
   String get thanks => 'Thank you for confirming your identity.';

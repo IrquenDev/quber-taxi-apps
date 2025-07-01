@@ -509,7 +509,7 @@ abstract class AppLocalizations {
   /// No description provided for @nowCanAskForTaxi.
   ///
   /// In es, this message translates to:
-  /// **'¡Ya puede ir a por su taxi!'**
+  /// **'¡Ya puede ir a por su viaje!'**
   String get nowCanAskForTaxi;
 
   /// No description provided for @thanks.
