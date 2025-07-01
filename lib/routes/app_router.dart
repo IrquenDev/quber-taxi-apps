@@ -1,5 +1,4 @@
 import 'package:go_router/go_router.dart';
-import 'package:quber_taxi/client-app/pages/client_account/client_create_account.dart';
 import 'package:quber_taxi/client-app/pages/home/home.dart';
 import 'package:quber_taxi/client-app/pages/home/search_destination.dart';
 import 'package:quber_taxi/client-app/pages/home/search_origin.dart';
@@ -25,6 +24,7 @@ import 'package:quber_taxi/driver-app/pages/home/home.dart';
 import 'package:quber_taxi/driver-app/pages/info-driver/info_driver.dart';
 import 'package:quber_taxi/driver-app/pages/navigation/driver_navigation.dart';
 import 'package:quber_taxi/util/runtime.dart' as runtime;
+import '../client-app/pages/client_account/create_account.dart';
 import '../common/pages/identity_verification/confirm_selfie.dart';
 import 'route_paths.dart';
 
