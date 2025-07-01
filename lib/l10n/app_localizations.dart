@@ -170,6 +170,12 @@ abstract class AppLocalizations {
   /// **'Vehículo'**
   String get vehicle;
 
+  /// No description provided for @settingsHome.
+  ///
+  /// In es, this message translates to:
+  /// **'Ajustes'**
+  String get settingsHome;
+
   /// No description provided for @map.
   ///
   /// In es, this message translates to:
@@ -647,7 +653,7 @@ abstract class AppLocalizations {
   /// No description provided for @myAccount.
   ///
   /// In es, this message translates to:
-  /// **'Mi Cuenta'**
+  /// **'Ajustes'**
   String get myAccount;
 
   /// No description provided for @balance.
@@ -701,13 +707,19 @@ abstract class AppLocalizations {
   /// No description provided for @companyDescription.
   ///
   /// In es, this message translates to:
-  /// **'Mipyme - Agencia de Taxi'**
+  /// **'Empresa - Agencia de Taxi'**
   String get companyDescription;
+
+  /// No description provided for @companyAdress.
+  ///
+  /// In es, this message translates to:
+  /// **'Calle 4ta / Central y Mercado, Reparto Martín Pérez, San Miguel del Padrón'**
+  String get companyAdress;
 
   /// No description provided for @companyAboutText.
   ///
   /// In es, this message translates to:
-  /// **'Quber es una Mipyme dedicada a ofrecer servicios de transporte a través de una red organizada de taxis, enfocada en brindar un servicio seguro, puntual y de calidad. La empresa se compromete con la satisfacción del cliente y el bienestar de sus conductores, promoviendo una experiencia de movilidad confiable, accesible, centrada en el respeto, la responsabilidad y la eficiencia.'**
+  /// **'Quber es una Empresa dedicada a ofrecer servicios de transporte a través de una red organizada de taxis, enfocada en brindar un servicio seguro, puntual y de calidad. La empresa se compromete con la satisfacción del cliente y el bienestar de sus conductores, promoviendo una experiencia de movilidad confiable, accesible, centrada en el respeto, la responsabilidad y la eficiencia.'**
   String get companyAboutText;
 
   /// No description provided for @contactAddress.
@@ -793,6 +805,204 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Irquen, fundada por tres estudiantes y construida como una familia de amigos, hoy es una empresa de software con bases firmes y visión de futuro. Su propósito es hacer que la digitalización sea rápida y accesible para todos. Su misión es llevar la tecnología a cada rincón, crecer, optimizar y expandirse. Su visión es superar límites, encontrar soluciones y crear lo que aún no existe.'**
   String get aboutText;
+
+  /// No description provided for @identityVerificationTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Verificación de identidad'**
+  String get identityVerificationTitle;
+
+  /// No description provided for @confirmIdentityHeader.
+  ///
+  /// In es, this message translates to:
+  /// **'Necesitamos confirmar su identidad'**
+  String get confirmIdentityHeader;
+
+  /// No description provided for @takeSelfieInstruction.
+  ///
+  /// In es, this message translates to:
+  /// **'Por favor, toma una selfie para confirmar que no eres un bot.'**
+  String get takeSelfieInstruction;
+
+  /// No description provided for @selfieUsageNote.
+  ///
+  /// In es, this message translates to:
+  /// **'No usaremos esta imagen como foto de perfil ni se mostrará públicamente.'**
+  String get selfieUsageNote;
+
+  /// No description provided for @verificationPurpose.
+  ///
+  /// In es, this message translates to:
+  /// **'Este paso es parte de nuestro proceso de verificación para garantizar la seguridad de todos los usuarios.'**
+  String get verificationPurpose;
+
+  /// No description provided for @takeSelfieButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Tomar Selfie'**
+  String get takeSelfieButton;
+
+  /// No description provided for @identityVerificationHeader.
+  ///
+  /// In es, this message translates to:
+  /// **'Verificación de identidad'**
+  String get identityVerificationHeader;
+
+  /// No description provided for @thankYouForVerification.
+  ///
+  /// In es, this message translates to:
+  /// **'Gracias por confirmar su identidad'**
+  String get thankYouForVerification;
+
+  /// No description provided for @identityConfirmedSuccessfully.
+  ///
+  /// In es, this message translates to:
+  /// **'Hemos confirmado su identidad con éxito.'**
+  String get identityConfirmedSuccessfully;
+
+  /// No description provided for @verificationBenefits.
+  ///
+  /// In es, this message translates to:
+  /// **'Este proceso nos ayuda a proteger su cuenta y a mantener nuestra comunidad segura para todos los usuarios.'**
+  String get verificationBenefits;
+
+  /// No description provided for @createAccountButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Crear Cuenta'**
+  String get createAccountButton;
+
+  /// No description provided for @createAccountTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Crear Cuenta'**
+  String get createAccountTitle;
+
+  /// No description provided for @nameLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre:'**
+  String get nameLabel;
+
+  /// No description provided for @nameHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduzca su nombre y apellidos'**
+  String get nameHint;
+
+  /// No description provided for @plateLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Chapa:'**
+  String get plateLabel;
+
+  /// No description provided for @plateHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Escriba la chapa de su vehículo'**
+  String get plateHint;
+
+  /// No description provided for @phoneLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Núm. de teléfono:'**
+  String get phoneLabel;
+
+  /// No description provided for @phoneHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Ej: 5566XXXX'**
+  String get phoneHint;
+
+  /// No description provided for @seatsLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Número de asientos:'**
+  String get seatsLabel;
+
+  /// No description provided for @seatsHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Ej: 4'**
+  String get seatsHint;
+
+  /// No description provided for @licenseLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Licencia de conducción'**
+  String get licenseLabel;
+
+  /// No description provided for @attachButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Adjuntar'**
+  String get attachButton;
+
+  /// No description provided for @vehicleTypeLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Seleccione su tipo de vehículo:'**
+  String get vehicleTypeLabel;
+
+  /// No description provided for @standardVehicle.
+  ///
+  /// In es, this message translates to:
+  /// **'Estándar'**
+  String get standardVehicle;
+
+  /// No description provided for @standardDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Vehículo compacto con transmisión manual, ideal para traslados cortos. Cuenta con 5 asientos y espacio limitado para equipaje.'**
+  String get standardDescription;
+
+  /// No description provided for @familyDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Vehículo espacioso ideal para familias y traslados grupales. Ofrece amplio espacio y confort.'**
+  String get familyDescription;
+
+  /// No description provided for @comfortVehicle.
+  ///
+  /// In es, this message translates to:
+  /// **'Confort'**
+  String get comfortVehicle;
+
+  /// No description provided for @comfortDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Vehículo cómodo con características premium, perfecto para traslados ejecutivos.'**
+  String get comfortDescription;
+
+  /// No description provided for @passwordLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Contraseña'**
+  String get passwordLabel;
+
+  /// No description provided for @passwordHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduzca la contraseña deseada'**
+  String get passwordHint;
+
+  /// No description provided for @confirmPasswordLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirmar contraseña:'**
+  String get confirmPasswordLabel;
+
+  /// No description provided for @confirmPasswordHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Vuelva a introducir su contraseña'**
+  String get confirmPasswordHint;
+
+  /// No description provided for @finishButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Finalizar registro'**
+  String get finishButton;
 }
 
 class _AppLocalizationsDelegate

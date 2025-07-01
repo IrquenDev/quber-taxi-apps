@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:network_checker/network_checker.dart';
@@ -73,12 +74,23 @@ class _LoginPageState extends State<LoginPage> {
                             controller: _phoneTFController,
                             decoration: InputDecoration(
                               hintText: localization.enterPhoneNumber,
-                              fillColor: colorScheme.surfaceContainer,
+                              fillColor: colorScheme.surfaceContainer.withAlpha(200),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(dimensions.borderRadius * 0.5),
                                 borderSide: BorderSide.none,
                               ),
+                              suffixIcon: _phoneTFController.text.length == 8
+                                  ? Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: SvgPicture.asset(
+                                  'assets/icons/yelow_check.svg',
+                                  width: 10,
+                                  height: 10,
+                                ),
+                              )
+                                  : null,
                             ),
+                            onChanged: (value) => setState(() {}),
                             validator: (value) {
                               if (value == null || value.isEmpty) return localization.requiredField;
                               return null;
@@ -94,7 +106,7 @@ class _LoginPageState extends State<LoginPage> {
                                 icon: Icon(_obscureText ? Icons.visibility_outlined : Icons.visibility_off_outlined),
                                 onPressed: () => setState(() => _obscureText = !_obscureText),
                               ),
-                              fillColor: colorScheme.surfaceContainer,
+                                fillColor: colorScheme.surfaceContainer.withAlpha(200),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(dimensions.borderRadius * 0.5),
                                 borderSide: BorderSide.none
@@ -154,17 +166,26 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           // Forgot Password
                           TextButton(
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
                             onPressed: () {
                               // TODO("yapmDev": @Reminder)
                               // - Impl recover password logic
                             },
                             child: Text(
                                 localization.forgotPassword,
-                                style: textTheme.bodyMedium?.copyWith(color: Colors.white)
+                                style: textTheme.bodyMedium?.copyWith(color: Colors.white, fontSize: 16)
                             )
                           ),
-                          // Create New Account
                           TextButton(
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.zero,
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
                             onPressed: () {
                               // TODO("yapmDev": @Reminder)
                               // - Go to create account (depends on app profile)
@@ -173,7 +194,8 @@ class _LoginPageState extends State<LoginPage> {
                               localization.createAccountLogin,
                               style: textTheme.bodyLarge?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: colorScheme.primaryFixedDim
+                                color: colorScheme.primaryFixedDim,
+                                  fontSize: 18
                               )
                             )
                           )

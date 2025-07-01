@@ -45,6 +45,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get vehicle => 'Vehículo';
 
   @override
+  String get settingsHome => 'Ajustes';
+
+  @override
   String get map => 'Mapa';
 
   @override
@@ -290,7 +293,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get saveInformation => 'Guardar';
 
   @override
-  String get myAccount => 'Mi Cuenta';
+  String get myAccount => 'Ajustes';
 
   @override
   String get balance => 'Balance:';
@@ -317,11 +320,15 @@ class AppLocalizationsEs extends AppLocalizations {
   String get aboutUsTitle => 'Acerca de Nosotros';
 
   @override
-  String get companyDescription => 'Mipyme - Agencia de Taxi';
+  String get companyDescription => 'Empresa - Agencia de Taxi';
+
+  @override
+  String get companyAdress =>
+      'Calle 4ta / Central y Mercado, Reparto Martín Pérez, San Miguel del Padrón';
 
   @override
   String get companyAboutText =>
-      'Quber es una Mipyme dedicada a ofrecer servicios de transporte a través de una red organizada de taxis, enfocada en brindar un servicio seguro, puntual y de calidad. La empresa se compromete con la satisfacción del cliente y el bienestar de sus conductores, promoviendo una experiencia de movilidad confiable, accesible, centrada en el respeto, la responsabilidad y la eficiencia.';
+      'Quber es una Empresa dedicada a ofrecer servicios de transporte a través de una red organizada de taxis, enfocada en brindar un servicio seguro, puntual y de calidad. La empresa se compromete con la satisfacción del cliente y el bienestar de sus conductores, promoviendo una experiencia de movilidad confiable, accesible, centrada en el respeto, la responsabilidad y la eficiencia.';
 
   @override
   String get contactAddress => 'Calle 10 entre Línea y 23';
@@ -365,4 +372,111 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get aboutText =>
       'Irquen, fundada por tres estudiantes y construida como una familia de amigos, hoy es una empresa de software con bases firmes y visión de futuro. Su propósito es hacer que la digitalización sea rápida y accesible para todos. Su misión es llevar la tecnología a cada rincón, crecer, optimizar y expandirse. Su visión es superar límites, encontrar soluciones y crear lo que aún no existe.';
+
+  @override
+  String get identityVerificationTitle => 'Verificación de identidad';
+
+  @override
+  String get confirmIdentityHeader => 'Necesitamos confirmar su identidad';
+
+  @override
+  String get takeSelfieInstruction =>
+      'Por favor, toma una selfie para confirmar que no eres un bot.';
+
+  @override
+  String get selfieUsageNote =>
+      'No usaremos esta imagen como foto de perfil ni se mostrará públicamente.';
+
+  @override
+  String get verificationPurpose =>
+      'Este paso es parte de nuestro proceso de verificación para garantizar la seguridad de todos los usuarios.';
+
+  @override
+  String get takeSelfieButton => 'Tomar Selfie';
+
+  @override
+  String get identityVerificationHeader => 'Verificación de identidad';
+
+  @override
+  String get thankYouForVerification => 'Gracias por confirmar su identidad';
+
+  @override
+  String get identityConfirmedSuccessfully =>
+      'Hemos confirmado su identidad con éxito.';
+
+  @override
+  String get verificationBenefits =>
+      'Este proceso nos ayuda a proteger su cuenta y a mantener nuestra comunidad segura para todos los usuarios.';
+
+  @override
+  String get createAccountButton => 'Crear Cuenta';
+
+  @override
+  String get createAccountTitle => 'Crear Cuenta';
+
+  @override
+  String get nameLabel => 'Nombre:';
+
+  @override
+  String get nameHint => 'Introduzca su nombre y apellidos';
+
+  @override
+  String get plateLabel => 'Chapa:';
+
+  @override
+  String get plateHint => 'Escriba la chapa de su vehículo';
+
+  @override
+  String get phoneLabel => 'Núm. de teléfono:';
+
+  @override
+  String get phoneHint => 'Ej: 5566XXXX';
+
+  @override
+  String get seatsLabel => 'Número de asientos:';
+
+  @override
+  String get seatsHint => 'Ej: 4';
+
+  @override
+  String get licenseLabel => 'Licencia de conducción';
+
+  @override
+  String get attachButton => 'Adjuntar';
+
+  @override
+  String get vehicleTypeLabel => 'Seleccione su tipo de vehículo:';
+
+  @override
+  String get standardVehicle => 'Estándar';
+
+  @override
+  String get standardDescription =>
+      'Vehículo compacto con transmisión manual, ideal para traslados cortos. Cuenta con 5 asientos y espacio limitado para equipaje.';
+
+  @override
+  String get familyDescription =>
+      'Vehículo espacioso ideal para familias y traslados grupales. Ofrece amplio espacio y confort.';
+
+  @override
+  String get comfortVehicle => 'Confort';
+
+  @override
+  String get comfortDescription =>
+      'Vehículo cómodo con características premium, perfecto para traslados ejecutivos.';
+
+  @override
+  String get passwordLabel => 'Contraseña';
+
+  @override
+  String get passwordHint => 'Introduzca la contraseña deseada';
+
+  @override
+  String get confirmPasswordLabel => 'Confirmar contraseña:';
+
+  @override
+  String get confirmPasswordHint => 'Vuelva a introducir su contraseña';
+
+  @override
+  String get finishButton => 'Finalizar registro';
 }

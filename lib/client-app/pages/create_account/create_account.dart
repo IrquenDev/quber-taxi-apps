@@ -31,7 +31,6 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
         children: [
           Column(
             children: [
-              // Cabecera usando color primario
               Container(
                 width: double.infinity,
                 height: 200,
@@ -51,14 +50,15 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
                 ),
                 child: SafeArea(
                   child: Padding(
-                    padding: const EdgeInsets.only(left: 70.0, bottom: 90),
+                    padding: const EdgeInsets.only(left: 30.0, bottom: 90, top: 20),
                     child: Row(
                       children: [
-                        Icon(Icons.menu, color: colorScheme.shadow),
+                        Icon(Icons.arrow_back, color: colorScheme.shadow),
                         const SizedBox(width: 8),
                         Text(
                           AppLocalizations.of(context)!.createAccount,
                           style: textTheme.headlineSmall?.copyWith(
+                            fontSize: 28,
                             fontWeight: FontWeight.bold,
                             color: colorScheme.shadow,
                           ),
@@ -80,7 +80,7 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
                       children: [
                         Text(AppLocalizations.of(context)!.name,
                           style: textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
                             color: colorScheme.onSurface,
                           ),
                         ),
@@ -102,7 +102,7 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
 
                         Text(AppLocalizations.of(context)!.phoneNumber,
                           style: textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
                             color: colorScheme.onSurface,
                           ),
                         ),
@@ -127,7 +127,7 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
 
                         Text(AppLocalizations.of(context)!.password,
                           style: textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
                             color: colorScheme.onSurface,
                           ),
                         ),
@@ -155,7 +155,7 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
 
                         Text(AppLocalizations.of(context)!.passwordConfirm,
                           style: textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
                             color: colorScheme.onSurface,
                           ),
                         ),
@@ -179,36 +179,6 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
                               : null,
                         ),
                         const SizedBox(height: 30),
-
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const RequestFaceIdPage(), //Esto hay q cambiarlo, es solo de prueba
-                                  ),
-                                );
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: colorScheme.primaryContainer,
-                              foregroundColor: colorScheme.onPrimaryContainer,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            child: Text(
-                              AppLocalizations.of(context)!.endRegistration,
-                              style: textTheme.labelLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
                       ],
                     ),
                   ),
@@ -246,6 +216,36 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
                       BlendMode.srcIn,
                     ),
                     fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                  foregroundColor: Theme.of(context).colorScheme.secondary,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.zero,
+                  ),
+                  elevation: 0,
+                ),
+                onPressed: () {
+
+                },
+                child: Text(
+                  AppLocalizations.of(context)!.endRegistration,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.secondary
                   ),
                 ),
               ),

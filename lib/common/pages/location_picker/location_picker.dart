@@ -79,7 +79,7 @@ class _LocationPickerState extends State<LocationPicker> {
           Positioned(
               right: 20.0, bottom: 20.0,
               child: FloatingActionButton(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                   onPressed: () async {
                     await requestLocationPermission(
                         context: context,

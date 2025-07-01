@@ -27,6 +27,14 @@ class AboutDevPage extends StatelessWidget {
                   bottomLeft: Radius.circular(25),
                   bottomRight: Radius.circular(25),
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Theme.of(context).colorScheme.surfaceDim,
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
               ),
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
@@ -35,7 +43,7 @@ class AboutDevPage extends StatelessWidget {
                     Row(
                       children: [
                         IconButton(
-                          icon: Icon(Icons.menu, color: colorScheme.shadow),
+                          icon: Icon(Icons.arrow_back, color: colorScheme.shadow),
                           onPressed: () {},
                         ),
                         const SizedBox(width: 15),
@@ -91,7 +99,7 @@ class AboutDevPage extends StatelessWidget {
                           width: cardWidth,
                           child: Card(
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(20),
                             ),
                             child: Padding(
                               padding: const EdgeInsets.all(10),
@@ -125,7 +133,7 @@ class AboutDevPage extends StatelessWidget {
                           width: cardWidth,
                           child: Card(
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(20),
                             ),
                             child: Padding(
                               padding: const EdgeInsets.all(16),
