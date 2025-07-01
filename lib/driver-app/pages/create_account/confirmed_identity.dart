@@ -132,7 +132,7 @@ class ConfirmedIdentityPage extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const CreateAccount()),
+                    MaterialPageRoute(builder: (_) => const CreateDriverAccountPage()),
                   );
                 },
                 child: Text(
