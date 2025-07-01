@@ -15,8 +15,6 @@ import 'package:quber_taxi/common/models/review.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/pages/about_dev/about_dev.dart';
 import 'package:quber_taxi/common/pages/about_us/about_us.dart';
-import 'package:quber_taxi/common/pages/face_id_confirm/confirmed_selfie.dart';
-import 'package:quber_taxi/common/pages/face_id_confirm/identity_verification.dart';
 import 'package:quber_taxi/common/pages/location_picker/location_picker.dart';
 import 'package:quber_taxi/common/pages/login/login.dart';
 import 'package:quber_taxi/common/pages/onboarding/onboarding.dart';
@@ -31,6 +29,8 @@ import 'package:quber_taxi/navigation/routes/admin_routes.dart';
 import 'package:quber_taxi/navigation/routes/client_routes.dart';
 import 'package:quber_taxi/navigation/routes/driver_routes.dart';
 import 'package:quber_taxi/util/runtime.dart' as runtime;
+import '../common/pages/identity_verification/confirmed_selfie.dart';
+import '../common/pages/identity_verification/identity_verification.dart';
 import 'routes/common_routes.dart';
 
 final GoRouter appRouter = GoRouter(
