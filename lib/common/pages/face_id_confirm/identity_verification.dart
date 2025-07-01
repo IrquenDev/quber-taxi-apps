@@ -41,7 +41,7 @@ class RequestFaceIdPage extends StatelessWidget {
                     padding: const EdgeInsets.only(left: 20.0, bottom: 90),
                     child: Row(
                       children: [
-                        Icon(Icons.arrow_back, color: colorScheme.shadow),
+                        Icon(Icons.menu, color: colorScheme.shadow),
                         const SizedBox(width: 8),
                         Text(
                           AppLocalizations.of(context)!.identityVerify,
@@ -102,29 +102,33 @@ class RequestFaceIdPage extends StatelessWidget {
               ),
               const SizedBox(height: 40),
               const Spacer(),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20),
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
                 child: SizedBox(
+                  height: 56,
                   width: double.infinity,
                   child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                      foregroundColor: Theme.of(context).colorScheme.secondary,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.zero,
+                      ),
+                      elevation: 0,
+                    ),
                     onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (_) => const FaceIdConfirmed()),
                       );
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colorScheme.primaryContainer,
-                      foregroundColor: colorScheme.onPrimaryContainer,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
                     child: Text(
-                      AppLocalizations.of(context)!.takeSelfie,
-                      style: textTheme.labelLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
+                      AppLocalizations.of(context)!.takeSelfieButton,
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.secondary
                       ),
                     ),
                   ),
