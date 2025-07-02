@@ -71,6 +71,8 @@ class _LoginPageState extends State<LoginPage> {
                         children: [
                           // Phone Number TF
                           TextFormField(
+                            keyboardType: TextInputType.number,
+                            maxLength: 11,
                             controller: _phoneTFController,
                             decoration: InputDecoration(
                               hintText: localization.enterPhoneNumber,
