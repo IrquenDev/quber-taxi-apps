@@ -178,7 +178,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                       ),
                       IconButton(
                         padding: EdgeInsets.zero,
-                        onPressed: () => setState(() => _passengerCount++),
+                        onPressed: () {if (_passengerCount < 20){setState(() => _passengerCount++);}} ,
                         icon: const Icon(Icons.add),
                       )
                     ]

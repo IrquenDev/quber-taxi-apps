@@ -2,7 +2,7 @@
   "@@locale": "es",
 
   "unknown": "Municipio no reconocido:",
-  "originName": "Seleccione el lugar de origen",
+  "originName": "Seleccione la ubicación de origen",
   "destinationName": "Seleccione el municipio de destino",
   "carPrefer": "¿Qué tipo de vehículo prefiere?",
   "howTravels": "¿Cuántas personas viajan?",
