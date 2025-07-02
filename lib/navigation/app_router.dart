@@ -28,9 +28,9 @@ import 'package:quber_taxi/driver-app/pages/settings/settings.dart';
 import 'package:quber_taxi/navigation/routes/admin_routes.dart';
 import 'package:quber_taxi/navigation/routes/client_routes.dart';
 import 'package:quber_taxi/navigation/routes/driver_routes.dart';
-import 'package:quber_taxi/util/runtime.dart' as runtime;
 import '../common/pages/identity_verification/confirmed_selfie.dart';
 import '../common/pages/identity_verification/identity_verification.dart';
+import 'package:quber_taxi/utils/runtime.dart' as runtime;
 import 'routes/common_routes.dart';
 
 final GoRouter appRouter = GoRouter(

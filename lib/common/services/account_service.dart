@@ -7,18 +7,20 @@ import 'package:quber_taxi/config/api_config.dart';
 class AccountService {
 
   final _endpoint = "${ApiConfig().baseUrl}/account";
-  final headers = {'Content-Type': 'application/json'};
+  final _headers = {'Content-Type': 'application/json'};
 
-  Future<http.Response> registerClient(Map<String, dynamic> clientData) async {
+  Future<http.Response> registerClient(String name, String phone, String password) async {
     final url = Uri.parse("$_endpoint/register/client");
-    final body = jsonEncode(clientData);
-    return await http.post(url, headers: headers, body: body);
+    final body = jsonEncode({
+      "name": name, "phone": phone, "password": password
+    });
+    return await http.post(url, headers: _headers, body: body);
   }
 
   Future<http.Response> registerDriver(Map<String, dynamic> driverData) async {
     final url = Uri.parse("$_endpoint/register/driver");
     final body = jsonEncode(driverData);
-    return await http.post(url, headers: headers, body: body);
+    return await http.post(url, headers: _headers, body: body);
   }
 
   Future<http.Response> deleteClient(int id) async {

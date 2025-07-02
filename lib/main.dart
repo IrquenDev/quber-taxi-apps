@@ -8,7 +8,7 @@ import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/app_router.dart';
 import 'package:quber_taxi/storage/prefs_manager.dart';
 import 'package:quber_taxi/theme/theme.dart';
-import 'package:quber_taxi/websocket/core/websocket_service.dart';
+import 'package:quber_taxi/utils/websocket/core/websocket_service.dart';
 
 void main() async {
 

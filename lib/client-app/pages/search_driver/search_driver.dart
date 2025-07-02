@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
-import 'package:quber_taxi/websocket/impl/travel_state_handler.dart';
+import 'package:quber_taxi/utils/websocket/impl/travel_state_handler.dart';
 
 class SearchDriverPage extends StatefulWidget {
 

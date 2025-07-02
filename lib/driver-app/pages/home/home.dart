@@ -17,12 +17,12 @@ import 'package:quber_taxi/driver-app/pages/home/trip_notification.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/driver_routes.dart';
-import 'package:quber_taxi/util/geolocator.dart' as g_util;
-import 'package:quber_taxi/util/mapbox.dart' as mb_util;
-import 'package:quber_taxi/util/runtime.dart';
-import 'package:quber_taxi/websocket/core/websocket_service.dart';
-import 'package:quber_taxi/websocket/impl/travel_request_handler.dart';
-import 'package:quber_taxi/websocket/impl/travel_state_handler.dart';
+import 'package:quber_taxi/utils/map/geolocator.dart' as g_util;
+import 'package:quber_taxi/utils/map/mapbox.dart' as mb_util;
+import 'package:quber_taxi/utils/runtime.dart';
+import 'package:quber_taxi/utils/websocket/core/websocket_service.dart';
+import 'package:quber_taxi/utils/websocket/impl/travel_request_handler.dart';
+import 'package:quber_taxi/utils/websocket/impl/travel_state_handler.dart';
 
 class DriverHomePage extends StatefulWidget {
 

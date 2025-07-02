@@ -6,13 +6,13 @@ import 'package:quber_taxi/common/services/travel_service.dart';
 import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
 import 'package:quber_taxi/common/widgets/dialogs/confirm_dialog.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
-import 'package:quber_taxi/util/mapbox.dart' as mb_util;
+import 'package:quber_taxi/utils/map/mapbox.dart' as mb_util;
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart' as g;
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:quber_taxi/client-app/pages/navigation/trip_info.dart';
 import 'package:quber_taxi/common/models/travel.dart';
-import 'package:quber_taxi/websocket/impl/finish_confirmation_handler.dart';
+import 'package:quber_taxi/utils/websocket/impl/finish_confirmation_handler.dart';
 import 'package:turf/distance.dart' as td;
 import 'package:turf/turf.dart' as turf;
 
