@@ -2,7 +2,7 @@
   "@@locale": "en",
 
   "unknown": "Unrecognized municipality:",
-  "originName": "Select the origin location",
+  "originName": "Select the source location",
   "destinationName": "Select the destination municipality",
   "carPrefer": "What type of vehicle do you prefer?",
   "howTravels": "How many people are traveling?",

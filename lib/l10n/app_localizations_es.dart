@@ -12,7 +12,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get unknown => 'Municipio no reconocido:';
 
   @override
-  String get originName => 'Seleccione el lugar de origen';
+  String get originName => 'Seleccione la ubicación de origen';
 
   @override
   String get destinationName => 'Seleccione el municipio de destino';

@@ -107,7 +107,7 @@ abstract class AppLocalizations {
   /// No description provided for @originName.
   ///
   /// In es, this message translates to:
-  /// **'Seleccione el lugar de origen'**
+  /// **'Seleccione la ubicación de origen'**
   String get originName;
 
   /// No description provided for @destinationName.
