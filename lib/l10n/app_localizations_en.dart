@@ -210,6 +210,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get endRegistration => 'Complete Registration';
 
   @override
+  String get accountCreatedSuccess => 'Account successfully created';
+
+  @override
+  String get errorCreatingAccount =>
+      'An error occurred while creating the account';
+
+  @override
+  String get checkYourInternetConnection =>
+      'Check your Internet connection and try again';
+
+  @override
+  String get nowCanAskForTaxi => 'You can now go get your trip';
+
+  @override
   String get thanks => 'Thank you for confirming your identity.';
 
   @override

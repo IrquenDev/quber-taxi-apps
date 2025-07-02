@@ -4,7 +4,7 @@ import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/client-app/pages/navigation/trip_completed.dart';
 import 'package:quber_taxi/common/services/travel_service.dart';
 import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
-import 'package:quber_taxi/driver-app/pages/home/dialogs/confirm_dialog.dart';
+import 'package:quber_taxi/common/widgets/dialogs/confirm_dialog.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
 import 'package:quber_taxi/utils/map/mapbox.dart' as mb_util;
 import 'package:flutter/services.dart';

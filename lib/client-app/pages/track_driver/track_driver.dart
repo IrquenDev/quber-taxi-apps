@@ -6,7 +6,7 @@ import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/services/travel_service.dart';
 import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
-import 'package:quber_taxi/driver-app/pages/home/dialogs/confirm_dialog.dart';
+import 'package:quber_taxi/common/widgets/dialogs/confirm_dialog.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
 import 'package:quber_taxi/navigation/routes/client_routes.dart';
 import 'package:quber_taxi/utils/websocket/impl/driver_location_handler.dart';

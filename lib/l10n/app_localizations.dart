@@ -488,6 +488,30 @@ abstract class AppLocalizations {
   /// **'Finalizar Registro'**
   String get endRegistration;
 
+  /// No description provided for @accountCreatedSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Cuenta creada satisfactoriamente'**
+  String get accountCreatedSuccess;
+
+  /// No description provided for @errorCreatingAccount.
+  ///
+  /// In es, this message translates to:
+  /// **'Ocurrió un error al crear la cuenta'**
+  String get errorCreatingAccount;
+
+  /// No description provided for @checkYourInternetConnection.
+  ///
+  /// In es, this message translates to:
+  /// **'Compruebe su conexión a Internet e intente de nuevo'**
+  String get checkYourInternetConnection;
+
+  /// No description provided for @nowCanAskForTaxi.
+  ///
+  /// In es, this message translates to:
+  /// **'¡Ya puede ir a por su viaje!'**
+  String get nowCanAskForTaxi;
+
   /// No description provided for @thanks.
   ///
   /// In es, this message translates to:
