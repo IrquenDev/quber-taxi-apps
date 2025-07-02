@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
-import 'package:quber_taxi/websocket/impl/travel_state_handler.dart';
+import 'package:quber_taxi/utils/websocket/impl/travel_state_handler.dart';
 
 class SearchDriverPage extends StatefulWidget {
 
@@ -75,8 +75,12 @@ class _SearchDriverPageState extends State<SearchDriverPage> with SingleTickerPr
       body: SafeArea(
         child: Column(
           children: [
-            const SizedBox(height: 40),
-            Text(AppLocalizations.of(context)!.searchDrivers, style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 30,),
+            Text(AppLocalizations.of(context)!.searchDrivers, style: TextStyle(
+              color: Theme.of(context).colorScheme.shadow,
+              fontSize: 20,
+              fontWeight: FontWeight.bold
+            )),
             const Spacer(),
             Center(
               child: Stack(

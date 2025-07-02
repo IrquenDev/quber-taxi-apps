@@ -1,4 +1,4 @@
-import 'package:quber_taxi/websocket/core/websocket_service.dart';
+import 'package:quber_taxi/utils/websocket/core/websocket_service.dart';
 
 /// A base class for WebSocket handlers that manage the lifecycle of a single topic subscription
 /// and provide typed parsing and dispatching of messages.

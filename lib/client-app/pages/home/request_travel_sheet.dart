@@ -11,8 +11,8 @@ import 'package:quber_taxi/enums/taxi_type.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/client_routes.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
-import 'package:quber_taxi/util/runtime.dart';
-import 'package:quber_taxi/util/turf.dart';
+import 'package:quber_taxi/utils/runtime.dart';
+import 'package:quber_taxi/utils/map/turf.dart';
 import 'package:turf/turf.dart' as turf;
 
 class RequestTravelSheet extends StatefulWidget {
@@ -87,6 +87,13 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
             spacing: 12.0,
             children: [
               // Origin / Destination inputs.
+              IconButton(
+                icon: Icon(Icons.close, color: Colors.grey[600]),
+                onPressed: () => Navigator.of(context).pop(),
+                padding: EdgeInsets.only(left: 260),
+                constraints: BoxConstraints(),
+                iconSize: 22.0,
+              ),
               Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   spacing: 16.0,
@@ -163,16 +170,16 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                       IconButton(
                         padding: EdgeInsets.zero,
                         onPressed: () {if (_passengerCount > 1) {setState(() => _passengerCount--);}},
-                        icon: const Icon(Icons.remove_circle_outline),
+                        icon: const Icon(Icons.remove),
                       ),
                       Text(
                         "$_passengerCount",
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold, fontSize: 18)
                       ),
                       IconButton(
                         padding: EdgeInsets.zero,
                         onPressed: () => setState(() => _passengerCount++),
-                        icon: const Icon(Icons.add_circle_outline),
+                        icon: const Icon(Icons.add),
                       )
                     ]
                   )
@@ -195,33 +202,42 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(AppLocalizations.of(context)!.minDistance), Text(_minDistance != null ? '${_minDistance!.toStringAsFixed(2)} km' : "-")
+                  Text(AppLocalizations.of(context)!.minDistance), Text(_minDistance != null ? '${_minDistance!.toStringAsFixed(2)} km' : "-", style: TextStyle(fontWeight: FontWeight.bold))
                 ]
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(AppLocalizations.of(context)!.maxDistance),
-                  Text(_maxDistance != null ? '${_maxDistance!.toStringAsFixed(2)}'' km' : "-")
+                  Text(_maxDistance != null ? '${_maxDistance!.toStringAsFixed(2)}'' km' : "-", style: TextStyle(fontWeight: FontWeight.bold))
                 ]
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(AppLocalizations.of(context)!.minPrice), Text(_minPrice != null ? '${_minPrice!.toStringAsFixed(0)} CUP' : "-")
+                  Text(AppLocalizations.of(context)!.minPrice), Text(_minPrice != null ? '${_minPrice!.toStringAsFixed(0)} CUP' : "-", style: TextStyle(fontWeight: FontWeight.bold))
                 ]
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(AppLocalizations.of(context)!.maxPrice),
-                  Text(_maxPrice != null ? '${_maxPrice!.toStringAsFixed(0)} CUP' : "-")
+                  Text(_maxPrice != null ? '${_maxPrice!.toStringAsFixed(0)} CUP' : "-", style: TextStyle(fontWeight: FontWeight.bold))
                 ]
               ),
               // Submit travel request
               SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(0),
+                      ),
+                      foregroundColor: Theme.of(context).colorScheme.secondary,
+                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                      textStyle: TextStyle(fontWeight: FontWeight.bold),
+                      padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 100),
+                      ),
                     onPressed: canEstimateDistance && isConnected ? () async {
                       Travel travel = await _travelService.requestNewTravel(
                           clientId: loggedInUser.id,
@@ -248,11 +264,11 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                         // - This travel request should be delete or marked as CANCELED.
                       }
                     } : null,
-                    child: Text(AppLocalizations.of(context)!.askTaxi),
+                    child: Text(AppLocalizations.of(context)!.askTaxi,)
                   )
               )
             ]
-        )
+        ),
     );
   }
 

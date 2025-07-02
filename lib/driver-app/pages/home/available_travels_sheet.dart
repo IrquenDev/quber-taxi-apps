@@ -7,7 +7,7 @@ import 'package:quber_taxi/common/services/travel_service.dart';
 import 'package:quber_taxi/driver-app/pages/home/trip_card.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
-import 'package:quber_taxi/util/runtime.dart';
+import 'package:quber_taxi/utils/runtime.dart';
 
 class AvailableTravelsSheet extends StatefulWidget {
 

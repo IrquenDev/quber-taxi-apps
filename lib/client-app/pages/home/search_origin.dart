@@ -9,9 +9,9 @@ import 'package:quber_taxi/common/services/mapbox_service.dart';
 import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/common_routes.dart';
-import 'package:quber_taxi/util/geolocator.dart';
+import 'package:quber_taxi/utils/map/geolocator.dart';
 import 'package:geolocator/geolocator.dart' as g;
-import 'package:quber_taxi/util/turf.dart';
+import 'package:quber_taxi/utils/map/turf.dart';
 import 'package:turf/turf.dart' as turf;
 
 class SearchOriginPage extends StatefulWidget {
@@ -75,12 +75,14 @@ class _SearchOriginPageState extends State<SearchOriginPage> {
               controller: _controller,
               onChanged: isConnected ? _onTextChanged : null,
               decoration: InputDecoration(
-                  hintText: AppLocalizations.of(context)!.writeUbication,
+                icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.shadow),
+                fillColor: Theme.of(context).colorScheme.surface,
+                hintText: AppLocalizations.of(context)!.writeUbication,
                   suffixIcon: _controller.text.isNotEmpty ?
                     IconButton(icon: const Icon(Icons.clear_outlined), onPressed: () {
                       _controller.clear();
                       setState(() => _suggestions = []);
-                    }) : null
+                    }) : null,
               )
             )
         ),

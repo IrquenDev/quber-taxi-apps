@@ -28,6 +28,14 @@ class AboutUsPage extends StatelessWidget {
                   bottomLeft: Radius.circular(25),
                   bottomRight: Radius.circular(25),
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: colorScheme.surfaceDim,
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: const Offset(0, 3),
+                  ),
+                ]
               ),
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
@@ -36,7 +44,7 @@ class AboutUsPage extends StatelessWidget {
                     Row(
                       children: [
                         IconButton(
-                          icon: Icon(Icons.menu, color: colorScheme.shadow),
+                          icon: Icon(Icons.arrow_back, color: colorScheme.shadow),
                           onPressed: () {},
                         ),
                         const SizedBox(width: 15),
@@ -67,7 +75,7 @@ class AboutUsPage extends StatelessWidget {
                       AppLocalizations.of(context)!.companyDescription,
                       style: textTheme.bodyMedium?.copyWith(
                           color: colorScheme.shadow,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.normal,
                           fontSize: 18
                       ),
                     ),
@@ -92,7 +100,7 @@ class AboutUsPage extends StatelessWidget {
                           width: cardWidth,
                           child: Card(
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(20),
                             ),
                             child: Padding(
                               padding: const EdgeInsets.all(10),
@@ -100,21 +108,17 @@ class AboutUsPage extends StatelessWidget {
                                 children: [
                                   _buildContactRow(
                                     context,
-                                    imagePath: 'assets/icons/mail.svg',
-                                    text: 'qubertaxi@gmail.com',
+                                    imagePath: 'assets/icons/location_on.svg',
+                                    text: AppLocalizations.of(context)!.companyAdress,
                                   ),
                                   const SizedBox(height: 6),
                                   _buildContactRow(
                                     context,
                                     imagePath: 'assets/icons/phone.svg',
-                                    text: '+5355555555',
+                                    text: '+53 52417814',
                                   ),
                                   const SizedBox(height: 6),
-                                  _buildContactRow(
-                                    context,
-                                    imagePath: 'assets/icons/location_on.svg',
-                                    text: AppLocalizations.of(context)!.contactAddress,
-                                  ),
+
                                 ],
                               ),
                             ),
@@ -126,7 +130,7 @@ class AboutUsPage extends StatelessWidget {
                           width: cardWidth,
                           child: Card(
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(20),
                             ),
                             child: Padding(
                               padding: const EdgeInsets.all(16),

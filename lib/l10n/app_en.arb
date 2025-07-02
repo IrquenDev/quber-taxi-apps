@@ -13,6 +13,7 @@
   "maxPrice": "Maximum price you can pay:",
   "askTaxi": "Request a taxi",
   "vehicle": "vehicle",
+  "settingsHome": "Settings",
 
   "map": "Map",
   "quberPoints": "Quber Points",
@@ -108,7 +109,7 @@
     "email": "Email:",
     "numberOfSeats": "Number of Seats:",
     "saveInformation": "Save",
-    "myAccount": "My Account",
+    "myAccount": "Settings",
     "balance": "Balance:",
     "valuation": "Accumulated Rating:",
     "quberCredits": "Accumulated Quber Credits:",
@@ -119,6 +120,7 @@
 
     "aboutUsTitle": "About Us",
     "companyDescription": "Microenterprise - Taxi Agency",
+    "companyAdress": "4th Street / Central and Market, Martín Pérez Neighborhood, San Miguel del Padrón",
     "companyAboutText": "Quber is a microenterprise dedicated to providing transportation services through an organized taxi network, focused on offering safe, punctual and quality service. The company is committed to customer satisfaction and the well-being of its drivers, promoting a reliable, accessible mobility experience centered on respect, responsibility and efficiency.",
     "contactAddress": "10th Street between Linea and 23rd",
 
@@ -135,7 +137,42 @@
 
     "aboutDeveloperTitle": "About Developer",
     "softwareCompany": "Software company",
-    "aboutText": "Irquen, founded by three students and built as a family of friends, is now a software company with strong foundations and future vision. Our purpose is to make digitalization fast and accessible for everyone. Our mission is to bring technology to every corner, grow, optimize and expand. Our vision is to push boundaries, find solutions and create what doesn't exist yet."
+    "aboutText": "Irquen, founded by three students and built as a family of friends, is now a software company with strong foundations and future vision. Our purpose is to make digitalization fast and accessible for everyone. Our mission is to bring technology to every corner, grow, optimize and expand. Our vision is to push boundaries, find solutions and create what doesn't exist yet.",
 
+    "identityVerificationTitle": "Identity Verification",
+    "confirmIdentityHeader": "We need to confirm your identity",
+    "takeSelfieInstruction": "Please take a selfie to confirm you're not a bot.",
+    "selfieUsageNote": "We won't use this image as a profile picture or display it publicly.",
+    "verificationPurpose": "This step is part of our verification process to ensure the safety of all users.",
+    "takeSelfieButton": "Take Selfie",
 
+      "identityVerificationHeader": "Identity Verification",
+      "thankYouForVerification": "Thank you for confirming your identity",
+      "identityConfirmedSuccessfully": "We have successfully confirmed your identity.",
+      "verificationBenefits": "This process helps us protect your account and maintain a safe community for all users.",
+      "createAccountButton": "Create Account",
+
+      "createAccountTitle": "Create Account",
+            "nameLabel": "Name:",
+            "nameHint": "Enter your full name",
+            "plateLabel": "License Plate:",
+            "plateHint": "Enter your vehicle license plate number",
+            "phoneLabel": "Phone Number:",
+            "phoneHint": "Example: 5566XXXX",
+            "seatsLabel": "Number of Seats:",
+            "seatsHint": "Example: 4",
+            "licenseLabel": "Driver's License",
+            "attachButton": "Attach",
+            "vehicleTypeLabel": "Select your vehicle type:",
+            "standardVehicle": "Standard",
+            "standardDescription": "Compact vehicle with manual transmission, ideal for short trips. Has 5 seats and limited luggage space.",
+            "familyVehicle": "Family",
+            "familyDescription": "Spacious vehicle ideal for families and group transfers. Features ample space and comfort.",
+            "comfortVehicle": "Comfort",
+            "comfortDescription": "Comfortable vehicle with premium features, perfect for executive transfers.",
+            "passwordLabel": "Password",
+            "passwordHint": "Enter your desired password",
+            "confirmPasswordLabel": "Confirm Password:",
+            "confirmPasswordHint": "Re-enter your password",
+            "finishButton": "Complete Registration"
 }

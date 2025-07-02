@@ -13,6 +13,7 @@
   "maxPrice": "Precio máximo que puede costar:",
   "askTaxi": "Pedir taxi",
   "vehicle": "Vehículo",
+  "settingsHome": "Ajustes",
 
   "map": "Mapa",
   "quberPoints": "Puntos Quber",
@@ -110,7 +111,7 @@
   "email": "Correo electrónico:",
   "numberOfSeats": "Número de asientos:",
   "saveInformation": "Guardar",
-  "myAccount": "Mi Cuenta",
+  "myAccount": "Ajustes",
   "balance": "Balance:",
   "valuation": "Valoración acumulada:",
   "quberCredits": "Crédito de Quber acumulado:",
@@ -120,8 +121,9 @@
   "goBack": "Regresar",
 
   "aboutUsTitle": "Acerca de Nosotros",
-  "companyDescription": "Mipyme - Agencia de Taxi",
-  "companyAboutText": "Quber es una Mipyme dedicada a ofrecer servicios de transporte a través de una red organizada de taxis, enfocada en brindar un servicio seguro, puntual y de calidad. La empresa se compromete con la satisfacción del cliente y el bienestar de sus conductores, promoviendo una experiencia de movilidad confiable, accesible, centrada en el respeto, la responsabilidad y la eficiencia.",
+  "companyDescription": "Empresa - Agencia de Taxi",
+  "companyAdress": "Calle 4ta / Central y Mercado, Reparto Martín Pérez, San Miguel del Padrón",
+  "companyAboutText": "Quber es una Empresa dedicada a ofrecer servicios de transporte a través de una red organizada de taxis, enfocada en brindar un servicio seguro, puntual y de calidad. La empresa se compromete con la satisfacción del cliente y el bienestar de sus conductores, promoviendo una experiencia de movilidad confiable, accesible, centrada en el respeto, la responsabilidad y la eficiencia.",
   "contactAddress": "Calle 10 entre Línea y 23",
 
   "tripsPageTitle": "Viajes",
@@ -137,8 +139,43 @@
 
   "aboutDeveloperTitle": "Acerca del Desarrollador",
   "softwareCompany": "Empresa de software",
-  "aboutText": "Irquen, fundada por tres estudiantes y construida como una familia de amigos, hoy es una empresa de software con bases firmes y visión de futuro. Su propósito es hacer que la digitalización sea rápida y accesible para todos. Su misión es llevar la tecnología a cada rincón, crecer, optimizar y expandirse. Su visión es superar límites, encontrar soluciones y crear lo que aún no existe."
+  "aboutText": "Irquen, fundada por tres estudiantes y construida como una familia de amigos, hoy es una empresa de software con bases firmes y visión de futuro. Su propósito es hacer que la digitalización sea rápida y accesible para todos. Su misión es llevar la tecnología a cada rincón, crecer, optimizar y expandirse. Su visión es superar límites, encontrar soluciones y crear lo que aún no existe.",
 
+  "identityVerificationTitle": "Verificación de identidad",
+  "confirmIdentityHeader": "Necesitamos confirmar su identidad",
+  "takeSelfieInstruction": "Por favor, toma una selfie para confirmar que no eres un bot.",
+  "selfieUsageNote": "No usaremos esta imagen como foto de perfil ni se mostrará públicamente.",
+  "verificationPurpose": "Este paso es parte de nuestro proceso de verificación para garantizar la seguridad de todos los usuarios.",
+  "takeSelfieButton": "Tomar Selfie",
 
+    "identityVerificationHeader": "Verificación de identidad",
+    "thankYouForVerification": "Gracias por confirmar su identidad",
+    "identityConfirmedSuccessfully": "Hemos confirmado su identidad con éxito.",
+    "verificationBenefits": "Este proceso nos ayuda a proteger su cuenta y a mantener nuestra comunidad segura para todos los usuarios.",
+    "createAccountButton": "Crear Cuenta",
+
+      "createAccountTitle": "Crear Cuenta",
+      "nameLabel": "Nombre:",
+      "nameHint": "Introduzca su nombre y apellidos",
+      "plateLabel": "Chapa:",
+      "plateHint": "Escriba la chapa de su vehículo",
+      "phoneLabel": "Núm. de teléfono:",
+      "phoneHint": "Ej: 5566XXXX",
+      "seatsLabel": "Número de asientos:",
+      "seatsHint": "Ej: 4",
+      "licenseLabel": "Licencia de conducción",
+      "attachButton": "Adjuntar",
+      "vehicleTypeLabel": "Seleccione su tipo de vehículo:",
+      "standardVehicle": "Estándar",
+      "standardDescription": "Vehículo compacto con transmisión manual, ideal para traslados cortos. Cuenta con 5 asientos y espacio limitado para equipaje.",
+      "familyVehicle": "Familiar",
+      "familyDescription": "Vehículo espacioso ideal para familias y traslados grupales. Ofrece amplio espacio y confort.",
+      "comfortVehicle": "Confort",
+      "comfortDescription": "Vehículo cómodo con características premium, perfecto para traslados ejecutivos.",
+      "passwordLabel": "Contraseña",
+      "passwordHint": "Introduzca la contraseña deseada",
+      "confirmPasswordLabel": "Confirmar contraseña:",
+      "confirmPasswordHint": "Vuelva a introducir su contraseña",
+      "finishButton": "Finalizar registro"
 
 }

@@ -24,9 +24,8 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
     return Scaffold(
       body: Stack(
         children: [
-          // Fondo general
-          Container(color: Colors.white),
 
+          Container(color: Colors.white),
 
           Positioned(
             top: 0,
@@ -40,13 +39,21 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
                   bottomLeft: Radius.circular(15),
                   bottomRight: Radius.circular(15),
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: const Offset(0, 3),
+                  ),
+                ]
               ),
             ),
           ),
 
-          // Contenido desplazable que comienza debajo del header
+
           Positioned(
-            top: 120, // Comienza más abajo para que no tape el menú
+            top: 120,
             left: 0,
             right: 0,
             bottom: 0,
@@ -54,7 +61,7 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
               physics: const BouncingScrollPhysics(),
               child: Column(
                 children: [
-                  // Card 1: Información personal con imagen
+                  // Card 1: Personal Information
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
                     child: Stack(
@@ -62,9 +69,13 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
                       children: [
                         Card(
                           color: Colors.white,
-                          elevation: 4,
+                          elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(25),
+                            side: BorderSide(
+                              color: Colors.grey.shade200,
+                              width: 1,
+                            ),
                           ),
                           child: Padding(
                             padding: const EdgeInsets.only(top: 120, left: 16, right: 16, bottom: 16),
@@ -88,8 +99,7 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
                             ),
                           ),
                         ),
-
-                        // Imagen de perfil (posicionada para que se vea bien)
+                        // Image
                         Positioned(
                           top: 20,
                           left: 0,
@@ -106,21 +116,15 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
                                   bottom: 0,
                                   right: 0,
                                   child: Container(
-                                    width: 28,
-                                    height: 28,
+                                    width: 33,
+                                    height: 33,
                                     decoration: BoxDecoration(
                                       color: Colors.white,
                                       shape: BoxShape.circle,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Theme.of(context).colorScheme.onSecondaryContainer,
-                                          blurRadius: 4,
-                                          offset: Offset(0, 2),
-                                        ),
-                                      ],
                                     ),
                                     child: SvgPicture.asset(
                                       "assets/icons/camera.svg",
+                                      color: Theme.of(context).colorScheme.surfaceDim,
                                       fit: BoxFit.scaleDown,
                                     ),
                                   ),
@@ -138,9 +142,13 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
                     margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                     child: Card(
                       color: Colors.white,
-                      elevation: 4,
+                      elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
+                        side: BorderSide(
+                          color: Colors.grey.shade200,
+                          width: 1,
+                        ),
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(16),
@@ -149,14 +157,18 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
                     ),
                   ),
 
-                  // Card 3: Contraseñas
+                  // Card 3: Passwords
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                     child: Card(
                       color: Colors.white,
-                      elevation: 4,
+                      elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
+                        side: BorderSide(
+                          color: Colors.grey.shade200,
+                          width: 1,
+                        ),
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(16),
@@ -177,27 +189,75 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
                       ),
                     ),
                   ),
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    child: Card(
+                      color: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        side: BorderSide(
+                          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                          width: 1,
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Opción "Sobre Nosotros"
+                          _buildMenuItem(
+                            icon: Icons.drive_eta_outlined,
+                            text: 'Sobre Nosotros',
+                            onTap: () {
+                            },
+                          ),
 
-                  // Espacio final
-                  const SizedBox(height: 30),
+                          Divider(height: 1, color: Colors.grey.shade200, indent: 12, endIndent: 12),
+
+                          // Opción "Sobre el desarrollador"
+                          _buildMenuItem(
+                            icon: Icons.code,
+                            text: 'Sobre el desarrollador',
+                            onTap: () {
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // Segunda card - Cerrar Sesión
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+
+                    child: _buildLogoutItem(
+                      text: 'Cerrar Sesión',
+                      icon: Icons.logout,
+                      textColor: Colors.red,
+                      iconColor: Colors.red,
+                      onTap: () {
+                      },
+                    ),
+                  ),
+
                 ],
               ),
             ),
           ),
 
-
+          // Header
           Positioned(
             top: 0,
-            left: 40,
+            left: 30,
             right: 0,
             child: SafeArea(
               child: Container(
-                height: 60,
+                height: 80,
                 padding: const EdgeInsets.only(left: 20.0),
                 child: Row(
                   children: [
-                    Icon(Icons.menu, color: colorScheme.shadow),
-                    const SizedBox(width: 8),
+                    Icon(Icons.arrow_back, color: colorScheme.shadow),
+                    const SizedBox(width: 10),
                     Text(
                       AppLocalizations.of(context)!.myAccount,
                       style: textTheme.headlineSmall?.copyWith(
@@ -222,7 +282,8 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
         Text(
           label,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.normal,
+            fontSize: 18,
             color: Colors.black,
           ),
         ),
@@ -231,11 +292,14 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
           initialValue: hint,
           decoration: InputDecoration(
             filled: true,
-            fillColor: Colors.grey.shade50,
+            fillColor: Theme.of(context).colorScheme.onPrimary,
             contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide.none,
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(
+                  color: Colors.white54,
+                  width: 0.1
+                )
             ),
           ),
         ),
@@ -280,15 +344,25 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
           AppLocalizations.of(context)!.balance,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.bold,
+            fontSize: 18,
             color: Colors.grey.shade700,
           ),
         ),
-        const SizedBox(height: 12),
-        _buildBalanceRow(AppLocalizations.of(context)!.valuation, "4.0", "assets/icons/yelow_star.svg"),
+
         const SizedBox(height: 8),
         _buildBalanceRow(AppLocalizations.of(context)!.quberCredits, "1600 CUP", null),
         const SizedBox(height: 8),
+        const Divider(
+          color: Colors.grey,
+          thickness: 0.5,
+        ),
         _buildBalanceRow(AppLocalizations.of(context)!.nextPay, "16/4/2025", null),
+        const SizedBox(height: 12),
+        const Divider(
+          color: Colors.grey,
+          thickness: 0.5,
+        ),
+        _buildBalanceRow(AppLocalizations.of(context)!.valuation, "4.0", "assets/icons/yelow_star.svg"),
       ],
     );
   }
@@ -303,7 +377,7 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
             child: Text(
               label,
               style: TextStyle(
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.bold,
                 color: Colors.grey.shade600,
               ),
             ),
@@ -312,7 +386,7 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
           Text(
             " $value",
             style: TextStyle(
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.bold,
               color: Colors.grey.shade800,
             ),
           ),
@@ -327,7 +401,7 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
           child: Text(
             label,
             style: TextStyle(
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.bold,
               color: Colors.grey.shade600,
             ),
           ),
@@ -376,6 +450,7 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
           label,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.bold,
+            fontSize: 16,
             color: Colors.grey.shade700,
           ),
         ),
@@ -385,7 +460,7 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
           obscureText: _obscurePassword,
           decoration: InputDecoration(
             filled: true,
-            fillColor: Colors.grey.shade50,
+            fillColor: Theme.of(context).colorScheme.onPrimary,
             suffixIcon: IconButton(
               icon: Icon(
                 _obscurePassword ? Icons.visibility_off : Icons.visibility,
@@ -395,12 +470,90 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide.none,
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.surfaceDim,
+                width: 1,
+
+              ),
             ),
           ),
         ),
         const SizedBox(height: 12),
       ],
+    );
+  }
+
+  Widget _buildMenuItem({
+
+    required String text,
+    required IconData icon,
+    required VoidCallback onTap,
+    Color? textColor,
+    Color? iconColor,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              size: 20,
+              color: iconColor ?? Colors.grey[600],
+            ),
+            SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                text,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: textColor ?? Colors.black87,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  Widget _buildLogoutItem({
+
+    required String text,
+    required IconData icon,
+    required VoidCallback onTap,
+    Color? textColor,
+    Color? iconColor,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+
+            SizedBox(width: 180),
+            Expanded(
+              child: Text(
+                text,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: textColor ?? Colors.black87,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Icon(
+              icon,
+              size: 20,
+              color: iconColor ?? Colors.grey[600],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

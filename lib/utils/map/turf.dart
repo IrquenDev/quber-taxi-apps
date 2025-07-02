@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
-import 'package:quber_taxi/util/waypoint.dart';
+import 'package:quber_taxi/utils/map/waypoint.dart';
 import 'package:turf/turf.dart' as turf;
 
 Future<turf.Polygon> loadGeoJsonPolygon(String source) async {
