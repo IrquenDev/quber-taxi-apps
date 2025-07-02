@@ -5,7 +5,7 @@ import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/driver-app/pages/home/dialogs/confirm_dialog.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
-import 'package:quber_taxi/util/geolocator.dart' as g_util;
+import 'package:quber_taxi/utils/map/geolocator.dart' as g_util;
 
 class TripCard extends StatelessWidget {
 

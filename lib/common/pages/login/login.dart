@@ -6,12 +6,14 @@ import 'package:http/http.dart' as http;
 import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/services/auth_service.dart';
 import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
+import 'package:quber_taxi/config/app_profile.dart';
+import 'package:quber_taxi/config/build_config.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/admin_routes.dart';
 import 'package:quber_taxi/navigation/routes/client_routes.dart';
 import 'package:quber_taxi/navigation/routes/driver_routes.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
-import 'package:quber_taxi/util/runtime.dart' as runtime;
+import 'package:quber_taxi/utils/runtime.dart' as runtime;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -54,6 +56,7 @@ class _LoginPageState extends State<LoginPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 28.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
+                  spacing: 60.0,
                   children: [
                     // Header Text
                     Text(
@@ -61,7 +64,6 @@ class _LoginPageState extends State<LoginPage> {
                       textAlign: TextAlign.center,
                       style: textTheme.displayLarge?.copyWith(fontWeight: FontWeight.bold, color: Colors.white)
                     ),
-                    SizedBox(height: 60),
                     // Form
                     Form(
                       key: _formKey,
@@ -187,8 +189,14 @@ class _LoginPageState extends State<LoginPage> {
                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
                             onPressed: () {
-                              // TODO("yapmDev": @Reminder)
-                              // - Go to create account (depends on app profile)
+                              final route = switch (BuildConfig.appProfile) {
+                                AppProfile.client => ClientRoutes.createAccount,
+                                AppProfile.driver => DriverRoutes.createAccount,
+                                // TODO("yapmDev": @Reminder)
+                                // - No create admin account page
+                                AppProfile.admin => throw UnimplementedError(),
+                              };
+                              context.push(route);
                             },
                             child: Text(
                               localization.createAccountLogin,

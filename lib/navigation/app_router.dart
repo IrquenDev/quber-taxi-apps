@@ -30,7 +30,7 @@ import 'package:quber_taxi/driver-app/pages/settings/settings.dart';
 import 'package:quber_taxi/navigation/routes/admin_routes.dart';
 import 'package:quber_taxi/navigation/routes/client_routes.dart';
 import 'package:quber_taxi/navigation/routes/driver_routes.dart';
-import 'package:quber_taxi/util/runtime.dart' as runtime;
+import 'package:quber_taxi/utils/runtime.dart' as runtime;
 import 'routes/common_routes.dart';
 
 final GoRouter appRouter = GoRouter(
