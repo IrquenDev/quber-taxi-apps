@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/services/auth_service.dart';
-import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
 import 'package:quber_taxi/config/app_profile.dart';
 import 'package:quber_taxi/config/build_config.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
@@ -171,8 +169,14 @@ class _LoginPageState extends State<LoginPage> {
                         // Create New Account
                         TextButton(
                           onPressed: () {
+                            final route = switch (BuildConfig.appProfile) {
+                              AppProfile.client => ClientRoutes.createAccount,
+                              AppProfile.driver => DriverRoutes.createAccount,
                             // TODO("yapmDev": @Reminder)
-                            // - Go to create account (depends on app profile)
+                            // - No create admin account page
+                              AppProfile.admin => throw UnimplementedError(),
+                            };
+                            context.push(route);
                           },
                           child: Text(
                             localization.createAccountLogin,
