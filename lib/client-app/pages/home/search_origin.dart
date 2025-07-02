@@ -9,9 +9,9 @@ import 'package:quber_taxi/common/services/mapbox_service.dart';
 import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/common_routes.dart';
-import 'package:quber_taxi/util/geolocator.dart';
+import 'package:quber_taxi/utils/map/geolocator.dart';
 import 'package:geolocator/geolocator.dart' as g;
-import 'package:quber_taxi/util/turf.dart';
+import 'package:quber_taxi/utils/map/turf.dart';
 import 'package:turf/turf.dart' as turf;
 
 class SearchOriginPage extends StatefulWidget {

@@ -3,7 +3,7 @@ import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
-import 'package:quber_taxi/websocket/core/websocket_service.dart';
+import 'package:quber_taxi/utils/websocket/core/websocket_service.dart';
 
 class TravelInfoSheet extends StatelessWidget {
 

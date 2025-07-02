@@ -11,8 +11,8 @@ import 'package:quber_taxi/enums/taxi_type.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/client_routes.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
-import 'package:quber_taxi/util/runtime.dart';
-import 'package:quber_taxi/util/turf.dart';
+import 'package:quber_taxi/utils/runtime.dart';
+import 'package:quber_taxi/utils/map/turf.dart';
 import 'package:turf/turf.dart' as turf;
 
 class RequestTravelSheet extends StatefulWidget {

@@ -4,9 +4,9 @@ import 'package:flutter_fusion/flutter_fusion.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:quber_taxi/common/services/mapbox_service.dart';
-import 'package:quber_taxi/util/geolocator.dart';
+import 'package:quber_taxi/utils/map/geolocator.dart';
 import 'package:geolocator/geolocator.dart' as g;
-import 'package:quber_taxi/util/turf.dart';
+import 'package:quber_taxi/utils/map/turf.dart';
 import 'package:turf/turf.dart' as turf;
 
 class LocationPicker extends StatefulWidget {

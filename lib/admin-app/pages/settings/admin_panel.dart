@@ -9,7 +9,7 @@ import 'package:quber_taxi/common/services/admin_service.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/admin_routes.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
-import 'package:quber_taxi/util/runtime.dart' as runtime;
+import 'package:quber_taxi/utils/runtime.dart' as runtime;
 
 class AdminSettingsPage extends StatefulWidget {
   const AdminSettingsPage({super.key});
