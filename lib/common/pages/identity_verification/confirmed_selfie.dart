@@ -43,7 +43,7 @@ class FaceIdConfirmed extends StatelessWidget {
                         const SizedBox(width: 8),
                         Text(
                           AppLocalizations.of(context)!.identityVerify,
-                          style: textTheme.headlineSmall?.copyWith(
+                          style: textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: colorScheme.shadow,
                           ),

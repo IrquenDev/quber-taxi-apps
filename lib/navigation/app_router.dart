@@ -28,9 +28,10 @@ import 'package:quber_taxi/driver-app/pages/settings/settings.dart';
 import 'package:quber_taxi/navigation/routes/admin_routes.dart';
 import 'package:quber_taxi/navigation/routes/client_routes.dart';
 import 'package:quber_taxi/navigation/routes/driver_routes.dart';
+import 'package:quber_taxi/utils/runtime.dart' as runtime;
 import '../common/pages/identity_verification/confirmed_selfie.dart';
 import '../common/pages/identity_verification/identity_verification.dart';
-import 'package:quber_taxi/utils/runtime.dart' as runtime;
+import '../common/pages/identity_verification/face_detection.dart';
 import 'routes/common_routes.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -69,11 +70,15 @@ final GoRouter appRouter = GoRouter(
     ),
 
     GoRoute(path: CommonRoutes.requestFaceId,
-        builder: (context, state) => const RequestFaceIdPage()
+        builder: (context, state) => const VerificationIdentityPage()
     ),
 
     GoRoute(path: CommonRoutes.faceIdConfirmed,
         builder: (context, state) => FaceIdConfirmed()
+    ),
+
+    GoRoute(path: CommonRoutes.faceDetection,
+        builder: (context, state) => const FaceDetectionPage()
     ),
 
     // CLIENT
