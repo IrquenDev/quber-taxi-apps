@@ -33,6 +33,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
         extendBody: true,
         body: const MapView(usingExtendedScaffold: true),
         floatingActionButton: FloatingActionButton(
+          heroTag: "fab1",
           shape: CircleBorder(),
           backgroundColor: Theme.of(context).colorScheme.primaryContainer,
           onPressed: () {

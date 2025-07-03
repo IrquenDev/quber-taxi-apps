@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quber_taxi/common/pages/sos/emergency_dialog.dart';
+import 'package:quber_taxi/enums/asset_dpi.dart';
 import 'package:quber_taxi/enums/taxi_type.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 
@@ -240,7 +241,7 @@ class _DriverTripInfoState extends State<DriverTripInfo> {
                 child: Transform(
                   alignment: Alignment.center,
                   transform: Matrix4.identity()..scale(-1.0, 1.0),
-                  child: Image.asset(widget.taxiType.assetRef)
+                  child: Image.asset(widget.taxiType.assetRef(AssetDpi.xhdpi))
                 )
               )
             )

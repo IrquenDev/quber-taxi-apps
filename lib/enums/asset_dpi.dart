@@ -1,0 +1,1 @@
+enum AssetDpi { mdpi, hdpi, xhdpi }

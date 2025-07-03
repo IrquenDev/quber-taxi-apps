@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:quber_taxi/common/models/client.dart';
 import 'package:quber_taxi/common/models/driver.dart';
 import 'package:quber_taxi/config/api_config.dart';
+import 'package:quber_taxi/enums/taxi_type.dart';
 
 class AccountService {
 
@@ -17,9 +18,29 @@ class AccountService {
     return await http.post(url, headers: _headers, body: body);
   }
 
-  Future<http.Response> registerDriver(Map<String, dynamic> driverData) async {
+  Future<http.Response> registerDriver({
+    required String name,
+    required String phone,
+    required String password,
+    required String plate,
+    required TaxiType type,
+    required int seats,
+  }) async {
     final url = Uri.parse("$_endpoint/register/driver");
-    final body = jsonEncode(driverData);
+    final body = jsonEncode({
+      "taxi": {
+        "plate": plate,
+        "seats": seats,
+        "type": type.apiValue,
+        "imageUrl": "https://example.com/taxi123.jpg"
+      },
+      "driver": {
+        "name": name,
+        "phone": phone,
+        "password": password,
+        "imageUrl": "https://example.com/ana.jpg"
+      }
+    });
     return await http.post(url, headers: _headers, body: body);
   }
 

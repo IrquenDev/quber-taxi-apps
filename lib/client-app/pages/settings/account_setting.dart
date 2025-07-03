@@ -26,7 +26,6 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
             child: Column(
               children: [
                 Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
                   padding: const EdgeInsets.fromLTRB(16, 60, 16, 16),
                   decoration: BoxDecoration(
                     color: colorScheme.surfaceContainerLowest,
@@ -66,7 +65,6 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                 const SizedBox(height: 16),
 
                 Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: colorScheme.surfaceContainerLowest,
@@ -88,7 +86,6 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                 const SizedBox(height: 16),
 
                 Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: colorScheme.surfaceContainerLowest,
@@ -133,7 +130,6 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                 const SizedBox(height: 16),
 
                 Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   decoration: BoxDecoration(
                     color: colorScheme.surfaceContainerLowest,

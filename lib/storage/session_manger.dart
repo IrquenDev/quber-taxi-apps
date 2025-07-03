@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:quber_taxi/common/models/encodable.dart';
 import 'package:quber_taxi/storage/prefs_manager.dart';
 
 /// A singleton class that manages the user's login session using [SharedPrefsManager].
@@ -54,7 +55,7 @@ class SessionManager {
   /// Saves a user object to shared preferences and marks the session as active.
   ///
   /// Returns true if both the user and session flag were successfully stored.
-  Future<bool> save(dynamic user) async {
+  Future<bool> save(Encodable user) async {
     final userSaved = await _setLoggedInUser(user);
     if (userSaved) {
       final flagSaved = await _prefsManager.setBool(_isSessionOk, true);
@@ -71,7 +72,7 @@ class SessionManager {
   }
 
   /// Internal method to JSON-encode and store the user object.
-  Future<bool> _setLoggedInUser(dynamic user) {
-    return _prefsManager.setString(_loggedInUser, jsonEncode(user));
+  Future<bool> _setLoggedInUser(Encodable user) {
+    return _prefsManager.setString(_loggedInUser, jsonEncode(user.toJson()));
   }
 }

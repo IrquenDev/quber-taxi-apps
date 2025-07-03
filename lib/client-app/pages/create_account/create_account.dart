@@ -166,7 +166,6 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
                                 borderRadius: BorderRadius.circular(8),
                                 borderSide: BorderSide.none,
                               ),
-
                             ),
                             validator: (value) => Workflow<String?>()
                                 .step(RequiredStep(errorMessage: localizations.requiredField))
@@ -271,6 +270,7 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
                   // Check connection status
                   if(!isConnected) {
                     showToast(context: context, message: "Revise su conexión a internet");
+                    return;
                   }
                   // Make the register request
                   final response = await AccountService().registerClient(
