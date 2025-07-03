@@ -1,10 +1,10 @@
-import 'package:intl/intl.dart';
 import 'package:quber_taxi/common/models/client.dart';
 import 'package:quber_taxi/common/models/driver.dart';
+import 'package:quber_taxi/common/models/encodable.dart';
 import 'package:quber_taxi/enums/taxi_type.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
 
-class Travel {
+class Travel implements Encodable{
 
   final int id;
   final String originName;
@@ -65,12 +65,11 @@ class Travel {
         finalDuration: json["finalDuration"],
         finalPrice: json["finalPrice"],
         finalDistance: json["finalDistance"],
-        endDate: json['endDate'] != null
-          ? DateFormat("yyyy-MM-dd-HH:mm").parse(json['endDate'])
-          : null
+        endDate: json['endDate'] != null ? DateTime.parse(json['endDate']) : null
     );
   }
 
+  @override
   Map<String, dynamic> toJson() => {
     "id": id,
     "originName": originName,
@@ -89,6 +88,6 @@ class Travel {
     "finalPrice": finalPrice,
     "finalDistance": finalDistance,
     "finalDuration": finalDuration,
-    "endDate": endDate
+    "endDate": endDate?.toIso8601String()
   };
 }

@@ -1,27 +1,34 @@
+import 'package:quber_taxi/enums/asset_dpi.dart';
+import 'package:quber_taxi/l10n/app_localizations.dart';
+
 enum TaxiType {
 
-  mdpiStandard("Estándar", "assets/images/vehicles/mdpi/standard.png", "STANDARD"),
-  hdpiStandard("Estándar", "assets/images/vehicles/hdpi/standard.png", "STANDARD"),
-  xhdpiStandard("Estándar", "assets/images/vehicles/xhdpi/standard.png", "STANDARD"),
+  standard,
+  familiar,
+  comfort;
 
-  mdpiFamiliar("Familiar", "assets/images/vehicles/mdpi/familiar.png", "FAMILIAR"),
-  hdpiFamiliar("Familiar", "assets/images/vehicles/hdpi/familiar.png", "FAMILIAR"),
-  xhdpiFamiliar("Familiar", "assets/images/vehicles/xhdpi/familiar.png", "FAMILIAR"),
+  static String nameOf(TaxiType type, AppLocalizations localizations) {
+    return switch(type) {
+      TaxiType.standard => localizations.standardVehicle,
+      TaxiType.familiar => localizations.familyVehicle,
+      TaxiType.comfort => localizations.comfortVehicle
+    };
+  }
 
-  mdpiComfort("Confort", "assets/images/vehicles/mdpi/comfort.png", "COMFORT"),
-  hdpiComfort("Confort", "assets/images/vehicles/hdpi/comfort.png", "COMFORT"),
-  xhdpiComfort("Confort", "assets/images/vehicles/xhdpi/comfort.png", "COMFORT");
+  static String descriptionOf(TaxiType type, AppLocalizations localizations) {
+    return switch(type) {
+      TaxiType.standard => localizations.standardDescription,
+      TaxiType.familiar => localizations.familyDescription,
+      TaxiType.comfort => localizations.comfortDescription
+    };
+  }
 
-  final String displayText;
-  final String assetRef;
-  final String apiValue;
-  const TaxiType(this.displayText, this.assetRef, this.apiValue);
+  String assetRef(AssetDpi dpi) => 'assets/images/vehicles/${dpi.name}/$name.png';
+
+  String get apiValue => name.toUpperCase();
 
   /// Resolves a [TaxiType] from a given string value.
   static TaxiType resolve(String value) {
-    return TaxiType.values.firstWhere(
-            (e) => e.apiValue == value,
-        orElse: () => throw Exception()
-    );
+    return TaxiType.values.firstWhere((e) => e.apiValue == value);
   }
 }

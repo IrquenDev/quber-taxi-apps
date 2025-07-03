@@ -1,7 +1,8 @@
 import 'package:flutter/foundation.dart';
+import 'package:quber_taxi/common/models/encodable.dart';
 
 @immutable
-class Review {
+class Review implements Encodable{
 
   final int id;
   final String comment;
@@ -27,17 +28,18 @@ class Review {
     );
   }
 
+  @override
   Map<String, dynamic> toJson() => {
     "id": id,
     "comment": comment,
     "rating": rating,
-    "timestamp": timestamp,
+    "timestamp": timestamp.toIso8601String(),
     "client": client.toJson()
   };
 }
 
 @immutable
-class ClientReview {
+class ClientReview implements Encodable{
 
   final int id;
   final String name;
@@ -55,5 +57,6 @@ class ClientReview {
       imageUrl: json['imageUrl']
   );
 
+  @override
   Map<String, dynamic> toJson() => {"id": id, "name": name, "imageUrl": imageUrl};
 }

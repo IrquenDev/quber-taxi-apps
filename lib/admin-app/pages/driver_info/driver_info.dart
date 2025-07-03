@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:quber_taxi/common/services/account_service.dart';
-import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/common/models/driver.dart';
+import 'package:quber_taxi/common/services/account_service.dart';
+import 'package:quber_taxi/enums/asset_dpi.dart';
+import 'package:quber_taxi/enums/taxi_type.dart';
+import 'package:quber_taxi/l10n/app_localizations.dart';
 
 class DriverInfoPage extends StatefulWidget {
   final int driverId;
@@ -17,12 +19,7 @@ class _DriverInfoPageState extends State<DriverInfoPage> {
   final accountService = AccountService();
   late Future<Driver> futureDriver;
   bool _isActionPending = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadDriverInfo();
-  }
+  late final AppLocalizations _localizations;
 
   void _loadDriverInfo() {
     setState(() {
@@ -33,6 +30,18 @@ class _DriverInfoPageState extends State<DriverInfoPage> {
         }
       });
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDriverInfo();
+  }
+
+  @override
+  void didChangeDependencies() {
+    _localizations = AppLocalizations.of(context)!;
+    super.didChangeDependencies();
   }
 
   @override
@@ -83,7 +92,7 @@ class _DriverInfoPageState extends State<DriverInfoPage> {
                             Icon(Icons.menu, color: colorScheme.shadow),
                             const SizedBox(width: 15),
                             Text(
-                              AppLocalizations.of(context)!.driverInfoTitle,
+                              _localizations.driverInfoTitle,
                               style: textTheme.headlineSmall?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: colorScheme.shadow,
@@ -156,7 +165,7 @@ class _DriverInfoPageState extends State<DriverInfoPage> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        AppLocalizations.of(context)!.averageRating,
+                                        _localizations.averageRating,
                                         style: textTheme.bodyLarge?.copyWith(
                                           fontWeight: FontWeight.normal,
                                           color: Colors.grey.shade800,
@@ -197,7 +206,7 @@ class _DriverInfoPageState extends State<DriverInfoPage> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        AppLocalizations.of(context)!.vehiclePlate,
+                                        _localizations.vehiclePlate,
                                         style: TextStyle(
                                           fontWeight: FontWeight.normal,
                                           color: Colors.grey.shade800,
@@ -232,7 +241,7 @@ class _DriverInfoPageState extends State<DriverInfoPage> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        AppLocalizations.of(context)!.seatNumber,
+                                        _localizations.seatNumber,
                                         style: TextStyle(
                                           fontWeight: FontWeight.normal,
                                           color: Colors.grey.shade800,
@@ -267,7 +276,7 @@ class _DriverInfoPageState extends State<DriverInfoPage> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        AppLocalizations.of(context)!.vehicleType,
+                                        _localizations.vehicleType,
                                         style: TextStyle(
                                           fontWeight: FontWeight.normal,
                                           color: Colors.grey.shade800,
@@ -279,7 +288,7 @@ class _DriverInfoPageState extends State<DriverInfoPage> {
                                         children: [
                                           Expanded(
                                             child: Text(
-                                              driver.taxi.type.displayText,
+                                              TaxiType.nameOf(driver.taxi.type, AppLocalizations.of(context)!),
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 color: Colors.grey.shade800,
@@ -288,23 +297,23 @@ class _DriverInfoPageState extends State<DriverInfoPage> {
                                             ),
                                           ),
                                           Image.asset(
-                                            driver.taxi.type.assetRef,
+                                            driver.taxi.type.assetRef(AssetDpi.mdpi),
                                             height: 60,
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                                          )
+                                        ]
+                                      )
+                                    ]
+                                  )
+                                )
+                              )
+                            )
+                          ]
+                        )
+                      )
+                    ]
                   );
-                },
-              ),
+                }
+              )
             ),
 
             // Botón Aceptar

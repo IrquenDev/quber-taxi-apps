@@ -3,9 +3,11 @@ import 'package:flutter_fusion/flutter_fusion.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:network_checker/network_checker.dart';
+import 'package:quber_taxi/common/models/client.dart';
 import 'package:quber_taxi/common/models/mapbox_place.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/services/travel_service.dart';
+import 'package:quber_taxi/enums/asset_dpi.dart';
 import 'package:quber_taxi/enums/municipalities.dart';
 import 'package:quber_taxi/enums/taxi_type.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
@@ -30,18 +32,17 @@ class RequestTravelSheet extends StatefulWidget {
 class _RequestTravelSheetState extends State<RequestTravelSheet> {
 
   final _travelService = TravelService();
-
   String? _originName;
   List<num>? _originCoords;
   String? _destinationName;
   int _passengerCount = 1;
-  TaxiType _selectedVehicle = TaxiType.mdpiStandard;
-  final List<TaxiType> _taxiTypeList = [TaxiType.mdpiStandard, TaxiType.mdpiFamiliar, TaxiType.mdpiComfort];
+  TaxiType _selectedVehicle = TaxiType.standard;
   bool _hasPets = false;
   num? _minDistance, _maxDistance;
   num? _minPrice, _maxPrice;
-
   bool get canEstimateDistance => _originName != null && _originCoords != null && _destinationName != null;
+  late AppLocalizations _localizations;
+  late final Client _client;
 
   Future<void> _estimateDistance() async {
     // Match .geojson
@@ -71,10 +72,17 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
   @override
   void initState() {
     super.initState();
+    _client = Client.fromJson(loggedInUser);
     _originName = widget.originName;
     _originCoords = widget.originCoords;
     _destinationName = widget.destinationName;
     if(canEstimateDistance) _estimateDistance();
+  }
+
+  @override
+  void didChangeDependencies() {
+    _localizations = AppLocalizations.of(context)!;
+    super.didChangeDependencies();
   }
 
   @override
@@ -154,7 +162,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
               // Available taxis list view
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: List.generate(_taxiTypeList.length, (index) => Flexible(child: _vehicleItemBuilder(index))),
+                children: List.generate(TaxiType.values.length, (index) => Flexible(child: _vehicleItemBuilder(index))),
               ),
               // Seats selection
               Row(
@@ -240,7 +248,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                       ),
                     onPressed: canEstimateDistance && isConnected ? () async {
                       Travel travel = await _travelService.requestNewTravel(
-                          clientId: loggedInUser.id,
+                          clientId: _client.id,
                           originName: _originName!,
                           destinationName: _destinationName!,
                           originCoords: _originCoords!,
@@ -274,7 +282,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
 
   Widget _vehicleItemBuilder(int index) {
 
-    final vehicle = _taxiTypeList[index];
+    final vehicle = TaxiType.values[index];
     final isSelected = _selectedVehicle == vehicle;
     final dimensions = Theme.of(context).extension<DimensionExtension>()!;
 
@@ -304,7 +312,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                                   children: [
                                     Row(
                                       children: [
-                                        Text(AppLocalizations.of(context)!.vehicle, style: Theme.of(context).textTheme.bodySmall),
+                                        Text(_localizations.vehicle, style: Theme.of(context).textTheme.bodySmall),
                                         if (isSelected)
                                           SizedBox(width: 8.0),
                                         if (isSelected)
@@ -315,7 +323,8 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                                           )
                                       ]
                                     ),
-                                    Text(vehicle.displayText, style: Theme.of(context).textTheme.labelLarge),
+                                    Text(TaxiType.nameOf(vehicle, _localizations), style: Theme.of(context).textTheme
+                                        .labelLarge),
                                   ]
                                 )
                               ]
@@ -330,7 +339,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                     alignment: Alignment.bottomCenter,
                     child: Padding(
                         padding: EdgeInsets.only(bottom: 8.0, right: 8.0),
-                        child: Image.asset(vehicle.assetRef)
+                        child: Image.asset(vehicle.assetRef(AssetDpi.xhdpi))
                     )
                 )
               ]

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/models/travel.dart';
+import 'package:quber_taxi/enums/taxi_type.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/utils/websocket/core/websocket_service.dart';
@@ -16,6 +17,7 @@ class TravelInfoSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final isConnected = NetworkScope.statusOf(context) == ConnectionStatus.online;
     final dimension = Theme.of(context).extension<DimensionExtension>()!;
+    final localizations = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0, right: 12.0, left: 12.0),
       child: Column(
@@ -78,9 +80,10 @@ class TravelInfoSheet extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('${AppLocalizations.of(context)!.countPeople} ${travel.requiredSeats}'),
-                      Text('${AppLocalizations.of(context)!.pet} ${travel.hasPets ? 'Sí' : 'No'}'),
-                      Text('${AppLocalizations.of(context)!.typeVehicle} ${travel.taxiType.displayText}'),
+                      Text('${localizations.standardVehicle} ${travel.requiredSeats}'),
+                      Text('${localizations.pet} ${travel.hasPets ? 'Sí' : 'No'}'),
+                      Text('${localizations.typeVehicle} ${TaxiType.nameOf(travel.taxiType, localizations)
+                      }'),
                     ]
                   )
                 )
@@ -97,7 +100,7 @@ class TravelInfoSheet extends StatelessWidget {
                 );
                 onPickUpConfirmationRequest.call();
               } : null,
-              child: Text(AppLocalizations.of(context)!.startTrip)
+              child: Text(localizations.startTrip)
             )
           )
         ]

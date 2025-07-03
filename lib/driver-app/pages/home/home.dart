@@ -8,6 +8,7 @@ import 'package:geolocator/geolocator.dart' as g;
 import 'package:go_router/go_router.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:network_checker/network_checker.dart';
+import 'package:quber_taxi/common/models/driver.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/services/driver_service.dart';
 import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
@@ -65,6 +66,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
   final List<Travel> _newTravels = [];
   // Websocket for travel state changed (Here we must wait for the client to accept the pickup confirmation).
   TravelStateHandler? _travelStateHandler;
+  // LoggedIn Driver
+  late final Driver _driver;
 
   void _startStreamingLocation() async {
     // Get current position
@@ -105,7 +108,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
   void _startSharingLocation() {
     _locationShareSubscription = _locationBroadcast.listen((position) async {
       WebSocketService.instance.send(
-        "/app/drivers/${loggedInUser.id}/location",
+        "/app/drivers/${_driver.id}/location",
         {"longitude": position.longitude, "latitude": position.latitude},
       );
       if(!_isLocationStreaming) _startStreamingLocation();
@@ -113,7 +116,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
   }
 
   void _onTravelSelected(Travel travel) async {
-    final response = await _driverService.acceptTravel(driverId: loggedInUser.id, travelId: travel.id);
+    final response = await _driverService.acceptTravel(driverId: _driver.id, travelId: travel.id);
     if(response.statusCode == 200) {
       final assetBytes = await rootBundle.load('assets/markers/route/x120/origin.png');
       final originMarkerImage = assetBytes.buffer.asUint8List();
@@ -161,8 +164,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
   @override
   void initState() {
     super.initState();
+    _driver = Driver.fromJson(loggedInUser);
     _newTravelRequestHandler = TravelRequestHandler(
-        driverId: loggedInUser.id,
+        driverId: _driver.id,
         onNewTravel: _onNewTravel
     )..activate();
     _locationBroadcast = g.Geolocator.getPositionStream().asBroadcastStream();

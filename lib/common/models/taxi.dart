@@ -1,8 +1,9 @@
 import 'package:flutter/foundation.dart';
+import 'package:quber_taxi/common/models/encodable.dart';
 import 'package:quber_taxi/enums/taxi_type.dart';
 
 @immutable
-class Taxi {
+class Taxi implements Encodable{
   final int id;
   final String plate;
   final String imageUrl;
@@ -27,6 +28,7 @@ class Taxi {
     );
   }
 
+  @override
   Map<String, dynamic> toJson() => {
     "id": id,
     "plate": plate,

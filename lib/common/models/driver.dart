@@ -1,8 +1,9 @@
 import 'package:flutter/foundation.dart';
+import 'package:quber_taxi/common/models/encodable.dart';
 import 'package:quber_taxi/common/models/taxi.dart';
 
 @immutable
-class Driver {
+class Driver implements Encodable {
 
   final int id;
   final String name;
@@ -26,6 +27,7 @@ class Driver {
     required this.taxi
   });
 
+  @override
   factory Driver.fromJson(Map<String, dynamic> json) {
     return Driver(
       id: json['id'],
@@ -40,6 +42,7 @@ class Driver {
     );
   }
 
+  @override
   Map<String, dynamic> toJson() => {
     "id": id,
     "name": name,
@@ -47,7 +50,7 @@ class Driver {
     "phone": phone,
     "available": isAvailable,
     "credit": credit,
-    "paymentDate": paymentDate,
+    "paymentDate": paymentDate.toIso8601String(),
     "rating": rating,
     "taxi": taxi.toJson()
   };
