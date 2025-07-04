@@ -4,12 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/services/auth_service.dart';
-import 'package:quber_taxi/config/app_profile.dart';
-import 'package:quber_taxi/config/build_config.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/admin_routes.dart';
 import 'package:quber_taxi/navigation/routes/client_routes.dart';
 import 'package:quber_taxi/navigation/routes/driver_routes.dart';
+import 'package:quber_taxi/navigation/routes/common_routes.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/utils/runtime.dart' as runtime;
 
@@ -171,14 +170,7 @@ class _LoginPageState extends State<LoginPage> {
                         // Create New Account
                         TextButton(
                           onPressed: () {
-                            final route = switch (BuildConfig.appProfile) {
-                              AppProfile.client => ClientRoutes.createAccount,
-                              AppProfile.driver => DriverRoutes.createAccount,
-                            // TODO("yapmDev": @Reminder)
-                            // - No create admin account page
-                              AppProfile.admin => throw UnimplementedError(),
-                            };
-                            context.push(route);
+                            context.push(CommonRoutes.requestFaceId);
                           },
                           child: Text(
                             localization.createAccountLogin,

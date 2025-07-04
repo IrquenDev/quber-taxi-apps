@@ -1,170 +1,154 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
+import 'package:quber_taxi/theme/dimensions.dart';
+import 'package:quber_taxi/navigation/routes/common_routes.dart';
 
-import 'confirmed_selfie.dart';
-
-
-class RequestFaceIdPage extends StatelessWidget {
-  const RequestFaceIdPage({super.key});
+class VerificationIdentityPage extends StatelessWidget {
+  const VerificationIdentityPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-
+    final dimensions = Theme.of(context).extension<DimensionExtension>()!;
     return Scaffold(
-      backgroundColor: colorScheme.surface,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: Stack(
         children: [
           Column(
             children: [
-              Container(
-                width: double.infinity,
-                height: 200,
-                decoration: BoxDecoration(
-                  color: colorScheme.primaryContainer,
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(20),
-                    bottomRight: Radius.circular(20),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: colorScheme.onSecondaryContainer,
-                      blurRadius: 9,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 20.0, bottom: 90),
-                    child: Row(
-                      children: [
-                        Icon(Icons.menu, color: colorScheme.shadow),
-                        const SizedBox(width: 8),
-                        Text(
-                          AppLocalizations.of(context)!.identityVerify,
-                          style: textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: colorScheme.shadow,
+              Container(height: 180, color: Colors.transparent),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.only(bottom: 80),
+                  child: Column(
+                    children: [
+                      SizedBox(height: 150),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 24.0),
+                        child: Text(
+                          AppLocalizations.of(context)!.confirmIdentityHeader,
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.secondary
                           ),
+                          textAlign: TextAlign.center,
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 150),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                child: Text(
-                  AppLocalizations.of(context)!.confirmIdentity,
-                  textAlign: TextAlign.center,
-                  style: textTheme.headlineMedium?.copyWith(
-                    color: colorScheme.onSurface,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 40),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                child: Text(
-                  AppLocalizations.of(context)!.noBot,
-                  textAlign: TextAlign.left,
-                  style: textTheme.bodyLarge?.copyWith(
-                    color: colorScheme.shadow,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                child: Text(
-                  AppLocalizations.of(context)!.noUsedImage,
-                  textAlign: TextAlign.left,
-                  style: textTheme.bodyLarge?.copyWith(
-                    color: colorScheme.shadow,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                child: Text(
-                  AppLocalizations.of(context)!.verificationUser,
-                  textAlign: TextAlign.left,
-                  style: textTheme.bodyLarge?.copyWith(
-                    color: colorScheme.shadow,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 40),
-              const Spacer(),
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: SizedBox(
-                  height: 56,
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                      foregroundColor: Theme.of(context).colorScheme.secondary,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero,
                       ),
-                      elevation: 0,
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const FaceIdConfirmed()),
-                      );
-                    },
-                    child: Text(
-                      AppLocalizations.of(context)!.takeSelfieButton,
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.secondary
+                      SizedBox(height: 24),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 24.0),
+                        child: Text(
+                          AppLocalizations.of(context)!.takeSelfieInstruction,
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontSize: 18,
+                              color: Theme.of(context).colorScheme.secondary
+                          ),
+                          textAlign: TextAlign.left,
+                        ),
                       ),
-                    ),
+                      SizedBox(height: 16),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 24.0),
+                        child: Text(
+                          AppLocalizations.of(context)!.selfieUsageNote,
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontSize: 18,
+                              color: Theme.of(context).colorScheme.secondary
+                          ),
+                          textAlign: TextAlign.left,
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 24.0),
+                        child: Text(
+                          AppLocalizations.of(context)!.verificationPurpose,
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontSize: 18,
+                              color: Theme.of(context).colorScheme.secondary
+                          ),
+                          textAlign: TextAlign.left,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ],
           ),
+          Container(
+            height: 200,
+            alignment: Alignment.topCenter,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primaryContainer,
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular
+                (dimensions.borderRadius)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 8,
+                  offset: Offset(0, 2),
+                ),
+              ],
+            ),
+            padding: const EdgeInsets.only(top: 52, left: 24, right: 16),
+            child: Row(
+              children: [
+                Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.secondary),
+                SizedBox(width: 12),
+                Text(
+                  AppLocalizations.of(context)!.identityVerificationTitle,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
 
           Positioned(
-            top: 110,
+            top: 120,
             left: 0,
             right: 0,
             child: Center(
-              child: Container(
-                width: 180,
-                height: 200,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: colorScheme.surface,
-                  boxShadow: [
-                    BoxShadow(
-                      color: colorScheme.onSecondaryContainer,
-                      blurRadius: 6,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
+              child: CircleAvatar(
+                radius: 75,
+                backgroundColor: Colors.white,
+                child: SvgPicture.asset(
+                  "assets/icons/camera.svg",
+                  width: 80,
+                  height: 80,
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(30),
-                  child: SvgPicture.asset(
-                    "assets/icons/camera.svg",
-                    colorFilter: ColorFilter.mode(
-                      Theme.of(context).colorScheme.onSecondaryContainer,
-                      BlendMode.srcIn,
-                    ),
-                    fit: BoxFit.contain,
+              ),
+            ),
+          ),
+
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: SizedBox(
+              height: 56,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                  foregroundColor: Theme.of(context).colorScheme.secondary,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.zero,
+                  ),
+                  elevation: 0,
+                ),
+                onPressed: () {
+                  context.push(CommonRoutes.faceDetection);
+                },
+                child: Text(
+                  AppLocalizations.of(context)!.takeSelfieButton,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.secondary
                   ),
                 ),
               ),

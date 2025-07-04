@@ -67,8 +67,7 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
                         const SizedBox(width: 8),
                         Text(
                           AppLocalizations.of(context)!.createAccount,
-                          style: textTheme.headlineSmall?.copyWith(
-                            fontSize: 28,
+                          style: textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: colorScheme.shadow,
                           ),
