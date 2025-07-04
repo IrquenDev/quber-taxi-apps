@@ -18,17 +18,10 @@ class DriverInfoPage extends StatefulWidget {
 class _DriverInfoPageState extends State<DriverInfoPage> {
   final accountService = AccountService();
   late Future<Driver> futureDriver;
-  bool _isActionPending = true;
-  late final AppLocalizations _localizations;
 
   void _loadDriverInfo() {
     setState(() {
-      _isActionPending = true;
-      futureDriver = accountService.getDriverById(widget.driverId).whenComplete(() {
-        if (mounted) {
-          setState(() => _isActionPending = false);
-        }
-      });
+      futureDriver = accountService.getDriverById(widget.driverId);
     });
   }
 
@@ -39,18 +32,12 @@ class _DriverInfoPageState extends State<DriverInfoPage> {
   }
 
   @override
-  void didChangeDependencies() {
-    _localizations = AppLocalizations.of(context)!;
-    super.didChangeDependencies();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final screenWidth = MediaQuery.of(context).size.width;
     final cardWidth = screenWidth * 0.9;
-
+    final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       body: SafeArea(
@@ -92,7 +79,7 @@ class _DriverInfoPageState extends State<DriverInfoPage> {
                             Icon(Icons.menu, color: colorScheme.shadow),
                             const SizedBox(width: 15),
                             Text(
-                              _localizations.driverInfoTitle,
+                              localizations.driverInfoTitle,
                               style: textTheme.headlineSmall?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: colorScheme.shadow,
@@ -165,7 +152,7 @@ class _DriverInfoPageState extends State<DriverInfoPage> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        _localizations.averageRating,
+                                        localizations.averageRating,
                                         style: textTheme.bodyLarge?.copyWith(
                                           fontWeight: FontWeight.normal,
                                           color: Colors.grey.shade800,
@@ -206,7 +193,7 @@ class _DriverInfoPageState extends State<DriverInfoPage> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        _localizations.vehiclePlate,
+                                        localizations.vehiclePlate,
                                         style: TextStyle(
                                           fontWeight: FontWeight.normal,
                                           color: Colors.grey.shade800,
@@ -241,7 +228,7 @@ class _DriverInfoPageState extends State<DriverInfoPage> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        _localizations.seatNumber,
+                                        localizations.seatNumber,
                                         style: TextStyle(
                                           fontWeight: FontWeight.normal,
                                           color: Colors.grey.shade800,
@@ -276,7 +263,7 @@ class _DriverInfoPageState extends State<DriverInfoPage> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        _localizations.vehicleType,
+                                        localizations.vehicleType,
                                         style: TextStyle(
                                           fontWeight: FontWeight.normal,
                                           color: Colors.grey.shade800,
@@ -362,5 +349,4 @@ class _DriverInfoPageState extends State<DriverInfoPage> {
       }),
     );
   }
-
 }

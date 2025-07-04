@@ -1,9 +1,10 @@
 import 'dart:convert';
-
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/models/client.dart';
 import 'package:quber_taxi/common/services/account_service.dart';
@@ -31,22 +32,15 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  // Connection State
-  late bool isConnected;
-
-  @override
-  void didChangeDependencies() {
-    isConnected = NetworkScope.statusOf(context) == ConnectionStatus.online;
-    super.didChangeDependencies();
-  }
+  XFile? _profileImage;
 
   @override
   Widget build(BuildContext context) {
-
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    final localizations = AppLocalizations.of(context)!;
-
+    late final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    late final TextTheme textTheme = Theme.of(context).textTheme;
+    late final localizations = AppLocalizations.of(context)!;
+    late final iconTheme = Theme.of(context).iconTheme;
+    final isConnected = NetworkScope.statusOf(context) == ConnectionStatus.online;
     return Scaffold(
       body: Stack(
         children: [
@@ -62,14 +56,7 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
                   borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(20),
                     bottomRight: Radius.circular(20),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: colorScheme.onSecondaryContainer,
-                      blurRadius: 9,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
+                  )
                 ),
                 child: SafeArea(
                   child: Padding(
@@ -109,12 +96,12 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
                         TextFormField(
                             controller: _nameController,
                             decoration: InputDecoration(
-                              filled: true,
                               fillColor: Colors.white,
                               hintText: AppLocalizations.of(context)!.nameAndLastName,
-                              hintStyle: TextStyle(color: Colors.grey.shade600),
-                              contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide.none,
+                              )
                             ),
                             validator: (value) => Workflow<String?>()
                                 .step(RequiredStep(errorMessage: localizations.requiredField))
@@ -136,7 +123,6 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
                               filled: true,
                               fillColor: Colors.white,
                               hintText: 'Ej: 5564XXXX',
-                              hintStyle: TextStyle(color: Colors.grey.shade600),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
                                 borderSide: BorderSide.none,
@@ -161,7 +147,6 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
                               filled: true,
                               fillColor: Colors.white,
                               hintText: 'Introduzca la contraseña deseada',
-                              hintStyle: TextStyle(color: Colors.grey.shade600),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
                                 borderSide: BorderSide.none,
@@ -188,7 +173,6 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
                               filled: true,
                               fillColor: Colors.white,
                               hintText: 'Repita la contraseña deseada',
-                              hintStyle: TextStyle(color: Colors.grey.shade600),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
                                 borderSide: BorderSide.none,
@@ -213,37 +197,20 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
           ),
           // Camera Button
           Positioned(
-            top: 130,
+            top: 120,
             left: 0,
             right: 0,
             child: Center(
-              child: Container(
-                width: 150,
-                height: 150,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: colorScheme.onPrimary,
-                  boxShadow: [
-                    BoxShadow(
-                      color: colorScheme.onSecondaryContainer,
-                      blurRadius: 6,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(30),
-                  child: SvgPicture.asset(
-                    "assets/icons/camera.svg",
-                    colorFilter: ColorFilter.mode(
-                      Theme.of(context).colorScheme.onSecondaryContainer,
-                      BlendMode.srcIn,
-                    ),
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-            ),
+                child: GestureDetector(
+                  onTap: () async {
+                    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+                    if(image != null) {
+                      setState(() => _profileImage = image);
+                    }
+                  },
+                  child: _buildCircleImagePicker(colorScheme, iconTheme),
+              )
+            )
           ),
           // Submit Form Button
           Positioned(
@@ -274,9 +241,10 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
                   }
                   // Make the register request
                   final response = await AccountService().registerClient(
-                      _nameController.text,
-                      _phoneController.text,
-                      _passwordController.text,
+                      name: _nameController.text,
+                      phone: _phoneController.text,
+                      password: _passwordController.text,
+                      image: _profileImage
                   );
                   // Avoid context's gaps
                   if(!context.mounted) return;
@@ -319,6 +287,37 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
           )
         ]
       )
+    );
+  }
+
+  Widget _buildCircleImagePicker(ColorScheme colorScheme, IconThemeData iconTheme) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        // Main Circle
+        CircleAvatar(
+          radius: 80,
+          backgroundColor: colorScheme.surfaceContainerLowest,
+          foregroundImage: _profileImage != null
+              ? FileImage(File(_profileImage!.path))
+              : null,
+          child: _profileImage == null
+              ? SvgPicture.asset("assets/icons/camera.svg", width: iconTheme.size! * 3)
+              : null,
+        ),
+        if (_profileImage != null)
+          Positioned(
+            top: 8.0, right: 8.0,
+            child: GestureDetector(
+              onTap: ()=> setState(()=> _profileImage = null),
+              child: CircleAvatar(
+                radius: 16,
+                backgroundColor: Colors.red,
+                child: Icon(Icons.close, color: Colors.white, size: 16),
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

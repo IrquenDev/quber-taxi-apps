@@ -46,6 +46,10 @@ dependencies:
   # http client
   http: ^1.4.0
 
+  # multipart-request:
+  http_parser: ^4.0.2
+  mime: ^1.0.4
+
   flutter_fusion:
     git:
       url: https://github.com/yapmDev/flutter-fusion.git
