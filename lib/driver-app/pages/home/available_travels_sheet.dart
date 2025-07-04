@@ -32,7 +32,6 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
   late final Taxi taxi;
 
   Future<void> _refreshTravels() async {
-
     final newTravels = await travelService.fetchAvailableTravels(taxi.seats, taxi.type);
     if(newTravels.isEmpty) {
       if(_sheetController.isAttached){

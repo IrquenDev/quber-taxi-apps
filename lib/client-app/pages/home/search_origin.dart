@@ -25,7 +25,6 @@ class _SearchOriginPageState extends State<SearchOriginPage> {
 
   final _controller = TextEditingController();
   final _mapboxService = MapboxService();
-  late bool isConnected;
 
   List<MapboxPlace> _suggestions = [];
   Timer? _debounce;
@@ -48,12 +47,6 @@ class _SearchOriginPageState extends State<SearchOriginPage> {
     _loadHavanaGeoJson();
   }
 
-  @override
-  void didChangeDependencies() {
-    isConnected = NetworkScope.statusOf(context) == ConnectionStatus.online;
-    super.didChangeDependencies();
-  }
-
   Future<void> _loadHavanaGeoJson() async {
     _havanaPolygon = await loadGeoJsonPolygon("assets/geojson/polygon/CiudadDeLaHabana.geojson");
   }
@@ -67,6 +60,7 @@ class _SearchOriginPageState extends State<SearchOriginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isConnected = NetworkScope.statusOf(context) == ConnectionStatus.online;
     return NetworkAlertTemplate(
       alertBuilder: (_, status) => CustomNetworkAlert(status: status),
       child: Scaffold(

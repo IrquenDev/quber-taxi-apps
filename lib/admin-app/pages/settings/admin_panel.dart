@@ -25,8 +25,6 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
 
   bool _isNewPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
-
-  late bool isConnected;
   final adminService = AdminService();
   late Future<QuberConfig?> futureQuberConfigs;
 
@@ -53,7 +51,6 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
     });
   }
 
-
   @override
   void initState() {
     super.initState();
@@ -61,15 +58,10 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
   }
 
   @override
-  void didChangeDependencies() {
-    isConnected = NetworkScope.statusOf(context) == ConnectionStatus.online;
-    super.didChangeDependencies();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final dimensions = Theme.of(context).extension<DimensionExtension>()!;
+    final isConnected = NetworkScope.statusOf(context) == ConnectionStatus.online;
     return Scaffold(
         body: Stack(
             children: [
