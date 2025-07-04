@@ -15,6 +15,7 @@ class FaceDetectionPage extends StatefulWidget {
 }
 
 class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProviderStateMixin {
+
   late CameraController _cameraController;
   late FaceDetector _faceDetector;
   late AnimationController _progressController;
@@ -29,38 +30,7 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
   int _noFaceCount = 0;
   static const int _requiredFrames = 5;
 
-  @override
-  void initState() {
-    super.initState();
-    _progressController = AnimationController(
-      duration: const Duration(seconds: 7),
-      vsync: this,
-    );
-    _progressAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _progressController,
-      curve: Curves.easeInOut,
-    ));
-
-    _progressController.addListener(() {
-      setState(() {});
-    });
-
-    _progressController.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        Future.microtask(() async {
-          if (!mounted) return;
-          await _cameraController.stopImageStream();
-          if (!mounted) return;
-          context.go(CommonRoutes.faceIdConfirmed);
-        });
-      }
-    });
-
-    _init();
-  }
+  Uint8List? _capturedImageBytes;
 
   Future<void> _init() async {
     final cameras = await availableCameras();
@@ -143,7 +113,14 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
             status = FaceDetectorState.blinkDetected;
             _isProcessing = true;
           });
-          _progressController.forward();
+          try {
+            final XFile file = await _cameraController.takePicture();
+            _capturedImageBytes = await file.readAsBytes();
+            _progressController.forward();
+          } catch (e) {
+            debugPrint('Error al capturar imagen: $e');
+            setState(() => status = FaceDetectorState.notSupportedCamera);
+          }
         } else if (_faceDetectedCount >= _requiredFrames &&
             status == FaceDetectorState.waitingFace) {
           setState(() => status = FaceDetectorState.faceDetected);
@@ -263,9 +240,7 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
         return "3. Captura de selfie";
       case FaceDetectorState.notSupportedCamera:
         return "Error de compatibilidad";
-      default:
-        return "1. Detección de rostro";
-    }
+      }
   }
 
   String _getDescription() {
@@ -278,9 +253,40 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
         return "Nuestra inteligencia artificial está procesando la selfie. Por favor, manténgase conectado a internet y evite cerrar la aplicación.";
       case FaceDetectorState.notSupportedCamera:
         return "Su dispositivo no es compatible con la verificación facial. Por favor, contacte con soporte técnico o intente con otro dispositivo.";
-      default:
-        return "Le aconsejamos que coloque su rostro en la zona indicada.";
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _progressController = AnimationController(
+      duration: const Duration(seconds: 7),
+      vsync: this,
+    );
+    _progressAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _progressController,
+      curve: Curves.easeInOut,
+    ));
+
+    _progressController.addListener(() {
+      setState(() {});
+    });
+
+    _progressController.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        Future.microtask(() async {
+          if (!mounted) return;
+          await _cameraController.stopImageStream();
+          if (!mounted) return;
+          context.push(CommonRoutes.faceIdConfirmed, extra: _capturedImageBytes);
+        });
+      }
+    });
+
+    _init();
   }
 
   @override
@@ -323,11 +329,11 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
                   width: 80,
                   height: 80,
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.9),
+                    color: Colors.white.withAlpha(225),
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
+                        color: Colors.black.withAlpha(50),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),

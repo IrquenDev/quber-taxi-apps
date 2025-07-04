@@ -52,8 +52,8 @@ class Workflow<T> {
   ///
   /// The function receives the original [value], and its result will be
   /// returned from [proceed] if no steps matched.
-  Workflow<T> withDefault(T Function(T value) handler) {
-    _defaultHandler = handler;
+  Workflow<T> withDefault(T Function(T value) defaultHandler) {
+    _defaultHandler = defaultHandler;
     return this;
   }
 

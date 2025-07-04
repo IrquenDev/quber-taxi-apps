@@ -87,7 +87,7 @@ class VerificationIdentityPage extends StatelessWidget {
                 (dimensions.borderRadius)),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withAlpha(50),
                   blurRadius: 8,
                   offset: Offset(0, 2),
                 ),
