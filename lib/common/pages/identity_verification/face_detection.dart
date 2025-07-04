@@ -95,13 +95,10 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
 
   Future<void> _captureSelfieWithOpenEyes() async {
     try {
-      // Tomamos la foto
       final image = await _cameraController.takePicture();
 
-      // Convertimos la imagen a bytes
       final bytes = await image.readAsBytes();
 
-      // Verificamos que los ojos estén abiertos
       final inputImage = InputImage.fromFilePath(image.path);
       final faces = await _faceDetector.processImage(inputImage);
 
@@ -110,13 +107,11 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
         final leftEyeOpen = face.leftEyeOpenProbability ?? 1.0;
         final rightEyeOpen = face.rightEyeOpenProbability ?? 1.0;
 
-        // Consideramos ojos abiertos si la probabilidad es mayor a 0.7
         if (leftEyeOpen > 0.7 && rightEyeOpen > 0.7) {
           setState(() {
             _capturedImage = bytes;
           });
         } else {
-          // Si los ojos no están abiertos, intentamos una vez más
           await Future.delayed(const Duration(milliseconds: 300));
           await _captureSelfieWithOpenEyes();
         }
