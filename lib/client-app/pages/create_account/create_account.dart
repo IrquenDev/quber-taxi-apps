@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -14,10 +15,11 @@ import 'package:quber_taxi/storage/session_manger.dart';
 import 'package:quber_taxi/utils/workflow/core/workflow.dart';
 import 'package:quber_taxi/utils/workflow/impl/form_validations.dart';
 
-// TODO("yapm:@Integration")
-// Should receive the face id confirmed image.
 class CreateClientAccountPage extends StatefulWidget {
-  const CreateClientAccountPage({super.key});
+
+  final Uint8List faceIdImage;
+
+  const CreateClientAccountPage({super.key, required this.faceIdImage});
 
   @override
   State<CreateClientAccountPage> createState() => _CreateClientAccountPage();
@@ -243,7 +245,8 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
                       name: _nameController.text,
                       phone: _phoneController.text,
                       password: _passwordController.text,
-                      image: _profileImage
+                      profileImage: _profileImage,
+                      faceIdImage: widget.faceIdImage
                   );
                   // Avoid context's gaps
                   if(!context.mounted) return;

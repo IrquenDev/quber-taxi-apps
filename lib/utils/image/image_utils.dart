@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:camera/camera.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
+import 'package:image/image.dart' as img;
 
 /// Converts an image from YUV420 format to NV21 format.
 /// This is required for compatibility in the face detection processing
@@ -49,4 +50,12 @@ InputImageFormat? mapRawFormatToInputImageFormat(int rawFormat) {
     default:
       return null; // Not Supported
   }
+}
+
+Uint8List fixImageOrientation(Uint8List imageData) {
+  final originalImage = img.decodeImage(imageData);
+  if (originalImage == null) return imageData;
+
+  final fixedImage = img.bakeOrientation(originalImage);
+  return Uint8List.fromList(img.encodeJpg(fixedImage));
 }
