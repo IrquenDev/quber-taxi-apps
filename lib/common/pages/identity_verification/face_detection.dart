@@ -29,6 +29,8 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
   int _noFaceCount = 0;
   static const int _requiredFrames = 5;
 
+  Uint8List? _capturedImage;
+
   @override
   void initState() {
     super.initState();
@@ -91,6 +93,39 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
     });
   }
 
+  Future<void> _captureSelfieWithOpenEyes() async {
+    try {
+      // Tomamos la foto
+      final image = await _cameraController.takePicture();
+
+      // Convertimos la imagen a bytes
+      final bytes = await image.readAsBytes();
+
+      // Verificamos que los ojos estén abiertos
+      final inputImage = InputImage.fromFilePath(image.path);
+      final faces = await _faceDetector.processImage(inputImage);
+
+      if (faces.isNotEmpty) {
+        final face = faces.first;
+        final leftEyeOpen = face.leftEyeOpenProbability ?? 1.0;
+        final rightEyeOpen = face.rightEyeOpenProbability ?? 1.0;
+
+        // Consideramos ojos abiertos si la probabilidad es mayor a 0.7
+        if (leftEyeOpen > 0.7 && rightEyeOpen > 0.7) {
+          setState(() {
+            _capturedImage = bytes;
+          });
+        } else {
+          // Si los ojos no están abiertos, intentamos una vez más
+          await Future.delayed(const Duration(milliseconds: 300));
+          await _captureSelfieWithOpenEyes();
+        }
+      }
+    } catch (e) {
+      debugPrint('Error al capturar selfie: $e');
+    }
+  }
+
   void _processImage(CameraImage image) async {
     if (_isDetecting || _isProcessing) return;
     _isDetecting = true;
@@ -143,6 +178,8 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
             status = FaceDetectorState.blinkDetected;
             _isProcessing = true;
           });
+
+          await _captureSelfieWithOpenEyes();
           _progressController.forward();
         } else if (_faceDetectedCount >= _requiredFrames &&
             status == FaceDetectorState.waitingFace) {
