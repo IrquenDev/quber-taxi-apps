@@ -20,10 +20,10 @@ class ClientHomePage extends StatefulWidget {
 class _ClientHomePageState extends State<ClientHomePage> {
 
   // Default m3  BottomAppBar height. The length of the curved space under a centered FAB coincides with this value.
-  final _bottomAppBarHeight = 80.0;
 
   @override
   Widget build(BuildContext context) {
+    final double _bottomAppBarHeight = MediaQuery.of(context).size.height * 0.08;
     final borderRadius = Theme.of(context).extension<DimensionExtension>()!.borderRadius;
     return NetworkAlertTemplate(
       alertBuilder: (_, status) => CustomNetworkAlert(status: status, useTopSafeArea: true),
@@ -38,15 +38,15 @@ class _ClientHomePageState extends State<ClientHomePage> {
           backgroundColor: Theme.of(context).colorScheme.primaryContainer,
           onPressed: () {
             showModalBottomSheet(
-                backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-            isDismissible: false,
-            context: context,
-            isScrollControlled: true,
-            showDragHandle: true,
-            shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(borderRadius)),
-            ),
-            builder: (context) => RequestTravelSheet(),
+              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+              isDismissible: false,
+              context: context,
+              isScrollControlled: true,
+              showDragHandle: true,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(borderRadius)),
+              ),
+              builder: (context) => RequestTravelSheet(),
             );
           },
           child: Icon(
@@ -95,13 +95,12 @@ class _BottomBarItem extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const SizedBox(height: 10,),
         Icon(icon, size: 26,),
         Text(
           label,
           style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold
+              fontSize: 16,
+              fontWeight: FontWeight.bold
           ),
         ),
       ],
@@ -119,14 +118,14 @@ class _QuberPoints extends StatelessWidget {
         Text(
           '56',
           style: TextStyle(
-            fontSize: 30,
+            fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
         ),
         Text(
           AppLocalizations.of(context)!.quberPoints,
           style: TextStyle(
-            fontSize: 16,
+              fontSize: 16,
               fontWeight: FontWeight.bold
           ),
         ),
