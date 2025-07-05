@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:quber_taxi/common/models/encodable.dart';
 
 @immutable
-class QuberConfig implements Encodable{
+class QuberConfig implements Encodable {
 
   final double driverCredit;
   final double travelPrice;

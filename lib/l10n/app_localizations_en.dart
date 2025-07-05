@@ -252,6 +252,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get acceptButton => 'Accept';
 
   @override
+  String get cancelButton => 'Cancel';
+
+  @override
   String get familyVehicle => 'Family';
 
   @override

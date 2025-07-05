@@ -5,22 +5,40 @@ import 'package:quber_taxi/common/models/client.dart';
 import 'package:quber_taxi/common/models/driver.dart';
 import 'package:quber_taxi/config/api_config.dart';
 import 'package:quber_taxi/storage/session_manger.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
+/// A service responsible for handling user authentication for clients, drivers, and admins.
+///
+/// Performs login operations using HTTP requests and persists user sessions
+/// via the [SessionManager] after successful authentication.
+///
+/// Each login method returns the full HTTP response, allowing
+/// the caller to handle status codes or errors.
 class AuthService {
-
+  /// Base endpoint for authentication-related operations.
   final _endpoint = "${ApiConfig().baseUrl}/auth";
-  final headers = {'Content-Type': 'application/json'};
 
+  /*
+  /// Checks if a session is still active by validating the session ID cookie.
+  ///
+  /// This method is commented out but may be used to verify
+  /// if a user has a valid backend session.
   Future<bool> isSessionActive() async {
     final prefs = await SharedPreferences.getInstance();
     final sessionId = prefs.getString('sessionId');
     if (sessionId == null) return false;
     final url = Uri.parse("$_endpoint/session-status");
-    final response = await http.post(url, headers: {'Cookie': 'JSESSIONID=$sessionId'});
+    final response = await http.post(
+      url,
+      headers: {'Cookie': 'JSESSIONID=$sessionId'},
+    );
     return response.statusCode == 200;
   }
+  */
 
+  /// Attempts to log in a client using [phone] and [password].
+  ///
+  /// On success (HTTP 200), parses the response into a [Client]
+  /// and saves the session via [SessionManager].
   Future<http.Response> loginClient(String phone, String password) async {
     final url = Uri.parse("$_endpoint/login/client?phone=$phone&password=$password");
     final response = await http.post(url);
@@ -32,6 +50,10 @@ class AuthService {
     return response;
   }
 
+  /// Attempts to log in a driver using [phone] and [password].
+  ///
+  /// On success (HTTP 200), parses the response into a [Driver]
+  /// and saves the session via [SessionManager].
   Future<http.Response> loginDriver(String phone, String password) async {
     final url = Uri.parse("$_endpoint/login/driver?phone=$phone&password=$password");
     final response = await http.post(url);
@@ -43,6 +65,10 @@ class AuthService {
     return response;
   }
 
+  /// Attempts to log in an admin using [phone] and [password].
+  ///
+  /// On success (HTTP 200), parses the response into an [Admin]
+  /// and saves the session via [SessionManager].
   Future<http.Response> loginAdmin(String phone, String password) async {
     final url = Uri.parse("$_endpoint/login/admin?phone=$phone&password=$password");
     final response = await http.post(url);
@@ -52,38 +78,5 @@ class AuthService {
       SessionManager.instance.save(admin);
     }
     return response;
-  }
-
-  Future<http.Response> requestPasswordReset(String phone) async {
-    final url = Uri.parse("$_endpoint/password-reset/request?phone=$phone");
-    return await http.post(url);
-  }
-
-  Future<http.Response> resetClientPassword({
-    required String phone,
-    required String code,
-    required String newPassword,
-  }) async {
-    final url = Uri.parse("$_endpoint/password-reset/reset-client");
-    final body = jsonEncode({
-      "phone": phone,
-      "code": code,
-      "newPassword": newPassword,
-    });
-    return await http.post(url, headers: headers, body: body);
-  }
-
-  Future<http.Response> resetDriverPassword({
-    required String phone,
-    required String code,
-    required String newPassword,
-  }) async {
-    final url = Uri.parse("$_endpoint/password-reset/reset-driver");
-    final body = jsonEncode({
-      "phone": phone,
-      "code": code,
-      "newPassword": newPassword,
-    });
-    return await http.post(url, headers: headers, body: body);
   }
 }

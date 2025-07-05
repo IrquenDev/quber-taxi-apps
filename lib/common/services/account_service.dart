@@ -4,16 +4,27 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
-import 'package:quber_taxi/common/models/client.dart';
 import 'package:quber_taxi/common/models/driver.dart';
 import 'package:quber_taxi/config/api_config.dart';
 import 'package:quber_taxi/enums/taxi_type.dart';
 import 'package:quber_taxi/utils/image/image_utils.dart';
 
+/// A service class that manages account-related operations such as
+/// client and driver registration and retrieval of driver data.
+///
+/// Handles multipart requests for file uploads (face ID, profile, taxi, license images)
+/// and ensures proper MIME types and orientation are applied.
 class AccountService {
 
+  // Base endpoint for account-related operations.
   final _endpoint = "${ApiConfig().baseUrl}/account";
 
+  /// Registers a new client account by sending a multipart POST request.
+  ///
+  /// Requires [name], [phone], [password], and a [faceIdImage] in raw bytes.
+  /// Optionally accepts a [profileImage] selected from the device.
+  ///
+  /// Returns the HTTP response from the server.
   Future<http.Response> registerClient({
     required String name,
     required String phone,
@@ -26,20 +37,28 @@ class AccountService {
     request.fields['name'] = name;
     request.fields['phone'] = phone;
     request.fields['password'] = password;
-    request.files.add(_getMultipartFileFromUint8List(faceIdImage, "faceIdImage", "upload.jpg"));
-    if(profileImage != null) {
+    request.files.add(
+      _getMultipartFileFromUint8List(faceIdImage, "faceIdImage", "upload.jpg"),
+    );
+    if (profileImage != null) {
       request.files.add(await _getMultipartFileFromXFile(profileImage, "profileImage"));
     }
     final streamedResponse = await request.send();
     return await http.Response.fromStream(streamedResponse);
   }
 
+  /// Registers a new driver account by sending a multipart POST request.
+  ///
+  /// Requires driver's [name], [phone], [password], [plate], [type], [seats],
+  /// and images for [faceIdImage], [taxiImage], and [licenseImage].
+  ///
+  /// Returns the HTTP response from the server.
   Future<http.Response> registerDriver({
     required String name,
     required String phone,
     required String password,
     required String plate,
-    required TaxiType type ,
+    required TaxiType type,
     required int seats,
     required Uint8List faceIdImage,
     required XFile taxiImage,
@@ -53,62 +72,58 @@ class AccountService {
     request.fields['plate'] = plate;
     request.fields['type'] = type.apiValue;
     request.fields['seats'] = seats.toString();
-    request.files.add(_getMultipartFileFromUint8List(faceIdImage, "faceIdImage", "upload.jpg"));
+    request.files.add(
+      _getMultipartFileFromUint8List(faceIdImage, "faceIdImage", "upload.jpg"),
+    );
     request.files.add(await _getMultipartFileFromXFile(taxiImage, "taxiImage"));
     request.files.add(await _getMultipartFileFromXFile(licenseImage, "licenseImage"));
     final streamedResponse = await request.send();
-    final response =  await http.Response.fromStream(streamedResponse);
-    print(response.statusCode);
-    print(response.body);
+    final response = await http.Response.fromStream(streamedResponse);
     return response;
   }
 
-  Future<http.Response> deleteClient(int id) async {
-    final url = Uri.parse("$_endpoint/delete/client/$id");
-    return await http.delete(url);
-  }
-
-  Future<http.Response> deleteDriver(int id) async {
-    final url = Uri.parse("$_endpoint/delete/driver/$id");
-    return await http.delete(url);
-  }
-
-  Future<Client> getClientById(int id) async {
-    final url = Uri.parse("$_endpoint/client/$id");
-    final response =  await http.get(url);
-    final json = jsonDecode(response.body);
-    return Client.fromJson(json);
-  }
-
+  /// Fetches a [Driver] object by its [id] from the backend.
+  ///
+  /// Performs a GET request and parses the response as JSON.
   Future<Driver> getDriverById(int id) async {
     final url = Uri.parse("$_endpoint/driver/$id");
-    final response =  await http.get(url);
+    final response = await http.get(url);
     final json = jsonDecode(response.body);
     return Driver.fromJson(json);
   }
 
+  /// Converts a [Uint8List] (e.g. raw image bytes) into a [http.MultipartFile].
+  ///
+  /// Optionally corrects image orientation before uploading.
+  ///
+  /// Used for face ID image uploads during registration.
   http.MultipartFile _getMultipartFileFromUint8List(Uint8List file, String value, String filename) {
     final faceMimeType = lookupMimeType('', headerBytes: file);
     final faceContentType = faceMimeType != null
         ? MediaType.parse(faceMimeType)
         : MediaType('application', 'octet-stream');
     final fixedFaceIdImage = fixImageOrientation(file);
-    final multipartFile = http.MultipartFile.fromBytes(
-        value,
-        fixedFaceIdImage,
-        filename: filename,
-        contentType: faceContentType
+    return http.MultipartFile.fromBytes(
+      value,
+      fixedFaceIdImage,
+      filename: filename,
+      contentType: faceContentType,
     );
-    return multipartFile;
   }
 
+  /// Converts an [XFile] into a [http.MultipartFile] for multipart upload.
+  ///
+  /// Attempts to resolve MIME type based on file extension.
   Future<http.MultipartFile> _getMultipartFileFromXFile(XFile file, String value) async {
-    String filePath = file.path;
+    final filePath = file.path;
     final profileMimeType = lookupMimeType(filePath);
     final profileContentType = profileMimeType != null
         ? MediaType.parse(profileMimeType)
         : MediaType('application', 'octet-stream');
-    final multipartFile = await http.MultipartFile.fromPath(value, filePath, contentType: profileContentType);
-    return multipartFile;
+    return await http.MultipartFile.fromPath(
+      value,
+      filePath,
+      contentType: profileContentType,
+    );
   }
 }
