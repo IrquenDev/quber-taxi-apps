@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 
 class Driver {
@@ -151,7 +152,7 @@ class DriversListPage extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
                   children: [
-                    const Icon(Icons.menu),
+                    IconButton(onPressed: () => context.pop(), icon: Icon(Icons.arrow_back)),
                     const SizedBox(width: 12),
                     Text(
                       'Conductores',
