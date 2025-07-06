@@ -8,7 +8,6 @@ import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 
 class ClientHomePage extends StatefulWidget {
-
   const ClientHomePage({super.key, this.position});
 
   final Position? position;
@@ -18,13 +17,11 @@ class ClientHomePage extends StatefulWidget {
 }
 
 class _ClientHomePageState extends State<ClientHomePage> {
-
-  // Default m3  BottomAppBar height. The length of the curved space under a centered FAB coincides with this value.
-
   @override
   Widget build(BuildContext context) {
     final double _bottomAppBarHeight = MediaQuery.of(context).size.height * 0.08;
     final borderRadius = Theme.of(context).extension<DimensionExtension>()!.borderRadius;
+
     return NetworkAlertTemplate(
       alertBuilder: (_, status) => CustomNetworkAlert(status: status, useTopSafeArea: true),
       alertPosition: Alignment.topCenter,
@@ -39,15 +36,17 @@ class _ClientHomePageState extends State<ClientHomePage> {
           onPressed: () {
             showModalBottomSheet(
               backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-              isDismissible: false,
+              isDismissible: true,
               context: context,
               isScrollControlled: true,
               showDragHandle: true,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(borderRadius)),
               ),
-              builder: (context) => RequestTravelSheet(),
-            );
+              builder: (context) => MapView(),
+            ).then((_) {
+              if (mounted) setState(() {});
+            });
           },
           child: Icon(
             Icons.location_on,
@@ -65,7 +64,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              const SizedBox(width: 24,),
+              const SizedBox(width: 48),
               _BottomBarItem(
                 icon: Icons.local_taxi_outlined,
                 label: AppLocalizations.of(context)!.askTaxi,
@@ -95,10 +94,10 @@ class _BottomBarItem extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(icon, size: 26,),
+        Icon(icon, size: 26),
         Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold
           ),
@@ -115,7 +114,7 @@ class _QuberPoints extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
+        const Text(
           '56',
           style: TextStyle(
             fontSize: 20,
@@ -124,7 +123,7 @@ class _QuberPoints extends StatelessWidget {
         ),
         Text(
           AppLocalizations.of(context)!.quberPoints,
-          style: TextStyle(
+          style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold
           ),
