@@ -22,9 +22,9 @@ class Taxi implements Encodable{
     return Taxi(
         id: json['id'],
         plate: json['plate'],
-        imageUrl: json['imageUrl'],
+        imageUrl: json['imageUrl'] ?? "",
         seats: json['seats'],
-        type: TaxiType.resolve(json["type"]),
+        type: TaxiType.resolve(json["type"])
     );
   }
 
