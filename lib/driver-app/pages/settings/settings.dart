@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
+import 'package:quber_taxi/navigation/routes/common_routes.dart';
 
 class DriverSettingsPage extends StatefulWidget {
   const DriverSettingsPage({super.key});
@@ -208,8 +210,7 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
                           _buildMenuItem(
                             icon: Icons.drive_eta_outlined,
                             text: 'Sobre Nosotros',
-                            onTap: () {
-                            },
+                            onTap: () => context.push(CommonRoutes.aboutUs)
                           ),
 
                           Divider(height: 1, color: Colors.grey.shade200, indent: 12, endIndent: 12),
@@ -218,8 +219,7 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
                           _buildMenuItem(
                             icon: Icons.code,
                             text: 'Sobre el desarrollador',
-                            onTap: () {
-                            },
+                            onTap: () => context.push(CommonRoutes.aboutDev)
                           ),
                         ],
                       ),
@@ -235,8 +235,7 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
                       icon: Icons.logout,
                       textColor: Colors.red,
                       iconColor: Colors.red,
-                      onTap: () {
-                      },
+                      onTap: () => context.push(CommonRoutes.login)
                     ),
                   ),
 
