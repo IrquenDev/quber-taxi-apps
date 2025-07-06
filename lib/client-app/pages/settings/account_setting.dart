@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:quber_taxi/navigation/routes/common_routes.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 
 class ClientSettingsPage extends StatefulWidget {
@@ -140,13 +142,13 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                       ListTile(
                         leading: const Icon(Icons.local_taxi),
                         title: const Text('Sobre Nosotros'),
-                        onTap: () {},
+                        onTap: () => context.push(CommonRoutes.aboutUs),
                       ),
                       const Divider(height: 1),
                       ListTile(
                         leading: const Icon(Icons.code),
                         title: const Text('Sobre el desarrollador'),
-                        onTap: () {},
+                        onTap: () => context.push(CommonRoutes.aboutDev),
                       ),
                     ],
                   ),
@@ -173,7 +175,9 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
                   children: [
-                    const Icon(Icons.arrow_back),
+                    IconButton(
+                      icon: Icon(Icons.arrow_back), onPressed: () => context.pop(),
+                    ),
                     const SizedBox(width: 8),
                     Text('Ajustes',
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -196,7 +200,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
           ),
           icon: Icon(Icons.logout, color: colorScheme.errorContainer),
           label: const Text('Cerrar Sesión'),
-          onPressed: () {},
+          onPressed: () => context.push(CommonRoutes.login),
         ),
       ),
     );
