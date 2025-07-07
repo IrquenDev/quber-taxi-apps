@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -10,14 +11,18 @@ import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/models/driver.dart';
 import 'package:quber_taxi/common/models/travel.dart';
+import 'package:quber_taxi/common/services/account_service.dart';
 import 'package:quber_taxi/common/services/driver_service.dart';
 import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
+import 'package:quber_taxi/common/widgets/dialogs/info_dialog.dart';
 import 'package:quber_taxi/driver-app/pages/home/available_travels_sheet.dart';
 import 'package:quber_taxi/driver-app/pages/home/info_travel_sheet.dart';
 import 'package:quber_taxi/driver-app/pages/home/trip_notification.dart';
+import 'package:quber_taxi/enums/driver_account_state.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/driver_routes.dart';
+import 'package:quber_taxi/storage/session_manger.dart';
 import 'package:quber_taxi/utils/map/geolocator.dart' as g_util;
 import 'package:quber_taxi/utils/map/mapbox.dart' as mb_util;
 import 'package:quber_taxi/utils/runtime.dart';
@@ -39,18 +44,22 @@ class _DriverHomePageState extends State<DriverHomePage> {
 
   // Mapbox controller instance
   late MapboxMap _mapController;
+
   // Global map bearing. Initialized onMapCreated and updated onCameraChangeListener. Needed for calculate bearing
   // and updates driver (real or fakes) annotation markers.
   late double _mapBearing;
+
   // Fake drivers animation control
   final _frameInterval = Duration(milliseconds: 100);
   late Ticker _ticker;
   Duration _lastUpdate = Duration.zero;
   late final List<AnimatedFakeDriver> _taxis = [];
+
   // Point annotation (markers) control
   PointAnnotationManager? _pointAnnotationManager;
   PointAnnotation? _driverAnnotation;
   late final Uint8List _driverMarkerImage;
+
   // Driver location streaming
   late final Stream<g.Position> _locationBroadcast;
   StreamSubscription<g.Position>? _locationStreamSubscription;
@@ -58,16 +67,120 @@ class _DriverHomePageState extends State<DriverHomePage> {
   late Position _coords;
   late Position _lastKnownCoords;
   bool _isLocationStreaming = false;
+
   // Selected travel. If not null, we should hide the available travel sheet.
   Travel? _selectedTravel;
   final _driverService = DriverService();
+
   // Handling new travel requests
   late final TravelRequestHandler _newTravelRequestHandler;
   final List<Travel> _newTravels = [];
+
   // Websocket for travel state changed (Here we must wait for the client to accept the pickup confirmation).
   TravelStateHandler? _travelStateHandler;
+
   // LoggedIn Driver
-  late final Driver _driver;
+  Driver _driver = Driver.fromJson(loggedInUser);
+  bool _didCheckAccount = false;
+  bool _isAccountEnabled = false;
+
+  // Network Checker
+  late void Function() _listener;
+  late final NetworkScope _scope;
+
+  bool get _shouldShowAvailableTravels => _isAccountEnabled && _selectedTravel == null;
+
+  void _handleNetworkScopeAndListener() {
+    _scope = NetworkScope.of(context); // save the scope (depends on context) to safely access on dispose.
+    _listener = _scope.registerListener(_checkDriverAccountStateListener);
+  }
+
+  void _checkDriverAccountStateListener(ConnectionStatus status) async {
+    if (!_didCheckAccount) {
+      final connectionStatus =  NetworkScope.statusOf(context);
+      if(connectionStatus == ConnectionStatus.checking) return;
+      final isConnected =  connectionStatus == ConnectionStatus.online;
+      if(isConnected) {
+        await _checkDriverAccountState();
+        _didCheckAccount = true;
+      }
+      else {
+        await _showNoConnectionDialog();
+      }
+    }
+  }
+
+  Future<void> _checkDriverAccountState() async {
+      // Update driver data
+      final response = await AccountService().findDriver(_driver.id);
+      // Avoid context's gaps
+      if (!mounted) return;
+      // Handle OK
+      if (response.statusCode == 200) {
+        _driver = Driver.fromJson(jsonDecode(response.body));
+        // Always update session
+        SessionManager.instance.save(_driver);
+        switch (_driver.accountState) {
+          case DriverAccountState.notConfirmed:
+            _showNeedsConfirmationDialog();
+          case DriverAccountState.paymentRequired:
+            _showPaymentRequired();
+          case DriverAccountState.enabled:
+            setState(() {
+              _isAccountEnabled = true;
+            });
+          case DriverAccountState.disabled:
+            setState(() {
+              _isAccountEnabled = false;
+            });
+        }
+      }
+      else {
+        // Generic error feedback
+        showToast(context: context, message: "Ocurrió algo mal, por favor inténtelo más tarde");
+      }
+  }
+
+  Future<void> _showNoConnectionDialog() async {
+    return await showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => InfoDialog(
+          title: "Sin conexión",
+          bodyMessage: "La app no podrá continuar sin conexión a internet",
+          onAccept: ()=> SystemNavigator.pop(),
+        ),
+    );
+  }
+
+  void _showNeedsConfirmationDialog() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => InfoDialog(
+            title: "Necesita Aprobación",
+            bodyMessage: "Su cuenta está en proceso de activación. Para continuar, por favor preséntese en nuestras "
+                "oficinas para la revisión técnica de su vehículo y la firma del contrato. Nos encontramos en Calle "
+                "4ta / Central y mercado, reparto Martín Pérez, San Miguel del Padrón. Una vez complete este paso, "
+                "podrá comenzar a usar la app normalmente.",
+            footerMessage: "¡Le esperamos!"
+        )
+    );
+  }
+
+  void _showPaymentRequired() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => InfoDialog(
+            title: "Necesita Aprobación",
+            bodyMessage: "Le recordamos que tiene un pago programado para mañana, 5 de octubre de 2025. Por favor, "
+                "diríjase a nuestra oficina en Calle 4ta / Central y mercado, reparto Martín Pérez, San Miguel del "
+                "Padrón para realizarlo. Puede consultar el monto a abonar accediendo a su perfil en la app.",
+            footerMessage: "Gracias por su atención."
+        )
+    );
+  }
 
   void _startStreamingLocation() async {
     // Get current position
@@ -164,17 +277,20 @@ class _DriverHomePageState extends State<DriverHomePage> {
   @override
   void initState() {
     super.initState();
-    _driver = Driver.fromJson(loggedInUser);
     _newTravelRequestHandler = TravelRequestHandler(
         driverId: _driver.id,
         onNewTravel: _onNewTravel
     )..activate();
     _locationBroadcast = g.Geolocator.getPositionStream().asBroadcastStream();
     _ticker = Ticker(_onTick);
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      _handleNetworkScopeAndListener();
+    });
   }
 
   @override
   void dispose() {
+    _scope.removeListener(_listener);
     _travelStateHandler?.deactivate();
     _newTravelRequestHandler.deactivate();
     _ticker.dispose();
@@ -262,15 +378,13 @@ class _DriverHomePageState extends State<DriverHomePage> {
             ),
             // FAB group (my location + travel info)
             Positioned(
-              right: 20.0,
-              // TODO("yapm": @Reminder)
-              // - Avoid hardcoded space
-              bottom: _selectedTravel == null ? 150.0 : 20.0,
+              right: 20.0, bottom: _shouldShowAvailableTravels ? 150.0 : 20.0,
               child: Column(
                 spacing: 8.0,
                 children: [
                   // Find my location
                   FloatingActionButton(
+                    heroTag: "find-my-location",
                     backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                     onPressed: () async {
                       // Ask for location permission
@@ -303,9 +417,23 @@ class _DriverHomePageState extends State<DriverHomePage> {
                         size: Theme.of(context).iconTheme.size
                     ),
                   ),
+                  // Find my location
+                  FloatingActionButton(
+                    heroTag: "go-settings",
+                    backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                    onPressed: () async {
+                      context.push(DriverRoutes.settings);
+                    },
+                    child: Icon(
+                        Icons.settings_outlined,
+                        color: Theme.of(context).iconTheme.color,
+                        size: Theme.of(context).iconTheme.size
+                    ),
+                  ),
                   // Show travel info bottom sheet
                   if(_selectedTravel != null)
                     FloatingActionButton(
+                        heroTag: "show-travel-info",
                         backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                         onPressed: () => showModalBottomSheet(
                             context: context,
@@ -332,7 +460,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
               )
             ),
             // Available travels sheet
-            if(_selectedTravel == null)
+            if(_shouldShowAvailableTravels)
               Align(
                   alignment: Alignment.bottomCenter,
                   child: AvailableTravelsSheet(onTravelSelected: _onTravelSelected)

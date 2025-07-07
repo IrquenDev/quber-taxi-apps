@@ -182,6 +182,7 @@ class _LoginPageState extends State<LoginPage> {
                             )
                         ),
                         // Create New Account
+                        if(runtime.isClientMode || runtime.isDriverMode)
                         TextButton(
                             onPressed: () {context.push(CommonRoutes.requestFaceId);},
                             child: Text(

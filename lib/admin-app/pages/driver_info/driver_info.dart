@@ -19,9 +19,11 @@ class _DriverInfoPageState extends State<DriverInfoPage> {
   final accountService = AccountService();
   late Future<Driver> futureDriver;
 
-  void _loadDriverInfo() {
+  void _loadDriverInfo() async {
     setState(() {
-      futureDriver = accountService.getDriverById(widget.driverId);
+      // TODO("yapmDev @Fix")
+      // - This is not the way to get user info, at this point is enough with Driver.fromJson(loggedInUser)
+      // futureDriver = await accountService.findDriver(widget.driverId);
     });
   }
 

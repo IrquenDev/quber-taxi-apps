@@ -44,12 +44,12 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
 
   TaxiType? _selectedTaxi;
   XFile? _taxiImage;
-  XFile? _licenseImage;
+  // XFile? _licenseImage;
 
   bool get _canSubmit => _formKey.currentState!.validate()
       && _selectedTaxi != null
-      && _taxiImage != null
-      && _licenseImage != null;
+      && _taxiImage != null;
+      // && _licenseImage != null;
 
   @override
   Widget build(BuildContext context) {
@@ -152,46 +152,46 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                                 )
                             ),
                             // Attach license
-                            Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                              decoration: BoxDecoration(
-                                color: colorScheme.surfaceContainerLowest,
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    AppLocalizations.of(context)!.licenseLabel,
-                                    style: textTheme.bodyLarge?.copyWith(fontSize: 18, color: colorScheme.secondary),
-                                  ),
-                                  TextButton(
-                                    style: TextButton.styleFrom(
-                                      side: BorderSide(
-                                        color: Colors.black,
-                                        width: 1.0,
-                                      ),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                    ),
-                                    onPressed: () async {
-                                      final image = await ImagePicker().pickImage(source: ImageSource.camera);
-                                      if(image != null) {
-                                        setState(() => _licenseImage = image);
-                                      }
-                                    },
-                                    child: Text(
-                                      _licenseImage == null
-                                          ? AppLocalizations.of(context)!.attachButton
-                                          : "Cambiar"
-                                    )
-                                  )
-                                ]
-                              )
-                            ),
+                            // Container(
+                            //   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                            //   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                            //   decoration: BoxDecoration(
+                            //     color: colorScheme.surfaceContainerLowest,
+                            //     borderRadius: BorderRadius.circular(16),
+                            //   ),
+                            //   child: Row(
+                            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            //     children: [
+                            //       Text(
+                            //         AppLocalizations.of(context)!.licenseLabel,
+                            //         style: textTheme.bodyLarge?.copyWith(fontSize: 18, color: colorScheme.secondary),
+                            //       ),
+                            //       TextButton(
+                            //         style: TextButton.styleFrom(
+                            //           side: BorderSide(
+                            //             color: Colors.black,
+                            //             width: 1.0,
+                            //           ),
+                            //           shape: RoundedRectangleBorder(
+                            //             borderRadius: BorderRadius.circular(8),
+                            //           ),
+                            //           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            //         ),
+                            //         onPressed: () async {
+                            //           final image = await ImagePicker().pickImage(source: ImageSource.camera);
+                            //           if(image != null) {
+                            //             setState(() => _licenseImage = image);
+                            //           }
+                            //         },
+                            //         child: Text(
+                            //           _licenseImage == null
+                            //               ? AppLocalizations.of(context)!.attachButton
+                            //               : "Cambiar"
+                            //         )
+                            //       )
+                            //     ]
+                            //   )
+                            // ),
                             // Vehicle Section
                             Container(
                               margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -278,7 +278,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                           type: _selectedTaxi!,
                           seats: int.parse(_seatsTFController.text),
                           taxiImage: _taxiImage!,
-                          licenseImage: _licenseImage!,
+                          // licenseImage: _licenseImage!,
                           faceIdImage: widget.faceIdImage
                       );
                       // Avoid context's gaps

@@ -62,7 +62,7 @@ class AccountService {
     required int seats,
     required Uint8List faceIdImage,
     required XFile taxiImage,
-    required XFile licenseImage,
+    // required XFile licenseImage,
   }) async {
     final url = Uri.parse("$_endpoint/register/driver");
     final request = http.MultipartRequest("POST", url);
@@ -76,7 +76,7 @@ class AccountService {
       _getMultipartFileFromUint8List(faceIdImage, "faceIdImage", "upload.jpg"),
     );
     request.files.add(await _getMultipartFileFromXFile(taxiImage, "taxiImage"));
-    request.files.add(await _getMultipartFileFromXFile(licenseImage, "licenseImage"));
+    // request.files.add(await _getMultipartFileFromXFile(licenseImage, "licenseImage"));
     final streamedResponse = await request.send();
     final response = await http.Response.fromStream(streamedResponse);
     return response;
@@ -85,11 +85,21 @@ class AccountService {
   /// Fetches a [Driver] object by its [id] from the backend.
   ///
   /// Performs a GET request and parses the response as JSON.
-  Future<Driver> getDriverById(int id) async {
+  Future<http.Response> findDriver(int id) async {
     final url = Uri.parse("$_endpoint/driver/$id");
+    return await http.get(url);
+  }
+
+  Future<List<Driver>> findAllDrivers() async {
+    final url = Uri.parse('$_endpoint/driver/all');
     final response = await http.get(url);
-    final json = jsonDecode(response.body);
-    return Driver.fromJson(json);
+    print(response.statusCode);
+    print(response.body);
+    if (response.body.trim().isEmpty) {
+      return [];
+    }
+    final List<dynamic> jsonList = jsonDecode(response.body);
+    return jsonList.map((json) => Driver.fromJson(json)).toList();
   }
 
   /// Converts a [Uint8List] (e.g. raw image bytes) into a [http.MultipartFile].

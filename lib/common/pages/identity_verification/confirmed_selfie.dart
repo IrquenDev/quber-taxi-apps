@@ -1,12 +1,10 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:quber_taxi/config/app_profile.dart';
-import 'package:quber_taxi/config/build_config.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
-import 'package:quber_taxi/navigation/routes/admin_routes.dart';
 import 'package:quber_taxi/navigation/routes/client_routes.dart';
 import 'package:quber_taxi/navigation/routes/driver_routes.dart';
+import 'package:quber_taxi/utils/runtime.dart';
 
 class FaceIdConfirmed extends StatelessWidget {
 
@@ -100,11 +98,9 @@ class FaceIdConfirmed extends StatelessWidget {
                       elevation: 0,
                     ),
                     onPressed: () {
-                      final route = switch(BuildConfig.appProfile) {
-                        AppProfile.driver => DriverRoutes.createAccount,
-                        AppProfile.client => ClientRoutes.createAccount,
-                        AppProfile.admin => AdminRoutes.settings
-                      };
+                      // We don't care about admin here, 'cause they don't have a create account page. Otherwise this
+                      // should be taken into account.
+                      final route = isClientMode ? ClientRoutes.createAccount : DriverRoutes.createAccount;
                       context.go(route, extra: imageBytes);
                     },
                     child: Text(

@@ -427,9 +427,7 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                                     decoration: BoxDecoration(
                                     ),
                                     child: InkWell(
-                                      onTap: () {
-                                        // Acción para ver todos los conductores
-                                      },
+                                      onTap: () => context.push(AdminRoutes.driversList),
                                       child: Padding(
                                         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                                         child: Row(

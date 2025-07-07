@@ -42,7 +42,7 @@ class InfoDialog extends StatelessWidget {
     super.key,
     required this.title,
     required this.bodyMessage,
-    required this.footerMessage,
+    this.footerMessage,
     this.onAccept,
   });
 
@@ -56,6 +56,7 @@ class InfoDialog extends StatelessWidget {
         ),
       ),
       content: Column(
+      mainAxisSize: MainAxisSize.min,
         spacing: 8.0, // Flutter 3.22+ uses spacing instead of mainAxisSize here
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
