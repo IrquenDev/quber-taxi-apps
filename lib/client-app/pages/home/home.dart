@@ -10,7 +10,6 @@ import 'package:quber_taxi/navigation/routes/client_routes.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 
 class ClientHomePage extends StatefulWidget {
-
   const ClientHomePage({super.key, this.position});
 
   final Position? position;
@@ -20,13 +19,11 @@ class ClientHomePage extends StatefulWidget {
 }
 
 class _ClientHomePageState extends State<ClientHomePage> {
-
-  // Default m3  BottomAppBar height. The length of the curved space under a centered FAB coincides with this value.
-  final _bottomAppBarHeight = 80.0;
-
   @override
   Widget build(BuildContext context) {
+    final double _bottomAppBarHeight = MediaQuery.of(context).size.height * 0.08;
     final borderRadius = Theme.of(context).extension<DimensionExtension>()!.borderRadius;
+
     return NetworkAlertTemplate(
       alertBuilder: (_, status) => CustomNetworkAlert(status: status, useTopSafeArea: true),
       alertPosition: Alignment.topCenter,
@@ -40,16 +37,18 @@ class _ClientHomePageState extends State<ClientHomePage> {
           backgroundColor: Theme.of(context).colorScheme.primaryContainer,
           onPressed: () {
             showModalBottomSheet(
-                backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-            isDismissible: false,
-            context: context,
-            isScrollControlled: true,
-            showDragHandle: true,
-            shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(borderRadius)),
-            ),
-            builder: (context) => MapView(),
-            );
+              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+              isDismissible: true,
+              context: context,
+              isScrollControlled: true,
+              showDragHandle: true,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(borderRadius)),
+              ),
+              builder: (context) => MapView(),
+            ).then((_) {
+              if (mounted) setState(() {});
+            });
           },
           child: Icon(
             Icons.location_on,
@@ -67,7 +66,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              const SizedBox(width: 24,),
+              const SizedBox(width: 48),
               _BottomBarItem(
                 icon: Icons.local_taxi_outlined,
                 label: AppLocalizations.of(context)!.askTaxi,
@@ -122,7 +121,6 @@ class _BottomBarItem extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const SizedBox(height: 10),
           Icon(icon, size: 28, color: Theme.of(context).colorScheme.shadow,),
           Text(
             label,
@@ -141,25 +139,22 @@ class _BottomBarItem extends StatelessWidget {
 class _QuberPoints extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => context.push(ClientRoutes.quberReviews),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            '56',
-            style: TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.bold,
-            ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text(
+          '56',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
-          Text(
-            AppLocalizations.of(context)!.quberPoints,
-            style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold
-            ),
+        ),
+        Text(
+          AppLocalizations.of(context)!.quberPoints,
+          style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold
           ),
         ],
       ),
