@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quber_taxi/admin-app/pages/driver_info/driver_info.dart';
 import 'package:quber_taxi/admin-app/pages/settings/admin_panel.dart';
@@ -15,6 +16,9 @@ import 'package:quber_taxi/common/models/review.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/pages/about_dev/about_dev.dart';
 import 'package:quber_taxi/common/pages/about_us/about_us.dart';
+import 'package:quber_taxi/common/pages/identity_verification/confirmed_selfie.dart';
+import 'package:quber_taxi/common/pages/identity_verification/face_detection.dart';
+import 'package:quber_taxi/common/pages/identity_verification/identity_verification.dart';
 import 'package:quber_taxi/common/pages/location_picker/location_picker.dart';
 import 'package:quber_taxi/common/pages/login/login.dart';
 import 'package:quber_taxi/common/pages/onboarding/onboarding.dart';
@@ -28,8 +32,6 @@ import 'package:quber_taxi/driver-app/pages/settings/settings.dart';
 import 'package:quber_taxi/navigation/routes/admin_routes.dart';
 import 'package:quber_taxi/navigation/routes/client_routes.dart';
 import 'package:quber_taxi/navigation/routes/driver_routes.dart';
-import '../common/pages/identity_verification/confirmed_selfie.dart';
-import '../common/pages/identity_verification/identity_verification.dart';
 import 'package:quber_taxi/utils/runtime.dart' as runtime;
 import 'routes/common_routes.dart';
 
@@ -38,7 +40,7 @@ final GoRouter appRouter = GoRouter(
   // App start up route. You can change it for developing or testing, just remember to take it back in place.
   initialLocation: runtime.isSessionOk
       ? _resolveInitialLocation(BuildConfig.appProfile)
-      : CommonRoutes.login,
+      : DriverRoutes.createAccount,
   
   routes: [
 
@@ -69,17 +71,29 @@ final GoRouter appRouter = GoRouter(
     ),
 
     GoRoute(path: CommonRoutes.requestFaceId,
-        builder: (context, state) => const RequestFaceIdPage()
+        builder: (context, state) => const VerificationIdentityPage()
     ),
 
-    GoRoute(path: CommonRoutes.faceIdConfirmed,
-        builder: (context, state) => FaceIdConfirmed()
+    GoRoute(
+        path: CommonRoutes.faceIdConfirmed,
+        builder: (context, state) {
+          final imageBytes = state.extra as Uint8List;
+          return FaceIdConfirmed(imageBytes: imageBytes);
+}
+    ),
+
+    GoRoute(path: CommonRoutes.faceDetection,
+        builder: (context, state) => const FaceDetectionPage()
     ),
 
     // CLIENT
 
-    GoRoute(path: ClientRoutes.createAccount,
-        builder: (context, state) => CreateClientAccountPage()
+    GoRoute(
+        path: ClientRoutes.createAccount,
+        builder: (context, state) {
+          final faceIdImage = state.extra as Uint8List;
+          return CreateClientAccountPage(faceIdImage: faceIdImage);
+        }
     ),
 
     GoRoute(path: ClientRoutes.settings,
@@ -137,7 +151,10 @@ final GoRouter appRouter = GoRouter(
 
     GoRoute(
         path: DriverRoutes.createAccount,
-        builder: (context, state) => const CreateDriverAccountPage()
+        builder: (context, state) {
+          final faceIdImage = state.extra as Uint8List;
+          return CreateDriverAccountPage(faceIdImage: faceIdImage);
+        }
     ),
 
     GoRoute(

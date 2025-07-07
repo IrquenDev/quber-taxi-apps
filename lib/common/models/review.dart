@@ -54,7 +54,7 @@ class ClientReview implements Encodable{
   factory ClientReview.fromJson(Map<String, dynamic> json) => ClientReview(
       id: json['id'],
       name: json['name'],
-      imageUrl: json['imageUrl']
+      imageUrl: json['imageUrl'] ?? ""
   );
 
   @override

@@ -1,8 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/models/driver.dart';
 import 'package:quber_taxi/common/services/account_service.dart';
@@ -16,20 +19,16 @@ import 'package:quber_taxi/utils/workflow/core/workflow.dart';
 import 'package:quber_taxi/utils/workflow/impl/form_validations.dart';
 
 class CreateDriverAccountPage extends StatefulWidget {
-  const CreateDriverAccountPage({super.key});
+
+  final Uint8List faceIdImage;
+
+  const CreateDriverAccountPage({super.key, required this.faceIdImage});
 
   @override
   State<CreateDriverAccountPage> createState() => _CreateDriverAccountPageState();
 }
 
 class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
-
-  late final ColorScheme _colorScheme;
-  late final TextTheme _textTheme;
-  late final DimensionExtension _dimensions;
-  late final AppLocalizations _localizations;
-
-  late bool _isConnected;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -44,21 +43,21 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
   bool _isConfirmPasswordVisible = false;
 
   TaxiType? _selectedTaxi;
+  XFile? _taxiImage;
+  XFile? _licenseImage;
 
-  bool get _canSubmit => _formKey.currentState!.validate() && _selectedTaxi != null;
-
-  @override
-  void didChangeDependencies() {
-    _isConnected = NetworkScope.statusOf(context) == ConnectionStatus.online;
-    _colorScheme = Theme.of(context).colorScheme;
-    _textTheme = Theme.of(context).textTheme;
-    _dimensions = Theme.of(context).extension<DimensionExtension>()!;
-    _localizations = AppLocalizations.of(context)!;
-    super.didChangeDependencies();
-  }
+  bool get _canSubmit => _formKey.currentState!.validate()
+      && _selectedTaxi != null
+      && _taxiImage != null
+      && _licenseImage != null;
 
   @override
   Widget build(BuildContext context) {
+    final isConnected = NetworkScope.statusOf(context) == ConnectionStatus.online;
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final dimensions = Theme.of(context).extension<DimensionExtension>()!;
+    final localizations = AppLocalizations.of(context)!;
     return Scaffold(
         body: Column(
           children: [Expanded(
@@ -71,20 +70,20 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                 child: Container(
                   height: 220,
                   decoration: BoxDecoration(
-                    color: _colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.vertical(bottom: Radius.circular(_dimensions.borderRadius))
+                    color: colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.vertical(bottom: Radius.circular(dimensions.borderRadius))
                   ),
                   child: SafeArea(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Row(
                         children: [
-                          Icon(Icons.arrow_back, color: _colorScheme.onPrimaryContainer),
+                          IconButton(onPressed: () => context.pop(), icon: Icon(Icons.arrow_back), color: Theme.of(context).colorScheme.shadow),
                           const SizedBox(width: 8),
                           Text(
                             AppLocalizations.of(context)!.createAccountTitle,
-                            style: _textTheme.titleLarge?.copyWith(
-                                fontSize: 26, fontWeight: FontWeight.bold, color: _colorScheme.onPrimaryContainer),
+                            style: textTheme.titleLarge?.copyWith(
+                                fontSize: 26, fontWeight: FontWeight.bold, color: colorScheme.onPrimaryContainer),
                           ),
                         ],
                       ),
@@ -103,95 +102,61 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                             // First Card
                             Container(
                                 margin: const EdgeInsets.symmetric(horizontal: 16),
-                                padding: const EdgeInsets.only(top: 60, bottom: 16, left: 16, right: 16),
+                                padding: const EdgeInsets.all(12.0),
                                 decoration: BoxDecoration(
-                                  color: _colorScheme.surfaceContainerLowest,
+                                  color: colorScheme.surfaceContainerLowest,
                                   borderRadius: BorderRadius.circular(20)
                                 ),
-                                child: Stack(clipBehavior: Clip.none, children: [
-                                  // Taxi Image
-                                  Positioned(
-                                    top: -50,
-                                    left: 0,
-                                    right: 0,
-                                    child: Center(
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black.withAlpha(50),
-                                              blurRadius: 10,
-                                              offset: const Offset(0, 5),
-                                            ),
-                                          ],
-                                        ),
-                                        child: Stack(
-                                          alignment: Alignment.bottomRight,
-                                          children: [
-                                            CircleAvatar(
-                                              radius: 60,
-                                              backgroundColor: _colorScheme.onPrimary,
-                                              child: SvgPicture.asset(
-                                                "assets/icons/taxi.svg",
-                                                width: 80,
-                                                height: 80,
-                                              ),
-                                            ),
-                                            Positioned(
-                                              bottom: 0,
-                                              right: 0,
-                                              child: CircleAvatar(
-                                                radius: 18,
-                                                backgroundColor: _colorScheme.surface,
-                                                child: SvgPicture.asset(
-                                                  "assets/icons/camera.svg",
-                                                  fit: BoxFit.scaleDown,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
+                                child: Column(
+                                  children: [
+                                    Center(
+                                        child: GestureDetector(
+                                            onTap: () async {
+                                              final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+                                              if(image != null) {
+                                                setState(() => _taxiImage = image);
+                                              }
+                                            },
+                                            child: _buildCircleImagePicker()
+                                        )
+                                    ),
+                                    // Form
+                                    Column(spacing: 12.0, children: [
+                                      // Name Text Field
+                                      _buildTextField(
+                                          controller: _nameTFController,
+                                          label: AppLocalizations.of(context)!.nameLabel,
+                                          hint: AppLocalizations.of(context)!.nameHint),
+                                      // Plate Text Field
+                                      _buildTextField(
+                                          controller: _plateTFController,
+                                          label: localizations.plateLabel,
+                                          hint: localizations.plateHint
                                       ),
-                                    ),
-                                  ),
-                                  // Form
-                                  Column(spacing: 12.0, children: [
-                                    const SizedBox(height: 70),
-                                    // Name Text Field
-                                    _buildTextField(
-                                        controller: _nameTFController,
-                                        label: AppLocalizations.of(context)!.nameLabel,
-                                        hint: AppLocalizations.of(context)!.nameHint),
-                                    // Plate Text Field
-                                    _buildTextField(
-                                        controller: _plateTFController,
-                                        label: _localizations.plateLabel,
-                                        hint: _localizations.plateHint
-                                    ),
-                                    // Phone Text Field
-                                    _buildTextField(
-                                        inputType: TextInputType.phone,
-                                        controller: _phoneTFController,
-                                        label: _localizations.phoneLabel,
-                                        hint: AppLocalizations.of(context)!.phoneHint
-                                    ),
-                                    // Seats Text Field
-                                    _buildTextField(
-                                        inputType: TextInputType.number,
-                                        controller: _seatsTFController,
-                                        label: _localizations.seatsLabel,
-                                        hint: _localizations.seatsHint
-                                    )
-                                  ])
-                                ])
+                                      // Phone Text Field
+                                      _buildTextField(
+                                          inputType: TextInputType.phone,
+                                          controller: _phoneTFController,
+                                          label: localizations.phoneLabel,
+                                          hint: AppLocalizations.of(context)!.phoneHint
+                                      ),
+                                      // Seats Text Field
+                                      _buildTextField(
+                                          inputType: TextInputType.number,
+                                          controller: _seatsTFController,
+                                          label: localizations.seatsLabel,
+                                          hint: localizations.seatsHint
+                                      )
+                                    ]),
+                                  ],
+                                )
                             ),
                             // Attach license
                             Container(
                               margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                               decoration: BoxDecoration(
-                                color: _colorScheme.surfaceContainerLowest,
+                                color: colorScheme.surfaceContainerLowest,
                                 borderRadius: BorderRadius.circular(16),
                               ),
                               child: Row(
@@ -199,7 +164,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                                 children: [
                                   Text(
                                     AppLocalizations.of(context)!.licenseLabel,
-                                    style: _textTheme.bodyLarge?.copyWith(fontSize: 18, color: _colorScheme.secondary),
+                                    style: textTheme.bodyLarge?.copyWith(fontSize: 18, color: colorScheme.secondary),
                                   ),
                                   TextButton(
                                     style: TextButton.styleFrom(
@@ -212,17 +177,20 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                                       ),
                                       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                     ),
-                                    onPressed: () {},
+                                    onPressed: () async {
+                                      final image = await ImagePicker().pickImage(source: ImageSource.camera);
+                                      if(image != null) {
+                                        setState(() => _licenseImage = image);
+                                      }
+                                    },
                                     child: Text(
-                                      AppLocalizations.of(context)!.attachButton,
-                                      style: _textTheme.bodyLarge?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: _colorScheme.secondary,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                      _licenseImage == null
+                                          ? AppLocalizations.of(context)!.attachButton
+                                          : "Cambiar"
+                                    )
+                                  )
+                                ]
+                              )
                             ),
                             // Vehicle Section
                             Container(
@@ -234,7 +202,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                                   children: [
                                     Text(
                                       AppLocalizations.of(context)!.vehicleTypeLabel,
-                                      style: _textTheme.bodyLarge?.copyWith(fontSize: 18, color: _colorScheme.secondary),
+                                      style: textTheme.bodyLarge?.copyWith(fontSize: 18, color: colorScheme.secondary),
                                     ),
                                     ...List.generate(TaxiType.values.length, (index) {
                                       return _buildTaxiCardItem(index);
@@ -248,7 +216,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                                 margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                                 padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
-                                  color: _colorScheme.surfaceContainerLowest,
+                                  color: colorScheme.surfaceContainerLowest,
                                   borderRadius: BorderRadius.circular(16),
                                 ),
                                 child: Column(
@@ -256,26 +224,25 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                                     children: [
                                       _buildPasswordField(
                                           controller: _passwordTFController,
-                                          label: _localizations.passwordLabel,
+                                          label: localizations.passwordLabel,
                                           visible: _isPasswordVisible,
                                           onToggle: (v) => setState(() => _isPasswordVisible = v),
                                           validationWorkflow: Workflow<String?>()
-                                              .step(RequiredStep(errorMessage: _localizations.requiredField))
+                                              .step(RequiredStep(errorMessage: localizations.requiredField))
                                               .step(MinLengthStep(min: 6, errorMessage: "La contraseña debe tener al menos 6 carateres"))
                                               .breakOnFirstApply(true)
                                               .withDefault((_) => null)
                                       ),
                                       _buildPasswordField(
                                           controller: _confirmPasswordTFController,
-                                          label: _localizations.confirmPasswordLabel,
+                                          label: localizations.confirmPasswordLabel,
                                           visible: _isConfirmPasswordVisible,
                                           onToggle: (v) => setState(() => _isConfirmPasswordVisible = v),
                                           validationWorkflow: Workflow<String?>()
-                                              .step(RequiredStep(errorMessage: _localizations.requiredField))
+                                              .step(RequiredStep(errorMessage: localizations.requiredField))
                                               .step(MatchOtherStep(
                                                 other: _passwordTFController.text,
-                                                errorMessage: "Las contraseñas no coinciden")
-                                              )
+                                                errorMessage: "Las contraseñas no coinciden"))
                                               .breakOnFirstApply(true)
                                               .withDefault((_) => null)
                                       )
@@ -294,11 +261,11 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                 height: 56,
                 child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: _colorScheme.primaryContainer,
+                        backgroundColor: colorScheme.primaryContainer,
                         shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero)),
                     onPressed: () async {
                       if (!_canSubmit) return;
-                      if(!_isConnected) {
+                      if(!isConnected) {
                         showToast(context: context, message: "Revise su conexión a internet");
                         return;
                       }
@@ -309,21 +276,20 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                           password: _passwordTFController.text,
                           plate: _plateTFController.text,
                           type: _selectedTaxi!,
-                          seats: int.parse(_seatsTFController.text)
+                          seats: int.parse(_seatsTFController.text),
+                          taxiImage: _taxiImage!,
+                          licenseImage: _licenseImage!,
+                          faceIdImage: widget.faceIdImage
                       );
                       // Avoid context's gaps
                       if(!context.mounted) return;
-                      print(response.statusCode);
                       // Handle responses (depends on status code)
                       // OK
                       if(response.statusCode == 200) {
                         final json = jsonDecode(response.body);
-                        print(json);
                         final driver = Driver.fromJson(json);
-                        print(driver.toString());
                         // Save the user's session
                         final success = await SessionManager.instance.save(driver);
-                        print(success);
                         if(success) {
                           // Avoid context's gaps
                           if(!context.mounted) return;
@@ -346,7 +312,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                     child: Text(
                       AppLocalizations.of(context)!.finishButton,
                       style:
-                      _textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold, color: _colorScheme.onPrimaryContainer),
+                      textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.onPrimaryContainer),
                     )
                 )
             )
@@ -367,7 +333,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
           controller: controller,
           validator: (value) =>
               Workflow<String?>()
-                  .step(RequiredStep(errorMessage: _localizations.requiredField))
+                  .step(RequiredStep(errorMessage: AppLocalizations.of(context)!.requiredField))
                   .withDefault((_) => null)
                   .proceed(value),
           decoration: InputDecoration(
@@ -383,10 +349,13 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
   }
 
   Widget _buildTaxiCardItem(int index) {
+    final localizations = AppLocalizations.of(context)!;
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
     final taxi = TaxiType.values[index];
     final isSelected = _selectedTaxi == taxi;
     return Card(
-      color: isSelected ? _colorScheme.primaryFixed : _colorScheme.surfaceContainerLowest,
+      color: isSelected ? colorScheme.primaryFixed : colorScheme.surfaceContainerLowest,
       child: ExpansionTile(
         title: GestureDetector(
           onTap: () => setState(()=> _selectedTaxi = taxi),
@@ -401,10 +370,10 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                       child: Image.asset(taxi.assetRef(AssetDpi.xhdpi), fit: BoxFit.fill)
                   ),
                   Text(
-                      TaxiType.nameOf(taxi, _localizations),
+                      TaxiType.nameOf(taxi, localizations),
                       style: isSelected
-                          ? _textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)
-                          : _textTheme.bodyMedium
+                          ? textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)
+                          : textTheme.bodyMedium
                   )
                 ]
             ),
@@ -416,7 +385,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
         tilePadding: EdgeInsets.symmetric(horizontal: 12.0),
         childrenPadding: EdgeInsets.only(left: 12.0, right: 12.0, bottom: 6.0),
         children: [
-          Text(TaxiType.descriptionOf(taxi, _localizations))
+          Text(TaxiType.descriptionOf(taxi, localizations))
         ],
       ),
     );
@@ -463,6 +432,37 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
           validator: (value) => validationWorkflow.proceed(value)
         )
       ]
+    );
+  }
+
+  Widget _buildCircleImagePicker() {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Stack(
+      children: [
+        // Main Circle
+        CircleAvatar(
+          radius: 80,
+          backgroundColor: colorScheme.surfaceContainer,
+          backgroundImage: _taxiImage != null ? FileImage(File(_taxiImage!.path)) : null,
+          child: _taxiImage == null
+              ? SvgPicture.asset("assets/icons/taxi.svg", width: Theme.of(context).iconTheme.size! * 3)
+              : null,
+        ),
+        if (_taxiImage != null)
+          Positioned(
+            top: 8.0, right: 8.0,
+            child: GestureDetector(
+              onTap: () {
+                setState(() => _taxiImage = null);
+              },
+              child: CircleAvatar(
+                radius: 16,
+                backgroundColor: Colors.red,
+                child: Icon(Icons.close, color: Colors.white, size: 16),
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

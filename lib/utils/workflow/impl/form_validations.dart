@@ -2,8 +2,10 @@ import 'package:quber_taxi/utils/workflow/core/step.dart';
 
 /// Base class for form validation steps.
 abstract class FormValidationStep implements WorkflowStep<String?> {
-  
+
+  /// {@template errorMessage}
   /// The error message to return when validation Applies.
+  /// {@endtemplate}
   final String errorMessage;
 
   FormValidationStep({required this.errorMessage});

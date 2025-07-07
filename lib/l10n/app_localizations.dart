@@ -566,6 +566,12 @@ abstract class AppLocalizations {
   /// **'Aceptar'**
   String get acceptButton;
 
+  /// No description provided for @cancelButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Cancelar'**
+  String get cancelButton;
+
   /// No description provided for @familyVehicle.
   ///
   /// In es, this message translates to:

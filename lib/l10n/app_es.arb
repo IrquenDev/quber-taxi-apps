@@ -94,6 +94,7 @@
   "seatNumber": "Número de asientos",
   "vehicleType": "Tipo de vehículo",
   "acceptButton": "Aceptar",
+  "cancelButton": "Cancelar",
   "familyVehicle": "Familiar",
 
   "adminSettingsTitle": "Ajustes del Administrador",

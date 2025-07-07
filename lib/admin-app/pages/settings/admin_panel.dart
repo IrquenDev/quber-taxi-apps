@@ -25,8 +25,6 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
 
   bool _isNewPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
-
-  late bool isConnected;
   final adminService = AdminService();
   late Future<QuberConfig?> futureQuberConfigs;
 
@@ -53,7 +51,6 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
     });
   }
 
-
   @override
   void initState() {
     super.initState();
@@ -61,15 +58,10 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
   }
 
   @override
-  void didChangeDependencies() {
-    isConnected = NetworkScope.statusOf(context) == ConnectionStatus.online;
-    super.didChangeDependencies();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final dimensions = Theme.of(context).extension<DimensionExtension>()!;
+    final isConnected = NetworkScope.statusOf(context) == ConnectionStatus.online;
     return Scaffold(
         body: Stack(
             children: [
@@ -89,13 +81,15 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                   ),
                   child: SafeArea(
                     child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 46, vertical: 10),
+                      padding: EdgeInsets.symmetric(horizontal: 26, vertical: 10),
                       child: Row(
                         children: [
-                          Icon(
-                            Icons.menu,
-                            color: theme.colorScheme.onPrimaryContainer,
-                            size: 24,
+                          IconButton(
+                            onPressed: () => context.pop(),
+                            icon: Icon(
+                              Icons.arrow_back,
+                              color: theme.colorScheme.onPrimaryContainer,
+                            ),
                           ),
                           SizedBox(width: 10),
                           Text(
@@ -435,9 +429,7 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                                     decoration: BoxDecoration(
                                     ),
                                     child: InkWell(
-                                      onTap: () {
-                                        // Acción para ver todos los conductores
-                                      },
+                                      onTap: () => context.push(AdminRoutes.driversList),
                                       child: Padding(
                                         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                                         child: Row(

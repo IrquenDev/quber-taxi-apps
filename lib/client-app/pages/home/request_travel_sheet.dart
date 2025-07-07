@@ -41,7 +41,6 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
   num? _minDistance, _maxDistance;
   num? _minPrice, _maxPrice;
   bool get canEstimateDistance => _originName != null && _originCoords != null && _destinationName != null;
-  late AppLocalizations _localizations;
   late final Client _client;
 
   Future<void> _estimateDistance() async {
@@ -77,12 +76,6 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
     _originCoords = widget.originCoords;
     _destinationName = widget.destinationName;
     if(canEstimateDistance) _estimateDistance();
-  }
-
-  @override
-  void didChangeDependencies() {
-    _localizations = AppLocalizations.of(context)!;
-    super.didChangeDependencies();
   }
 
   @override
@@ -285,7 +278,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
     final vehicle = TaxiType.values[index];
     final isSelected = _selectedVehicle == vehicle;
     final dimensions = Theme.of(context).extension<DimensionExtension>()!;
-
+    final localizations = AppLocalizations.of(context)!;
     return GestureDetector(
         onTap: () => setState(() => _selectedVehicle= vehicle),
         child: SizedBox(
@@ -312,7 +305,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                                   children: [
                                     Row(
                                       children: [
-                                        Text(_localizations.vehicle, style: Theme.of(context).textTheme.bodySmall),
+                                        Text(localizations.vehicle, style: Theme.of(context).textTheme.bodySmall),
                                         if (isSelected)
                                           SizedBox(width: 8.0),
                                         if (isSelected)
@@ -323,7 +316,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                                           )
                                       ]
                                     ),
-                                    Text(TaxiType.nameOf(vehicle, _localizations), style: Theme.of(context).textTheme
+                                    Text(TaxiType.nameOf(vehicle, localizations), style: Theme.of(context).textTheme
                                         .labelLarge),
                                   ]
                                 )

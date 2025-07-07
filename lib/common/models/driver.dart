@@ -7,7 +7,6 @@ class Driver implements Encodable {
 
   final int id;
   final String name;
-  final String imageUrl;
   final String phone;
   final bool isAvailable;
   final double credit;
@@ -18,7 +17,6 @@ class Driver implements Encodable {
   const Driver({
     required this.id,
     required this.name,
-    required this.imageUrl,
     required this.phone,
     required this.isAvailable,
     required this.credit,
@@ -32,7 +30,6 @@ class Driver implements Encodable {
     return Driver(
       id: json['id'],
       name: json['name'],
-      imageUrl: json['imageUrl'],
       phone: json['phone'],
       isAvailable: json['available'],
       credit: (json['credit']),
@@ -46,7 +43,6 @@ class Driver implements Encodable {
   Map<String, dynamic> toJson() => {
     "id": id,
     "name": name,
-    "imageUrl": imageUrl,
     "phone": phone,
     "available": isAvailable,
     "credit": credit,

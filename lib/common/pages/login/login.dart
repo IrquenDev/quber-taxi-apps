@@ -4,14 +4,15 @@ import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/services/auth_service.dart';
-import 'package:quber_taxi/config/app_profile.dart';
-import 'package:quber_taxi/config/build_config.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/admin_routes.dart';
 import 'package:quber_taxi/navigation/routes/client_routes.dart';
 import 'package:quber_taxi/navigation/routes/driver_routes.dart';
+import 'package:quber_taxi/navigation/routes/common_routes.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/utils/runtime.dart' as runtime;
+import 'package:quber_taxi/utils/workflow/core/workflow.dart';
+import 'package:quber_taxi/utils/workflow/impl/form_validations.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -72,6 +73,12 @@ class _LoginPageState extends State<LoginPage> {
                           controller: _phoneTFController,
                           keyboardType: TextInputType.number,
                           maxLength: 11,
+                          errorBuilder: (context, value) => Text(
+                              value,
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: Theme.of(context).colorScheme.surface
+                              )
+                          ),
                           decoration: InputDecoration(
                             hintText: localization.enterPhoneNumber,
                             fillColor: colorScheme.surfaceContainer,
@@ -80,113 +87,110 @@ class _LoginPageState extends State<LoginPage> {
                               borderSide: BorderSide.none,
                             ),
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) return localization.requiredField;
-                            return null;
-                          },
+                          validator: Workflow<String?>()
+                              .step(RequiredStep(errorMessage: localization.requiredField))
+                              .withDefault((_)=> null)
+                              .proceed
                         ),
                         // Password TF
                         TextFormField(
-                          controller: _passwordTFController,
-                          obscureText: _obscureText,
-                          decoration: InputDecoration(
-                            hintText: localization.enterPassword,
-                            suffixIcon: IconButton(
-                              icon: Icon(_obscureText ? Icons.visibility_outlined : Icons.visibility_off_outlined),
-                              onPressed: () => setState(() => _obscureText = !_obscureText),
+                            controller: _passwordTFController,
+                            obscureText: _obscureText,
+                            errorBuilder: (context, value) => Text(
+                                value,
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Theme.of(context).colorScheme.surface
+                                )
                             ),
-                            fillColor: colorScheme.surfaceContainer,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(dimensions.borderRadius * 0.5),
-                              borderSide: BorderSide.none
-                            )
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) return localization.requiredField;
-                            return null;
-                          },
+                            decoration: InputDecoration(
+                                hintText: localization.enterPassword,
+                                suffixIcon: IconButton(
+                                  icon: Icon(_obscureText ? Icons.visibility_outlined : Icons.visibility_off_outlined),
+                                  onPressed: () => setState(() => _obscureText = !_obscureText),
+                                ),
+                                fillColor: colorScheme.surfaceContainer,
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(dimensions.borderRadius * 0.5),
+                                    borderSide: BorderSide.none
+                                )
+                            ),
+                            validator: Workflow<String?>()
+                                .step(RequiredStep(errorMessage: localization.requiredField))
+                                .withDefault((_)=> null)
+                                .proceed
                         ),
                         // Login Button
                         SizedBox(
-                          width: double.infinity,
-                          height: 48,
-                          child: OutlinedButton(
-                            onPressed: () async {
-                              FocusScope.of(context).unfocus();
-                              // Validate form
-                              if (_formKey.currentState!.validate()) {
-                                // Get form data
-                                final phone = _phoneTFController.text;
-                                final password = _passwordTFController.text;
-                                // Check connection
-                                if(!isConnected) return;
-                                // Init var
-                                http.Response? response;
-                                String route;
-                                // Depending on appProfile decides who we need to authenticate and set the next
-                                // route.
-                                if(runtime.isClientMode) {
-                                  response = await _authService.loginClient(phone, password);
-                                  route = ClientRoutes.home;
-                                } else if(runtime.isDriverMode) {
-                                  response = await _authService.loginDriver(phone, password);
-                                  route = DriverRoutes.home;
-                                } else {
-                                  response = await _authService.loginAdmin(phone, password);
-                                  route = AdminRoutes.settings;
-                                }
-                                // Handle response
-                                if(!context.mounted) return;
-                                switch (response.statusCode) {
-                                  case 200: context.go(route);
-                                  case 401: showToast(context: context,
-                                    message: "La contraseña es incorrecta",
-                                      duration: const Duration(seconds: 4));
-                                  case 404: showToast(context: context,
-                                    message: "El número de teléfono no se encuentra registrado",
-                                      duration: const Duration(seconds: 4));
-                                  default: showToast(context: context,
-                                    message: "Ocurrió algo mal, por favor inténtelo más tarde",
-                                      duration: const Duration(seconds: 4));
-                                }
-                              }
-                            },
-                            child: Text(
-                                localization.loginButton,
-                                style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)
+                            width: double.infinity,
+                            height: 48,
+                            child: OutlinedButton(
+                                onPressed: () async {
+                                  FocusScope.of(context).unfocus();
+                                  // Validate form
+                                  if (_formKey.currentState!.validate()) {
+                                    // Get form data
+                                    final phone = _phoneTFController.text;
+                                    final password = _passwordTFController.text;
+                                    // Check connection
+                                    if(!isConnected) return;
+                                    // Init var
+                                    http.Response? response;
+                                    String route;
+                                    // Depending on appProfile decides who we need to authenticate and set the next
+                                    // route.
+                                    if(runtime.isClientMode) {
+                                      response = await _authService.loginClient(phone, password);
+                                      route = ClientRoutes.home;
+                                    } else if(runtime.isDriverMode) {
+                                      response = await _authService.loginDriver(phone, password);
+                                      route = DriverRoutes.home;
+                                    } else {
+                                      response = await _authService.loginAdmin(phone, password);
+                                      route = AdminRoutes.settings;
+                                    }
+                                    // Handle response
+                                    if(!context.mounted) return;
+                                    switch (response.statusCode) {
+                                      case 200: context.go(route);
+                                      case 401: showToast(context: context,
+                                          message: "La contraseña es incorrecta",
+                                          duration: const Duration(seconds: 4));
+                                      case 404: showToast(context: context,
+                                          message: "El número de teléfono no se encuentra registrado",
+                                          duration: const Duration(seconds: 4));
+                                      default: showToast(context: context,
+                                          message: "Ocurrió algo mal, por favor inténtelo más tarde",
+                                          duration: const Duration(seconds: 4));
+                                    }
+                                  }
+                                },
+                                child: Text(
+                                    localization.loginButton,
+                                    style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)
+                                )
                             )
-                          )
                         ),
                         // Forgot Password
                         TextButton(
-                          onPressed: () {
-                            // TODO("yapmDev": @Reminder)
-                            // - Impl recover password logic
-                          },
-                          child: Text(
-                              localization.forgotPassword,
-                              style: textTheme.bodyMedium?.copyWith(color: Colors.white)
-                          )
+                            onPressed: () {
+                              // TODO("yapmDev": @Reminder)
+                              // - Impl recover password logic
+                            },
+                            child: Text(
+                                localization.forgotPassword,
+                                style: textTheme.bodyMedium?.copyWith(color: Colors.white)
+                            )
                         ),
                         // Create New Account
                         TextButton(
-                          onPressed: () {
-                            final route = switch (BuildConfig.appProfile) {
-                              AppProfile.client => ClientRoutes.createAccount,
-                              AppProfile.driver => DriverRoutes.createAccount,
-                            // TODO("yapmDev": @Reminder)
-                            // - No create admin account page
-                              AppProfile.admin => throw UnimplementedError(),
-                            };
-                            context.push(route);
-                          },
-                          child: Text(
-                            localization.createAccountLogin,
-                            style: textTheme.bodyLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: colorScheme.primaryFixedDim
+                            onPressed: () {context.push(CommonRoutes.requestFaceId);},
+                            child: Text(
+                                localization.createAccountLogin,
+                                style: textTheme.bodyLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: colorScheme.primaryFixedDim
+                                )
                             )
-                          )
                         )
                       ]
                     )

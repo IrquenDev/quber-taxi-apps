@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/services/travel_service.dart';
@@ -54,11 +55,11 @@ class _TripsPageState extends State<TripsPage> {
               ),
               child: SafeArea(
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 40.0, bottom: 90),
+                  padding: const EdgeInsets.only(left: 30.0, bottom: 90),
                   child: Row(
                     spacing: 16.0,
                     children: [
-                      Icon(Icons.menu, color: Theme.of(context).colorScheme.shadow),
+                      IconButton(onPressed: () => context.pop(), icon: Icon(Icons.arrow_back), color: Theme.of(context).colorScheme.shadow),
                       Text(
                         AppLocalizations.of(context)!.tripsPageTitle,
                         style: TextStyle(

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
 class DashedLine extends StatelessWidget {
+
   final double height;
   final Color color;
 
-  const DashedLine({this.height = 1, this.color = Colors.black});
+  const DashedLine({super.key, this.height = 1, this.color = Colors.black});
 
   @override
   Widget build(BuildContext context) {
@@ -22,11 +23,11 @@ class DashedLine extends StatelessWidget {
               height: height,
               child: DecoratedBox(
                 decoration: BoxDecoration(color: color),
-              ),
+              )
             );
-          }),
+          })
         );
-      },
+      }
     );
   }
 }

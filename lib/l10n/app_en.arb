@@ -93,6 +93,7 @@
     "seatNumber": "Number of Seats",
     "vehicleType": "Vehicle Type",
     "acceptButton": "Accept",
+    "cancelButton": "Cancel",
     "familyVehicle": "Family",
 
     "adminSettingsTitle": "Admin Settings",

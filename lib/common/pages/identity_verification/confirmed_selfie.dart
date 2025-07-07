@@ -1,16 +1,23 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:quber_taxi/client-app/pages/create_account/create_account.dart';
+import 'package:go_router/go_router.dart';
+import 'package:quber_taxi/config/app_profile.dart';
+import 'package:quber_taxi/config/build_config.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
+import 'package:quber_taxi/navigation/routes/admin_routes.dart';
+import 'package:quber_taxi/navigation/routes/client_routes.dart';
+import 'package:quber_taxi/navigation/routes/driver_routes.dart';
 
 class FaceIdConfirmed extends StatelessWidget {
-  const FaceIdConfirmed({super.key});
+
+  final Uint8List imageBytes;
+
+  const FaceIdConfirmed({super.key, required this.imageBytes});
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-
     return Scaffold(
       backgroundColor: colorScheme.surface,
       body: Stack(
@@ -28,7 +35,7 @@ class FaceIdConfirmed extends StatelessWidget {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: colorScheme.primary.withOpacity(0.2),
+                      color: colorScheme.primary.withAlpha(50),
                       blurRadius: 9,
                       offset: const Offset(0, 4),
                     ),
@@ -36,22 +43,13 @@ class FaceIdConfirmed extends StatelessWidget {
                 ),
                 child: SafeArea(
                   child: Padding(
-                    padding: const EdgeInsets.only(left: 40.0, bottom: 90),
-                    child: Row(
-                      children: [
-                        Icon(Icons.menu, color: colorScheme.shadow),
-                        const SizedBox(width: 8),
-                        Text(
-                          AppLocalizations.of(context)!.identityVerify,
-                          style: textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: colorScheme.shadow,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                    padding: const EdgeInsets.only(left: 40.0, top: 20.0),
+                    child: Text(
+                      "Identidad Confirmada",
+                      style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)
+                    )
+                  )
+                )
               ),
               const SizedBox(height: 150),
               Padding(
@@ -89,11 +87,7 @@ class FaceIdConfirmed extends StatelessWidget {
               ),
               const SizedBox(height: 40),
               const Spacer(),
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: SizedBox(
+              SizedBox(
                   height: 56,
                   width: double.infinity,
                   child: ElevatedButton(
@@ -106,10 +100,12 @@ class FaceIdConfirmed extends StatelessWidget {
                       elevation: 0,
                     ),
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const CreateClientAccountPage()),
-                      );
+                      final route = switch(BuildConfig.appProfile) {
+                        AppProfile.driver => DriverRoutes.createAccount,
+                        AppProfile.client => ClientRoutes.createAccount,
+                        AppProfile.admin => AdminRoutes.settings
+                      };
+                      context.go(route, extra: imageBytes);
                     },
                     child: Text(
                       AppLocalizations.of(context)!.createAccountButton,
@@ -119,22 +115,19 @@ class FaceIdConfirmed extends StatelessWidget {
                       ),
                     ),
                   ),
-                ),
-              ),
-            ],
+                )
+            ]
           ),
-
           Positioned(
             top: 110,
             left: 0,
             right: 0,
             child: Center(
               child: Container(
-                width: 180,
+                width: 200,
                 height: 200,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: colorScheme.surface,
                   boxShadow: [
                     BoxShadow(
                       color: colorScheme.onSecondaryContainer,
@@ -143,22 +136,19 @@ class FaceIdConfirmed extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(30),
-                  child: SvgPicture.asset(
-                    "assets/icons/camera.svg",
-                    colorFilter: ColorFilter.mode(
-                      Theme.of(context).colorScheme.onSecondaryContainer,
-                      BlendMode.srcIn,
-                    ),
-                    fit: BoxFit.contain,
+                child: ClipOval(
+                  child: Image.memory(
+                    imageBytes,
+                    fit: BoxFit.cover,
+                    width: 200,
+                    height: 200,
                   ),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
+          )
+        ]
+      )
     );
   }
 }

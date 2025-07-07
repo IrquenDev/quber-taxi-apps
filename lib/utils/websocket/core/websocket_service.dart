@@ -28,7 +28,6 @@ class WebSocketService {
   /// this does nothing.
   void connect({required String baseUrl, String? authToken}) {
     if (_isConnected) return;
-
     _client = StompClient(
       config: StompConfig.sockJS(
         url: '$baseUrl/ws',
@@ -64,7 +63,6 @@ class WebSocketService {
         heartbeatIncoming: const Duration(seconds: 10),
       ),
     );
-
     _client.activate();
   }
 
@@ -101,7 +99,6 @@ class WebSocketService {
         }
       },
     );
-
     _subscriptions[topic] = sub;
   }
 
