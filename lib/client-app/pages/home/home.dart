@@ -21,11 +21,14 @@ class ClientHomePage extends StatefulWidget {
 class _ClientHomePageState extends State<ClientHomePage> {
   @override
   Widget build(BuildContext context) {
-    final double _bottomAppBarHeight = MediaQuery.of(context).size.height * 0.08;
-    final borderRadius = Theme.of(context).extension<DimensionExtension>()!.borderRadius;
+    final double _bottomAppBarHeight =
+        MediaQuery.of(context).size.height * 0.08;
+    final borderRadius =
+        Theme.of(context).extension<DimensionExtension>()!.borderRadius;
 
     return NetworkAlertTemplate(
-      alertBuilder: (_, status) => CustomNetworkAlert(status: status, useTopSafeArea: true),
+      alertBuilder: (_, status) =>
+          CustomNetworkAlert(status: status, useTopSafeArea: true),
       alertPosition: Alignment.topCenter,
       child: Scaffold(
         resizeToAvoidBottomInset: false,
@@ -37,13 +40,15 @@ class _ClientHomePageState extends State<ClientHomePage> {
           backgroundColor: Theme.of(context).colorScheme.primaryContainer,
           onPressed: () {
             showModalBottomSheet(
-              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+              backgroundColor:
+                  Theme.of(context).colorScheme.surfaceContainerHighest,
               isDismissible: true,
               context: context,
               isScrollControlled: true,
               showDragHandle: true,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(borderRadius)),
+                borderRadius:
+                    BorderRadius.vertical(top: Radius.circular(borderRadius)),
               ),
               builder: (context) => MapView(),
             ).then((_) {
@@ -72,13 +77,15 @@ class _ClientHomePageState extends State<ClientHomePage> {
                 label: AppLocalizations.of(context)!.askTaxi,
                 onPressed: () {
                   showModalBottomSheet(
-                    backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    backgroundColor:
+                        Theme.of(context).colorScheme.surfaceContainerHighest,
                     isDismissible: false,
                     context: context,
                     isScrollControlled: true,
                     showDragHandle: true,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.vertical(top: Radius.circular(borderRadius)),
+                      borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(borderRadius)),
                     ),
                     builder: (context) => RequestTravelSheet(),
                   );
@@ -121,7 +128,11 @@ class _BottomBarItem extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 28, color: Theme.of(context).colorScheme.shadow,),
+          Icon(
+            icon,
+            size: 28,
+            color: Theme.of(context).colorScheme.shadow,
+          ),
           Text(
             label,
             style: TextStyle(
@@ -152,12 +163,9 @@ class _QuberPoints extends StatelessWidget {
         ),
         Text(
           AppLocalizations.of(context)!.quberPoints,
-          style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold
-          ),
-        ],
-      ),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        )
+      ],
     );
   }
 }
