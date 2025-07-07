@@ -81,13 +81,15 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                   ),
                   child: SafeArea(
                     child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 46, vertical: 10),
+                      padding: EdgeInsets.symmetric(horizontal: 26, vertical: 10),
                       child: Row(
                         children: [
-                          Icon(
-                            Icons.menu,
-                            color: theme.colorScheme.onPrimaryContainer,
-                            size: 24,
+                          IconButton(
+                            onPressed: () => context.pop(),
+                            icon: Icon(
+                              Icons.arrow_back,
+                              color: theme.colorScheme.onPrimaryContainer,
+                            ),
                           ),
                           SizedBox(width: 10),
                           Text(

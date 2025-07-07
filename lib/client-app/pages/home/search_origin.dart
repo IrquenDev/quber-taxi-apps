@@ -69,7 +69,6 @@ class _SearchOriginPageState extends State<SearchOriginPage> {
               controller: _controller,
               onChanged: isConnected ? _onTextChanged : null,
               decoration: InputDecoration(
-                icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.shadow),
                 fillColor: Theme.of(context).colorScheme.surface,
                 hintText: AppLocalizations.of(context)!.writeUbication,
                   suffixIcon: _controller.text.isNotEmpty ?

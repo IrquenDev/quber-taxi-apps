@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 
@@ -50,11 +51,7 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                   padding: EdgeInsets.symmetric(horizontal: 46, vertical: 10),
                   child: Row(
                     children: [
-                      Icon(
-                        Icons.arrow_back,
-                        color: theme.colorScheme.onPrimaryContainer,
-                        size: 24,
-                      ),
+                      IconButton(onPressed: () => context.pop(), icon: Icon(Icons.arrow_back), color: Theme.of(context).colorScheme.shadow),
                       SizedBox(width: 10),
                       Text(
                         AppLocalizations.of(context)!.adminSettingsTitle,

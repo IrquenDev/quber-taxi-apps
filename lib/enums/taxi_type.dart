@@ -30,6 +30,6 @@ enum TaxiType {
 
   /// Resolves a [TaxiType] from a given string value. Normally used in [Taxi.fromJson].
   static TaxiType resolve(String value) {
-    return TaxiType.values.firstWhere((e) => e.apiValue == value);
+    return TaxiType.values.firstWhere((e) => e.apiValue.toLowerCase() == value.toLowerCase());
   }
 }

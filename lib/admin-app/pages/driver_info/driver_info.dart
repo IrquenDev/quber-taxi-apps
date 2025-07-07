@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quber_taxi/common/models/driver.dart';
 import 'package:quber_taxi/common/services/account_service.dart';
 import 'package:quber_taxi/enums/asset_dpi.dart';
@@ -78,7 +79,7 @@ class _DriverInfoPageState extends State<DriverInfoPage> {
                       children: [
                         Row(
                           children: [
-                            Icon(Icons.menu, color: colorScheme.shadow),
+                            IconButton(onPressed: () => context.pop(), icon: Icon(Icons.arrow_back), color: Theme.of(context).colorScheme.shadow),
                             const SizedBox(width: 15),
                             Text(
                               localizations.driverInfoTitle,
