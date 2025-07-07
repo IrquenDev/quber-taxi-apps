@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 
 
@@ -45,7 +46,7 @@ class AboutUsPage extends StatelessWidget {
                       children: [
                         IconButton(
                           icon: Icon(Icons.arrow_back, color: colorScheme.shadow),
-                          onPressed: () {},
+                          onPressed: () => context.pop(),
                         ),
                         const SizedBox(width: 15),
                         Text(
