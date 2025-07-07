@@ -1,5 +1,7 @@
 class DriverRoutes {
 
+  DriverRoutes._();
+
   static const String createAccount = '/driver-account';
 
   static const String settings = '/driver-settings';

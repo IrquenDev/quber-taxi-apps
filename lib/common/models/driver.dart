@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:quber_taxi/common/models/encodable.dart';
 import 'package:quber_taxi/common/models/taxi.dart';
+import 'package:quber_taxi/enums/driver_account_state.dart';
 
 @immutable
 class Driver implements Encodable {
@@ -10,9 +11,10 @@ class Driver implements Encodable {
   final String phone;
   final bool isAvailable;
   final double credit;
-  final DateTime paymentDate;
+  final DateTime? paymentDate;
   final double rating;
   final Taxi taxi;
+  final DriverAccountState accountState;
 
   const Driver({
     required this.id,
@@ -22,7 +24,8 @@ class Driver implements Encodable {
     required this.credit,
     required this.paymentDate,
     required this.rating,
-    required this.taxi
+    required this.taxi,
+    required this.accountState
   });
 
   @override
@@ -33,9 +36,10 @@ class Driver implements Encodable {
       phone: json['phone'],
       isAvailable: json['available'],
       credit: (json['credit']),
-      paymentDate: DateTime.parse(json['paymentDate']),
+      paymentDate: json['paymentDate'] != null ?DateTime.parse(json['paymentDate']) : null,
       rating: (json['rating']),
-      taxi: Taxi.fromJson(json['taxi'])
+      taxi: Taxi.fromJson(json['taxi']),
+      accountState: DriverAccountState.resolve(json['accountState'])
     );
   }
 
@@ -46,8 +50,9 @@ class Driver implements Encodable {
     "phone": phone,
     "available": isAvailable,
     "credit": credit,
-    "paymentDate": paymentDate.toIso8601String(),
+    "paymentDate": paymentDate?.toIso8601String(),
     "rating": rating,
-    "taxi": taxi.toJson()
+    "taxi": taxi.toJson(),
+    "accountState": accountState.apiValue
   };
 }

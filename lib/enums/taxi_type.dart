@@ -1,3 +1,4 @@
+import 'package:quber_taxi/common/models/taxi.dart';
 import 'package:quber_taxi/enums/asset_dpi.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 
@@ -27,7 +28,7 @@ enum TaxiType {
 
   String get apiValue => name.toUpperCase();
 
-  /// Resolves a [TaxiType] from a given string value.
+  /// Resolves a [TaxiType] from a given string value. Normally used in [Taxi.fromJson].
   static TaxiType resolve(String value) {
     return TaxiType.values.firstWhere((e) => e.apiValue.toLowerCase() == value.toLowerCase());
   }

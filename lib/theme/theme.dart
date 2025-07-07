@@ -386,6 +386,11 @@ class MaterialTheme {
             elevation: dimensions.elevation
         )
     ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        padding: EdgeInsets.zero
+      )
+    ),
     outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           backgroundColor: colorScheme.primaryContainer,

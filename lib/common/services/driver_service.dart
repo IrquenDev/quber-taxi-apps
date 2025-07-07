@@ -1,5 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'package:quber_taxi/config/api_config.dart';
+import 'package:quber_taxi/enums/driver_account_state.dart';
 
 /// A service class responsible for driver-specific backend operations.
 ///
@@ -34,7 +35,15 @@ class DriverService {
   }) async {
     final url = Uri.parse("${_apiConfig.baseUrl}/$_endpoint/$driverId?travelId=$travelId");
     final headers = {'Content-Type': 'application/json'};
+    return await http.patch(url, headers: headers);
+  }
 
+  Future<http.Response> changeState({
+    required int driverId,
+    required DriverAccountState state,
+  }) async {
+    final url = Uri.parse("${_apiConfig.baseUrl}/$_endpoint/$driverId?state=${state.apiValue}");
+    final headers = {'Content-Type': 'application/json'};
     return await http.patch(url, headers: headers);
   }
 }
