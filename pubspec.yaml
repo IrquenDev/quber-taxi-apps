@@ -91,6 +91,9 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
+  #App Splash
+  flutter_native_splash: ^2.4.6
+
   # Linting rules for good code style.
   flutter_lints: ^5.0.0
 
@@ -126,3 +129,9 @@ flutter:
 flutter_intl:
   # Enables support for translations and language management.
   enabled: true
+
+flutter_native_splash:
+   color: "#ffffff"
+   image: assets/icons/isotipo_quber.png
+   android: true
+   ios: true
