@@ -78,7 +78,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Row(
                         children: [
-                          IconButton(onPressed: () => context.pop(), icon: Icon(Icons.arrow_back), color: Theme.of(context).colorScheme.shadow),
+                          // IconButton(onPressed: () => context.pop(), icon: Icon(Icons.arrow_back), color: Theme.of(context).colorScheme.shadow),
                           const SizedBox(width: 8),
                           Text(
                             AppLocalizations.of(context)!.createAccountTitle,

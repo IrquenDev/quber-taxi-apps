@@ -65,7 +65,7 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
                     padding: const EdgeInsets.only(left: 30.0, bottom: 90, top: 20),
                     child: Row(
                       children: [
-                        Icon(Icons.arrow_back, color: colorScheme.shadow),
+                        // Icon(Icons.arrow_back, color: colorScheme.shadow),
                         const SizedBox(width: 8),
                         Text(
                           AppLocalizations.of(context)!.createAccount,
