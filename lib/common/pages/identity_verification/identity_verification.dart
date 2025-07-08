@@ -96,7 +96,15 @@ class VerificationIdentityPage extends StatelessWidget {
             padding: const EdgeInsets.only(top: 52, left: 24, right: 16),
             child: Row(
               children: [
-                Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.secondary),
+                IconButton(
+                  onPressed: () {
+                    context.pop();
+                  },
+                  icon: Icon(
+                    Icons.arrow_back,
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
+                ),
                 SizedBox(width: 12),
                 Text(
                   AppLocalizations.of(context)!.identityVerificationTitle,
