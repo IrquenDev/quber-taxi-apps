@@ -84,6 +84,7 @@ dependencies:
 
   # Advanced image manipulation library.
   image: ^4.0.17
+  curved_navigation_bar: ^1.0.6
 
 # Development dependencies for testing and code generation.
 dev_dependencies:
