@@ -100,6 +100,9 @@ dev_dependencies:
   # Tool for automatic code generation.
   build_runner: ^2.5.4
 
+  #Util tool for flavors
+  flutter_flavorizr: ^2.4.1
+
 # Flutter-specific configuration.
 flutter:
   # Enables automatic code generation for assets and localization.
@@ -124,6 +127,7 @@ flutter:
     - assets/markers/route/x120/
     - assets/markers/route/x180/
     - assets/markers/taxi/
+    - assets/launch/
 
 # Configuration for the flutter_intl plugin for localization.
 flutter_intl:
