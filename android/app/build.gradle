@@ -32,25 +32,7 @@ android {
         }
     }
 
-    flavorDimensions "app"
 
-    productFlavors {
-        Client {
-            dimension "app"
-            applicationIdSuffix ".client"
-            resValue "string", "app_name", "Quber Cliente"
-        }
-        Driver {
-            dimension "app"
-            applicationIdSuffix ".driver"
-            resValue "string", "app_name", "Quber Chofer"
-        }
-        Admin {
-            dimension "app"
-            applicationIdSuffix ".admin"
-            resValue "string", "app_name", "Quber Admin"
-        }
-    }
 }
 
 flutter {
