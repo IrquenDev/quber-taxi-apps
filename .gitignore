@@ -34,6 +34,9 @@ pubspec.lock
 .pub-cache/
 .pub/
 /build/
+/.tmp/
+
+assets.tmp.zip
 
 # Symbolication related
 app.*.symbols
@@ -46,3 +49,6 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 /devtools_options.yaml
+
+/ios/Flutter/ephemeral/
+ios/Flutter/Generated.xcconfig
