@@ -33,33 +33,47 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
   Uint8List? _capturedImageBytes;
 
   Future<void> _init() async {
-    final cameras = await availableCameras();
-    final frontCamera = cameras.firstWhere(
-          (camera) => camera.lensDirection == CameraLensDirection.front,
-    );
+    try {
+      final cameras = await availableCameras();
+      final frontCamera = cameras.firstWhere(
+            (camera) => camera.lensDirection == CameraLensDirection.front,
+      );
 
-    _cameraController = CameraController(
-      frontCamera,
-      ResolutionPreset.medium,
-      enableAudio: false,
-    );
+      _cameraController = CameraController(
+        frontCamera,
+        ResolutionPreset.medium,
+        enableAudio: false,
+      );
 
-    await _cameraController.initialize();
+      await _cameraController.initialize();
 
-    _faceDetector = FaceDetector(
-      options: FaceDetectorOptions(
-        enableClassification: true,
-        enableTracking: true,
-        minFaceSize: 0.1,
-      ),
-    );
+      _faceDetector = FaceDetector(
+        options: FaceDetectorOptions(
+          enableClassification: true,
+          enableTracking: true,
+          minFaceSize: 0.1,
+        ),
+      );
 
-    _cameraController.startImageStream((image) => _processImage(image));
+      _cameraController.startImageStream((image) => _processImage(image));
 
-    setState(() {
-      _cameraInitialized = true;
-    });
+      setState(() {
+        _cameraInitialized = true;
+      });
+
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Permiso de cámara denegado.'),
+            duration: Duration(seconds: 3),
+          ),
+        );
+        context.pop();
+      }
+    }
   }
+
 
   void _processImage(CameraImage image) async {
     if (_isDetecting || _isProcessing) return;
