@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/common_routes.dart';
+import 'package:quber_taxi/storage/session_manger.dart';
 
 class DriverSettingsPage extends StatefulWidget {
   const DriverSettingsPage({super.key});
@@ -235,7 +236,10 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
                       icon: Icons.logout,
                       textColor: Colors.red,
                       iconColor: Colors.red,
-                      onTap: () => context.push(CommonRoutes.login)
+                        onTap: () async {
+                          await SessionManager.instance.clear();
+                          context.go(CommonRoutes.login);
+                        }
                     ),
                   ),
 
