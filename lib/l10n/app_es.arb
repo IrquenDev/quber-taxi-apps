@@ -95,7 +95,6 @@
   "vehicleType": "Tipo de vehículo",
   "acceptButton": "Aceptar",
   "cancelButton": "Cancelar",
-  "familyVehicle": "Familiar",
 
   "adminSettingsTitle": "Ajustes del Administrador",
   "pricesSectionTitle": "Precios",
@@ -181,6 +180,8 @@
       "passwordHint": "Introduzca la contraseña deseada",
       "confirmPasswordLabel": "Confirmar contraseña:",
       "confirmPasswordHint": "Vuelva a introducir su contraseña",
-      "finishButton": "Finalizar registro"
+      "finishButton": "Finalizar registro",
+      "motoTaxiVehicle": "Mototaxi",
+      "motoTaxiDescription": "Vehículo compacto de tres ruedas, ideal para traslados individuales o en pareja. Ofrece un transporte rápido, económico y eficiente en zonas urbanas o con alto tráfico. Espacio limitado para equipaje."
 
 }

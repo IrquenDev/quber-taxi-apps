@@ -153,9 +153,16 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                 ))
               ),
               // Available taxis list view
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: List.generate(TaxiType.values.length, (index) => Flexible(child: _vehicleItemBuilder(index))),
+              SizedBox(
+                height: 130, // altura fija para contener los ítems
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: TaxiType.values.length,
+                  itemBuilder: (context, index) => Padding(
+                    padding: const EdgeInsets.only(right: 12.0),
+                    child: _vehicleItemBuilder(index),
+                  ),
+                ),
               ),
               // Seats selection
               Row(
@@ -283,6 +290,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
         onTap: () => setState(() => _selectedVehicle= vehicle),
         child: SizedBox(
           height: 120,
+          width: 130,
           child: Stack(
               children: [
                 // Background Card

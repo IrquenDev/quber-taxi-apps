@@ -94,7 +94,6 @@
     "vehicleType": "Vehicle Type",
     "acceptButton": "Accept",
     "cancelButton": "Cancel",
-    "familyVehicle": "Family",
 
     "adminSettingsTitle": "Admin Settings",
     "pricesSectionTitle": "Prices",
@@ -179,5 +178,7 @@
             "passwordHint": "Enter your desired password",
             "confirmPasswordLabel": "Confirm Password:",
             "confirmPasswordHint": "Re-enter your password",
-            "finishButton": "Complete Registration"
+            "finishButton": "Complete Registration",
+            "motoTaxiVehicle": "Mototaxi",
+            "motoTaxiDescription": "Compact three-wheeled vehicle, ideal for individual or two-person rides. Provides fast, economical, and efficient transportation in urban areas or heavy traffic. Limited luggage space."
 }
