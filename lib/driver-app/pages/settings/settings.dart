@@ -291,7 +291,7 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
           initialValue: hint,
           decoration: InputDecoration(
             filled: true,
-            fillColor: Theme.of(context).colorScheme.onPrimary,
+            fillColor: Theme.of(context).colorScheme.surface,
             contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
@@ -459,7 +459,7 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
           obscureText: _obscurePassword,
           decoration: InputDecoration(
             filled: true,
-            fillColor: Theme.of(context).colorScheme.onPrimary,
+            fillColor: Theme.of(context).colorScheme.surface,
             suffixIcon: IconButton(
               icon: Icon(
                 _obscurePassword ? Icons.visibility_off : Icons.visibility,

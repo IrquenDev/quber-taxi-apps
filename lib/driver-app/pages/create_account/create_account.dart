@@ -338,7 +338,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                   .proceed(value),
           decoration: InputDecoration(
               hintText: hint,
-              fillColor: Theme.of(context).colorScheme.onPrimary,
+              fillColor: Theme.of(context).colorScheme.surface,
               border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(color: Colors.white54, width: 0.1)
@@ -413,7 +413,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
           controller: controller,
           obscureText: !visible,
           decoration: InputDecoration(
-            fillColor: Theme.of(context).colorScheme.onPrimary,
+            fillColor: Theme.of(context).colorScheme.surface,
             suffixIcon: IconButton(
               icon: Icon(
                 visible ? Icons.visibility : Icons.visibility_off,

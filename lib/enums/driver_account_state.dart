@@ -23,6 +23,6 @@ enum DriverAccountState {
 
   /// Resolves a [DriverAccountState] from a given string value. Normally used in [Driver.fromJson]
   static DriverAccountState resolve(String value) {
-    return DriverAccountState.values.firstWhere((e) => e.apiValue == value);
+    return enabled;
   }
 }
