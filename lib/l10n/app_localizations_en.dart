@@ -255,9 +255,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cancelButton => 'Cancel';
 
   @override
-  String get familyVehicle => 'Family';
-
-  @override
   String get adminSettingsTitle => 'Admin Settings';
 
   @override
@@ -472,6 +469,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Compact vehicle with manual transmission, ideal for short trips. Has 5 seats and limited luggage space.';
 
   @override
+  String get familyVehicle => 'Family';
+
+  @override
   String get familyDescription =>
       'Spacious vehicle ideal for families and group transfers. Features ample space and comfort.';
 
@@ -496,4 +496,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get finishButton => 'Complete Registration';
+
+  @override
+  String get motoTaxiVehicle => 'Mototaxi';
+
+  @override
+  String get motoTaxiDescription =>
+      'Compact three-wheeled vehicle, ideal for individual or two-person rides. Provides fast, economical, and efficient transportation in urban areas or heavy traffic. Limited luggage space.';
 }
