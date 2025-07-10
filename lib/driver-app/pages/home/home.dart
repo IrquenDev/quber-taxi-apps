@@ -329,7 +329,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                 _pointAnnotationManager = await controller.annotations.createPointAnnotationManager();
                 // Load Taxi Marker
                 final assetBytesA = await rootBundle.load('assets/markers/taxi/taxi_pin_x172.png');
-                final assetBytesB = await rootBundle.load('assets/markers/taxi/mototaxipin_x172.png');
+                final assetBytesB = await rootBundle.load('assets/markers/taxi/pin_mototaxix172.png');
                 final iconA = assetBytesA.buffer.asUint8List();
                 final iconB = assetBytesB.buffer.asUint8List();
                 _driverMarkerImage = assetBytesA.buffer.asUint8List();
