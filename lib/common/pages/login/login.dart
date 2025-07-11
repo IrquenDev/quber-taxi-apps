@@ -143,6 +143,7 @@ class _LoginPageState extends State<LoginPage> {
                                       route = ClientRoutes.home;
                                     } else if(runtime.isDriverMode) {
                                       response = await _authService.loginDriver(phone, password);
+                                      response = await _authService.loginDriver(phone, password);
                                       route = DriverRoutes.home;
                                     } else {
                                       response = await _authService.loginAdmin(phone, password);
@@ -153,13 +154,13 @@ class _LoginPageState extends State<LoginPage> {
                                     switch (response.statusCode) {
                                       case 200: context.go(route);
                                       case 401: showToast(context: context,
-                                          message: "La contraseña es incorrecta",
+                                          message: localization.incorrectPasswordMessage,
                                           duration: const Duration(seconds: 4));
                                       case 404: showToast(context: context,
-                                          message: "El número de teléfono no se encuentra registrado",
+                                          message: localization.phoneNotRegisteredMessage,
                                           duration: const Duration(seconds: 4));
                                       default: showToast(context: context,
-                                          message: "Ocurrió algo mal, por favor inténtelo más tarde",
+                                          message: localization.unexpectedErrorLoginMessage,
                                           duration: const Duration(seconds: 4));
                                     }
                                   }
@@ -173,8 +174,12 @@ class _LoginPageState extends State<LoginPage> {
                         // Forgot Password
                         TextButton(
                             onPressed: () {
-                              // TODO("yapmDev": @Reminder)
-                              // - Impl recover password logic
+                              FocusScope.of(context).unfocus();
+                              showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (context) => const ForgotPasswordDialog(),
+                              );
                             },
                             child: Text(
                                 localization.forgotPassword,
@@ -205,3 +210,270 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
+
+class ForgotPasswordDialog extends StatefulWidget {
+  const ForgotPasswordDialog({super.key});
+
+  @override
+  State<ForgotPasswordDialog> createState() => _ForgotPasswordDialogState();
+}
+
+class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
+  final TextEditingController _phoneController = TextEditingController();
+  final _authService = AuthService();
+
+  void _submitPhoneNumber() async {
+    final phone = _phoneController.text.trim();
+    final localization = AppLocalizations.of(context)!;
+
+    if (phone.length == 8 && RegExp(r'^\d{8}$').hasMatch(phone)) {
+      final response = await _authService.requestPasswordReset(phone);
+
+      if (!context.mounted) return;
+
+      if (response.statusCode == 200) {
+        Navigator.of(context).pop();
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => PasswordResetStepDialog(phone: phone),
+        );
+      } else {
+        showToast(
+          context: context,
+          message: localization.codeSendErrorMessage,
+          duration: const Duration(seconds: 3),
+        );
+      }
+    } else {
+      showToast(
+        context: context,
+        message: localization.invalidPhoneMessage,
+        duration: const Duration(seconds: 3),
+      );
+    }
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final localization = AppLocalizations.of(context)!;
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(localization.recoverPassword,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                InkWell(
+                  onTap: () => Navigator.of(context).pop(),
+                  child: const Icon(Icons.close),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Text(localization.recoverPasswordDescription,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: _phoneController,
+              keyboardType: TextInputType.number,
+              maxLength: 8,
+              decoration: InputDecoration(
+                counterText: '',
+                hintText: localization.enterPhoneNumber,
+                filled: true,
+                fillColor: theme.colorScheme.onSecondary,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              ),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              height: 44,
+              child: ElevatedButton(
+                onPressed: () {
+                  FocusScope.of(context).unfocus();
+                  _submitPhoneNumber();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: theme.colorScheme.primary,
+                  foregroundColor: theme.colorScheme.secondary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Text(localization.sendButton),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class PasswordResetStepDialog extends StatefulWidget {
+  final String phone;
+  const PasswordResetStepDialog({super.key, required this.phone});
+
+  @override
+  State<PasswordResetStepDialog> createState() => _PasswordResetStepDialogState();
+}
+
+class _PasswordResetStepDialogState extends State<PasswordResetStepDialog> {
+  final _codeController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmController = TextEditingController();
+  final _authService = AuthService();
+  bool _obscure = true;
+  bool _obscure1 = true;
+
+  void _submitReset() async {
+    final code = _codeController.text.trim();
+    final password = _passwordController.text.trim();
+    final confirm = _confirmController.text.trim();
+    final localization = AppLocalizations.of(context)!;
+
+    if (code.isEmpty || password.isEmpty || confirm.isEmpty) {
+      showToast(context: context, message: localization.allFieldsRequiredMessage);
+      return;
+    }
+
+    if (password != confirm) {
+      showToast(context: context, message: localization.passwordsDoNotMatchMessage);
+      return;
+    }
+
+    final response = await _authService.resetPassword(
+      phone: widget.phone,
+      code: code,
+      newPassword: password,
+    );
+
+    if (!context.mounted) return;
+    if (response.statusCode == 200) {
+      Navigator.of(context).pop();
+      showToast(
+        context: context,
+        message: localization.resetSuccessMessage,
+        duration: const Duration(seconds: 3),
+      );
+    } else if (response.statusCode == 400) {
+      showToast(
+        context: context,
+        message: localization.invalidCodeMessage,
+        duration: const Duration(seconds: 3),
+      );
+    } else {
+      showToast(
+        context: context,
+        message: localization.unexpectedErrorMessage,
+        duration: const Duration(seconds: 3),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final localization = AppLocalizations.of(context)!;
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(localization.resetPasswordTitle,
+                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                  InkWell(onTap: () => Navigator.of(context).pop(), child: const Icon(Icons.close)),
+                ],
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _codeController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  hintText: localization.verificationCodeHint,
+                  fillColor: theme.colorScheme.onSecondary,
+                  filled: true,
+                  border: OutlineInputBorder(borderSide: BorderSide.none),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: _passwordController,
+                obscureText: _obscure,
+                decoration: InputDecoration(
+                  hintText: localization.newPasswordHint,
+                  fillColor: theme.colorScheme.onSecondary,
+                  suffixIcon: IconButton(
+                    icon: Icon(_obscure ? Icons.visibility : Icons.visibility_off),
+                    onPressed: () => setState(() => _obscure = !_obscure),
+                  ),
+                  filled: true,
+                  border: const OutlineInputBorder(borderSide: BorderSide.none),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: _confirmController,
+                obscureText: _obscure1,
+                decoration: InputDecoration(
+                  hintText: localization.confirmPasswordLabel,
+                  fillColor: theme.colorScheme.onSecondary,
+                  suffixIcon: IconButton(
+                    icon: Icon(_obscure1 ? Icons.visibility : Icons.visibility_off),
+                    onPressed: () => setState(() => _obscure1 = !_obscure1),
+                  ),
+                  filled: true,
+                  border: OutlineInputBorder(borderSide: BorderSide.none),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                ),
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                height: 44,
+                child: ElevatedButton(
+                  onPressed: () {
+                    FocusScope.of(context).unfocus();
+                    _submitReset();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: theme.colorScheme.primary,
+                    foregroundColor: theme.colorScheme.secondary,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                  child: Text(localization.resetButton),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+

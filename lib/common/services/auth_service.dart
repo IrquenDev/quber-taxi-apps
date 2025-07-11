@@ -5,6 +5,7 @@ import 'package:quber_taxi/common/models/client.dart';
 import 'package:quber_taxi/common/models/driver.dart';
 import 'package:quber_taxi/config/api_config.dart';
 import 'package:quber_taxi/storage/session_manger.dart';
+import 'package:quber_taxi/utils/runtime.dart' as runtime;
 
 /// A service responsible for handling user authentication for clients, drivers, and admins.
 ///
@@ -79,4 +80,35 @@ class AuthService {
     }
     return response;
   }
+
+  Future<http.Response> requestPasswordReset(String phone) async {
+    final url = Uri.parse("$_endpoint/password-reset/request?phone=$phone");
+    final response = await http.post(url);
+    return response;
+  }
+
+  Future<http.Response> resetPassword({
+    required String phone,
+    required String code,
+    required String newPassword,
+  }) async {
+    final isDriver = runtime.isDriverMode;
+    final path = isDriver ? '/reset-driver' : '/reset-client';
+    final url = Uri.parse("$_endpoint/password-reset$path");
+    final body = jsonEncode({
+      "phone": phone,
+      "code": code,
+      "newPassword": newPassword,
+    });
+    final response = await http.post(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: body,
+    );
+    return response;
+  }
+
+
 }

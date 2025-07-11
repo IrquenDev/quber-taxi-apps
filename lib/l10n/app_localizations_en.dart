@@ -160,7 +160,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get recoverPasswordDescription =>
-      'Please enter your email address. We’ll send you a link to reset your password.';
+      'Please enter your phone number. We will send you a code to reset your password.';
 
   @override
   String get sendButton => 'Send';
@@ -179,6 +179,53 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tripCompleted => 'Trip completed';
+
+  @override
+  String get resetPasswordTitle => 'Reset Password';
+
+  @override
+  String get verificationCodeHint => 'Verification Code';
+
+  @override
+  String get newPasswordHint => 'New Password';
+
+  @override
+  String get confirmPasswordHint => 'Re-enter your password';
+
+  @override
+  String get resetButton => 'Reset';
+
+  @override
+  String get allFieldsRequiredMessage => 'Please fill out all fields';
+
+  @override
+  String get passwordsDoNotMatchMessage => 'Passwords do not match';
+
+  @override
+  String get resetSuccessMessage => 'Password reset successfully';
+
+  @override
+  String get invalidCodeMessage => 'Invalid or expired code';
+
+  @override
+  String get unexpectedErrorMessage =>
+      'Unexpected error. Please try again later.';
+
+  @override
+  String get codeSendErrorMessage => 'Failed to send code. Please try again.';
+
+  @override
+  String get invalidPhoneMessage => 'Invalid phone number. Must be 8 digits.';
+
+  @override
+  String get incorrectPasswordMessage => 'The password is incorrect';
+
+  @override
+  String get phoneNotRegisteredMessage => 'The phone number is not registered';
+
+  @override
+  String get unexpectedErrorLoginMessage =>
+      'Something went wrong, please try again later';
 
   @override
   String get identityVerify => 'Identity Verification';
@@ -502,9 +549,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get confirmPasswordLabel => 'Confirm Password:';
-
-  @override
-  String get confirmPasswordHint => 'Re-enter your password';
 
   @override
   String get finishButton => 'Complete Registration';
