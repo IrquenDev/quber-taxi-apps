@@ -104,6 +104,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
             top: 100.0, left: 20.0, right: 20.0, bottom: 0.0,
             child: SingleChildScrollView(
               child: Column(
+                spacing: 16.0,
                 children: [
                   //  Edit Profile Info Card
                   Container(
@@ -167,7 +168,6 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                       ),
                     )
                   ),
-                  const SizedBox(height: 16),
                   // Edit Password Card
                   Container(
                     padding: const EdgeInsets.all(16),
@@ -238,7 +238,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                       )
                     )
                   ),
-                  const SizedBox(height: 16),
+                  // Referral Code Card
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
@@ -283,7 +283,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                       ]
                     )
                   ),
-                  const SizedBox(height: 16),
+                  // About Us/Dev Card
                   Container(
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     decoration: BoxDecoration(
@@ -333,61 +333,6 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
             ),
           )
         )
-      )
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  height: 66,
-                  width: double.infinity,
-                  child: TextButton.icon(
-                    style: TextButton.styleFrom(
-                      foregroundColor: colorScheme.errorContainer,
-                      textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-                    ),
-                    icon: Icon(Icons.logout, color: colorScheme.errorContainer),
-                    label: const Text('Cerrar Sesión'),
-                    onPressed: () => context.push(CommonRoutes.login),
-                  ),
-                ),
-              ],
-
-            ),
-
-          ),
-
-          Container(
-            height: 190,
-            decoration: BoxDecoration(
-              color: colorScheme.primaryContainer,
-              borderRadius: BorderRadius.vertical(bottom: Radius.circular(radius)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black26,
-                  blurRadius: 6,
-                  offset: Offset(0, 2),
-                ),
-              ],
-            ),
-            child: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  children: [
-                    // IconButton(
-                    //   icon: Icon(Icons.arrow_back), onPressed: () => context.pop(),
-                    // ),
-                    const SizedBox( width: 8,),
-                    Text('Ajustes',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.secondary,
-                        )),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
       )
     );
   }
