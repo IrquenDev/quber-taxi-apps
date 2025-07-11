@@ -188,6 +188,30 @@ abstract class AppLocalizations {
   /// **'Puntos Quber'**
   String get quberPoints;
 
+  /// No description provided for @mapBottomItem.
+  ///
+  /// In es, this message translates to:
+  /// **'Mapa'**
+  String get mapBottomItem;
+
+  /// No description provided for @requestTaxiBottomItem.
+  ///
+  /// In es, this message translates to:
+  /// **'Pedir Taxi'**
+  String get requestTaxiBottomItem;
+
+  /// No description provided for @settingsBottomItem.
+  ///
+  /// In es, this message translates to:
+  /// **'Ajustes'**
+  String get settingsBottomItem;
+
+  /// No description provided for @quberPointsBottomItem.
+  ///
+  /// In es, this message translates to:
+  /// **'Puntos Quber'**
+  String get quberPointsBottomItem;
+
   /// No description provided for @ubicationFailed.
   ///
   /// In es, this message translates to:

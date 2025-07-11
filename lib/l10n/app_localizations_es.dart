@@ -54,6 +54,18 @@ class AppLocalizationsEs extends AppLocalizations {
   String get quberPoints => 'Puntos Quber';
 
   @override
+  String get mapBottomItem => 'Mapa';
+
+  @override
+  String get requestTaxiBottomItem => 'Pedir Taxi';
+
+  @override
+  String get settingsBottomItem => 'Ajustes';
+
+  @override
+  String get quberPointsBottomItem => 'Puntos Quber';
+
+  @override
   String get ubicationFailed =>
       'Su ubicación actual está fuera de los límites de La Habana';
 
