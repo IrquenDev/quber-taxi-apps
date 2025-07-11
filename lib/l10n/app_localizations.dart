@@ -1067,7 +1067,7 @@ abstract class AppLocalizations {
   /// No description provided for @motoTaxiDescription.
   ///
   /// In es, this message translates to:
-  /// **'Vehículo compacto de tres ruedas, ideal para traslados individuales o en pareja. Ofrece un transporte rápido, económico y eficiente en zonas urbanas o con alto tráfico. Espacio limitado para equipaje.'**
+  /// **'Compact vehicle with three or two wheels, ideal for individual or couple transportation. Offers fast, economical, and efficient travel in urban or high-traffic areas. Limited luggage space.'**
   String get motoTaxiDescription;
 }
 

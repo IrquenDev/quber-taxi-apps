@@ -514,5 +514,5 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get motoTaxiDescription =>
-      'Compact three-wheeled vehicle, ideal for individual or two-person rides. Provides fast, economical, and efficient transportation in urban areas or heavy traffic. Limited luggage space.';
+      'Compact three-wheeled  vehicle, ideal for individual or two-person rides. Provides fast, economical, and efficient transportation in urban areas or heavy traffic. Limited luggage space.';
 }

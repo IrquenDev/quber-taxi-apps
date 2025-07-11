@@ -513,5 +513,5 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get motoTaxiDescription =>
-      'Vehículo compacto de tres ruedas, ideal para traslados individuales o en pareja. Ofrece un transporte rápido, económico y eficiente en zonas urbanas o con alto tráfico. Espacio limitado para equipaje.';
+      'Compact vehicle with three or two wheels, ideal for individual or couple transportation. Offers fast, economical, and efficient travel in urban or high-traffic areas. Limited luggage space.';
 }
