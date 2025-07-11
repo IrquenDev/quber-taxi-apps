@@ -99,7 +99,7 @@ class _DriverInfoPageState extends State<DriverInfoPage> {
                           ),
                           child: ClipOval(
                             child: Image.asset(
-                              'assets/images/splash_driver.png',
+                              'assets/images/driver.png',
                               fit: BoxFit.cover,
                               width: 110,
                               height: 110,

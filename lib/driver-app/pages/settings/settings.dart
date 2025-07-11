@@ -112,7 +112,7 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
                               children: [
                                 CircleAvatar(
                                   radius: 60,
-                                  backgroundImage: AssetImage('assets/images/splash_driver.png'),
+                                  backgroundImage: AssetImage('assets/images/driver.png'),
                                 ),
                                 Positioned(
                                   bottom: 0,

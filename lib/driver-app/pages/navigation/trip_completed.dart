@@ -43,7 +43,7 @@ class _DriverTripCompletedState extends State<DriverTripCompleted> {
                                 CircleStack(
                                     count: 2, radius: 40.0, offset: 20.0,
                                     prototypeBuilder: (index) =>
-                                        Image.asset('assets/images/splash_driver.png', fit: BoxFit.cover)
+                                        Image.asset('assets/images/driver.png', fit: BoxFit.cover)
                                 ),
                                 // Title
                                 Text(
