@@ -79,7 +79,7 @@ final GoRouter appRouter = GoRouter(
         builder: (context, state) {
           final imageBytes = state.extra as Uint8List;
           return FaceIdConfirmed(imageBytes: imageBytes);
-}
+        }
     ),
 
     GoRoute(path: CommonRoutes.faceDetection,
