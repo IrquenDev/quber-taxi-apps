@@ -154,12 +154,28 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                     ],
                   ),
                 ),
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  height: 66,
+                  width: double.infinity,
+                  child: TextButton.icon(
+                    style: TextButton.styleFrom(
+                      foregroundColor: colorScheme.errorContainer,
+                      textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    icon: Icon(Icons.logout, color: colorScheme.errorContainer),
+                    label: const Text('Cerrar Sesión'),
+                    onPressed: () => context.push(CommonRoutes.login),
+                  ),
+                ),
               ],
+
             ),
+
           ),
 
           Container(
-            height: 140,
+            height: 190,
             decoration: BoxDecoration(
               color: colorScheme.primaryContainer,
               borderRadius: BorderRadius.vertical(bottom: Radius.circular(radius)),
@@ -176,10 +192,10 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
                   children: [
-                    IconButton(
-                      icon: Icon(Icons.arrow_back), onPressed: () => context.pop(),
-                    ),
-                    const SizedBox(width: 8),
+                    // IconButton(
+                    //   icon: Icon(Icons.arrow_back), onPressed: () => context.pop(),
+                    // ),
+                    const SizedBox( width: 8,),
                     Text('Ajustes',
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
@@ -191,21 +207,6 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
             ),
           ),
         ],
-      ),
-      bottomNavigationBar: SizedBox(
-        height: 56,
-        child: TextButton.icon(
-          style: TextButton.styleFrom(
-            foregroundColor: colorScheme.errorContainer,
-            textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          icon: Icon(Icons.logout, color: colorScheme.errorContainer),
-          label: const Text('Cerrar Sesión'),
-            onPressed: () async {
-              await SessionManager.instance.clear();
-              context.go(CommonRoutes.login);
-            }
-        ),
       ),
     );
   }
