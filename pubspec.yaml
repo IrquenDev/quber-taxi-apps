@@ -139,9 +139,9 @@ flutter_intl:
 
 flutter_native_splash:
    color: "#fbb635"
-   image: assets/launch/icon_app_flutter_yellow.png
+   image: assets/launch/splash_client.png
    android: true
-   ios: true
+   ios: false
    web: true
    android_12:
-     image: assets/launch/icon_app_flutter_yellow.png
+     image: assets/launch/splash_client.png
