@@ -134,27 +134,31 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                                       // Name Text Field
                                       _buildTextField(
                                           controller: _nameTFController,
+                                          maxLength: 50,
                                           label: AppLocalizations.of(context)!.nameLabel,
                                           hint: AppLocalizations.of(context)!.nameHint),
                                       // Plate Text Field
                                       _buildTextField(
                                           controller: _plateTFController,
                                           label: localizations.plateLabel,
-                                          hint: localizations.plateHint
+                                          hint: localizations.plateHint,
+                                        maxLength: 7,
                                       ),
                                       // Phone Text Field
                                       _buildTextField(
                                           inputType: TextInputType.phone,
                                           controller: _phoneTFController,
                                           label: localizations.phoneLabel,
-                                          hint: AppLocalizations.of(context)!.phoneHint
+                                          hint: AppLocalizations.of(context)!.phoneHint,
+                                        maxLength: 8,
                                       ),
                                       // Seats Text Field
                                       _buildTextField(
                                           inputType: TextInputType.number,
                                           controller: _seatsTFController,
                                           label: localizations.seatsLabel,
-                                          hint: localizations.seatsHint
+                                          hint: localizations.seatsHint,
+                                        maxLength: 3,
                                       )
                                     ]),
                                   ],
@@ -335,28 +339,68 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
     required TextEditingController controller,
     required String label,
     required String hint,
-    TextInputType? inputType
+    TextInputType? inputType,
+    int? maxLength, // Nuevo parámetro para límite de caracteres
   }) {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, spacing: 6.0, children: [
-      Text(label),
-      TextFormField(
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 6.0,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            color: Colors.grey.shade700,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 6),
+        TextFormField(
           keyboardType: inputType ?? TextInputType.text,
           controller: controller,
+          maxLength: maxLength,
+          buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
           validator: (value) =>
               Workflow<String?>()
                   .step(RequiredStep(errorMessage: AppLocalizations.of(context)!.requiredField))
                   .withDefault((_) => null)
                   .proceed(value),
           decoration: InputDecoration(
-              hintText: hint,
-              fillColor: Theme.of(context).colorScheme.surface,
-              border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: Colors.white54, width: 0.1)
-              )
-          )
-      )
-    ]);
+            hintText: hint,
+            filled: true,
+            fillColor: Theme.of(context).colorScheme.surfaceContainer,
+            contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color: Colors.grey.shade300,
+                width: 1.0,
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.grey.shade300,
+                width: 1.0,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.surface,
+                width: 1.5,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.red.shade400,
+                width: 1.0,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+      ],
+    );
   }
 
   Widget _buildTaxiCardItem(int index) {
@@ -407,24 +451,33 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
     required String label,
     required bool visible,
     required Function(bool) onToggle,
-    required Workflow<String?> validationWorkflow
-}) {
+    required Workflow<String?> validationWorkflow,
+    int? maxLength,
+  }) {
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 8.0,
       children: [
         Text(
           label,
-          style: Theme.of(context)
-              .textTheme
-              .bodyMedium
-              ?.copyWith(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.grey.shade700),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            color: Colors.grey.shade700,
+          ),
         ),
+        const SizedBox(height: 6),
         TextFormField(
           controller: controller,
           obscureText: !visible,
+          maxLength: maxLength,
+          buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
+          validator: (value) => validationWorkflow.proceed(value),
           decoration: InputDecoration(
-            fillColor: Theme.of(context).colorScheme.surface,
+            filled: true,
+            fillColor: Theme.of(context).colorScheme.surfaceContainer,
+            contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             suffixIcon: IconButton(
               icon: Icon(
                 visible ? Icons.visibility : Icons.visibility_off,
@@ -435,14 +488,32 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(
-                color: Theme.of(context).colorScheme.surfaceDim,
-                width: 1,
+                color: Colors.grey.shade300,
+                width: 1.0,
               ),
-            )
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.grey.shade300,
+                width: 1.0,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.surface,
+                width: 1.5,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.red.shade400, // Borde rojo para errores
+                width: 1.0,
+              ),
+            ),
           ),
-          validator: (value) => validationWorkflow.proceed(value)
-        )
-      ]
+        ),
+        const SizedBox(height: 12),
+      ],
     );
   }
 
