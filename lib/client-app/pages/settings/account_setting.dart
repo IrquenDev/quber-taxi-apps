@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quber_taxi/navigation/routes/common_routes.dart';
+import 'package:quber_taxi/storage/session_manger.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 
 class ClientSettingsPage extends StatefulWidget {
@@ -207,7 +208,6 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
           ),
         ],
       ),
-
     );
   }
 

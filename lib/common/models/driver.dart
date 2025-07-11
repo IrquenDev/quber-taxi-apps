@@ -39,7 +39,7 @@ class Driver implements Encodable {
       paymentDate: json['paymentDate'] != null ?DateTime.parse(json['paymentDate']) : null,
       rating: (json['rating']),
       taxi: Taxi.fromJson(json['taxi']),
-      accountState: DriverAccountState.resolve(json['accountState'])
+      accountState: DriverAccountState.resolve(json['accountState'] ?? "")
     );
   }
 

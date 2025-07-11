@@ -1,0 +1,21 @@
+android {
+    flavorDimensions += "flavor-type"
+
+    productFlavors {
+        client {
+            dimension "flavor-type"
+            applicationId "com.irquen.quber_taxi"
+            resValue "string", "app_name", "Quber"
+        }
+        driver {
+            dimension "flavor-type"
+            applicationId "com.irquen.quber_taxi.driver"
+            resValue "string", "app_name", "Quber Chofer"
+        }
+        admin {
+            dimension "flavor-type"
+            applicationId "com.irquen.quber_taxi.admin"
+            resValue "string", "app_name", "Quber Admin"
+        }
+    }
+}

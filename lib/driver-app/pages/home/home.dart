@@ -328,8 +328,11 @@ class _DriverHomePageState extends State<DriverHomePage> {
                 // Create PAM
                 _pointAnnotationManager = await controller.annotations.createPointAnnotationManager();
                 // Load Taxi Marker
-                final assetBytes = await rootBundle.load('assets/markers/taxi/taxi_pin_x172.png');
-                _driverMarkerImage = assetBytes.buffer.asUint8List();
+                final assetBytesA = await rootBundle.load('assets/markers/taxi/taxi_pin_x172.png');
+                final assetBytesB = await rootBundle.load('assets/markers/taxi/pin_mototaxix172.png');
+                final iconA = assetBytesA.buffer.asUint8List();
+                final iconB = assetBytesB.buffer.asUint8List();
+                _driverMarkerImage = assetBytesA.buffer.asUint8List();
                 // Add Fake Drivers Animation.
                 // FDA is too heavy for the emulator.
                 // As it is a requirement of the app, it will be enabled by default.
@@ -339,26 +342,30 @@ class _DriverHomePageState extends State<DriverHomePage> {
                 // Just care running "flutter build apk" including this flag as FALSE.
                 String definedAllowFDA = const String.fromEnvironment("ALLOW_FDA", defaultValue: "TRUE");
                 final fdaAllowed = definedAllowFDA == "TRUE";
-                if(fdaAllowed) {
+                if (fdaAllowed) {
                   for (int i = 1; i <= 5; i++) {
                     final fakeRoute = await mb_util.loadGeoJsonFakeRoute("assets/geojson/line/fake_route_$i.geojson");
                     final origin = fakeRoute.coordinates.first;
+
+                    final imageToUse = (i % 2 == 0) ? iconA : iconB;
+
                     final annotation = await _pointAnnotationManager?.create(
                       PointAnnotationOptions(
                         geometry: Point(coordinates: Position(origin[0], origin[1])),
-                        image: _driverMarkerImage,
+                        image: imageToUse,
                         iconAnchor: IconAnchor.CENTER,
                       ),
                     );
+
                     _taxis.add(AnimatedFakeDriver(
                         routeCoords: fakeRoute.coordinates,
                         annotation: annotation!,
                         routeDuration: Duration(milliseconds: (fakeRoute.duration * 1000).round())
                     ));
                   }
-                  // Start running fake drivers animation
                   _ticker.start();
                 }
+
               },
               onCameraChangeListener: (cameraData) async {
                 // Always update bearing 'cause fake drivers animation depends on it

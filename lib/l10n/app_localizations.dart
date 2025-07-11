@@ -572,12 +572,6 @@ abstract class AppLocalizations {
   /// **'Cancelar'**
   String get cancelButton;
 
-  /// No description provided for @familyVehicle.
-  ///
-  /// In es, this message translates to:
-  /// **'Familiar'**
-  String get familyVehicle;
-
   /// No description provided for @adminSettingsTitle.
   ///
   /// In es, this message translates to:
@@ -986,6 +980,12 @@ abstract class AppLocalizations {
   /// **'Vehículo compacto con transmisión manual, ideal para traslados cortos. Cuenta con 5 asientos y espacio limitado para equipaje.'**
   String get standardDescription;
 
+  /// No description provided for @familyVehicle.
+  ///
+  /// In es, this message translates to:
+  /// **'Familiar'**
+  String get familyVehicle;
+
   /// No description provided for @familyDescription.
   ///
   /// In es, this message translates to:
@@ -1033,6 +1033,18 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Finalizar registro'**
   String get finishButton;
+
+  /// No description provided for @motoTaxiVehicle.
+  ///
+  /// In es, this message translates to:
+  /// **'Mototaxi'**
+  String get motoTaxiVehicle;
+
+  /// No description provided for @motoTaxiDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Vehículo compacto de tres ruedas, ideal para traslados individuales o en pareja. Ofrece un transporte rápido, económico y eficiente en zonas urbanas o con alto tráfico. Espacio limitado para equipaje.'**
+  String get motoTaxiDescription;
 }
 
 class _AppLocalizationsDelegate
