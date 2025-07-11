@@ -93,13 +93,37 @@ class AccountService {
   Future<List<Driver>> findAllDrivers() async {
     final url = Uri.parse('$_endpoint/driver/all');
     final response = await http.get(url);
-    print(response.statusCode);
-    print(response.body);
     if (response.body.trim().isEmpty) {
       return [];
     }
     final List<dynamic> jsonList = jsonDecode(response.body);
     return jsonList.map((json) => Driver.fromJson(json)).toList();
+  }
+
+  Future<http.Response> updateClient(
+      int clientId,
+      String name,
+      String phone,
+      XFile? profileImage,
+      bool shouldUpdateImage
+  ) async {
+    final url = Uri.parse("$_endpoint/update/client/$clientId");
+    final request = http.MultipartRequest("POST", url);
+    request.fields['name'] = name;
+    request.fields['phone'] = phone;
+    request.fields['shouldUpdateImage'] = shouldUpdateImage.toString();
+    if (shouldUpdateImage) {
+      if(profileImage != null) {
+        request.files.add(await _getMultipartFileFromXFile(profileImage, "profileImage"));
+      }
+    }
+    final streamedResponse = await request.send();
+    return await http.Response.fromStream(streamedResponse);
+  }
+
+  Future<http.Response> updateClientPassword(int clientId, String password) async {
+    final url = Uri.parse("$_endpoint/client/$clientId?password=$password");
+    return await http.patch(url);
   }
 
   /// Converts a [Uint8List] (e.g. raw image bytes) into a [http.MultipartFile].

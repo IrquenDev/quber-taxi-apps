@@ -157,7 +157,7 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                                                   keyboardType: TextInputType.number,
                                                   initialValue: quberConfig != null ? quberConfig.driverCredit.toString() : "",
                                                   decoration: InputDecoration(
-                                                      fillColor: theme.colorScheme.onPrimary,
+                                                      fillColor: theme.colorScheme.surface,
                                                       border: OutlineInputBorder(
                                                         borderRadius: BorderRadius.circular(dimensions.borderRadius * 0.5),
                                                       )
@@ -180,7 +180,7 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                                                   keyboardType: TextInputType.number,
                                                   initialValue: quberConfig != null ? quberConfig.travelPrice.toString() : "",
                                                   decoration: InputDecoration(
-                                                      fillColor: theme.colorScheme.onPrimary,
+                                                      fillColor: theme.colorScheme.surface,
                                                       border: OutlineInputBorder(
                                                         borderRadius: BorderRadius.circular(dimensions.borderRadius * 0.5),
                                                       )

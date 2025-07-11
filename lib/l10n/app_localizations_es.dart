@@ -54,6 +54,18 @@ class AppLocalizationsEs extends AppLocalizations {
   String get quberPoints => 'Puntos Quber';
 
   @override
+  String get mapBottomItem => 'Mapa';
+
+  @override
+  String get requestTaxiBottomItem => 'Pedir Taxi';
+
+  @override
+  String get settingsBottomItem => 'Ajustes';
+
+  @override
+  String get quberPointsBottomItem => 'Puntos Quber';
+
+  @override
   String get ubicationFailed =>
       'Su ubicación actual está fuera de los límites de La Habana';
 
@@ -253,9 +265,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get cancelButton => 'Cancelar';
-
-  @override
-  String get familyVehicle => 'Familiar';
 
   @override
   String get adminSettingsTitle => 'Ajustes del Administrador';
@@ -471,6 +480,9 @@ class AppLocalizationsEs extends AppLocalizations {
       'Vehículo compacto con transmisión manual, ideal para traslados cortos. Cuenta con 5 asientos y espacio limitado para equipaje.';
 
   @override
+  String get familyVehicle => 'Familiar';
+
+  @override
   String get familyDescription =>
       'Vehículo espacioso ideal para familias y traslados grupales. Ofrece amplio espacio y confort.';
 
@@ -495,4 +507,11 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get finishButton => 'Finalizar registro';
+
+  @override
+  String get motoTaxiVehicle => 'Mototaxi';
+
+  @override
+  String get motoTaxiDescription =>
+      'Compact vehicle with three or two wheels, ideal for individual or couple transportation. Offers fast, economical, and efficient travel in urban or high-traffic areas. Limited luggage space.';
 }

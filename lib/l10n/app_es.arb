@@ -18,6 +18,11 @@
   "map": "Mapa",
   "quberPoints": "Puntos Quber",
 
+   "mapBottomItem": "Mapa",
+   "requestTaxiBottomItem": "Pedir Taxi",
+   "settingsBottomItem": "Ajustes",
+   "quberPointsBottomItem": "Puntos Quber",
+
   "ubicationFailed": "Su ubicación actual está fuera de los límites de La Habana",
   "permissionsDenied": "Permiso de ubicación denegado",
   "permissionDeniedPermanently": "Permiso de ubicación denegado permanentemente",
@@ -95,7 +100,6 @@
   "vehicleType": "Tipo de vehículo",
   "acceptButton": "Aceptar",
   "cancelButton": "Cancelar",
-  "familyVehicle": "Familiar",
 
   "adminSettingsTitle": "Ajustes del Administrador",
   "pricesSectionTitle": "Precios",
@@ -181,6 +185,8 @@
       "passwordHint": "Introduzca la contraseña deseada",
       "confirmPasswordLabel": "Confirmar contraseña:",
       "confirmPasswordHint": "Vuelva a introducir su contraseña",
-      "finishButton": "Finalizar registro"
+      "finishButton": "Finalizar registro",
+      "motoTaxiVehicle": "Mototaxi",
+      "motoTaxiDescription": "Compact vehicle with three or two wheels, ideal for individual or couple transportation. Offers fast, economical, and efficient travel in urban or high-traffic areas. Limited luggage space."
 
 }

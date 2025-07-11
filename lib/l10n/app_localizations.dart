@@ -188,6 +188,30 @@ abstract class AppLocalizations {
   /// **'Puntos Quber'**
   String get quberPoints;
 
+  /// No description provided for @mapBottomItem.
+  ///
+  /// In es, this message translates to:
+  /// **'Mapa'**
+  String get mapBottomItem;
+
+  /// No description provided for @requestTaxiBottomItem.
+  ///
+  /// In es, this message translates to:
+  /// **'Pedir Taxi'**
+  String get requestTaxiBottomItem;
+
+  /// No description provided for @settingsBottomItem.
+  ///
+  /// In es, this message translates to:
+  /// **'Ajustes'**
+  String get settingsBottomItem;
+
+  /// No description provided for @quberPointsBottomItem.
+  ///
+  /// In es, this message translates to:
+  /// **'Puntos Quber'**
+  String get quberPointsBottomItem;
+
   /// No description provided for @ubicationFailed.
   ///
   /// In es, this message translates to:
@@ -571,12 +595,6 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Cancelar'**
   String get cancelButton;
-
-  /// No description provided for @familyVehicle.
-  ///
-  /// In es, this message translates to:
-  /// **'Familiar'**
-  String get familyVehicle;
 
   /// No description provided for @adminSettingsTitle.
   ///
@@ -986,6 +1004,12 @@ abstract class AppLocalizations {
   /// **'Vehículo compacto con transmisión manual, ideal para traslados cortos. Cuenta con 5 asientos y espacio limitado para equipaje.'**
   String get standardDescription;
 
+  /// No description provided for @familyVehicle.
+  ///
+  /// In es, this message translates to:
+  /// **'Familiar'**
+  String get familyVehicle;
+
   /// No description provided for @familyDescription.
   ///
   /// In es, this message translates to:
@@ -1033,6 +1057,18 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Finalizar registro'**
   String get finishButton;
+
+  /// No description provided for @motoTaxiVehicle.
+  ///
+  /// In es, this message translates to:
+  /// **'Mototaxi'**
+  String get motoTaxiVehicle;
+
+  /// No description provided for @motoTaxiDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Compact vehicle with three or two wheels, ideal for individual or couple transportation. Offers fast, economical, and efficient travel in urban or high-traffic areas. Limited luggage space.'**
+  String get motoTaxiDescription;
 }
 
 class _AppLocalizationsDelegate
