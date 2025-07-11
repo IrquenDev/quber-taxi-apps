@@ -26,6 +26,9 @@ dependencies:
   # Access to device geolocation.
   geolocator: 13.0.2
 
+  #App Splash
+  flutter_native_splash: ^2.4.6
+
   # Geospatial calculation.
   turf: ^0.0.10
 
@@ -136,7 +139,10 @@ flutter_intl:
   enabled: true
 
 flutter_native_splash:
-   color: "#ffffff"
-   image: assets/icons/isotipo_quber.png
+   color: "#fbb635"
+   image: assets/launch/splash_client.png
    android: true
-   ios: true
+   ios: false
+   web: true
+   android_12:
+     image: assets/launch/splash_client.png
