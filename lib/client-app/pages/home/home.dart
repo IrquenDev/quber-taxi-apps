@@ -5,6 +5,7 @@ import 'package:quber_taxi/client-app/pages/home/map.dart';
 import 'package:quber_taxi/client-app/pages/home/request_travel_sheet.dart';
 import 'package:quber_taxi/client-app/pages/settings/account_setting.dart';
 import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
+import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
@@ -23,7 +24,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final borderRadius = Theme.of(context).extension<DimensionExtension>()!.borderRadius;
+    final localizations = AppLocalizations.of(context)!;
 
     return NetworkAlertTemplate(
       alertBuilder: (_, status) => CustomNetworkAlert(status: status, useTopSafeArea: true),
@@ -45,24 +46,22 @@ class _ClientHomePageState extends State<ClientHomePage> {
 
             Transform.scale(
               scale: 1,
-              child: _buildNavItem(Icons.location_on, 'Mapa', 0),
+              child: _buildNavItem(Icons.location_on, localizations.mapBottomItem, 0),
             ),
             Transform.scale(
               scale: 1,
-              child: _buildNavItem(Icons.local_taxi_outlined, 'Pedir Taxi', 1),
+              child: _buildNavItem(Icons.local_taxi_outlined, localizations.requestTaxiBottomItem, 1),
             ),
             Transform.scale(
               scale: 1,
-              child:  _buildNavItem(Icons.settings_outlined, 'Ajustes', 2),
+              child:  _buildNavItem(Icons.settings_outlined, localizations.settingsBottomItem, 2),
             ),
 
             Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Transform.translate(
-                  offset: Offset(0, 4.0),
-                  child: Text(
+                Text(
                     '56',
                     style: TextStyle(
                       fontSize: 24,
@@ -70,19 +69,15 @@ class _ClientHomePageState extends State<ClientHomePage> {
                       color: Theme.of(context).colorScheme.shadow,
                     ),
                   ),
-                ),
-                Transform.translate(
-                  offset: Offset(0, 0),
-                  child: Text(
-                  'P. Quber',
+                if(_currentIndex != 3)
+                Text(
+                  localizations.quberPoints,
                     style: TextStyle(
-                      fontSize: _currentIndex == 3 ? 14 : 16,
+                      fontSize: 12,
                       fontWeight: FontWeight.bold,
                       color:  Theme.of(context).colorScheme.shadow,
                     ),
                 ),
-                ),
-
               ],
             )
           ],
@@ -97,36 +92,34 @@ class _ClientHomePageState extends State<ClientHomePage> {
   }
 
   Widget _buildNavItem(IconData icon, String text, int index) {
-    // Ajusta estos valores según necesites
-    final double iconVerticalPosition = 5.0; // Negativo = arriba, Positivo = abajo
-    final double iconSize = 38.0;
+    final double iconSize = 32;
 
     return SizedBox(
-      width: 70,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Transform.translate(
-            offset: Offset(0, iconVerticalPosition),
-            child: Icon(
-              icon,
-              size: iconSize,
-              color: Theme.of(context).colorScheme.shadow,
-            ),
-          ),
-          Transform.translate(
-            offset: Offset(0, 2.0),
-            child: Text(
-              text,
-              style: TextStyle(
-                fontSize:_currentIndex == index ? 12 : 16,
-                fontWeight: FontWeight.bold,
-                color:  Theme.of(context).colorScheme.shadow,
+      width: double.infinity,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+                icon,
+                size: iconSize,
+                color: Theme.of(context).colorScheme.shadow,
               ),
-            ),
-          )
-        ],
+            if(_currentIndex != index)
+            Transform.translate(
+              offset: Offset(0, 2.0),
+              child: Text(
+                text,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color:  Theme.of(context).colorScheme.shadow,
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

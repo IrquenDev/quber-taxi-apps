@@ -15,6 +15,11 @@
   "vehicle": "vehicle",
   "settingsHome": "Settings",
 
+  "mapBottomItem": "Map",
+  "requestTaxiBottomItem": "Order Taxi",
+  "settingsBottomItem": "Settings",
+  "quberPointsBottomItem": "Quber Points",
+
   "map": "Map",
   "quberPoints": "Quber Points",
 
