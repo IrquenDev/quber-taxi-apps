@@ -1,3 +1,5 @@
+import 'package:flutter/services.dart';
+
 /// Provides the profile of the application that is currently running.
 enum AppProfile {
 
@@ -10,14 +12,8 @@ enum AppProfile {
   /// Refers to the Admin App.
   admin;
 
-  /// Returns the uppercase string value associated with the app profile.
-  String get value => name.toUpperCase();
-
   /// Resolves an [AppProfile] from a given string value (case-insensitive).
-  static AppProfile resolve(String value) {
-    return AppProfile.values.firstWhere(
-          (e) => e.value == value.toUpperCase(),
-      orElse: () => throw StateError("No supported profile: $value")
-    );
+  static AppProfile resolve() {
+    return AppProfile.values.firstWhere((e) => e.name == appFlavor);
   }
 }

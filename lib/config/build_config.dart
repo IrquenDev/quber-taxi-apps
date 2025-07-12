@@ -10,8 +10,7 @@ class BuildConfig {
 
   /// Loads and resolves build configurations.
   static void loadConfig() {
-    String definedAppProfile = const String.fromEnvironment("APP_PROFILE");
-    appProfile = AppProfile.resolve(definedAppProfile);
+    appProfile = AppProfile.resolve();
     String definedBaseUrl = const String.fromEnvironment(
         "BASE_URL",
         defaultValue: "http://qnecesitas.nat.cu/qubertaxiapi"
