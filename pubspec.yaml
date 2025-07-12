@@ -87,6 +87,10 @@ dependencies:
 
   # Advanced image manipulation library.
   image: ^4.0.17
+
+  path_provider: ^2.1.2
+  path: ^1.9.0
+
   curved_navigation_bar: ^1.0.6
 
 # Development dependencies for testing and code generation.
@@ -94,9 +98,6 @@ dev_dependencies:
   # Official Flutter testing framework.
   flutter_test:
     sdk: flutter
-
-  #App Splash
-  flutter_native_splash: ^2.4.6
 
   # Linting rules for good code style.
   flutter_lints: ^5.0.0

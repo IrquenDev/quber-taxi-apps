@@ -6,7 +6,6 @@ import 'package:quber_taxi/client-app/pages/home/request_travel_sheet.dart';
 import 'package:quber_taxi/client-app/pages/settings/account_setting.dart';
 import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
-import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
 class ClientHomePage extends StatefulWidget {
