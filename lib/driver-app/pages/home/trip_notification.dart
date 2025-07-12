@@ -40,57 +40,62 @@ class TripNotification extends StatelessWidget {
                 borderRadius: BorderRadius.circular(dimensions.borderRadius)
             ),
             child: Row(
+                spacing: 4.0,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                      spacing: 8.0,
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Nuevo Viaje', style: Theme.of(context).textTheme.titleMedium),
-                        Row(
-                            spacing: 8.0,
-                            children: [
-                              Icon(
-                                  Icons.my_location_outlined,
-                                  color: Colors.grey,
-                                  size: Theme.of(context).iconTheme.size! * 0.75
-                              ),
-                              RichText(
-                                  text: TextSpan(
-                                      style: Theme.of(context).textTheme.bodyMedium,
-                                      children: [
-                                        const TextSpan(text: 'Desde: ', style: TextStyle(fontWeight: FontWeight.bold)),
-                                        TextSpan(text: travel.originName)
-                                      ]
+                  Expanded(
+                    child: Column(
+                        spacing: 8.0,
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Nuevo Viaje', style: Theme.of(context).textTheme.titleMedium),
+                          Row(
+                              spacing: 8.0,
+                              children: [
+                                Icon(
+                                    Icons.my_location_outlined,
+                                    color: Colors.grey,
+                                    size: Theme.of(context).iconTheme.size! * 0.75
+                                ),
+                                Flexible(
+                                  child: RichText(
+                                      text: TextSpan(
+                                          style: Theme.of(context).textTheme.bodyMedium,
+                                          children: [
+                                            const TextSpan(text: 'Desde: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                                            TextSpan(text: travel.originName)
+                                          ]
+                                      )
                                   )
-                              )
-                            ]
-                        ),
-                        Row(
-                            spacing: 8.0,
-                            children: [
-                              Icon(
-                                  Icons.location_on_outlined,
-                                  color: Colors.grey,
-                                  size: Theme.of(context).iconTheme.size! * 0.75
-                              ),
-                              RichText(
-                                  text: TextSpan(
-                                      style: Theme.of(context).textTheme.bodyMedium,
-                                      children: [
-                                        const TextSpan(text: 'Hasta: ', style: TextStyle(fontWeight: FontWeight.bold)),
-                                        TextSpan(text: travel.destinationName)
-                                      ]
-                                  )
-                              )
-                            ]
-                        )
-                      ]
+                                )
+                              ]
+                          ),
+                          Row(
+                              spacing: 8.0,
+                              children: [
+                                Icon(
+                                    Icons.location_on_outlined,
+                                    color: Colors.grey,
+                                    size: Theme.of(context).iconTheme.size! * 0.75
+                                ),
+                                Flexible(
+                                  child: RichText(
+                                      text: TextSpan(
+                                          style: Theme.of(context).textTheme.bodyMedium,
+                                          children: [
+                                            const TextSpan(text: 'Hasta: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                                            TextSpan(text: travel.destinationName)
+                                          ]
+                                      )
+                                  ),
+                                )
+                              ]
+                          )
+                        ]
+                    ),
                   ),
                   Column(
-                      mainAxisSize: MainAxisSize.min,
-                      spacing: 8.0,
                       children: [Icon(Icons.notifications_outlined), Text("5:59 pm")]
                   )
                 ]

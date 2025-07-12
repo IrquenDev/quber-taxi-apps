@@ -466,41 +466,41 @@ class _DriverHomePageState extends State<DriverHomePage> {
                 ]
               )
             ),
+            // Notification area
+            Positioned(
+                top: 32,
+                right: 0.0,
+                left: 0.0,
+                child: Container(
+                    margin: EdgeInsets.all(12.0),
+                    child: Column(
+                        children: List.generate(_newTravels.length, (index) {
+                          return AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 400),
+                              switchInCurve: Curves.easeInOut,
+                              transitionBuilder: (child, animation) {
+                                return SlideTransition(
+                                    position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero).animate(animation),
+                                    child: FadeTransition(opacity: animation, child: child)
+                                );
+                              },
+                              child: TripNotification(
+                                key: ValueKey(_newTravels[index].id),
+                                travel: _newTravels[index],
+                                index: index,
+                                onDismissed: () => setState(() => _newTravels.removeAt(index)),
+                              )
+                          );
+                        })
+                    )
+                )
+            ),
             // Available travels sheet
             if(_shouldShowAvailableTravels)
               Align(
                   alignment: Alignment.bottomCenter,
                   child: AvailableTravelsSheet(onTravelSelected: _onTravelSelected)
-              ),
-            // Notification area
-            Positioned(
-              top: 32,
-              right: 0.0,
-              left: 0.0,
-              child: Container(
-                margin: EdgeInsets.all(12.0),
-                child: Column(
-                  children: List.generate(_newTravels.length, (index) {
-                    return AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 400),
-                      switchInCurve: Curves.easeInOut,
-                      transitionBuilder: (child, animation) {
-                        return SlideTransition(
-                          position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero).animate(animation),
-                          child: FadeTransition(opacity: animation, child: child)
-                        );
-                      },
-                      child: TripNotification(
-                        key: ValueKey(_newTravels[index].id),
-                        travel: _newTravels[index],
-                        index: index,
-                        onDismissed: () => setState(() => _newTravels.removeAt(index)),
-                      )
-                    );
-                  })
-                )
               )
-            )
           ]
         )
       )

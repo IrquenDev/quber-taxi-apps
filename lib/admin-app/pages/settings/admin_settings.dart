@@ -63,6 +63,7 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
     final dimensions = Theme.of(context).extension<DimensionExtension>()!;
     final isConnected = NetworkScope.statusOf(context) == ConnectionStatus.online;
     return Scaffold(
+      backgroundColor: theme.colorScheme.surfaceContainer,
         body: Stack(
             children: [
               // Curved Yellow Header
@@ -120,7 +121,7 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                                 margin: EdgeInsets.symmetric(horizontal: 0),
                                 padding: EdgeInsets.all(20),
                                 decoration: BoxDecoration(
-                                  color: theme.colorScheme.onPrimary,
+                                  color: theme.colorScheme.surfaceContainerLowest,
                                   borderRadius: BorderRadius.circular(dimensions.borderRadius),
                                 ),
                                 child: FutureBuilder(
@@ -227,7 +228,7 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                               margin: EdgeInsets.symmetric(horizontal: 0),
                               padding: EdgeInsets.all(20),
                               decoration: BoxDecoration(
-                                color: theme.colorScheme.onPrimary,
+                                color: theme.colorScheme.surfaceContainerLowest,
                                 borderRadius: BorderRadius.circular(dimensions.borderRadius),
 
                               ),
@@ -271,7 +272,7 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                                         ),
                                         contentPadding: dimensions.contentPadding,
                                         filled: true,
-                                        fillColor: theme.colorScheme.onPrimary,
+                                        fillColor: theme.colorScheme.surfaceContainerLowest,
                                         suffixIcon: IconButton(
                                           icon: Icon(
                                             _isNewPasswordVisible ? Icons.visibility : Icons.visibility_off,
@@ -318,7 +319,7 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                                         ),
                                         contentPadding: dimensions.contentPadding,
                                         filled: true,
-                                        fillColor: theme.colorScheme.onPrimary,
+                                        fillColor: theme.colorScheme.surfaceContainerLowest,
                                         suffixIcon: IconButton(
                                           icon: Icon(
                                             _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
@@ -372,7 +373,7 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                               width: double.infinity,
                               margin: EdgeInsets.symmetric(horizontal: 0),
                               decoration: BoxDecoration(
-                                color: theme.colorScheme.onPrimary,
+                                color: theme.colorScheme.surfaceContainerLowest,
                                 borderRadius: BorderRadius.circular(dimensions.borderRadius),
                               ),
                               child: Column(
