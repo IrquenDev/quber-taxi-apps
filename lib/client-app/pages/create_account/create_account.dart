@@ -6,13 +6,13 @@ import 'package:flutter_fusion/flutter_fusion.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/models/client.dart';
 import 'package:quber_taxi/common/services/account_service.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/client_routes.dart';
 import 'package:quber_taxi/storage/session_manger.dart';
 import 'package:quber_taxi/utils/image/image_utils.dart';
+import 'package:quber_taxi/utils/runtime.dart';
 import 'package:quber_taxi/utils/workflow/core/workflow.dart';
 import 'package:quber_taxi/utils/workflow/impl/form_validations.dart';
 
@@ -44,7 +44,6 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
     late final TextTheme textTheme = Theme.of(context).textTheme;
     late final localizations = AppLocalizations.of(context)!;
     late final iconTheme = Theme.of(context).iconTheme;
-    final isConnected = NetworkScope.statusOf(context) == ConnectionStatus.online;
     return Scaffold(
       body: Stack(
         children: [
@@ -245,7 +244,7 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
                   // Validate form
                   if(!_formKey.currentState!.validate()) return;
                   // Check connection status
-                  if(!isConnected) {
+                  if(!hasConnection(context)) {
                     showToast(context: context, message: "Revise su conexión a internet");
                     return;
                   }

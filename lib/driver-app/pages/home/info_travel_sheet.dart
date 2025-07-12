@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/enums/taxi_type.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
+import 'package:quber_taxi/utils/runtime.dart';
 import 'package:quber_taxi/utils/websocket/core/websocket_service.dart';
 
 class TravelInfoSheet extends StatelessWidget {
@@ -15,7 +15,6 @@ class TravelInfoSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isConnected = NetworkScope.statusOf(context) == ConnectionStatus.online;
     final dimension = Theme.of(context).extension<DimensionExtension>()!;
     final localizations = AppLocalizations.of(context)!;
     return Padding(
@@ -94,7 +93,7 @@ class TravelInfoSheet extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: isConnected ? () {
+              onPressed: hasConnection(context) ? () {
                 WebSocketService.instance.send(
                     "/app/travels/${travel.id}/pick-up-confirmation", null // no body needed
                 );

@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/config/app_profile.dart';
 import 'package:quber_taxi/config/build_config.dart';
 import 'package:quber_taxi/storage/session_manger.dart';
@@ -20,3 +22,4 @@ bool get isSessionOk => SessionManager.instance.isSessionOk();
 /// ```
 dynamic get loggedInUser => SessionManager.instance.getLoggedInUserAsRawType();
 
+bool hasConnection(BuildContext context) => NetworkScope.statusOf(context) == ConnectionStatus.online;

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
-import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/services/auth_service.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/admin_routes.dart';
@@ -37,8 +36,6 @@ class _LoginPageState extends State<LoginPage> {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final dimensions = Theme.of(context).extension<DimensionExtension>()!;
-
-    final isConnected = NetworkScope.statusOf(context) == ConnectionStatus.online;
 
     return Scaffold(
       body: Stack(
@@ -132,7 +129,7 @@ class _LoginPageState extends State<LoginPage> {
                                     final phone = _phoneTFController.text;
                                     final password = _passwordTFController.text;
                                     // Check connection
-                                    if(!isConnected) return;
+                                    if(runtime.hasConnection(context)) return;
                                     // Init var
                                     http.Response? response;
                                     String route;

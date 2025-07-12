@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fusion/flutter_fusion.dart' show CircleStack, showToast;
 import 'package:go_router/go_router.dart';
-import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/models/review.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/services/review_service.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/client_routes.dart';
+import 'package:quber_taxi/utils/runtime.dart';
 
 class ClientTripCompleted extends StatefulWidget {
 
@@ -51,7 +51,6 @@ class _ClientTripCompletedState extends State<ClientTripCompleted> {
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
-    final isConnected = NetworkScope.statusOf(context) == ConnectionStatus.online;
     return Container(
       color: Theme.of(context).colorScheme.surface,
       child: SingleChildScrollView(
@@ -127,7 +126,7 @@ class _ClientTripCompletedState extends State<ClientTripCompleted> {
                           hintText: loc.reviewTextHint,
                           suffixIcon: IconButton(
                               icon: const Icon(Icons.send_outlined),
-                              onPressed: _canSubmitReview && isConnected ? () async {
+                              onPressed: _canSubmitReview && hasConnection(context) ? () async {
                                 final response = await _reviewService.submitReview(
                                   comment: _commentController.text,
                                   rating: _rating,

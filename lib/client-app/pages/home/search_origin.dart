@@ -12,6 +12,7 @@ import 'package:quber_taxi/navigation/routes/common_routes.dart';
 import 'package:quber_taxi/utils/map/geolocator.dart';
 import 'package:geolocator/geolocator.dart' as g;
 import 'package:quber_taxi/utils/map/turf.dart';
+import 'package:quber_taxi/utils/runtime.dart';
 import 'package:turf/turf.dart' as turf;
 
 class SearchOriginPage extends StatefulWidget {
@@ -60,14 +61,13 @@ class _SearchOriginPageState extends State<SearchOriginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isConnected = NetworkScope.statusOf(context) == ConnectionStatus.online;
     return NetworkAlertTemplate(
       alertBuilder: (_, status) => CustomNetworkAlert(status: status),
       child: Scaffold(
         appBar: AppBar(
             title: TextField(
               controller: _controller,
-              onChanged: isConnected ? _onTextChanged : null,
+              onChanged: hasConnection(context) ? _onTextChanged : null,
               decoration: InputDecoration(
                 fillColor: Theme.of(context).colorScheme.surface,
                 hintText: AppLocalizations.of(context)!.writeUbication,

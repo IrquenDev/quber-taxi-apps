@@ -6,7 +6,6 @@ import 'package:flutter_fusion/flutter_fusion.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/models/driver.dart';
 import 'package:quber_taxi/common/services/account_service.dart';
 import 'package:quber_taxi/enums/asset_dpi.dart';
@@ -16,6 +15,7 @@ import 'package:quber_taxi/navigation/routes/driver_routes.dart';
 import 'package:quber_taxi/storage/session_manger.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/utils/image/image_utils.dart';
+import 'package:quber_taxi/utils/runtime.dart';
 import 'package:quber_taxi/utils/workflow/core/workflow.dart';
 import 'package:quber_taxi/utils/workflow/impl/form_validations.dart';
 
@@ -56,7 +56,6 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isConnected = NetworkScope.statusOf(context) == ConnectionStatus.online;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final dimensions = Theme.of(context).extension<DimensionExtension>()!;
@@ -277,7 +276,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                         shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero)),
                     onPressed: () async {
                       if (!_canSubmit) return;
-                      if(!isConnected) {
+                      if(!hasConnection(context)) {
                         showToast(context: context, message: "Revise su conexión a internet");
                         return;
                       }

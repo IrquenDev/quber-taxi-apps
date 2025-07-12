@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/models/client.dart';
 import 'package:quber_taxi/common/services/account_service.dart';
 import 'package:quber_taxi/config/api_config.dart';
@@ -53,7 +52,6 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isConnected = NetworkScope.statusOf(context) == ConnectionStatus.online;
     final colorScheme = Theme.of(context).colorScheme;
     final radius = Theme.of(context).extension<DimensionExtension>()!.borderRadius;
     return Scaffold(
@@ -128,7 +126,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                               child: OutlinedButton(
                                   onPressed: () async {
                                     FocusScope.of(context).unfocus();
-                                    if(isConnected) {
+                                    if(hasConnection(context)) {
                                       if (_formKey.currentState!.validate()) {
                                         final response = await _accountService.updateClient(
                                             _client.id,
@@ -212,7 +210,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                           OutlinedButton(
                               onPressed: () async {
                                 FocusScope.of(context).unfocus();
-                                if(isConnected) {
+                                if(hasConnection(context)) {
                                   if (_passFormKey.currentState!.validate()) {
                                     final response = await _accountService.updateClientPassword(
                                         _client.id, _passwordTFController.text

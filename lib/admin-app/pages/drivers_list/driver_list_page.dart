@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
-import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/models/driver.dart';
 import 'package:quber_taxi/common/services/account_service.dart';
 import 'package:quber_taxi/common/services/driver_service.dart';
 import 'package:quber_taxi/config/api_config.dart';
 import 'package:quber_taxi/enums/driver_account_state.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
+import 'package:quber_taxi/utils/runtime.dart';
 
 class DriversListPage extends StatefulWidget {
   const DriversListPage({super.key});
@@ -105,7 +105,6 @@ class _DriversListPageState extends State<DriversListPage> {
   }
 
   Widget _buildDriverItem(Driver driver) {
-    final isConnected = NetworkScope.statusOf(context) == ConnectionStatus.online;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -138,7 +137,7 @@ class _DriversListPageState extends State<DriversListPage> {
             padding: const EdgeInsets.only(right: 8.0),
             child: GestureDetector(
                 onTap: () async {
-                  if(!isConnected) return;
+                  if(!hasConnection(context)) return;
                   final newState = driver.accountState != DriverAccountState.enabled
                       ? DriverAccountState.enabled
                       : DriverAccountState.disabled;

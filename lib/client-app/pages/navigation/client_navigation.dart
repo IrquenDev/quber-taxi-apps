@@ -12,6 +12,7 @@ import 'package:geolocator/geolocator.dart' as g;
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:quber_taxi/client-app/pages/navigation/trip_info.dart';
 import 'package:quber_taxi/common/models/travel.dart';
+import 'package:quber_taxi/utils/runtime.dart';
 import 'package:quber_taxi/utils/websocket/impl/finish_confirmation_handler.dart';
 import 'package:turf/distance.dart' as td;
 import 'package:turf/turf.dart' as turf;
@@ -179,7 +180,6 @@ class _ClientNavigationState extends State<ClientNavigation> {
 
   @override
   Widget build(BuildContext context) {
-    final isConnected = NetworkScope.statusOf(context) == ConnectionStatus.online;
     // Init camera options
     final cameraOptions = CameraOptions(
       center: Point(coordinates: Position(widget.travel.originCoords[0], widget.travel.originCoords[1])),
@@ -200,7 +200,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
           onCameraChangeListener: _onCameraChangeListener,
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: isConnected ? () async {
+          onPressed: hasConnection(context) ? () async {
             // Confirmation dialog
             final result = await showDialog<bool>(
                 context: context,

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
-import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/widgets/dialogs/confirm_dialog.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/utils/map/geolocator.dart' as g_util;
+import 'package:quber_taxi/utils/runtime.dart';
 
 class TripCard extends StatelessWidget {
 
@@ -16,7 +16,6 @@ class TripCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isConnected = NetworkScope.statusOf(context) == ConnectionStatus.online;
     final dimensions = Theme.of(context).extension<DimensionExtension>()!;
     return Card(
       elevation: dimensions.elevation,
@@ -51,7 +50,7 @@ class TripCard extends StatelessWidget {
             Align(
               alignment: Alignment.centerRight,
               child: OutlinedButton(
-                onPressed: isConnected ? () async {
+                onPressed: hasConnection(context) ? () async {
                   // ConfirmDialog
                   final result = await showDialog<bool>(
                     context: context,

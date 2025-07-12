@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/models/driver.dart';
 import 'package:quber_taxi/common/models/taxi.dart';
 import 'package:quber_taxi/common/models/travel.dart';
@@ -72,7 +71,6 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
   @override
   Widget build(BuildContext context) {
     final dimensions = Theme.of(context).extension<DimensionExtension>()!;
-    final isConnected = NetworkScope.statusOf(context) == ConnectionStatus.online;
     return DraggableScrollableSheet(
       controller: _sheetController,
       initialChildSize: 0.15,
@@ -150,7 +148,7 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
                                             IconButton(
                                                 icon: const Icon(Icons.refresh),
                                                 tooltip: AppLocalizations.of(context)!.updateTravel,
-                                                onPressed: isConnected ? _refreshTravels : null
+                                                onPressed: hasConnection(context) ? _refreshTravels : null
                                             ) : ghostContainer
                                           ]
                                       ),

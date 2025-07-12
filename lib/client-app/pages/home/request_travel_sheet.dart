@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/models/client.dart';
 import 'package:quber_taxi/common/models/mapbox_place.dart';
 import 'package:quber_taxi/common/models/travel.dart';
@@ -10,6 +9,7 @@ import 'package:quber_taxi/common/services/travel_service.dart';
 import 'package:quber_taxi/enums/asset_dpi.dart';
 import 'package:quber_taxi/enums/municipalities.dart';
 import 'package:quber_taxi/enums/taxi_type.dart';
+import 'package:quber_taxi/enums/travel_state.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/client_routes.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
@@ -67,6 +67,16 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
       _maxPrice = _maxDistance! * 100;
     });
   }
+
+  Future<void> _cancelTravelRequest(int travelId) async {
+    final response = await _travelService.changeState(
+        travelId: travelId, state: TravelState.canceled
+    );
+    if(!mounted) return;
+    if(response.statusCode == 200) {
+      showToast(context: context, message: "Se ha cancelado la solicitud de este viaje");
+    }
+  }
   
   @override
   void initState() {
@@ -80,7 +90,6 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final isConnected = NetworkScope.statusOf(context) == ConnectionStatus.online;
     return Padding(
         padding: EdgeInsets.only(left: 16.0, right: 16.0, bottom: 32.0),
         child: Column(
@@ -154,7 +163,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
               ),
               // Available taxis list view
               SizedBox(
-                height: 130, // altura fija para contener los ítems
+                height: 130,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: TaxiType.values.length,
@@ -246,7 +255,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                       textStyle: TextStyle(fontWeight: FontWeight.bold),
                       padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 100),
                       ),
-                    onPressed: canEstimateDistance && isConnected ? () async {
+                    onPressed: canEstimateDistance && hasConnection(context) ? () async {
                       Travel travel = await _travelService.requestNewTravel(
                           clientId: _client.id,
                           originName: _originName!,
@@ -268,11 +277,13 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                         // Navigate to TrackDriver Screen.
                         context.go(ClientRoutes.trackDriver, extra: updatedTravel);
                       } else {
-                        // TODO ("yapmDev": @Reminder)
-                        // - This travel request should be delete or marked as CANCELED.
+                        // Cancel this travel request
+                        if(hasConnection(context)) {
+                          await _cancelTravelRequest(travel.id);
+                        }
                       }
                     } : null,
-                    child: Text(AppLocalizations.of(context)!.askTaxi,)
+                    child: Text(AppLocalizations.of(context)!.askTaxi)
                   )
               )
             ]

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/models/admin.dart';
 import 'package:quber_taxi/common/models/quber_config.dart';
 import 'package:quber_taxi/common/services/admin_service.dart';
@@ -61,7 +60,6 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final dimensions = Theme.of(context).extension<DimensionExtension>()!;
-    final isConnected = NetworkScope.statusOf(context) == ConnectionStatus.online;
     return Scaffold(
       backgroundColor: theme.colorScheme.surfaceContainer,
         body: Stack(
@@ -194,7 +192,7 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                                                 alignment: Alignment.centerRight,
                                                 child: ElevatedButton(
                                                     onPressed: () async {
-                                                      if(!isConnected || !canSubmitNewConfigs) return;
+                                                      if(!runtime.hasConnection(context) || !canSubmitNewConfigs) return;
                                                       final response = await adminService.updateConfig(
                                                           travelPrice: double.parse(_travelPriceAsString),
                                                           driverCredit: double.parse(_driverCreditAsString)
@@ -342,7 +340,7 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                                     alignment: Alignment.centerRight,
                                     child: ElevatedButton(
                                         onPressed: () async {
-                                          if(!isConnected || !canSubmitNewPassword) return;
+                                          if(!runtime.hasConnection(context) || !canSubmitNewPassword) return;
                                           final admin = Admin.fromJson(runtime.loggedInUser);
                                           final response = await adminService.updatePassword(
                                             admin.id,
