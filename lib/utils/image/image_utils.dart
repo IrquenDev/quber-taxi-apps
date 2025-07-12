@@ -1,7 +1,11 @@
-import 'dart:typed_data';
+import 'dart:io';
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:image/image.dart' as img;
+import 'package:path/path.dart';
+
+import 'package:path_provider/path_provider.dart';
 
 /// Converts an image from YUV420 format to NV21 format.
 ///
@@ -101,4 +105,68 @@ Uint8List fixImageOrientation(Uint8List imageData) {
   final fixedImage = img.bakeOrientation(originalImage);
 
   return Uint8List.fromList(img.encodeJpg(fixedImage));
+}
+
+/// Compresses an [XFile] image to ensure it does not exceed the specified [targetSizeInMB].
+///
+/// If the image is already below the target size, it returns the original image.
+/// Otherwise, it compresses the image in a background isolate and returns a new [XFile].
+///
+/// This method prevents blocking the UI by offloading heavy processing via [compute].
+Future<XFile?> compressXFileToTargetSize(XFile original, double targetSizeInMB) async {
+  final originalFile = File(original.path);
+  final maxBytes = (targetSizeInMB * 1024 * 1024).toInt(); // Convert MB to bytes
+  // If already within size limits, no compression is needed
+  if (await originalFile.length() <= maxBytes) {
+    return original;
+  }
+  // Obtain the temporary directory once in the main isolate
+  final tempDir = await getTemporaryDirectory();
+  // Launch compression in a background isolate
+  final path = await compute(_compressImageInIsolate, {
+    'path': original.path,
+    'maxBytes': maxBytes,
+    'tempDirPath': tempDir.path,
+  });
+  // If compression fails or image is invalid
+  if (path == null) return null;
+  // Return a new XFile pointing to the compressed image path
+  return XFile(path);
+}
+
+/// Runs in a background isolate to compress an image located at [path],
+/// reducing its size until it's under [maxBytes]. Uses the provided [tempDirPath]
+/// to store the compressed result.
+///
+/// This isolate must not call any platform channels like `getTemporaryDirectory()`.
+Future<String?> _compressImageInIsolate(Map<String, dynamic> args) async {
+  final String path = args['path'];
+  final int maxBytes = args['maxBytes'];
+  final String tempDirPath = args['tempDirPath'];
+  final bytes = await File(path).readAsBytes();
+  // Decode the image using the image package
+  final image = img.decodeImage(bytes);
+  if (image == null) return null;
+  // Generate the path for the compressed image
+  final targetPath = join(tempDirPath, "compressed_${basename(path)}");
+  int quality = 95;
+  const int minQuality = 10;
+  File? compressedFile;
+  // Try progressively lower qualities until size condition is met
+  while (quality >= minQuality) {
+    final encoded = img.encodeJpg(image, quality: quality);
+    final file = await File(targetPath).writeAsBytes(encoded);
+    if (file.lengthSync() <= maxBytes) {
+      compressedFile = file;
+      break;
+    }
+    quality -= 5;
+  }
+  // If all quality reductions fail, resize the image by half and save with lowest quality
+  if (compressedFile == null) {
+    final resized = img.copyResize(image, width: image.width ~/ 2);
+    final finalEncoded = img.encodeJpg(resized, quality: minQuality);
+    compressedFile = await File(targetPath).writeAsBytes(finalEncoded);
+  }
+  return compressedFile.path;
 }

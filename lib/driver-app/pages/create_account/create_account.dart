@@ -15,6 +15,7 @@ import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/driver_routes.dart';
 import 'package:quber_taxi/storage/session_manger.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
+import 'package:quber_taxi/utils/image/image_utils.dart';
 import 'package:quber_taxi/utils/workflow/core/workflow.dart';
 import 'package:quber_taxi/utils/workflow/impl/form_validations.dart';
 
@@ -50,6 +51,8 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
       && _selectedTaxi != null
       && _taxiImage != null;
       // && _licenseImage != null;
+
+  bool _isProcessingImage = false;
 
   @override
   Widget build(BuildContext context) {
@@ -112,9 +115,16 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                                     Center(
                                         child: GestureDetector(
                                             onTap: () async {
-                                              final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-                                              if(image != null) {
-                                                setState(() => _taxiImage = image);
+                                              final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
+                                              if (pickedImage != null) {
+                                                setState(() => _isProcessingImage = true);
+                                                final compressedImage = await compressXFileToTargetSize(pickedImage, 5);
+                                                setState(() => _isProcessingImage = false);
+                                                if (compressedImage != null) {
+                                                  setState(() {
+                                                    _taxiImage = compressedImage;
+                                                  });
+                                                }
                                               }
                                             },
                                             child: _buildCircleImagePicker()
@@ -252,7 +262,9 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                           ])
                       )
                   )
-              )
+              ),
+              if(_isProcessingImage)
+                Positioned.fill(child: Center(child: CircularProgressIndicator()))
             ]),
           ),
             // Submit Button

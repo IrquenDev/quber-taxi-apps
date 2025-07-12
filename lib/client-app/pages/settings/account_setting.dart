@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
@@ -14,6 +13,7 @@ import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/common_routes.dart';
 import 'package:quber_taxi/storage/session_manger.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
+import 'package:quber_taxi/utils/image/image_utils.dart';
 import 'package:quber_taxi/utils/runtime.dart';
 import 'package:quber_taxi/utils/workflow/core/workflow.dart';
 import 'package:quber_taxi/utils/workflow/impl/form_validations.dart';
@@ -42,6 +42,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
 
   XFile? _profileImage;
   bool get _shouldUpdateImage => _profileImage != null || (_profileImage == null && _client.profileImageUrl != null);
+  bool _isProcessingImage = false;
 
   @override
   void initState() {
@@ -305,34 +306,39 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                         ),
                       ],
                     ),
-                  )
+                  ),
+                  SizedBox(
+                      height: 56,
+                      child: Align(
+                          alignment: Alignment.centerRight,
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 20.0),
+                            child: TextButton.icon(
+                                style: TextButton.styleFrom(
+                                  foregroundColor: colorScheme.errorContainer,
+                                  textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+                                ),
+                                icon: Icon(Icons.logout, color: colorScheme.errorContainer),
+                                label: const Text('Cerrar Sesión'),
+                                onPressed: () async {
+                                  await SessionManager.instance.clear();
+                                  if(!context.mounted) return;
+                                  context.go(CommonRoutes.login);
+                                }
+                            ),
+                          )
+                      )
+                  ),
+                  // Just for space, to don't hide the logout button, 'cause home's Scaffold is using extendedBody.
+                  SizedBox(height: 70),
+
                 ]
               )
             )
-          )
+          ),
+          if(_isProcessingImage)
+          Positioned.fill(child: Center(child: CircularProgressIndicator()))
         ]
-      ),
-      bottomNavigationBar: SizedBox(
-        height: 56,
-        child: Align(
-          alignment: Alignment.centerRight,
-          child: Padding(
-            padding: const EdgeInsets.only(right: 20.0),
-            child: TextButton.icon(
-              style: TextButton.styleFrom(
-                foregroundColor: colorScheme.errorContainer,
-                textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              icon: Icon(Icons.logout, color: colorScheme.errorContainer),
-              label: const Text('Cerrar Sesión'),
-                onPressed: () async {
-                  await SessionManager.instance.clear();
-                  if(!context.mounted) return;
-                  context.go(CommonRoutes.login);
-                }
-            ),
-          )
-        )
       )
     );
   }
@@ -342,24 +348,29 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
         alignment: Alignment.bottomRight,
         children: [
           ClipOval(
-            child: SizedBox(
-              height: 160, width: 160,
-              child: _profileImage != null
-                  ? Image.file(File(_profileImage!.path), fit: BoxFit.cover)
-                  : _client.profileImageUrl != null
-                  ? Image.network("${ApiConfig().baseUrl}/${_client.profileImageUrl}", fit: BoxFit.cover)
-                  : ColoredBox(color: randomColor())
-            )
+              child: SizedBox(
+                  height: 160, width: 160,
+                  child: _profileImage != null
+                      ? Image.file(File(_profileImage!.path), fit: BoxFit.cover)
+                      : _client.profileImageUrl != null
+                      ? Image.network("${ApiConfig().baseUrl}/${_client.profileImageUrl}", fit: BoxFit.cover)
+                      : ColoredBox(color: randomColor())
+              )
           ),
           Positioned(
               bottom: 8.0, right: 8.0,
               child: GestureDetector(
                 onTap: () async {
-                  final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-                  if(image != null) {
-                    setState(() {
-                      _profileImage = image;
-                    });
+                  final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
+                  if (pickedImage != null) {
+                    setState(() => _isProcessingImage = true);
+                    final compressedImage = await compressXFileToTargetSize(pickedImage, 5);
+                    setState(() => _isProcessingImage = false);
+                    if (compressedImage != null) {
+                      setState(() {
+                        _profileImage = compressedImage;
+                      });
+                    }
                   }
                 },
                 child: CircleAvatar(
@@ -375,23 +386,23 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
 
   Widget _buildTextField(String label, String hint, TextEditingController controller) {
     return Column(
-      spacing: 8.0,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label),
-        TextFormField(
-          controller: controller,
-          decoration: InputDecoration(
-            hintText: hint,
-            fillColor: Theme.of(context).colorScheme.surfaceContainerLowest,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))
-          ),
-          validator: (value) => Workflow<String?>()
-              .step(RequiredStep(errorMessage: AppLocalizations.of(context)!.requiredField))
-              .withDefault((_) => null)
-              .proceed(value)
-        )
-      ]
+        spacing: 8.0,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label),
+          TextFormField(
+              controller: controller,
+              decoration: InputDecoration(
+                  hintText: hint,
+                  fillColor: Theme.of(context).colorScheme.surfaceContainerLowest,
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))
+              ),
+              validator: (value) => Workflow<String?>()
+                  .step(RequiredStep(errorMessage: AppLocalizations.of(context)!.requiredField))
+                  .withDefault((_) => null)
+                  .proceed(value)
+          )
+        ]
     );
   }
 
@@ -403,26 +414,26 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
     required String? Function(String?) validator
   }) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: 8.0,
-      children: [
-        Text(label),
-        TextFormField(
-          controller: controller,
-          obscureText: !visible,
-          decoration: InputDecoration(
-            hintText: 'Introduzca la contraseña deseada',
-            fillColor: Theme.of(context).colorScheme.surfaceContainerLowest,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            suffixIcon: IconButton(
-              icon: Icon(visible ? Icons.visibility : Icons.visibility_off),
-              onPressed: () => onToggle(!visible),
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 8.0,
+        children: [
+          Text(label),
+          TextFormField(
+            controller: controller,
+            obscureText: !visible,
+            decoration: InputDecoration(
+              hintText: 'Introduzca la contraseña deseada',
+              fillColor: Theme.of(context).colorScheme.surfaceContainerLowest,
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              suffixIcon: IconButton(
+                icon: Icon(visible ? Icons.visibility : Icons.visibility_off),
+                onPressed: () => onToggle(!visible),
+              ),
             ),
-          ),
-          validator: validator,
-        )
-      ]
+            validator: validator,
+          )
+        ]
     );
   }
 }

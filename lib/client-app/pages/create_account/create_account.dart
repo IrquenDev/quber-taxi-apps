@@ -12,6 +12,7 @@ import 'package:quber_taxi/common/services/account_service.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/client_routes.dart';
 import 'package:quber_taxi/storage/session_manger.dart';
+import 'package:quber_taxi/utils/image/image_utils.dart';
 import 'package:quber_taxi/utils/workflow/core/workflow.dart';
 import 'package:quber_taxi/utils/workflow/impl/form_validations.dart';
 
@@ -35,6 +36,7 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
   final _confirmPasswordController = TextEditingController();
 
   XFile? _profileImage;
+  bool _isProcessingImage = false;
 
   @override
   Widget build(BuildContext context) {
@@ -204,9 +206,16 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
             child: Center(
                 child: GestureDetector(
                   onTap: () async {
-                    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-                    if(image != null) {
-                      setState(() => _profileImage = image);
+                    final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
+                    if (pickedImage != null) {
+                      setState(() => _isProcessingImage = true);
+                      final compressedImage = await compressXFileToTargetSize(pickedImage, 5);
+                      setState(() => _isProcessingImage = false);
+                      if (compressedImage != null) {
+                        setState(() {
+                          _profileImage = compressedImage;
+                        });
+                      }
                     }
                   },
                   child: _buildCircleImagePicker(colorScheme, iconTheme),
@@ -286,7 +295,9 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
                 )
               )
             )
-          )
+          ),
+          if(_isProcessingImage)
+          Positioned.fill(child: Center(child: CircularProgressIndicator()))
         ]
       )
     );
@@ -318,8 +329,8 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
                 child: Icon(Icons.close, color: Colors.white, size: 16),
               ),
             ),
-          ),
-      ],
+          )
+      ]
     );
   }
 }
