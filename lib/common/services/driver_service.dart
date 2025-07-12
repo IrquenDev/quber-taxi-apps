@@ -35,7 +35,7 @@ class DriverService {
   }) async {
     final url = Uri.parse("${_apiConfig.baseUrl}/$_endpoint/$driverId?travelId=$travelId");
     final headers = {'Content-Type': 'application/json'};
-    return await http.patch(url, headers: headers);
+    return await http.post(url, headers: headers);
   }
 
   Future<http.Response> changeState({
