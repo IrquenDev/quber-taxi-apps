@@ -160,7 +160,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get recoverPasswordDescription =>
-      'Por favor, introduzca su correo electrónico. Le enviaremos un enlace para restablecer su contraseña.';
+      'Por favor, introduzca su número de teléfono. Le enviaremos un código para restablecer su contraseña.';
 
   @override
   String get sendButton => 'Enviar';
@@ -179,6 +179,54 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get tripCompleted => 'Viaje Finalizado';
+
+  @override
+  String get resetPasswordTitle => 'Restablecer Contraseña';
+
+  @override
+  String get verificationCodeHint => 'Código de verificación';
+
+  @override
+  String get newPasswordHint => 'Nueva contraseña';
+
+  @override
+  String get confirmPasswordHint => 'Vuelva a introducir su contraseña';
+
+  @override
+  String get resetButton => 'Restablecer';
+
+  @override
+  String get allFieldsRequiredMessage => 'Complete todos los campos';
+
+  @override
+  String get passwordsDoNotMatchMessage => 'Las contraseñas no coinciden';
+
+  @override
+  String get resetSuccessMessage => 'Contraseña restablecida correctamente';
+
+  @override
+  String get invalidCodeMessage => 'Código inválido o expirado';
+
+  @override
+  String get unexpectedErrorMessage => 'Error inesperado. Intente más tarde.';
+
+  @override
+  String get codeSendErrorMessage =>
+      'Error al enviar el código. Intente nuevamente.';
+
+  @override
+  String get invalidPhoneMessage => 'Número inválido. Debe tener 8 dígitos.';
+
+  @override
+  String get incorrectPasswordMessage => 'La contraseña es incorrecta';
+
+  @override
+  String get phoneNotRegisteredMessage =>
+      'El número de teléfono no se encuentra registrado';
+
+  @override
+  String get unexpectedErrorLoginMessage =>
+      'Ocurrió algo mal, por favor inténtelo más tarde';
 
   @override
   String get identityVerify => 'Verificación de identidad';
@@ -501,9 +549,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get confirmPasswordLabel => 'Confirmar contraseña:';
-
-  @override
-  String get confirmPasswordHint => 'Vuelva a introducir su contraseña';
 
   @override
   String get finishButton => 'Finalizar registro';

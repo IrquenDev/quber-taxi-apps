@@ -395,7 +395,7 @@ abstract class AppLocalizations {
   /// No description provided for @recoverPasswordDescription.
   ///
   /// In es, this message translates to:
-  /// **'Por favor, introduzca su correo electrónico. Le enviaremos un enlace para restablecer su contraseña.'**
+  /// **'Por favor, introduzca su número de teléfono. Le enviaremos un código para restablecer su contraseña.'**
   String get recoverPasswordDescription;
 
   /// No description provided for @sendButton.
@@ -433,6 +433,96 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Viaje Finalizado'**
   String get tripCompleted;
+
+  /// No description provided for @resetPasswordTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Restablecer Contraseña'**
+  String get resetPasswordTitle;
+
+  /// No description provided for @verificationCodeHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Código de verificación'**
+  String get verificationCodeHint;
+
+  /// No description provided for @newPasswordHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Nueva contraseña'**
+  String get newPasswordHint;
+
+  /// No description provided for @confirmPasswordHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Vuelva a introducir su contraseña'**
+  String get confirmPasswordHint;
+
+  /// No description provided for @resetButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Restablecer'**
+  String get resetButton;
+
+  /// No description provided for @allFieldsRequiredMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Complete todos los campos'**
+  String get allFieldsRequiredMessage;
+
+  /// No description provided for @passwordsDoNotMatchMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Las contraseñas no coinciden'**
+  String get passwordsDoNotMatchMessage;
+
+  /// No description provided for @resetSuccessMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Contraseña restablecida correctamente'**
+  String get resetSuccessMessage;
+
+  /// No description provided for @invalidCodeMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Código inválido o expirado'**
+  String get invalidCodeMessage;
+
+  /// No description provided for @unexpectedErrorMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Error inesperado. Intente más tarde.'**
+  String get unexpectedErrorMessage;
+
+  /// No description provided for @codeSendErrorMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Error al enviar el código. Intente nuevamente.'**
+  String get codeSendErrorMessage;
+
+  /// No description provided for @invalidPhoneMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Número inválido. Debe tener 8 dígitos.'**
+  String get invalidPhoneMessage;
+
+  /// No description provided for @incorrectPasswordMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'La contraseña es incorrecta'**
+  String get incorrectPasswordMessage;
+
+  /// No description provided for @phoneNotRegisteredMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'El número de teléfono no se encuentra registrado'**
+  String get phoneNotRegisteredMessage;
+
+  /// No description provided for @unexpectedErrorLoginMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Ocurrió algo mal, por favor inténtelo más tarde'**
+  String get unexpectedErrorLoginMessage;
 
   /// No description provided for @identityVerify.
   ///
@@ -1045,12 +1135,6 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Confirmar contraseña:'**
   String get confirmPasswordLabel;
-
-  /// No description provided for @confirmPasswordHint.
-  ///
-  /// In es, this message translates to:
-  /// **'Vuelva a introducir su contraseña'**
-  String get confirmPasswordHint;
 
   /// No description provided for @finishButton.
   ///
