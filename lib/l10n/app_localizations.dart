@@ -1091,7 +1091,7 @@ abstract class AppLocalizations {
   /// No description provided for @standardDescription.
   ///
   /// In es, this message translates to:
-  /// **'Vehículo compacto con transmisión manual, ideal para traslados cortos. Cuenta con 5 asientos y espacio limitado para equipaje.'**
+  /// **'La opción más común para viajes diarios. Para 3 o 4 pasajeros, con confort aceptable, buen rendimiento y tarifas accesibles.'**
   String get standardDescription;
 
   /// No description provided for @familyVehicle.
@@ -1103,7 +1103,7 @@ abstract class AppLocalizations {
   /// No description provided for @familyDescription.
   ///
   /// In es, this message translates to:
-  /// **'Vehículo espacioso ideal para familias y traslados grupales. Ofrece amplio espacio y confort.'**
+  /// **'Espacioso y cómodo, ideal para grupos de 6 o más personas o para viajes con equipaje adicional. Perfecto para traslados en grupo o viajes largos.'**
   String get familyDescription;
 
   /// No description provided for @comfortVehicle.
@@ -1115,7 +1115,7 @@ abstract class AppLocalizations {
   /// No description provided for @comfortDescription.
   ///
   /// In es, this message translates to:
-  /// **'Vehículo cómodo con características premium, perfecto para traslados ejecutivos.'**
+  /// **'Una experiencia superior en comodidad. Asientos más amplios, suspensión suave, aire acondicionado y mayor atención al detalle. Ideal para quienes buscan un viaje más relajado y placentero.'**
   String get comfortDescription;
 
   /// No description provided for @passwordLabel.
@@ -1151,7 +1151,7 @@ abstract class AppLocalizations {
   /// No description provided for @motoTaxiDescription.
   ///
   /// In es, this message translates to:
-  /// **'Compact vehicle with three or two wheels, ideal for individual or couple transportation. Offers fast, economical, and efficient travel in urban or high-traffic areas. Limited luggage space.'**
+  /// **'Vehículo de dos o tres ruedas, ideal para trayectos cortos en zonas con tráfico intenso. Económico, ágil y perfecto para movilizarse rápidamente por calles estrechas.'**
   String get motoTaxiDescription;
 }
 

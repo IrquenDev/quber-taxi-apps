@@ -190,17 +190,17 @@
       "attachButton": "Adjuntar",
       "vehicleTypeLabel": "Seleccione su tipo de vehículo:",
       "standardVehicle": "Estándar",
-      "standardDescription": "Vehículo compacto con transmisión manual, ideal para traslados cortos. Cuenta con 5 asientos y espacio limitado para equipaje.",
+      "standardDescription": "La opción más común para viajes diarios. Para 3 o 4 pasajeros, con confort aceptable, buen rendimiento y tarifas accesibles.",
       "familyVehicle": "Familiar",
-      "familyDescription": "Vehículo espacioso ideal para familias y traslados grupales. Ofrece amplio espacio y confort.",
+      "familyDescription": "Espacioso y cómodo, ideal para grupos de 6 o más personas o para viajes con equipaje adicional. Perfecto para traslados en grupo o viajes largos.",
       "comfortVehicle": "Confort",
-      "comfortDescription": "Vehículo cómodo con características premium, perfecto para traslados ejecutivos.",
+      "comfortDescription": "Una experiencia superior en comodidad. Asientos más amplios, suspensión suave, aire acondicionado y mayor atención al detalle. Ideal para quienes buscan un viaje más relajado y placentero.",
       "passwordLabel": "Contraseña",
       "passwordHint": "Introduzca la contraseña deseada",
       "confirmPasswordLabel": "Confirmar contraseña:",
       "confirmPasswordHint": "Vuelva a introducir su contraseña",
       "finishButton": "Finalizar registro",
       "motoTaxiVehicle": "Mototaxi",
-      "motoTaxiDescription": "Compact vehicle with three or two wheels, ideal for individual or couple transportation. Offers fast, economical, and efficient travel in urban or high-traffic areas. Limited luggage space."
+      "motoTaxiDescription": "Vehículo de dos o tres ruedas, ideal para trayectos cortos en zonas con tráfico intenso. Económico, ágil y perfecto para movilizarse rápidamente por calles estrechas."
 
 }

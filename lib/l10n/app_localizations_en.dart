@@ -525,21 +525,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get standardDescription =>
-      'Compact vehicle with manual transmission, ideal for short trips. Has 5 seats and limited luggage space.';
+      'The most common choice for daily trips. Suitable for 3 or 4 passengers, offering acceptable comfort, good performance, and affordable rates.';
 
   @override
   String get familyVehicle => 'Family';
 
   @override
   String get familyDescription =>
-      'Spacious vehicle ideal for families and group transfers. Features ample space and comfort.';
+      'Spacious and comfortable, ideal for groups of 6 or more people or trips with extra luggage. Perfect for group transfers or long journeys.';
 
   @override
   String get comfortVehicle => 'Comfort';
 
   @override
   String get comfortDescription =>
-      'Comfortable vehicle with premium features, perfect for executive transfers.';
+      'A superior comfort experience. Wider seats, smooth suspension, air conditioning, and greater attention to detail. Ideal for those seeking a more relaxed and pleasant ride.';
 
   @override
   String get passwordLabel => 'Password';
@@ -558,5 +558,5 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get motoTaxiDescription =>
-      'Compact three-wheeled  vehicle, ideal for individual or two-person rides. Provides fast, economical, and efficient transportation in urban areas or heavy traffic. Limited luggage space.';
+      'Two- or three-wheeled vehicle, ideal for short trips in heavy traffic areas. Economical, agile, and perfect for quick navigation through narrow streets.';
 }
