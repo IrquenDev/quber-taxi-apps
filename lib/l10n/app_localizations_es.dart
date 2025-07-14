@@ -99,6 +99,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get selectTravel => 'Seleccione un viaje';
 
   @override
+  String get travelSolicitation => 'Solicitudes de Viajes';
+
+  @override
   String get updateTravel => 'Actualizar viajes';
 
   @override

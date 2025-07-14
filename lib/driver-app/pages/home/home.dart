@@ -438,31 +438,26 @@ class _DriverHomePageState extends State<DriverHomePage> {
                     ),
                   ),
                   // Show travel info bottom sheet
-                  if(_selectedTravel != null)
-                    FloatingActionButton(
-                        heroTag: "show-travel-info",
-                        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                        onPressed: () => showModalBottomSheet(
-                            context: context,
-                            showDragHandle: true,
-                            builder: (sheetContext) => TravelInfoSheet(
-                              travel: _selectedTravel!,
-                              onPickUpConfirmationRequest: () {
-                                  _travelStateHandler = TravelStateHandler(
-                                      state: TravelState.inProgress,
-                                      travelId: _selectedTravel!.id,
-                                      onMessage: (travel) => sheetContext.go(DriverRoutes.navigation, extra:
-                                      travel)
-                                  )..activate();
-                              }
-                            )
-                        ),
-                        child: Icon(
-                            Icons.info_outline,
-                            color: Theme.of(context).iconTheme.color,
-                            size: Theme.of(context).iconTheme.size
-                        )
-                    )
+                  // if(_selectedTravel == null)
+                  //   FloatingActionButton(
+                  //       heroTag: "show-travel-info",
+                  //       backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                  //       onPressed: () => showModalBottomSheet(
+                  //           context: context,
+                  //           showDragHandle: true,
+                  //           builder: (sheetContext) => TravelInfoSheet(
+                  //             travel: _selectedTravel!,
+                  //             onPickUpConfirmationRequest: () {
+                  //                 _travelStateHandler = TravelStateHandler(
+                  //                     state: TravelState.inProgress,
+                  //                     travelId: _selectedTravel!.id,
+                  //                     onMessage: (travel) => sheetContext.go(DriverRoutes.navigation, extra:
+                  //                     travel)
+                  //                 )..activate();
+                  //             }
+                  //           )
+                  //       ),
+                  //   )
                 ]
               )
             ),

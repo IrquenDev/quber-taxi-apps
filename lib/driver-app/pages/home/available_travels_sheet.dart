@@ -24,7 +24,7 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
   final DraggableScrollableController _sheetController = DraggableScrollableController();
   final travelService = TravelService();
   // Just for simplify alignment
-  final ghostContainer = Container(width: 40, color: Colors.transparent);
+  final ghostContainer = Container(width: 50, color: Colors.transparent);
   double _currentSize = 0.15;
   bool _isActionPending = true;
 
@@ -100,12 +100,16 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
                                 _sheetController.jumpTo(_currentSize >= 0.15 && _currentSize <= 0.45 ? 0.9 : 0.15);
                               },
                               icon: Icon(_currentSize >= 0.15 && _currentSize <= 0.45
-                                  ? Icons.keyboard_double_arrow_up
-                                  : Icons.keyboard_double_arrow_down
+                                  ? Icons.keyboard_double_arrow_down
+                                  : Icons.keyboard_double_arrow_up
                               )
                           ),
-                          Text(AppLocalizations.of(context)!.selectTravel, style: Theme.of(context).textTheme
-                              .titleMedium)
+                          Text(
+                              _currentSize >= 0.15 && _currentSize <= 0.45
+                                  ? AppLocalizations.of(context)!.travelSolicitation
+                                  : AppLocalizations.of(context)!.selectTravel ,
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                          )
                         ]
                     )
                   )

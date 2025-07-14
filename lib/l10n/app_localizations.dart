@@ -272,6 +272,12 @@ abstract class AppLocalizations {
   /// **'Seleccione un viaje'**
   String get selectTravel;
 
+  /// No description provided for @travelSolicitation.
+  ///
+  /// In es, this message translates to:
+  /// **'Solicitudes de Viajes'**
+  String get travelSolicitation;
+
   /// No description provided for @updateTravel.
   ///
   /// In es, this message translates to:
