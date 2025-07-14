@@ -129,7 +129,7 @@ class _LoginPageState extends State<LoginPage> {
                                     final phone = _phoneTFController.text;
                                     final password = _passwordTFController.text;
                                     // Check connection
-                                    if(runtime.hasConnection(context)) return;
+                                    //if(runtime.hasConnection(context)) return;
                                     // Init var
                                     http.Response? response;
                                     String route;
