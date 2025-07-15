@@ -566,11 +566,15 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
               padding: EdgeInsets.zero,
               icon: SvgPicture.asset(
                 "assets/icons/camera.svg",
-                color: Theme.of(context).colorScheme.onSecondaryContainer,
+                color: Theme
+                    .of(context)
+                    .colorScheme
+                    .onSecondaryContainer,
                 fit: BoxFit.scaleDown,
               ),
               onPressed: () async {
-                final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+                final image = await ImagePicker().pickImage(
+                    source: ImageSource.gallery);
                 if (image != null) {
                   setState(() => _taxiImage = image);
                 }
@@ -597,11 +601,6 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
     );
   }
 }
-
-
-
-
-
 
 
 // // Vehicle Section
