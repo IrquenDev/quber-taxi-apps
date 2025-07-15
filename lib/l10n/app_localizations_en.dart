@@ -389,6 +389,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get goBack => 'Go Back';
 
   @override
+  String get aboutUsDriver => 'About Us';
+
+  @override
+  String get aboutDevDriver => 'About the developer';
+
+  @override
+  String get logout => 'Logout';
+
+  @override
+  String get requiredLabel => 'Please complete all required fields';
+
+  @override
   String get aboutUsTitle => 'About Us';
 
   @override

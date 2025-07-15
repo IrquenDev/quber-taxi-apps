@@ -836,6 +836,30 @@ abstract class AppLocalizations {
   /// **'Regresar'**
   String get goBack;
 
+  /// No description provided for @aboutUsDriver.
+  ///
+  /// In es, this message translates to:
+  /// **'Sobre Nosotros'**
+  String get aboutUsDriver;
+
+  /// No description provided for @aboutDevDriver.
+  ///
+  /// In es, this message translates to:
+  /// **'Sobre el desarrollador'**
+  String get aboutDevDriver;
+
+  /// No description provided for @logout.
+  ///
+  /// In es, this message translates to:
+  /// **'Cerrar Sesión'**
+  String get logout;
+
+  /// No description provided for @requiredLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Por favor complete todos los campos obligatorios'**
+  String get requiredLabel;
+
   /// No description provided for @aboutUsTitle.
   ///
   /// In es, this message translates to:

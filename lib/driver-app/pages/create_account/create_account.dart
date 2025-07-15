@@ -50,7 +50,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
   bool get _canSubmit => _formKey.currentState!.validate()
       && _selectedTaxi != null
       && _taxiImage != null;
-      // && _licenseImage != null;
+  // && _licenseImage != null;
 
   bool _isProcessingImage = false;
 
@@ -73,7 +73,15 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                   height: 220,
                   decoration: BoxDecoration(
                     color: colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.vertical(bottom: Radius.circular(dimensions.borderRadius))
+                    borderRadius: BorderRadius.vertical(bottom: Radius.circular(dimensions.borderRadius)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 2,
+                        blurRadius: 5,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
                   ),
                   child: SafeArea(
                     child: Padding(
@@ -107,7 +115,11 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                                 padding: const EdgeInsets.all(12.0),
                                 decoration: BoxDecoration(
                                   color: colorScheme.surfaceContainerLowest,
-                                  borderRadius: BorderRadius.circular(20)
+                                  borderRadius: BorderRadius.circular(25),
+                                  border: Border.all(
+                                    color: Colors.grey.shade200,
+                                    width: 1,
+                                  ),
                                 ),
                                 child: Column(
                                   children: [
@@ -134,27 +146,31 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                                       // Name Text Field
                                       _buildTextField(
                                           controller: _nameTFController,
+                                          maxLength: 50,
                                           label: AppLocalizations.of(context)!.nameLabel,
                                           hint: AppLocalizations.of(context)!.nameHint),
                                       // Plate Text Field
                                       _buildTextField(
                                           controller: _plateTFController,
-                                          label: localizations.plateLabel,
-                                          hint: localizations.plateHint
-                                      ),
-                                      // Phone Text Field
-                                      _buildTextField(
+                                          label: AppLocalizations.of(context)!.carRegistration,
+                                          hint: localizations.plateHint,
+                                          maxLength: 7,
+                                        ),
+                                        // Phone Text Field
+                                        _buildTextField(
                                           inputType: TextInputType.phone,
                                           controller: _phoneTFController,
-                                          label: localizations.phoneLabel,
-                                          hint: AppLocalizations.of(context)!.phoneHint
-                                      ),
-                                      // Seats Text Field
-                                      _buildTextField(
+                                          label: AppLocalizations.of(context)!.phoneNumberDriver,
+                                          hint: AppLocalizations.of(context)!.phoneHint,
+                                          maxLength: 8,
+                                        ),
+                                        // Seats Text Field
+                                        _buildTextField(
                                           inputType: TextInputType.number,
                                           controller: _seatsTFController,
-                                          label: localizations.seatsLabel,
-                                          hint: localizations.seatsHint
+                                          label: AppLocalizations.of(context)!.numberOfSeats,
+                                          hint: localizations.seatsHint,
+                                        maxLength: 3,
                                       )
                                     ]),
                                   ],
@@ -204,19 +220,30 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                             // Vehicle Section
                             Container(
                               margin: const EdgeInsets.symmetric(horizontal: 16),
-                              child: Theme(
-                                data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      AppLocalizations.of(context)!.vehicleTypeLabel,
-                                      style: textTheme.bodyLarge?.copyWith(fontSize: 18, color: colorScheme.secondary),
-                                    ),
-                                    ...List.generate(TaxiType.values.length, (index) {
-                                      return _buildTaxiCardItem(index);
-                                    })
-                                  ]
+                              child: Card(
+                                color: Colors.white,
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  side: BorderSide(
+                                    color: Colors.grey.shade200,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Theme(
+                                  data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        AppLocalizations.of(context)!.vehicleTypeLabel,
+                                        style: textTheme.bodyLarge?.copyWith(fontSize: 18, color: colorScheme.secondary),
+                                      ),
+                                      ...List.generate(TaxiType.values.length, (index) {
+                                        return _buildTaxiCardItem(index);
+                                      })
+                                    ]
+                                  ),
                                 ),
                               )
                             ),
@@ -335,28 +362,61 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
     required TextEditingController controller,
     required String label,
     required String hint,
-    TextInputType? inputType
+    TextInputType? inputType,
+    int? maxLength,
   }) {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, spacing: 6.0, children: [
-      Text(label),
-      TextFormField(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        RichText(
+          text: TextSpan(
+            text: label,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.normal,
+              fontSize: 18,
+              color: Colors.black,
+            ),
+          ),
+        ),
+        const SizedBox(height: 6),
+        TextFormField(
           keyboardType: inputType ?? TextInputType.text,
           controller: controller,
+          maxLength: maxLength,
+          buildCounter: (context, {required currentLength, required isFocused, maxLength}) => const SizedBox.shrink(),
           validator: (value) =>
               Workflow<String?>()
                   .step(RequiredStep(errorMessage: AppLocalizations.of(context)!.requiredField))
                   .withDefault((_) => null)
                   .proceed(value),
           decoration: InputDecoration(
-              hintText: hint,
-              fillColor: Theme.of(context).colorScheme.surface,
-              border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: BorderSide(color: Colors.white54, width: 0.1)
-              )
-          )
-      )
-    ]);
+            filled: true,
+            fillColor: Colors.white,
+            contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color: Colors.grey.shade300,
+                width: 1,
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.grey.shade300,
+                width: 1,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.red.shade400,
+                width: 1,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+      ],
+    );
   }
 
   Widget _buildTaxiCardItem(int index) {
@@ -366,31 +426,28 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
     final taxi = TaxiType.values[index];
     final isSelected = _selectedTaxi == taxi;
     return Card(
-      color: isSelected ? colorScheme.primaryFixed : colorScheme.surfaceContainerLowest,
+      color: isSelected ? colorScheme.primaryFixed : Colors.white,
       child: ExpansionTile(
         title: GestureDetector(
           onTap: () => setState(()=> _selectedTaxi = taxi),
           child: ListTile(
-            // value: isSelected,
-            // onChanged: (_)=> setState(()=> _selectedTaxi = taxi),
-            title: Row(
-                spacing: 12.0,
-                children: [
-                  SizedBox(
-                      width: 90, height: 48,
-                      child: Image.asset(taxi.assetRef(AssetDpi.xhdpi), fit: BoxFit.fill)
-                  ),
-                  Text(
-                      TaxiType.nameOf(taxi, localizations),
-                      style: isSelected
-                          ? textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)
-                          : textTheme.bodyMedium
-                  )
-                ]
-            ),
-            selected: isSelected,
-            // activeColor: _colorScheme.primaryContainer,
-            contentPadding: EdgeInsets.zero
+              title: Row(
+                  spacing: 12.0,
+                  children: [
+                    SizedBox(
+                        width: 90, height: 48,
+                        child: Image.asset(taxi.assetRef(AssetDpi.xhdpi), fit: BoxFit.fill)
+                    ),
+                    Text(
+                        TaxiType.nameOf(taxi, localizations),
+                        style: isSelected
+                            ? textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)
+                            : textTheme.bodyMedium
+                    )
+                  ]
+              ),
+              selected: isSelected,
+              contentPadding: EdgeInsets.zero
           ),
         ),
         tilePadding: EdgeInsets.symmetric(horizontal: 12.0),
@@ -407,24 +464,33 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
     required String label,
     required bool visible,
     required Function(bool) onToggle,
-    required Workflow<String?> validationWorkflow
-}) {
+    required Workflow<String?> validationWorkflow,
+    int? maxLength,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: 8.0,
       children: [
-        Text(
-          label,
-          style: Theme.of(context)
-              .textTheme
-              .bodyMedium
-              ?.copyWith(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.grey.shade700),
+        RichText(
+          text: TextSpan(
+            text: label,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: Colors.grey.shade700,
+            ),
+          ),
         ),
+        const SizedBox(height: 6),
         TextFormField(
           controller: controller,
           obscureText: !visible,
+          maxLength: maxLength,
+          buildCounter: (context, {required currentLength, required isFocused, maxLength}) => const SizedBox.shrink(),
+          validator: (value) => validationWorkflow.proceed(value),
           decoration: InputDecoration(
-            fillColor: Theme.of(context).colorScheme.surface,
+            filled: true,
+            fillColor: Colors.white,
+            contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             suffixIcon: IconButton(
               icon: Icon(
                 visible ? Icons.visibility : Icons.visibility_off,
@@ -435,14 +501,26 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(
-                color: Theme.of(context).colorScheme.surfaceDim,
+                color: Colors.grey.shade300,
                 width: 1,
               ),
-            )
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.grey.shade300,
+                width: 1,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.red.shade400,
+                width: 1,
+              ),
+            ),
           ),
-          validator: (value) => validationWorkflow.proceed(value)
-        )
-      ]
+        ),
+        const SizedBox(height: 12),
+      ],
     );
   }
 
@@ -450,18 +528,75 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
     final colorScheme = Theme.of(context).colorScheme;
     return Stack(
       children: [
-        // Main Circle
-        CircleAvatar(
-          radius: 80,
-          backgroundColor: colorScheme.surfaceContainer,
-          backgroundImage: _taxiImage != null ? FileImage(File(_taxiImage!.path)) : null,
-          child: _taxiImage == null
-              ? SvgPicture.asset("assets/icons/taxi.svg", width: Theme.of(context).iconTheme.size! * 3)
-              : null,
+        // Main Circle with shadow
+        Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: CircleAvatar(
+            radius: 80,
+            backgroundColor: colorScheme.onSecondary,
+            backgroundImage: _taxiImage != null ? FileImage(File(_taxiImage!.path)) : null,
+            child: _taxiImage == null
+                ? SvgPicture.asset(
+              "assets/icons/taxi.svg",
+              width: Theme.of(context).iconTheme.size! * 3,
+              color: colorScheme.onSecondaryContainer,
+            )
+                : null,
+          ),
+        ),
+        // Camera icon positioned at bottom right (similar to first code)
+        Positioned(
+          bottom: 0,
+          right: 0,
+          child: Container(
+            width: 33,
+            height: 33,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.3),
+                  spreadRadius: 1,
+                  blurRadius: 3,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: IconButton(
+              padding: EdgeInsets.zero,
+              icon: SvgPicture.asset(
+                "assets/icons/camera.svg",
+                color: Theme
+                    .of(context)
+                    .colorScheme
+                    .onSecondaryContainer,
+                fit: BoxFit.scaleDown,
+              ),
+              onPressed: () async {
+                final image = await ImagePicker().pickImage(
+                    source: ImageSource.gallery);
+                if (image != null) {
+                  setState(() => _taxiImage = image);
+                }
+              },
+            ),
+          ),
         ),
         if (_taxiImage != null)
           Positioned(
-            top: 8.0, right: 8.0,
+            top: 8.0,
+            right: 8.0,
             child: GestureDetector(
               onTap: () {
                 setState(() => _taxiImage = null);
