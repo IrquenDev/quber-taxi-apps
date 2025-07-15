@@ -45,297 +45,295 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
 
     return Scaffold(
       body: Stack(
-          children: [
-          Container(color: Colors.white),
-      Positioned(
-        top: 0,
-        left: 0,
-        right: 0,
-        child: Container(
-          height: 180,
-          decoration: BoxDecoration(
-              color: colorScheme.primaryContainer,
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(15),
-                bottomRight: Radius.circular(15),
+        children: [
+          Container(color: colorScheme.surface),
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              height: 180,
+              decoration: BoxDecoration(
+                color: colorScheme.primaryContainer,
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(15),
+                  bottomRight: Radius.circular(15),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: colorScheme.shadow.withOpacity(0.5),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
               ),
-              boxShadow: [
-          BoxShadow(
-          color: Colors.grey.withOpacity(0.5),
-          spreadRadius: 2,
-          blurRadius: 5,
-          offset: const Offset(0, 3),
+            ),
           ),
-          ],
-        ),
+          Positioned(
+            top: 120,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                children: [
+                  // Card 1: Personal Information
+                  Container(
+                    margin:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Card(
+                          color: colorScheme.surfaceContainerLowest,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                top: 120, left: 16, right: 16, bottom: 16),
+                            child: Form(
+                              key: _formKey,
+                              child: Column(
+                                children: [
+                                  const SizedBox(height: 20),
+                                  _buildLabeledField(
+                                    AppLocalizations.of(context)!.nameDriver,
+                                    _nameController,
+                                    isRequired: true,
+                                    maxLimit: 50,
+                                  ),
+                                  _buildLabeledField(
+                                    AppLocalizations.of(context)!
+                                        .carRegistration,
+                                    _carRegistrationController,
+                                    isRequired: true,
+                                    maxLimit: 7,
+                                  ),
+                                  _buildLabeledField(
+                                    AppLocalizations.of(context)!
+                                        .phoneNumberDriver,
+                                    _phoneController,
+                                    isRequired: true,
+                                    maxLimit: 8,
+                                  ),
+                                  _buildLabeledField(
+                                    AppLocalizations.of(context)!.email,
+                                    _emailController,
+                                    isRequired: true,
+                                    maxLimit: 50,
+                                    isEmail: true,
+                                  ),
+                                  _buildLabeledField(
+                                    AppLocalizations.of(context)!.numberOfSeats,
+                                    _seatsController,
+                                    isRequired: true,
+                                    maxLimit: 3,
+                                    isNumeric: true,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: _buildGuardarButton(
+                                      _formKey,
+                                      AppLocalizations.of(context)!
+                                          .saveInformation,
+                                      onSave: _savePersonalInfo,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        // Image
+                        Positioned(
+                          top: 20,
+                          left: 0,
+                          right: 0,
+                          child: Center(
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                CircleAvatar(
+                                  radius: 60,
+                                  backgroundImage:
+                                  AssetImage('assets/images/driver.png'),
+                                ),
+                                Positioned(
+                                  bottom: 0,
+                                  right: 0,
+                                  child: Container(
+                                    width: 33,
+                                    height: 33,
+                                    decoration: BoxDecoration(
+                                      color: colorScheme.surfaceContainerLowest,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: SvgPicture.asset(
+                                      "assets/icons/camera.svg",
+                                      color: colorScheme.onSurfaceVariant,
+                                      fit: BoxFit.scaleDown,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Card 2: Balance
+                  Container(
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
+                    child: Card(
+                      color: colorScheme.surfaceContainerLowest,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: _buildBalanceBox(),
+                      ),
+                    ),
+                  ),
+
+                  // Card 3: Passwords
+                  Container(
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
+                    child: Card(
+                      color: colorScheme.surfaceContainerLowest,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Form(
+                          key: _passwordFormKey,
+                          child: Column(
+                            children: [
+                              _buildLabeledPassword(
+                                AppLocalizations.of(context)!.passwordDriver,
+                                _passwordController,
+                                isRequired: true,
+                                maxLimit: 20,
+                              ),
+                              _buildLabeledPassword(
+                                AppLocalizations.of(context)!
+                                    .passwordConfirmDriver,
+                                _confirmPasswordController,
+                                isRequired: true,
+                                isConfirmation: true,
+                                originalPassword: _passwordController.text,
+                                maxLimit: 20,
+                              ),
+                              const SizedBox(height: 16),
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: _buildGuardarButton(
+                                  _passwordFormKey,
+                                  AppLocalizations.of(context)!.saveInformation,
+                                  onSave: _savePassword,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // Menu Items
+                  Container(
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
+                    child: Card(
+                      color: colorScheme.surfaceContainerLowest,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _buildMenuItem(
+                            icon: Icons.drive_eta_outlined,
+                            text: AppLocalizations.of(context)!.aboutUsDriver,
+                            onTap: () => context.push(CommonRoutes.aboutUs),
+                          ),
+                          Divider(
+                              height: 1,
+                              color: colorScheme.outlineVariant,
+                              indent: 12,
+                              endIndent: 12),
+                          _buildMenuItem(
+                            icon: Icons.code,
+                            text: AppLocalizations.of(context)!.aboutDevDriver,
+                            onTap: () => context.push(CommonRoutes.aboutDev),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // Logout Button
+                  Container(
+                    margin:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                    child: _buildLogoutItem(
+                      text: AppLocalizations.of(context)!.logout,
+                      icon: Icons.logout,
+                      textColor: colorScheme.error,
+                      iconColor: colorScheme.error,
+                      onTap: () async {
+                        await SessionManager.instance.clear();
+                        context.go(CommonRoutes.login);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Header
+          Positioned(
+            top: 0,
+            left: 30,
+            right: 0,
+            child: SafeArea(
+              child: Container(
+                height: 80,
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.arrow_back, color: colorScheme.onPrimaryContainer),
+                      onPressed: () => context.pop(),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      AppLocalizations.of(context)!.myAccount,
+                      style: textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onPrimaryContainer,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
-    ),
-    Positioned(
-    top: 120,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    child: SingleChildScrollView(
-    physics: const BouncingScrollPhysics(),
-    child: Column(
-    children: [
-    // Card 1: Personal Information
-    Container(
-    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-    child: Stack(
-    clipBehavior: Clip.none,
-    children: [
-    Card(
-    color: Colors.white,
-    elevation: 0,
-    shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(25),
-    side: BorderSide(
-    color: Colors.grey.shade200,
-    width: 1,
-    ),
-    ),
-    child: Padding(
-    padding: const EdgeInsets.only(top: 120, left: 16, right: 16, bottom: 16),
-    child: Form(
-    key: _formKey,
-    child: Column(
-    children: [
-    const SizedBox(height: 20),
-    _buildLabeledField(
-    AppLocalizations.of(context)!.nameDriver,
-    _nameController,
-    isRequired: true,
-      maxLimit: 50,
-
-    ),
-    _buildLabeledField(
-    AppLocalizations.of(context)!.carRegistration,
-    _carRegistrationController,
-    isRequired: true,
-      maxLimit: 7,
-    ),
-    _buildLabeledField(
-    AppLocalizations.of(context)!.phoneNumberDriver,
-    _phoneController,
-    isRequired: true,
-      maxLimit: 8,
-    ),
-    _buildLabeledField(
-    AppLocalizations.of(context)!.email,
-    _emailController,
-    isRequired: true,
-      maxLimit: 50,
-    isEmail: true,
-    ),
-    _buildLabeledField(
-    AppLocalizations.of(context)!.numberOfSeats,
-    _seatsController,
-    isRequired: true,
-    maxLimit: 3,
-    isNumeric: true,
-    ),
-    const SizedBox(height: 16),
-    Align(
-    alignment: Alignment.centerLeft,
-    child: _buildGuardarButton(
-    _formKey,
-    AppLocalizations.of(context)!.saveInformation,
-    onSave: _savePersonalInfo,
-    ),
-    ),
-    ],
-    ),
-    ),
-    ),
-    ),
-    // Image
-    Positioned(
-    top: 20,
-    left: 0,
-    right: 0,
-    child: Center(
-    child: Stack(
-    alignment: Alignment.center,
-    children: [
-    CircleAvatar(
-    radius: 60,
-    backgroundImage: AssetImage('assets/images/driver.png'),
-    ),
-    Positioned(
-    bottom: 0,
-    right: 0,
-    child: Container(
-    width: 33,
-    height: 33,
-    decoration: BoxDecoration(
-    color: Colors.white,
-    shape: BoxShape.circle,
-    ),
-    child: SvgPicture.asset(
-    "assets/icons/camera.svg",
-    color: Theme.of(context).colorScheme.surfaceDim,
-    fit: BoxFit.scaleDown,
-    ),
-    ),
-    ),
-    ],
-    ),
-    ),
-    ),
-    ],
-    ),
-    ),
-
-    // Card 2: Balance
-    Container(
-    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-    child: Card(
-    color: Colors.white,
-    elevation: 0,
-    shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(15),
-    side: BorderSide(
-    color: Colors.grey.shade200,
-    width: 1,
-    ),
-    ),
-    child: Padding(
-    padding: const EdgeInsets.all(16),
-    child: _buildBalanceBox(),
-    ),
-    ),
-    ),
-
-    // Card 3: Passwords
-    Container(
-    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-    child: Card(
-    color: Colors.white,
-    elevation: 0,
-    shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(15),
-    side: BorderSide(
-    color: Colors.grey.shade200,
-    width: 1,
-    ),
-    ),
-    child: Padding(
-    padding: const EdgeInsets.all(16),
-    child: Form(
-    key: _passwordFormKey,
-    child: Column(
-    children: [
-    _buildLabeledPassword(
-    AppLocalizations.of(context)!.passwordDriver,
-    _passwordController,
-    isRequired: true,
-      maxLimit: 20,
-    ),
-    _buildLabeledPassword(
-    AppLocalizations.of(context)!.passwordConfirmDriver,
-    _confirmPasswordController,
-    isRequired: true,
-    isConfirmation: true,
-    originalPassword: _passwordController.text,
-      maxLimit: 20,
-    ),
-    const SizedBox(height: 16),
-    Align(
-    alignment: Alignment.centerLeft,
-    child: _buildGuardarButton(
-    _passwordFormKey,
-    AppLocalizations.of(context)!.saveInformation,
-    onSave: _savePassword,
-    ),
-    ),
-    ],
-    ),
-    ),
-    ),
-    ),
-    ),
-
-    // Menu Items
-    Container(
-    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-    child: Card(
-    color: Colors.white,
-    elevation: 0,
-    shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(15),
-    side: BorderSide(
-    color: Theme.of(context).colorScheme.surfaceContainerHighest,
-    width: 1,
-    ),
-    ),
-    child: Column(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-    _buildMenuItem(
-    icon: Icons.drive_eta_outlined,
-    text: 'Sobre Nosotros',
-    onTap: () => context.push(CommonRoutes.aboutUs),
-    ),
-    Divider(height: 1, color: Colors.grey.shade200, indent: 12, endIndent: 12),
-    _buildMenuItem(
-    icon: Icons.code,
-    text: 'Sobre el desarrollador',
-    onTap: () => context.push(CommonRoutes.aboutDev),
-    ),
-    ],
-    ),
-    ),
-    ),
-
-    // Logout Button
-    Container(
-    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-    child: _buildLogoutItem(
-    text: 'Cerrar Sesión',
-    icon: Icons.logout,
-    textColor: Colors.red,
-    iconColor: Colors.red,
-    onTap: () async {
-    await SessionManager.instance.clear();
-    context.go(CommonRoutes.login);
-    },
-    ),
-    ),
-    ],
-    ),
-    ),
-    ),
-
-    // Header
-    Positioned(
-    top: 0,
-    left: 30,
-    right: 0,
-    child: SafeArea(
-    child: Container(
-    height: 80,
-    child: Row(
-    children: [
-    IconButton(
-    icon: Icon(Icons.arrow_back, color: colorScheme.shadow),
-    onPressed: () => context.pop(),
-    ),
-    const SizedBox(width: 10),
-    Text(
-    AppLocalizations.of(context)!.myAccount,
-    style: textTheme.headlineSmall?.copyWith(
-    fontWeight: FontWeight.bold,
-    color: colorScheme.shadow,
-    ),
-    ),
-    ],
-    ),
-    ),
-    ),
-    ),
-    ],
-    ),
     );
   }
 
@@ -347,16 +345,19 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
         bool isNumeric = false,
         int? maxLimit,
       }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         RichText(
           text: TextSpan(
             text: label,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            style: textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.normal,
               fontSize: 18,
-              color: Colors.black,
+              color: colorScheme.onSurface,
             ),
           ),
         ),
@@ -364,27 +365,30 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
         TextFormField(
           controller: controller,
           maxLength: maxLimit,
-          buildCounter: (context, {required currentLength, required isFocused, maxLength}) => const SizedBox.shrink(),
+          buildCounter: (context,
+              {required currentLength, required isFocused, maxLength}) =>
+          const SizedBox.shrink(),
           decoration: InputDecoration(
             filled: true,
-            fillColor: Colors.white,
-            contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            fillColor: colorScheme.surfaceContainer,
+            contentPadding:
+            const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(
-                color: Colors.grey.shade300,
+                color: colorScheme.outlineVariant,
                 width: 1,
               ),
             ),
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: Colors.grey.shade300,
+                color: colorScheme.outlineVariant,
                 width: 1,
               ),
             ),
             errorBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: Colors.red.shade400,
+                color: colorScheme.error,
                 width: 1,
               ),
             ),
@@ -393,7 +397,8 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
             if (isRequired && (value == null || value.isEmpty)) {
               return 'Este campo es obligatorio';
             }
-            if (isEmail && !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value!)) {
+            if (isEmail &&
+                !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value!)) {
               return 'Ingrese un email válido';
             }
             if (isNumeric && !RegExp(r'^[0-9]+$').hasMatch(value!)) {
@@ -412,6 +417,8 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
       String text, {
         required VoidCallback onSave,
       }) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return SizedBox(
       width: 180,
       child: ElevatedButton(
@@ -421,21 +428,22 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text("$text correctamente"),
-                backgroundColor: Colors.green,
+                backgroundColor: colorScheme.tertiaryContainer,
               ),
             );
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text("Por favor complete todos los campos obligatorios"),
-                backgroundColor: Colors.red,
+                content:
+                Text(AppLocalizations.of(context)!.requiredLabel),
+                backgroundColor: colorScheme.errorContainer,
               ),
             );
           }
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-          foregroundColor: Colors.black,
+          backgroundColor: colorScheme.primaryContainer,
+          foregroundColor: colorScheme.onPrimaryContainer,
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(18),
@@ -444,62 +452,75 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
         ),
         child: Text(
           text,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            color: colorScheme.onPrimaryContainer,
+          ),
         ),
       ),
     );
   }
 
   Widget _buildBalanceBox() {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           AppLocalizations.of(context)!.balance,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          style: textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.bold,
             fontSize: 18,
-            color: Colors.grey.shade700,
+            color: colorScheme.onSurfaceVariant,
           ),
         ),
         const SizedBox(height: 8),
-        _buildBalanceRow(AppLocalizations.of(context)!.quberCredits, "1600 CUP", null),
+        _buildBalanceRow(
+            AppLocalizations.of(context)!.quberCredits, "1600 CUP", null),
         const SizedBox(height: 8),
-        const Divider(
-          color: Colors.grey,
+        Divider(
+          color: colorScheme.outlineVariant,
           thickness: 0.5,
         ),
-        _buildBalanceRow(AppLocalizations.of(context)!.nextPay, "16/4/2025", null),
+        _buildBalanceRow(
+            AppLocalizations.of(context)!.nextPay, "16/4/2025", null),
         const SizedBox(height: 12),
-        const Divider(
-          color: Colors.grey,
+        Divider(
+          color: colorScheme.outlineVariant,
           thickness: 0.5,
         ),
-        _buildBalanceRow(AppLocalizations.of(context)!.valuation, "4.0", "assets/icons/yelow_star.svg"),
+        _buildBalanceRow(AppLocalizations.of(context)!.valuation, "4.0",
+            "assets/icons/yelow_star.svg"),
       ],
     );
   }
 
   Widget _buildBalanceRow(String label, String value, String? iconPath) {
-    if (label == "Valoración acumulada:") {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    if (label == AppLocalizations.of(context)!.valuation) {
       final rating = double.tryParse(value) ?? 0.0;
       return Row(
         children: [
           Expanded(
             child: Text(
               label,
-              style: TextStyle(
+              style: textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: Colors.grey.shade600,
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
           ),
           _buildStarRating(rating),
           Text(
             " $value",
-            style: TextStyle(
+            style: textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              color: Colors.grey.shade800,
+              color: colorScheme.onSurface,
             ),
           ),
         ],
@@ -511,19 +532,18 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
         Expanded(
           child: Text(
             label,
-            style: TextStyle(
+            style: textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              color: Colors.grey.shade600,
+              color: colorScheme.onSurfaceVariant,
             ),
           ),
         ),
-        if (iconPath != null)
-          SvgPicture.asset(iconPath, height: 20),
+        if (iconPath != null) SvgPicture.asset(iconPath, height: 20),
         Text(
           " $value",
-          style: TextStyle(
+          style: textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w600,
-            color: Colors.grey.shade800,
+            color: colorScheme.onSurface,
           ),
         ),
       ],
@@ -557,62 +577,57 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
         String originalPassword = '',
         int? maxLimit,
       }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         RichText(
           text: TextSpan(
             text: label,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            style: textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.bold,
               fontSize: 16,
-              color: Colors.grey.shade700,
+              color: colorScheme.onSurfaceVariant,
             ),
-            children: isRequired
-                ? [
-              TextSpan(
-                text: ' *',
-                style: TextStyle(
-                  color: Colors.red,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ]
-                : [],
           ),
         ),
         const SizedBox(height: 6),
         TextFormField(
           controller: controller,
           maxLength: maxLimit,
-          buildCounter: (context, {required currentLength, required isFocused, maxLength}) => const SizedBox.shrink(),
+          buildCounter: (context,
+              {required currentLength, required isFocused, maxLength}) =>
+          const SizedBox.shrink(),
           obscureText: _obscurePassword,
           decoration: InputDecoration(
             filled: true,
-            fillColor: Colors.white,
+            fillColor: colorScheme.surfaceContainer,
             suffixIcon: IconButton(
               icon: Icon(
                 _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                color: Colors.grey.shade600,
+                color: colorScheme.onSurfaceVariant,
               ),
-              onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+              onPressed: () =>
+                  setState(() => _obscurePassword = !_obscurePassword),
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(
-                color: Colors.grey.shade300,
+                color: colorScheme.outlineVariant,
                 width: 1,
               ),
             ),
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: Colors.grey.shade300,
+                color: colorScheme.outlineVariant,
                 width: 1,
               ),
             ),
             errorBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: Colors.red.shade400,
+                color: colorScheme.error,
                 width: 1,
               ),
             ),
@@ -642,6 +657,9 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
     Color? textColor,
     Color? iconColor,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
@@ -652,15 +670,14 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
             Icon(
               icon,
               size: 20,
-              color: iconColor ?? Colors.grey[600],
+              color: iconColor ?? colorScheme.onSurfaceVariant,
             ),
             SizedBox(width: 12),
             Expanded(
               child: Text(
                 text,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: textColor ?? Colors.black87,
+                style: textTheme.bodyMedium?.copyWith(
+                  color: textColor ?? colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -678,6 +695,9 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
     Color? textColor,
     Color? iconColor,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
@@ -689,9 +709,8 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
             Expanded(
               child: Text(
                 text,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: textColor ?? Colors.black87,
+                style: textTheme.bodyMedium?.copyWith(
+                  color: textColor ?? colorScheme.error,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -699,7 +718,7 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
             Icon(
               icon,
               size: 20,
-              color: iconColor ?? Colors.grey[600],
+              color: iconColor ?? colorScheme.error,
             ),
           ],
         ),

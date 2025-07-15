@@ -142,6 +142,10 @@
     "passwordConfirmDriver": "Confirm Password:",
     "passwordDriver": "Password:",
     "goBack": "Go Back",
+    "aboutUsDriver": "About Us",
+    "aboutDevDriver": "About the developer",
+    "logout": "Logout",
+    "requiredLabel": "Please complete all required fields",
 
     "aboutUsTitle": "About Us",
     "companyDescription": "Microenterprise - Taxi Agency",

@@ -142,6 +142,10 @@
   "passwordConfirmDriver": "Confirme contraseña:",
   "passwordDriver": "Contraseña:",
   "goBack": "Regresar",
+  "aboutUsDriver": "Sobre Nosotros",
+  "aboutDevDriver": "Sobre el desarrollador",
+  "logout": "Cerrar Sesión",
+  "requiredLabel": "Por favor complete todos los campos obligatorios",
 
   "aboutUsTitle": "Acerca de Nosotros",
   "companyDescription": "Empresa - Agencia de Taxi",
