@@ -220,19 +220,30 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                             // Vehicle Section
                             Container(
                               margin: const EdgeInsets.symmetric(horizontal: 16),
-                              child: Theme(
-                                data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      AppLocalizations.of(context)!.vehicleTypeLabel,
-                                      style: textTheme.bodyLarge?.copyWith(fontSize: 18, color: colorScheme.secondary),
-                                    ),
-                                    ...List.generate(TaxiType.values.length, (index) {
-                                      return _buildTaxiCardItem(index);
-                                    })
-                                  ]
+                              child: Card(
+                                color: Colors.white,
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  side: BorderSide(
+                                    color: Colors.grey.shade200,
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Theme(
+                                  data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        AppLocalizations.of(context)!.vehicleTypeLabel,
+                                        style: textTheme.bodyLarge?.copyWith(fontSize: 18, color: colorScheme.secondary),
+                                      ),
+                                      ...List.generate(TaxiType.values.length, (index) {
+                                        return _buildTaxiCardItem(index);
+                                      })
+                                    ]
+                                  ),
                                 ),
                               )
                             ),
@@ -601,96 +612,3 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
     );
   }
 }
-
-
-// // Vehicle Section
-//                               Container(
-//                                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-//                                   child: Card(
-//                                       color: Colors.white,
-//                                       elevation: 0,
-//                                       shape: RoundedRectangleBorder(
-//                                         borderRadius: BorderRadius.circular(15),
-//                                         side: BorderSide(
-//                                           color: Colors.grey.shade200,
-//                                           width: 1,
-//                                         ),
-//                                       ),
-//                                       child: Theme(
-//                                           data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-//                                           child: Padding(
-//                                             padding: const EdgeInsets.all(16),
-//                                             child: Column(
-//                                                 crossAxisAlignment: CrossAxisAlignment.start,
-//                                                 children: [
-//                                                   Text(
-//                                                     AppLocalizations.of(context)!.vehicleTypeLabel,
-//                                                     style: textTheme.bodyMedium?.copyWith(
-//                                                       fontWeight: FontWeight.bold,
-//                                                       fontSize: 18,
-//                                                       color: Colors.grey.shade700,
-//                                                     ),
-//                                                   ),
-//                                                   const SizedBox(height: 8),
-//                                                   ...List.generate(TaxiType.values.length, (index) {
-//                                                     return _buildTaxiCardItem(index);
-//                                                   })
-//                                                 ]
-//                                             ),
-//                                           )
-//                                       )
-//                                   )
-//                               ),
-//                               // Password Section
-//                               Container(
-//                                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-//                                   child: Card(
-//                                       color: Colors.white,
-//                                       elevation: 0,
-//                                       shape: RoundedRectangleBorder(
-//                                         borderRadius: BorderRadius.circular(15),
-//                                         side: BorderSide(
-//                                           color: Colors.grey.shade200,
-//                                           width: 1,
-//                                         ),
-//                                       ),
-//                                       child: Padding(
-//                                           padding: const EdgeInsets.all(16),
-//                                           child: Column(
-//                                               spacing: 12.0,
-//                                               children: [
-//                                                 _buildPasswordField(
-//                                                     controller: _passwordTFController,
-//                                                     label: AppLocalizations.of(context)!.passwordDriver,
-//                                                     visible: _isPasswordVisible,
-//                                                     onToggle: (v) => setState(() => _isPasswordVisible = v),
-//                                                     validationWorkflow: Workflow<String?>()
-//                                                         .step(RequiredStep(errorMessage: localizations.requiredField))
-//                                                         .step(MinLengthStep(min: 6, errorMessage: "La contraseña debe tener al menos 6 carateres"))
-//                                                         .breakOnFirstApply(true)
-//                                                         .withDefault((_) => null)
-//                                                 ),
-//                                                 _buildPasswordField(
-//                                                     controller: _confirmPasswordTFController,
-//                                                     label: AppLocalizations.of(context)!.passwordConfirmDriver,
-//                                                     visible: _isConfirmPasswordVisible,
-//                                                     onToggle: (v) => setState(() => _isConfirmPasswordVisible = v),
-//                                                     validationWorkflow: Workflow<String?>()
-//                                                         .step(RequiredStep(errorMessage: localizations.requiredField))
-//                                                         .step(MatchOtherStep(
-//                                                         other: _passwordTFController.text,
-//                                                         errorMessage: "Las contraseñas no coinciden"))
-//                                                         .breakOnFirstApply(true)
-//                                                         .withDefault((_) => null)
-//                                                 )
-//                                               ]
-//                                           )
-//                                       )
-//                                   )
-//                               )
-//                             ])
-//                         )
-//                     )
-//                 )
-//               ]),
-//             ),
