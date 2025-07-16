@@ -175,6 +175,9 @@
     "verificationPurpose": "This step is part of our verification process to ensure the safety of all users.",
     "takeSelfieButton": "Take Selfie",
 
+     "titlePlaceholder": "A text should appear here, but it doesn't seem to have loaded.",
+     "descriptionPlaceholder": "A description should appear here, but it doesn't seem to have loaded. Please wait a moment. If the issue persists, close the app and reopen it.",
+
       "identityVerificationHeader": "Identity Verification",
       "thankYouForVerification": "Thank you for confirming your identity",
       "identityConfirmedSuccessfully": "We have successfully confirmed your identity.",

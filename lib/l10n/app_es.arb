@@ -181,6 +181,9 @@
     "verificationBenefits": "Este proceso nos ayuda a proteger su cuenta y a mantener nuestra comunidad segura para todos los usuarios.",
     "createAccountButton": "Crear Cuenta",
 
+     "titlePlaceholder": "Aquí debería aparecer un texto, pero parece que no se ha cargado.",
+     "descriptionPlaceholder": "Aquí debería aparecer una descripción, pero parece que no se ha cargado. Por favor, espere un momento. Si el problema persiste, cierre la aplicación y vuelva a abrirla.",
+
       "createAccountTitle": "Crear Cuenta",
       "nameLabel": "Nombre:",
       "nameHint": "Introduzca su nombre y apellidos",

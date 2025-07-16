@@ -497,6 +497,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createAccountButton => 'Create Account';
 
   @override
+  String get titlePlaceholder =>
+      'A text should appear here, but it doesn\'t seem to have loaded.';
+
+  @override
+  String get descriptionPlaceholder =>
+      'A description should appear here, but it doesn\'t seem to have loaded. Please wait a moment. If the issue persists, close the app and reopen it.';
+
+  @override
   String get createAccountTitle => 'Create Account';
 
   @override
