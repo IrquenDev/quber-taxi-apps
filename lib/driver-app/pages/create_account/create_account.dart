@@ -302,6 +302,24 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                         backgroundColor: colorScheme.primaryContainer,
                         shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero)),
                     onPressed: () async {
+
+                      final missingFields = <String>[];
+                      if (_selectedTaxi == null) {
+                        missingFields.add("Seleccione Tipo de Vehiculo");
+                      }
+                      if (_taxiImage == null) {
+                        missingFields.add("Seleccione una foto de perfil");
+                      }
+                      if ( missingFields.isNotEmpty) {
+                        final errorMessage = "Campos Requeridos faltantes: ${missingFields.join(", ")}";
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(errorMessage),
+                            backgroundColor: colorScheme.error,
+                          ),
+                        );
+                        return;
+                      }
                       if (!_canSubmit) return;
                       if(!hasConnection(context)) {
                         showToast(context: context, message: "Revise su conexión a internet");
