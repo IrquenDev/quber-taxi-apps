@@ -555,13 +555,13 @@ class AppLocalizationsEs extends AppLocalizations {
       'Una experiencia superior en comodidad. Asientos más amplios, suspensión suave, aire acondicionado y mayor atención al detalle. Ideal para quienes buscan un viaje más relajado y placentero.';
 
   @override
-  String get passwordLabel => 'Contraseña';
+  String get passwordLabel => 'Contraseña:';
 
   @override
   String get passwordHint => 'Introduzca la contraseña deseada';
 
   @override
-  String get confirmPasswordLabel => 'Confirmar contraseña:';
+  String get confirmPasswordLabel => 'Confirme contraseña:';
 
   @override
   String get finishButton => 'Finalizar registro';
@@ -572,4 +572,56 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get motoTaxiDescription =>
       'Vehículo de dos o tres ruedas, ideal para trayectos cortos en zonas con tráfico intenso. Económico, ágil y perfecto para movilizarse rápidamente por calles estrechas.';
+
+  @override
+  String get updatePasswordSuccess => 'Contraseña actualizada';
+
+  @override
+  String get somethingWentWrong =>
+      'Algo salió mal, por favor inténtelo más tarde';
+
+  @override
+  String get checkConnection => 'Revise su conexión a internet';
+
+  @override
+  String get save => 'Guardar';
+
+  @override
+  String get logout => 'Cerrar Sesión';
+
+  @override
+  String get aboutUs => 'Sobre Nosotros';
+
+  @override
+  String get aboutDeveloper => 'Sobre el desarrollador';
+
+  @override
+  String get hintPassword => 'Introduzca la contraseña deseada';
+
+  @override
+  String get labelNameDriver => 'Nombre:';
+
+  @override
+  String get labelCarRegistration => 'Chapa:';
+
+  @override
+  String get labelPhoneNumberDriver => 'Num. teléfono:';
+
+  @override
+  String get labelNumberOfSeats => 'Número de asientos:';
+
+  @override
+  String get balanceLabel => 'Balance:';
+
+  @override
+  String get quberCreditsLabel => 'Crédito de Quber acumulado:';
+
+  @override
+  String get nextPayLabel => 'Próxima fecha de pago:';
+
+  @override
+  String get valuationLabel => 'Valoración acumulada:';
+
+  @override
+  String get androidOnlyText => '-';
 }

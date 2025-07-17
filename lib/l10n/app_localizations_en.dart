@@ -554,13 +554,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'A superior comfort experience. Wider seats, smooth suspension, air conditioning, and greater attention to detail. Ideal for those seeking a more relaxed and pleasant ride.';
 
   @override
-  String get passwordLabel => 'Password';
+  String get passwordLabel => 'Password:';
 
   @override
   String get passwordHint => 'Enter your desired password';
 
   @override
-  String get confirmPasswordLabel => 'Confirm Password:';
+  String get confirmPasswordLabel => 'Confirm password:';
 
   @override
   String get finishButton => 'Complete Registration';
@@ -571,4 +571,56 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get motoTaxiDescription =>
       'Two- or three-wheeled vehicle, ideal for short trips in heavy traffic areas. Economical, agile, and perfect for quick navigation through narrow streets.';
+
+  @override
+  String get updatePasswordSuccess => 'Password updated';
+
+  @override
+  String get somethingWentWrong =>
+      'Something went wrong, please try again later';
+
+  @override
+  String get checkConnection => 'Please check your internet connection';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get logout => 'Log out';
+
+  @override
+  String get aboutUs => 'About Us';
+
+  @override
+  String get aboutDeveloper => 'About the Developer';
+
+  @override
+  String get hintPassword => 'Enter your desired password';
+
+  @override
+  String get labelNameDriver => 'Name:';
+
+  @override
+  String get labelCarRegistration => 'Plate:';
+
+  @override
+  String get labelPhoneNumberDriver => 'Phone number:';
+
+  @override
+  String get labelNumberOfSeats => 'Number of seats:';
+
+  @override
+  String get balanceLabel => 'Balance:';
+
+  @override
+  String get quberCreditsLabel => 'Accumulated Quber credits:';
+
+  @override
+  String get nextPayLabel => 'Next pay date:';
+
+  @override
+  String get valuationLabel => 'Accumulated rating:';
+
+  @override
+  String get androidOnlyText => '-';
 }

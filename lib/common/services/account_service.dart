@@ -126,6 +126,39 @@ class AccountService {
     return await http.patch(url);
   }
 
+  Future<http.Response> updateDriver(
+      int driverId,
+      String name,
+      String phone,
+      int seats,
+      String plate,
+      XFile? taxiImage,
+      bool shouldUpdateImage
+      ) async {
+    final url = Uri.parse("$_endpoint/update/driver/$driverId");
+    final request = http.MultipartRequest("POST", url);
+    request.fields['name'] = name;
+    request.fields['phone'] = phone;
+    request.fields['seats'] = seats.toString();
+    request.fields['plate'] = plate;
+    request.fields['shouldUpdateImage'] = shouldUpdateImage.toString();
+
+    if (shouldUpdateImage) {
+      if (taxiImage != null) {
+        request.files.add(await _getMultipartFileFromXFile(taxiImage, "taxiImage"));
+      }
+    }
+    final streamedResponse = await request.send();
+    return await http.Response.fromStream(streamedResponse);
+  }
+
+  Future<http.Response> updateDriverPassword(int driverId, String password)
+  async {
+    final url = Uri.parse("$_endpoint/driver/$driverId?password=$password");
+    return await http.patch(url);
+  }
+
+
   /// Converts a [Uint8List] (e.g. raw image bytes) into a [http.MultipartFile].
   ///
   /// Optionally corrects image orientation before uploading.
