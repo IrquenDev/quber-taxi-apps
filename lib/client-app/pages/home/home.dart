@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/client-app/pages/home/map.dart';
 import 'package:quber_taxi/client-app/pages/home/request_travel_sheet.dart';
 import 'package:quber_taxi/client-app/pages/settings/account_setting.dart';
+import 'package:quber_taxi/common/services/app_announcement_service.dart';
 import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
+import 'package:quber_taxi/navigation/routes/common_routes.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
 class ClientHomePage extends StatefulWidget {
@@ -20,6 +24,61 @@ class ClientHomePage extends StatefulWidget {
 class _ClientHomePageState extends State<ClientHomePage> {
   int _currentIndex = 0;
   final _navKey = GlobalKey<CurvedNavigationBarState>();
+
+  // Announcement service
+  final _announcementService = AppAnnouncementService();
+  bool _didCheckAnnouncements = false;
+
+  // Network Checker
+  late void Function() _listener;
+  late final NetworkScope _scope;
+
+  void _handleNetworkScopeAndListener() {
+    _scope = NetworkScope.of(context);
+    _listener = _scope.registerListener(_checkAnnouncementsListener);
+  }
+
+  void _checkAnnouncementsListener(ConnectionStatus status) async {
+    if (!_didCheckAnnouncements) {
+      final connectionStatus = NetworkScope.statusOf(context);
+      if (connectionStatus == ConnectionStatus.checking) return;
+      final isConnected = connectionStatus == ConnectionStatus.online;
+      if (isConnected) {
+        await _checkAnnouncements();
+      }
+    }
+  }
+
+  Future<void> _checkAnnouncements() async {
+    if (_didCheckAnnouncements) return;
+    
+    try {
+      final announcements = await _announcementService.getActiveAnnouncements();
+      
+      if (announcements.isNotEmpty && mounted) {
+        // Navigate to the first announcement, passing the announcement data
+        context.push(CommonRoutes.announcement, extra: announcements.first);
+        _didCheckAnnouncements = true;
+      }
+    } catch (e) {
+      // Handle error silently - announcements are not critical for app functionality
+      print('Error checking announcements: $e');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      _handleNetworkScopeAndListener();
+    });
+  }
+
+  @override
+  void dispose() {
+    _scope.removeListener(_listener);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -12,6 +12,7 @@ import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/models/driver.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/services/account_service.dart';
+import 'package:quber_taxi/common/services/app_announcement_service.dart';
 import 'package:quber_taxi/common/services/driver_service.dart';
 import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
 import 'package:quber_taxi/common/widgets/dialogs/info_dialog.dart';
@@ -21,6 +22,7 @@ import 'package:quber_taxi/driver-app/pages/home/trip_notification.dart';
 import 'package:quber_taxi/enums/driver_account_state.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
+import 'package:quber_taxi/navigation/routes/common_routes.dart';
 import 'package:quber_taxi/navigation/routes/driver_routes.dart';
 import 'package:quber_taxi/storage/session_manger.dart';
 import 'package:quber_taxi/utils/map/geolocator.dart' as g_util;
@@ -84,6 +86,10 @@ class _DriverHomePageState extends State<DriverHomePage> {
   bool _didCheckAccount = false;
   bool _isAccountEnabled = false;
 
+  // Announcement service
+  final _announcementService = AppAnnouncementService();
+  bool _didCheckAnnouncements = false;
+
   // Network Checker
   late void Function() _listener;
   late final NetworkScope _scope;
@@ -103,6 +109,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
       if(isConnected) {
         await _checkDriverAccountState();
         _didCheckAccount = true;
+        // Check announcements after account state is verified
+        await _checkAnnouncements();
       }
       else {
         await _showNoConnectionDialog();
@@ -298,6 +306,23 @@ class _DriverHomePageState extends State<DriverHomePage> {
     _locationStreamSubscription?.cancel();
     _pointAnnotationManager?.deleteAll();
     super.dispose();
+  }
+
+  Future<void> _checkAnnouncements() async {
+    if (_didCheckAnnouncements) return;
+    
+    try {
+      final announcements = await _announcementService.getActiveAnnouncements();
+      
+      if (announcements.isNotEmpty && mounted) {
+        // Navigate to the first announcement, passing the announcement data
+        context.push(CommonRoutes.announcement, extra: announcements.first);
+        _didCheckAnnouncements = true;
+      }
+    } catch (e) {
+      // Handle error silently - announcements are not critical for app functionality
+      print('Error checking announcements: $e');
+    }
   }
 
   @override
