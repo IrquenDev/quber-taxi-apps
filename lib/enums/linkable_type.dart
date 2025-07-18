@@ -1,8 +1,7 @@
 enum LinkableType {
   NONE,
-  EXTERNAL_URL,
-  INTERNAL_ROUTE,
-  ACTION
+  TEXT,
+  BUTTON
 }
 
 extension LinkableTypeExtension on LinkableType {
@@ -10,12 +9,10 @@ extension LinkableTypeExtension on LinkableType {
     switch (this) {
       case LinkableType.NONE:
         return 'NONE';
-      case LinkableType.EXTERNAL_URL:
-        return 'EXTERNAL_URL';
-      case LinkableType.INTERNAL_ROUTE:
-        return 'INTERNAL_ROUTE';
-      case LinkableType.ACTION:
-        return 'ACTION';
+      case LinkableType.TEXT:
+        return 'TEXT';
+      case LinkableType.BUTTON:
+        return 'BUTTON';
     }
   }
 
@@ -23,12 +20,10 @@ extension LinkableTypeExtension on LinkableType {
     switch (value) {
       case 'NONE':
         return LinkableType.NONE;
-      case 'EXTERNAL_URL':
-        return LinkableType.EXTERNAL_URL;
-      case 'INTERNAL_ROUTE':
-        return LinkableType.INTERNAL_ROUTE;
-      case 'ACTION':
-        return LinkableType.ACTION;
+      case 'TEXT':
+        return LinkableType.TEXT;
+      case 'BUTTON':
+        return LinkableType.BUTTON;
       default:
         return LinkableType.NONE;
     }

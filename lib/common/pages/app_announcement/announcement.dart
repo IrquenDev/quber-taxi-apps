@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quber_taxi/common/models/app_announcement.dart';
+import 'package:quber_taxi/enums/linkable_type.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AppAnnouncementPage extends StatelessWidget {
   final AppAnnouncement? announcement;
@@ -82,6 +84,13 @@ class AppAnnouncementPage extends StatelessWidget {
                           ),
                           textAlign: TextAlign.center,
                         ),
+                      ),
+                    
+                    // Linkable text - show as clickable link if available
+                    if (_shouldShowLinkable())
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                        child: _buildLinkableWidget(context, textTheme, colorScheme, parsedBackgroundColor),
                       ),
                     
                     // Bottom spacing
@@ -171,5 +180,91 @@ class AppAnnouncementPage extends StatelessWidget {
       return luminance > 0.5 ? Colors.black54 : Colors.white70;
     }
     return colorScheme.onSurfaceVariant;
+  }
+
+  bool _shouldShowLinkable() {
+    if (announcement?.linkableType == LinkableType.NONE) return false;
+    
+    // Show if we have linkableText OR linkableUrl
+    return (announcement?.linkableText != null && announcement!.linkableText!.isNotEmpty) ||
+           (announcement?.linkableUrl != null && announcement!.linkableUrl!.isNotEmpty);
+  }
+
+  String _getLinkableDisplayText() {
+    // If linkableText exists, use it. Otherwise use linkableUrl
+    if (announcement?.linkableText != null && announcement!.linkableText!.isNotEmpty) {
+      return announcement!.linkableText!;
+    } else if (announcement?.linkableUrl != null && announcement!.linkableUrl!.isNotEmpty) {
+      return announcement!.linkableUrl!;
+    }
+    return '';
+  }
+
+  Widget _buildLinkableWidget(BuildContext context, TextTheme textTheme, ColorScheme colorScheme, Color? parsedBackgroundColor) {
+    final displayText = _getLinkableDisplayText();
+    final textColor = _getSecondaryTextColor(parsedBackgroundColor, colorScheme);
+    
+    if (announcement?.linkableType == LinkableType.BUTTON) {
+      // Show as outlined button for BUTTON type
+      return OutlinedButton(
+        onPressed: () => _handleLinkableTap(context),
+        style: OutlinedButton.styleFrom(
+          foregroundColor: textColor,
+          side: BorderSide(color: textColor),
+          backgroundColor: Colors.transparent,
+        ),
+        child: Text(displayText),
+      );
+    } else {
+      // Show as underlined text for TEXT type (default)
+      return GestureDetector(
+        onTap: () => _handleLinkableTap(context),
+        child: Text(
+          displayText,
+          style: textTheme.bodyLarge?.copyWith(
+            color: textColor,
+            decoration: TextDecoration.underline,
+            decorationColor: textColor,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      );
+    }
+  }
+
+  void _handleLinkableTap(BuildContext context) async {
+    if (announcement?.linkableUrl == null || announcement!.linkableUrl!.isEmpty) {
+      return;
+    }
+    
+    final url = announcement!.linkableUrl!;
+    
+    switch (announcement!.linkableType) {
+      case LinkableType.TEXT:
+      case LinkableType.BUTTON:
+        try {
+          final uri = Uri.parse(url);
+          
+          final canLaunch = await canLaunchUrl(uri);
+          
+          if (canLaunch) {
+            await launchUrl(uri, mode: LaunchMode.externalApplication);
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('No se pudo abrir el enlace: $url')),
+            );
+          }
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error al abrir el enlace: $e')),
+          );
+        }
+        break;
+      
+      case LinkableType.NONE:
+      default:
+        // No action for NONE type
+        break;
+    }
   }
 }
