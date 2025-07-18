@@ -24,14 +24,19 @@ migrate_working_dir/
 #.vscode/
 
 # Flutter/Dart/Pub related
+
 **/doc/api/
 **/ios/Flutter/.last_build_id
 .dart_tool/
+pubspec.lock
 .flutter-plugins
 .flutter-plugins-dependencies
 .pub-cache/
 .pub/
 /build/
+/.tmp/
+
+assets.tmp.zip
 
 # Symbolication related
 app.*.symbols
@@ -43,3 +48,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+/devtools_options.yaml
+
+/ios/Flutter/ephemeral/
+ios/Flutter/Generated.xcconfig

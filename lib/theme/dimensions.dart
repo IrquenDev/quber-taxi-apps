@@ -45,7 +45,7 @@ import 'dart:ui';
 class DimensionExtension extends ThemeExtension<DimensionExtension> {
 
   /// Default border radius used across the app.
-  final BorderRadius borderRadius;
+  final double borderRadius;
 
   /// Standard elevation value used for shadows or raised surfaces.
   final double elevation;
@@ -61,7 +61,7 @@ class DimensionExtension extends ThemeExtension<DimensionExtension> {
 
   @override
   DimensionExtension copyWith({
-    BorderRadius? borderRadius,
+    double? borderRadius,
     double? elevation,
     EdgeInsets? contentPadding
   }) {
@@ -76,7 +76,7 @@ class DimensionExtension extends ThemeExtension<DimensionExtension> {
   DimensionExtension lerp(ThemeExtension<DimensionExtension>? other, double t) {
     if (other is! DimensionExtension) return this;
     return DimensionExtension(
-      borderRadius: BorderRadius.lerp(borderRadius, other.borderRadius, t)!,
+      borderRadius: lerpDouble(borderRadius, other.borderRadius, t)!,
       elevation: lerpDouble(elevation, other.elevation, t)!,
       contentPadding: EdgeInsets.lerp(contentPadding, other.contentPadding, t)!,
     );

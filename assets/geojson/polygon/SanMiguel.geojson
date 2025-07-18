@@ -1,0 +1,85 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -82.3296,
+                            23.1104
+                        ],
+                        [
+                            -82.2946,
+                            23.0971
+                        ],
+                        [
+                            -82.2719,
+                            23.0801
+                        ],
+                        [
+                            -82.2773,
+                            23.0689
+                        ],
+                        [
+                            -82.2977,
+                            23.0568
+                        ],
+                        [
+                            -82.3135,
+                            23.0538
+                        ],
+                        [
+                            -82.319,
+                            23.0637
+                        ],
+                        [
+                            -82.3085,
+                            23.0674
+                        ],
+                        [
+                            -82.3235,
+                            23.0717
+                        ],
+                        [
+                            -82.3318,
+                            23.089
+                        ],
+                        [
+                            -82.3397,
+                            23.0924
+                        ],
+                        [
+                            -82.3427,
+                            23.1039
+                        ],
+                        [
+                            -82.3507,
+                            23.1122
+                        ],
+                        [
+                            -82.3394,
+                            23.1084
+                        ],
+                        [
+                            -82.3296,
+                            23.1104
+                        ]
+                    ]
+                ]
+            },
+            "type": "Feature",
+            "properties": {
+                "province": "La Habana",
+                "DPA_municipality_code": "23.08",
+                "country": "Cuba",
+                "region": "municipality",
+                "municipality": "San Miguel del Padr\u00f3n",
+                "country_domain": "cu",
+                "province_id": "lha",
+                "DPA_province_code": "23"
+            }
+        }
+    ]
+}

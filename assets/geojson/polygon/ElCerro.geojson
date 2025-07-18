@@ -1,0 +1,77 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -82.3655,
+                            23.1248
+                        ],
+                        [
+                            -82.3663,
+                            23.1143
+                        ],
+                        [
+                            -82.3794,
+                            23.1032
+                        ],
+                        [
+                            -82.3824,
+                            23.0971
+                        ],
+                        [
+                            -82.3801,
+                            23.0801
+                        ],
+                        [
+                            -82.4022,
+                            23.0753
+                        ],
+                        [
+                            -82.3976,
+                            23.0949
+                        ],
+                        [
+                            -82.4054,
+                            23.0993
+                        ],
+                        [
+                            -82.404,
+                            23.1006
+                        ],
+                        [
+                            -82.3863,
+                            23.1136
+                        ],
+                        [
+                            -82.3769,
+                            23.1322
+                        ],
+                        [
+                            -82.3743,
+                            23.1242
+                        ],
+                        [
+                            -82.3655,
+                            23.1248
+                        ]
+                    ]
+                ]
+            },
+            "type": "Feature",
+            "properties": {
+                "province": "La Habana",
+                "DPA_municipality_code": "23.10",
+                "country": "Cuba",
+                "region": "municipality",
+                "municipality": "Cerro",
+                "country_domain": "cu",
+                "province_id": "lha",
+                "DPA_province_code": "23"
+            }
+        }
+    ]
+}

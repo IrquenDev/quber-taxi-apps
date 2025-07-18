@@ -1,0 +1,34 @@
+flavors:
+  client:
+    app:
+      name: "Quber"
+    android:
+      applicationId: "com.irquen.quber_taxi"
+      icon: "assets/launch/icon_app_flutter_yellow.png"
+    ios:
+      bundleId: "com.irquen.quber_taxi"
+      icon: "assets/launch/icon_app_flutter_yellow.png"
+
+  driver:
+    app:
+      name: "Quber Chofer"
+    android:
+      applicationId: "com.irquen.quber_taxi.driver"
+      icon: "assets/launch/icon_app_flutter_yellow_driver.png"
+    ios:
+      bundleId: "com.irquen.quber_taxi.driver"
+      icon: "assets/launch/icon_app_flutter_yellow_driver.png"
+
+  admin:
+    app:
+      name: "Quber Admin"
+    android:
+      applicationId: "com.irquen.quber_taxi.admin"
+      icon: "assets/launch/icon_app_flutter_yellow_admin.png"
+    ios:
+      bundleId: "com.irquen.quber_taxi.admin"
+      icon: "assets/launch/icon_app_flutter_yellow_admin.png"
+
+instructions:
+  - android:icons
+  - ios:icons
