@@ -38,7 +38,7 @@ class AppAnnouncement implements Encodable {
     "linkableText": linkableText,
     "linkableUrl": linkableUrl,
     "linkableType": linkableType.value,
-    "isDismissible": isDismissible,
+    "dismissible": isDismissible,
     "metadata": metadata,
   };
 

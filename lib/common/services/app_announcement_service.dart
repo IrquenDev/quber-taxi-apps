@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:quber_taxi/common/models/app_announcement.dart';
+import 'package:quber_taxi/common/services/announcement_condition_service.dart';
 import 'package:quber_taxi/config/api_config.dart';
 
 /// A service responsible for handling app announcements from the backend.
@@ -41,12 +42,15 @@ class AppAnnouncementService {
 
   /// Retrieves announcements that are currently active/visible.
   ///
-  /// This method can be extended to filter announcements based on
-  /// additional criteria like date ranges, user preferences, etc.
+  /// This method filters announcements based on conditional logic,
+  /// including app version requirements and other criteria.
   Future<List<AppAnnouncement>> getActiveAnnouncements() async {
     final announcements = await getAnnouncementsList();
-    // For now, return all announcements
-    // Future enhancement: filter by date, user preferences, etc.
-    return announcements;
+    
+    // Filter announcements based on conditional logic
+    final filteredAnnouncements = await AnnouncementConditionService
+        .filterConditionalAnnouncements(announcements);
+    
+    return filteredAnnouncements;
   }
 } 
