@@ -205,6 +205,26 @@
       "confirmPasswordHint": "Vuelva a introducir su contraseña",
       "finishButton": "Finalizar registro",
       "motoTaxiVehicle": "Mototaxi",
-      "motoTaxiDescription": "Vehículo de dos o tres ruedas, ideal para trayectos cortos en zonas con tráfico intenso. Económico, ágil y perfecto para movilizarse rápidamente por calles estrechas."
+      "motoTaxiDescription": "Vehículo de dos o tres ruedas, ideal para trayectos cortos en zonas con tráfico intenso. Económico, ágil y perfecto para movilizarse rápidamente por calles estrechas.",
+
+      "updatePasswordSuccess": "Contraseña actualizada",
+      "somethingWentWrong": "Algo salió mal, por favor inténtelo más tarde",
+      "checkConnection": "Revise su conexión a internet",
+      "save": "Guardar",
+      "logout": "Cerrar Sesión",
+      "aboutUs": "Sobre Nosotros",
+      "aboutDeveloper": "Sobre el desarrollador",
+      "confirmPasswordLabel": "Confirme contraseña:",
+      "passwordLabel": "Contraseña:",
+      "hintPassword": "Introduzca la contraseña deseada",
+      "labelNameDriver": "Nombre:",
+      "labelCarRegistration": "Chapa:",
+      "labelPhoneNumberDriver": "Num. teléfono:",
+      "labelNumberOfSeats": "Número de asientos:",
+      "balanceLabel": "Balance:",
+      "quberCreditsLabel": "Crédito de Quber acumulado:",
+      "nextPayLabel": "Próxima fecha de pago:",
+      "valuationLabel": "Valoración acumulada:",
+      "androidOnlyText": "-"
 
 }

@@ -1145,7 +1145,7 @@ abstract class AppLocalizations {
   /// No description provided for @passwordLabel.
   ///
   /// In es, this message translates to:
-  /// **'Contraseña'**
+  /// **'Contraseña:'**
   String get passwordLabel;
 
   /// No description provided for @passwordHint.
@@ -1157,7 +1157,7 @@ abstract class AppLocalizations {
   /// No description provided for @confirmPasswordLabel.
   ///
   /// In es, this message translates to:
-  /// **'Confirmar contraseña:'**
+  /// **'Confirme contraseña:'**
   String get confirmPasswordLabel;
 
   /// No description provided for @finishButton.
@@ -1177,6 +1177,108 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Vehículo de dos o tres ruedas, ideal para trayectos cortos en zonas con tráfico intenso. Económico, ágil y perfecto para movilizarse rápidamente por calles estrechas.'**
   String get motoTaxiDescription;
+
+  /// No description provided for @updatePasswordSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Contraseña actualizada'**
+  String get updatePasswordSuccess;
+
+  /// No description provided for @somethingWentWrong.
+  ///
+  /// In es, this message translates to:
+  /// **'Algo salió mal, por favor inténtelo más tarde'**
+  String get somethingWentWrong;
+
+  /// No description provided for @checkConnection.
+  ///
+  /// In es, this message translates to:
+  /// **'Revise su conexión a internet'**
+  String get checkConnection;
+
+  /// No description provided for @save.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar'**
+  String get save;
+
+  /// No description provided for @logout.
+  ///
+  /// In es, this message translates to:
+  /// **'Cerrar Sesión'**
+  String get logout;
+
+  /// No description provided for @aboutUs.
+  ///
+  /// In es, this message translates to:
+  /// **'Sobre Nosotros'**
+  String get aboutUs;
+
+  /// No description provided for @aboutDeveloper.
+  ///
+  /// In es, this message translates to:
+  /// **'Sobre el desarrollador'**
+  String get aboutDeveloper;
+
+  /// No description provided for @hintPassword.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduzca la contraseña deseada'**
+  String get hintPassword;
+
+  /// No description provided for @labelNameDriver.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre:'**
+  String get labelNameDriver;
+
+  /// No description provided for @labelCarRegistration.
+  ///
+  /// In es, this message translates to:
+  /// **'Chapa:'**
+  String get labelCarRegistration;
+
+  /// No description provided for @labelPhoneNumberDriver.
+  ///
+  /// In es, this message translates to:
+  /// **'Num. teléfono:'**
+  String get labelPhoneNumberDriver;
+
+  /// No description provided for @labelNumberOfSeats.
+  ///
+  /// In es, this message translates to:
+  /// **'Número de asientos:'**
+  String get labelNumberOfSeats;
+
+  /// No description provided for @balanceLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Balance:'**
+  String get balanceLabel;
+
+  /// No description provided for @quberCreditsLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Crédito de Quber acumulado:'**
+  String get quberCreditsLabel;
+
+  /// No description provided for @nextPayLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Próxima fecha de pago:'**
+  String get nextPayLabel;
+
+  /// No description provided for @valuationLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Valoración acumulada:'**
+  String get valuationLabel;
+
+  /// No description provided for @androidOnlyText.
+  ///
+  /// In es, this message translates to:
+  /// **'-'**
+  String get androidOnlyText;
 }
 
 class _AppLocalizationsDelegate
