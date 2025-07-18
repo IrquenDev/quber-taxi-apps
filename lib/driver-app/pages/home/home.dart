@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
 import 'package:geolocator/geolocator.dart' as g;
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/models/driver.dart';
@@ -111,34 +112,24 @@ class _DriverHomePageState extends State<DriverHomePage> {
   }
 
   Future<void> _checkDriverAccountState() async {
-      // Update driver data
-      final response = await AccountService().findDriver(_driver.id);
-      // Avoid context's gaps
-      if (!mounted) return;
-      // Handle OK
-      if (response.statusCode == 200) {
-        _driver = Driver.fromJson(jsonDecode(response.body));
-        // Always update session
-        SessionManager.instance.save(_driver);
-        switch (_driver.accountState) {
-          case DriverAccountState.notConfirmed:
-            _showNeedsConfirmationDialog();
-          case DriverAccountState.paymentRequired:
-            _showPaymentRequired();
-          case DriverAccountState.enabled:
-            setState(() {
-              _isAccountEnabled = true;
-            });
-          case DriverAccountState.disabled:
-            setState(() {
-              _isAccountEnabled = false;
-            });
-        }
+    // Update driver data
+    final response = await AccountService().findDriver(_driver.id);
+    // Avoid context's gaps
+    if (!mounted) return;
+    // Handle OK
+    if (response.statusCode == 200) {
+      _driver = Driver.fromJson(jsonDecode(response.body));
+      // Always update session
+      await SessionManager.instance.save(_driver);
+      // Show payment reminder (will show nothing if doesn't applies)
+      await _showPaymentReminder();
+      switch (_driver.accountState) {
+        case DriverAccountState.notConfirmed: await _showNeedsConfirmationDialog();
+        case DriverAccountState.paymentRequired: break;
+        case DriverAccountState.enabled: setState(() => _isAccountEnabled = true);
+        case DriverAccountState.disabled: break;
       }
-      else {
-        // Generic error feedback
-        showToast(context: context, message: "Ocurrió algo mal, por favor inténtelo más tarde");
-      }
+    }
   }
 
   Future<void> _showNoConnectionDialog() async {
@@ -153,7 +144,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
     );
   }
 
-  void _showNeedsConfirmationDialog() {
+  Future<void> _showNeedsConfirmationDialog() async {
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -168,17 +159,76 @@ class _DriverHomePageState extends State<DriverHomePage> {
     );
   }
 
-  void _showPaymentRequired() {
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => InfoDialog(
-            title: "Necesita Aprobación",
-            bodyMessage: "Le recordamos que tiene un pago programado para mañana, 5 de octubre de 2025. Por favor, "
-                "diríjase a nuestra oficina en Calle 4ta / Central y mercado, reparto Martín Pérez, San Miguel del "
-                "Padrón para realizarlo. Puede consultar el monto a abonar accediendo a su perfil en la app.",
-            footerMessage: "Gracias por su atención."
-        )
+  Future<void> _showPaymentReminder() async {
+    final credit = _driver.credit;
+    if (credit == 0.0) return;
+    final now = DateTime.now();
+    final paymentDate = _driver.paymentDate!;
+    final today = DateTime(now.year, now.month, now.day);
+    final paymentDay = DateTime(paymentDate.year, paymentDate.month, paymentDate.day);
+    final difference = paymentDay.difference(today).inDays;
+    final formattedPaymentDate = DateFormat("dd-MM-yyyy").format(paymentDate);
+    final bool isPaymentSoon = difference > 0 && difference <= 3;
+    final isSameDay = paymentDate.year == now.year && paymentDate.month == now.month && paymentDate.day == now.day;
+
+    String title;
+    String dynamicMessage;
+
+    // ---- Payment Soon ----
+    if (isPaymentSoon) {
+      String remainingTimeText;
+      if (difference == 3) {
+        remainingTimeText = "en 3 días";
+      } else if (difference == 2) {
+        remainingTimeText = "pasado mañana";
+      }
+      else {
+        remainingTimeText = "mañana";
+      }
+      title = "Pago próximo";
+      dynamicMessage = "Le recordamos que su próxima fecha de pago es $remainingTimeText.";
+
+      // ---- Same Day ----
+    } else if (isSameDay) {
+      title = "Pago pendiente";
+      dynamicMessage = "La fecha de pago programada para hoy ha llegado. Tiene hasta 4 días para realizar el pago.";
+
+      // ---- The Payment Date Has Already Passed ----
+    } else if (!today.isBefore(paymentDay)) {
+      final daysSince = today.difference(paymentDay).inDays;
+      // Before four days
+      if (daysSince < 3) {
+        int daysLeft = 3 - daysSince;
+        dynamicMessage = "La fecha de pago programada fue el $formattedPaymentDate. "
+            "Tiene $daysLeft ${daysLeft == 1 ? "día" : "días"} para realizar el pago.";
+        // Last Day
+      } else if(daysSince == 3) {
+        dynamicMessage = "La fecha de pago programada fue el $formattedPaymentDate. "
+            "Hoy es su último día para realizar el pago.";
+      }
+      // Deadline Expired
+      else {
+        dynamicMessage = "La fecha límite para el pago previamente fijado para el día "
+            "$formattedPaymentDate ha expirado.";
+      }
+      title = "Pago pendiente";
+
+      // ---- No Condition Applies, We Don't Show Anything ----
+    } else {return;}
+
+    // Static part of the message
+    const staticBody =
+        " Por favor, diríjase a nuestra oficina en Calle 4ta / Central y mercado, reparto Martín Pérez, "
+        "San Miguel del Padrón para realizarlo. Puede consultar el monto accediendo a su perfil en la app.";
+
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => InfoDialog(
+        title: title,
+        bodyMessage: "$dynamicMessage$staticBody",
+        footerMessage: "Gracias por su atención.",
+      ),
     );
   }
 

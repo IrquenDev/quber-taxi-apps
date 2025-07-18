@@ -107,6 +107,7 @@ class AccountService {
       XFile? profileImage,
       bool shouldUpdateImage
   ) async {
+    print(shouldUpdateImage);
     final url = Uri.parse("$_endpoint/update/client/$clientId");
     final request = http.MultipartRequest("POST", url);
     request.fields['name'] = name;
