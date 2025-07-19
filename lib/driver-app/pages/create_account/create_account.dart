@@ -303,9 +303,8 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                                                 padding: const EdgeInsets.only(top: 8.0),
                                                 child: Text(
                                                   localizations.requiredField,
-                                                  style: TextStyle(
+                                                  style: textTheme.labelSmall?.copyWith(
                                                     color: colorScheme.error,
-                                                    fontSize: 12,
                                                   ),
                                                 ),
                                               ),
@@ -421,9 +420,8 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                                                 padding: const EdgeInsets.only(top: 4.0),
                                                 child: Text(
                                                   localizations.requiredField,
-                                                  style: TextStyle(
+                                                  style: textTheme.labelSmall?.copyWith(
                                                     color: colorScheme.error,
-                                                    fontSize: 12,
                                                   ),
                                                 ),
                                               ),
@@ -543,6 +541,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
     int? maxLength,
   }) {
     final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final dimensions = Theme.of(context).extension<DimensionExtension>()!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -550,7 +549,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
         RichText(
           text: TextSpan(
             text: label,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+            style: textTheme.bodyLarge?.copyWith(
               fontWeight: FontWeight.normal,
               color: colorScheme.onSurface,
             ),
@@ -569,7 +568,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                   .proceed(value),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
+            hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
             filled: true,
             fillColor: colorScheme.surface,
             contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
@@ -652,6 +651,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
     int? maxLength,
   }) {
     final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final dimensions = Theme.of(context).extension<DimensionExtension>()!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -659,7 +659,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
         RichText(
           text: TextSpan(
             text: label,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            style: textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: colorScheme.onSurface,
             ),
@@ -674,7 +674,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
           validator: (value) => validationWorkflow.proceed(value),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
+            hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
             filled: true,
             fillColor: colorScheme.surface,
             contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
