@@ -7,6 +7,10 @@ class MaterialTheme {
 
   final dimensions = const DimensionExtension(
       borderRadius: 20.0,
+      buttonBorderRadius: 8.0,
+      cardBorderRadiusSmall: 8.0,
+      cardBorderRadiusMedium: 12.0,
+      cardBorderRadiusLarge: 16.0,
       elevation: 4.0,
       contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0)
   );

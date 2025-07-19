@@ -26,7 +26,92 @@ class _LoginPageState extends State<LoginPage> {
   final _phoneTFController = TextEditingController();
   final _passwordTFController = TextEditingController();
   var _obscureText = true;
+  var _isLoading = false;
   final _authService = AuthService();
+
+  String _normalizePhoneNumber(String phone) {
+    // Remove all spaces and trim
+    String cleanPhone = phone.trim().replaceAll(' ', '');
+    
+    // Remove + if present
+    if (cleanPhone.startsWith('+')) {
+      cleanPhone = cleanPhone.substring(1);
+    }
+    
+    // Remove country code (53) if present
+    if (cleanPhone.startsWith('53') && cleanPhone.length > 8) {
+      cleanPhone = cleanPhone.substring(2);
+    }
+    
+    return cleanPhone;
+  }
+
+  Future<void> _handleLogin() async {
+    FocusScope.of(context).unfocus();
+    
+    // Validate form
+    if (!_formKey.currentState!.validate()) return;
+    
+    setState(() => _isLoading = true);
+    
+    try {
+      // Get form data
+      final phone = _normalizePhoneNumber(_phoneTFController.text);
+      final password = _passwordTFController.text;
+      final localization = AppLocalizations.of(context)!;
+      
+      // Init variables
+      http.Response? response;
+      String route;
+      
+      // Depending on appProfile, decide who we need to authenticate and set the next route
+      if(runtime.isClientMode) {
+        response = await _authService.loginClient(phone, password);
+        route = ClientRoutes.home;
+      } else if(runtime.isDriverMode) {
+        response = await _authService.loginDriver(phone, password);
+        route = DriverRoutes.home;
+      } else {
+        response = await _authService.loginAdmin(phone, password);
+        route = AdminRoutes.settings;
+      }
+      
+      // Handle response
+      if(!context.mounted) return;
+      
+      switch (response.statusCode) {
+        case 200: 
+          context.go(route);
+          break;
+        case 401: 
+          _showErrorToast(localization.incorrectPasswordMessage);
+          break;
+        case 404: 
+          _showErrorToast(localization.phoneNotRegisteredMessage);
+          break;
+        default: 
+          _showErrorToast(localization.unexpectedErrorLoginMessage);
+          break;
+      }
+    } catch (e) {
+      if(context.mounted) {
+        final localization = AppLocalizations.of(context)!;
+        _showErrorToast(localization.unexpectedErrorLoginMessage);
+      }
+    } finally {
+      if(mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+  
+  void _showErrorToast(String message) {
+    showToast(
+      context: context,
+      message: message,
+      duration: const Duration(seconds: 4),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +123,7 @@ class _LoginPageState extends State<LoginPage> {
     final dimensions = Theme.of(context).extension<DimensionExtension>()!;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           // Background Image
@@ -46,30 +132,32 @@ class _LoginPageState extends State<LoginPage> {
           Positioned.fill(child: ColoredBox(color: colorScheme.shadow.withAlpha(200))),
           // Content
           Positioned.fill(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 28.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+            child: SafeArea(
+              child: SingleChildScrollView(
+                physics: ClampingScrollPhysics(),
+                padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                child: Column(
+                  children: [
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.1),
                   // Header Text
                   Text(
                     localization.welcomeTitle,
                     textAlign: TextAlign.center,
                     style: textTheme.displayLarge?.copyWith(fontWeight: FontWeight.bold, color: Colors.white)
                   ),
-                  SizedBox(height: 60),
+                  SizedBox(height: 80),
                   // Form
                   Form(
                     key: _formKey,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
-                      spacing: 20.0,
                       children: [
-                        // Phone Number TF
+                        // Phone Number Field
                         TextFormField(
                           controller: _phoneTFController,
-                          keyboardType: TextInputType.number,
-                          maxLength: 11,
+                          keyboardType: TextInputType.phone,
+                          maxLength: 12,
+                          style: TextStyle(color: colorScheme.onSurface),
                           errorBuilder: (context, value) => Text(
                               value,
                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -78,21 +166,34 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           decoration: InputDecoration(
                             hintText: localization.enterPhoneNumber,
-                            fillColor: colorScheme.surfaceContainer,
+                            hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
+                            fillColor: Colors.white.withValues(alpha: 0.7),
+                            filled: true,
+                            counterText: '',
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(dimensions.borderRadius * 0.5),
+                              borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
                               borderSide: BorderSide.none,
                             ),
+                            contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
                           ),
-                          validator: Workflow<String?>()
-                              .step(RequiredStep(errorMessage: localization.requiredField))
-                              .withDefault((_)=> null)
-                              .proceed
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return localization.requiredField;
+                            }
+                            final normalizedPhone = _normalizePhoneNumber(value);
+                            if (normalizedPhone.length != 8 || !RegExp(r'^\d{8}$').hasMatch(normalizedPhone)) {
+                              return localization.invalidPhoneMessage;
+                            }
+                            return null;
+                          }
                         ),
-                        // Password TF
+                        SizedBox(height: 16),
+                        // Password Field
                         TextFormField(
                             controller: _passwordTFController,
                             obscureText: _obscureText,
+                            maxLength: 20,
+                            style: TextStyle(color: colorScheme.onSurface),
                             errorBuilder: (context, value) => Text(
                                 value,
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -101,73 +202,56 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             decoration: InputDecoration(
                                 hintText: localization.enterPassword,
+                                hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
                                 suffixIcon: IconButton(
-                                  icon: Icon(_obscureText ? Icons.visibility_outlined : Icons.visibility_off_outlined),
+                                  icon: Icon(_obscureText ? Icons.visibility_outlined : Icons.visibility_off_outlined, color: colorScheme.onSurfaceVariant),
                                   onPressed: () => setState(() => _obscureText = !_obscureText),
                                 ),
-                                fillColor: colorScheme.surfaceContainer,
+                                fillColor: Colors.white.withValues(alpha: 0.7),
+                                filled: true,
+                                counterText: '',
                                 border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(dimensions.borderRadius * 0.5),
+                                    borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
                                     borderSide: BorderSide.none
-                                )
+                                ),
+                                contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
                             ),
                             validator: Workflow<String?>()
                                 .step(RequiredStep(errorMessage: localization.requiredField))
                                 .withDefault((_)=> null)
                                 .proceed
                         ),
+                        SizedBox(height: 20),
                         // Login Button
                         SizedBox(
                             width: double.infinity,
                             height: 48,
-                            child: OutlinedButton(
-                                onPressed: () async {
-                                  FocusScope.of(context).unfocus();
-                                  // Validate form
-                                  if (_formKey.currentState!.validate()) {
-                                    // Get form data
-                                    final phone = _phoneTFController.text;
-                                    final password = _passwordTFController.text;
-                                    // Check connection
-                                    //if(runtime.hasConnection(context)) return;
-                                    // Init var
-                                    http.Response? response;
-                                    String route;
-                                    // Depending on appProfile decides who we need to authenticate and set the next
-                                    // route.
-                                    if(runtime.isClientMode) {
-                                      response = await _authService.loginClient(phone, password);
-                                      route = ClientRoutes.home;
-                                    } else if(runtime.isDriverMode) {
-                                      response = await _authService.loginDriver(phone, password);
-                                      response = await _authService.loginDriver(phone, password);
-                                      route = DriverRoutes.home;
-                                    } else {
-                                      response = await _authService.loginAdmin(phone, password);
-                                      route = AdminRoutes.settings;
-                                    }
-                                    // Handle response
-                                    if(!context.mounted) return;
-                                    switch (response.statusCode) {
-                                      case 200: context.go(route);
-                                      case 401: showToast(context: context,
-                                          message: localization.incorrectPasswordMessage,
-                                          duration: const Duration(seconds: 4));
-                                      case 404: showToast(context: context,
-                                          message: localization.phoneNotRegisteredMessage,
-                                          duration: const Duration(seconds: 4));
-                                      default: showToast(context: context,
-                                          message: localization.unexpectedErrorLoginMessage,
-                                          duration: const Duration(seconds: 4));
-                                    }
-                                  }
-                                },
-                                child: Text(
-                                    localization.loginButton,
-                                    style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)
-                                )
+                            child: ElevatedButton(
+                                onPressed: _isLoading ? null : () => _handleLogin(),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: colorScheme.primary,
+                                  foregroundColor: colorScheme.onPrimary,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+                                  ),
+                                  elevation: 0,
+                                ),
+                                child: _isLoading 
+                                  ? SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor: AlwaysStoppedAnimation<Color>(colorScheme.onPrimary),
+                                      ),
+                                    )
+                                  : Text(
+                                      localization.loginButton,
+                                      style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)
+                                    )
                             )
                         ),
+                        SizedBox(height: 8),
                         // Forgot Password
                         TextButton(
                             onPressed: () {
@@ -183,6 +267,7 @@ class _LoginPageState extends State<LoginPage> {
                                 style: textTheme.bodyMedium?.copyWith(color: Colors.white)
                             )
                         ),
+                        SizedBox(height: 4),
                         // Create New Account
                         if(runtime.isClientMode || runtime.isDriverMode)
                         TextButton(
@@ -191,10 +276,11 @@ class _LoginPageState extends State<LoginPage> {
                                 localization.createAccountLogin,
                                 style: textTheme.bodyLarge?.copyWith(
                                     fontWeight: FontWeight.bold,
-                                    color: colorScheme.primaryFixedDim
+                                    color: colorScheme.primary
                                 )
                             )
-                        )
+                        ),
+                        SizedBox(height: 50),
                       ]
                     )
                   )
@@ -202,6 +288,7 @@ class _LoginPageState extends State<LoginPage> {
               )
             )
           )
+        )
         ]
       )
     );
@@ -218,34 +305,47 @@ class ForgotPasswordDialog extends StatefulWidget {
 class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
   final TextEditingController _phoneController = TextEditingController();
   final _authService = AuthService();
+  final _formKey = GlobalKey<FormState>();
+
+  String _normalizePhoneNumber(String phone) {
+    // Remove all spaces and trim
+    String cleanPhone = phone.trim().replaceAll(' ', '');
+    
+    // Remove + if present
+    if (cleanPhone.startsWith('+')) {
+      cleanPhone = cleanPhone.substring(1);
+    }
+    
+    // Remove country code (53) if present
+    if (cleanPhone.startsWith('53') && cleanPhone.length > 8) {
+      cleanPhone = cleanPhone.substring(2);
+    }
+    
+    return cleanPhone;
+  }
 
   void _submitPhoneNumber() async {
-    final phone = _phoneController.text.trim();
+    // Validate form first
+    if (!_formKey.currentState!.validate()) return;
+    
+    final normalizedPhone = _normalizePhoneNumber(_phoneController.text);
     final localization = AppLocalizations.of(context)!;
 
-    if (phone.length == 8 && RegExp(r'^\d{8}$').hasMatch(phone)) {
-      final response = await _authService.requestPasswordReset(phone);
+    final response = await _authService.requestPasswordReset(normalizedPhone);
 
-      if (!context.mounted) return;
+    if (!context.mounted) return;
 
-      if (response.statusCode == 200) {
-        Navigator.of(context).pop();
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (_) => PasswordResetStepDialog(phone: phone),
-        );
-      } else {
-        showToast(
-          context: context,
-          message: localization.codeSendErrorMessage,
-          duration: const Duration(seconds: 3),
-        );
-      }
+    if (response.statusCode == 200) {
+      Navigator.of(context).pop();
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => PasswordResetStepDialog(phone: normalizedPhone),
+      );
     } else {
       showToast(
         context: context,
-        message: localization.invalidPhoneMessage,
+        message: localization.codeSendErrorMessage,
         duration: const Duration(seconds: 3),
       );
     }
@@ -256,13 +356,16 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final localization = AppLocalizations.of(context)!;
+    final dimensions = Theme.of(context).extension<DimensionExtension>()!;
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusMedium)),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -282,21 +385,31 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
-            TextField(
+            TextFormField(
               controller: _phoneController,
-              keyboardType: TextInputType.number,
-              maxLength: 8,
+              keyboardType: TextInputType.phone,
+              maxLength: 12,
               decoration: InputDecoration(
                 counterText: '',
                 hintText: localization.enterPhoneNumber,
                 filled: true,
                 fillColor: theme.colorScheme.onSecondary,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
                   borderSide: BorderSide.none,
                 ),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return localization.requiredField;
+                }
+                final normalizedPhone = _normalizePhoneNumber(value);
+                if (normalizedPhone.length != 8 || !RegExp(r'^\d{8}$').hasMatch(normalizedPhone)) {
+                  return localization.invalidPhoneMessage;
+                }
+                return null;
+              },
             ),
             const SizedBox(height: 16),
             SizedBox(
@@ -307,17 +420,18 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
                   FocusScope.of(context).unfocus();
                   _submitPhoneNumber();
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: theme.colorScheme.primary,
-                  foregroundColor: theme.colorScheme.secondary,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                                  style: ElevatedButton.styleFrom(
+                    backgroundColor: theme.colorScheme.primary,
+                    foregroundColor: theme.colorScheme.secondary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+                    ),
                   ),
-                ),
                 child: Text(localization.sendButton),
               ),
             ),
           ],
+        ),
         ),
       ),
     );
@@ -389,8 +503,9 @@ class _PasswordResetStepDialogState extends State<PasswordResetStepDialog> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final localization = AppLocalizations.of(context)!;
+    final dimensions = Theme.of(context).extension<DimensionExtension>()!;
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusMedium)),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         child: SingleChildScrollView(
@@ -461,7 +576,7 @@ class _PasswordResetStepDialogState extends State<PasswordResetStepDialog> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: theme.colorScheme.primary,
                     foregroundColor: theme.colorScheme.secondary,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius)),
                   ),
                   child: Text(localization.resetButton),
                 ),

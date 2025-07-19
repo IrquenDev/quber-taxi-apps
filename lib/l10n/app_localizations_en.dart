@@ -395,7 +395,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutDevDriver => 'About the developer';
 
   @override
-  String get logout => 'Logout';
+  String get logout => 'Log out';
 
   @override
   String get requiredLabel => 'Please complete all required fields';
@@ -584,9 +584,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get save => 'Save';
-
-  @override
-  String get logout => 'Log out';
 
   @override
   String get aboutUs => 'About Us';

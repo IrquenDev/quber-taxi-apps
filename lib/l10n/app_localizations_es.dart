@@ -587,9 +587,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get save => 'Guardar';
 
   @override
-  String get logout => 'Cerrar Sesión';
-
-  @override
   String get aboutUs => 'Sobre Nosotros';
 
   @override
