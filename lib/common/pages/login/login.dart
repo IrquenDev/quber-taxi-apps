@@ -207,7 +207,7 @@ class _LoginPageState extends State<LoginPage> {
                                   icon: Icon(_obscureText ? Icons.visibility_outlined : Icons.visibility_off_outlined, color: colorScheme.onSurfaceVariant),
                                   onPressed: () => setState(() => _obscureText = !_obscureText),
                                 ),
-                                fillColor: Colors.white.withOpacity(0.7),
+                                fillColor: Colors.white.withValues(alpha: 0.7),
                                 filled: true,
                                 counterText: '',
                                 border: OutlineInputBorder(
@@ -305,6 +305,7 @@ class ForgotPasswordDialog extends StatefulWidget {
 class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
   final TextEditingController _phoneController = TextEditingController();
   final _authService = AuthService();
+  final _formKey = GlobalKey<FormState>();
 
   String _normalizePhoneNumber(String phone) {
     // Remove all spaces and trim
@@ -324,32 +325,27 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
   }
 
   void _submitPhoneNumber() async {
+    // Validate form first
+    if (!_formKey.currentState!.validate()) return;
+    
     final normalizedPhone = _normalizePhoneNumber(_phoneController.text);
     final localization = AppLocalizations.of(context)!;
 
-    if (normalizedPhone.length == 8 && RegExp(r'^\d{8}$').hasMatch(normalizedPhone)) {
-      final response = await _authService.requestPasswordReset(normalizedPhone);
+    final response = await _authService.requestPasswordReset(normalizedPhone);
 
-      if (!context.mounted) return;
+    if (!context.mounted) return;
 
-      if (response.statusCode == 200) {
-        Navigator.of(context).pop();
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (_) => PasswordResetStepDialog(phone: normalizedPhone),
-        );
-      } else {
-        showToast(
-          context: context,
-          message: localization.codeSendErrorMessage,
-          duration: const Duration(seconds: 3),
-        );
-      }
+    if (response.statusCode == 200) {
+      Navigator.of(context).pop();
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => PasswordResetStepDialog(phone: normalizedPhone),
+      );
     } else {
       showToast(
         context: context,
-        message: localization.invalidPhoneMessage,
+        message: localization.codeSendErrorMessage,
         duration: const Duration(seconds: 3),
       );
     }
@@ -365,9 +361,11 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusMedium)),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -387,7 +385,7 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
-            TextField(
+            TextFormField(
               controller: _phoneController,
               keyboardType: TextInputType.phone,
               maxLength: 12,
@@ -402,6 +400,16 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
                 ),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return localization.requiredField;
+                }
+                final normalizedPhone = _normalizePhoneNumber(value);
+                if (normalizedPhone.length != 8 || !RegExp(r'^\d{8}$').hasMatch(normalizedPhone)) {
+                  return localization.invalidPhoneMessage;
+                }
+                return null;
+              },
             ),
             const SizedBox(height: 16),
             SizedBox(
@@ -423,6 +431,7 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
               ),
             ),
           ],
+        ),
         ),
       ),
     );
