@@ -157,7 +157,7 @@ class _LoginPageState extends State<LoginPage> {
                           controller: _phoneTFController,
                           keyboardType: TextInputType.phone,
                           maxLength: 12,
-                          style: TextStyle(color: colorScheme.onSurface),
+                          style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
                           errorBuilder: (context, value) => Text(
                               value,
                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -166,7 +166,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           decoration: InputDecoration(
                             hintText: localization.enterPhoneNumber,
-                            hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
+                            hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
                             fillColor: Colors.white.withValues(alpha: 0.7),
                             filled: true,
                             counterText: '',
@@ -193,7 +193,7 @@ class _LoginPageState extends State<LoginPage> {
                             controller: _passwordTFController,
                             obscureText: _obscureText,
                             maxLength: 20,
-                            style: TextStyle(color: colorScheme.onSurface),
+                            style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
                             errorBuilder: (context, value) => Text(
                                 value,
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -202,7 +202,7 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             decoration: InputDecoration(
                                 hintText: localization.enterPassword,
-                                hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
+                                hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
                                 suffixIcon: IconButton(
                                   icon: Icon(_obscureText ? Icons.visibility_outlined : Icons.visibility_off_outlined, color: colorScheme.onSurfaceVariant),
                                   onPressed: () => setState(() => _obscureText = !_obscureText),
