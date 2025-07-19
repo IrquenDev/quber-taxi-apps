@@ -621,4 +621,56 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get androidOnlyText => '-';
+
+  @override
+  String get cameraPermissionDenied => 'Permiso de cámara denegado.';
+
+  @override
+  String get goBackButton => 'Regresar';
+
+  @override
+  String get faceDetectionStep => '1. Detección de rostro';
+
+  @override
+  String get livenessDetectionStep => '2. Detección de vida';
+
+  @override
+  String get selfieCapturingStep => '3. Captura de selfie';
+
+  @override
+  String get compatibilityErrorTitle => 'Error de compatibilidad';
+
+  @override
+  String get faceDetectionInstruction =>
+      'Le aconsejamos que coloque su rostro en la zona indicada.';
+
+  @override
+  String get livenessDetectionInstruction =>
+      'Le aconsejamos que no actúe de forma rígida, sin pestañear o respirar de manera natural, para asegurar una detección precisa del rostro.';
+
+  @override
+  String get selfieProcessingInstruction =>
+      'Nuestra inteligencia artificial está procesando la selfie. Por favor, manténgase conectado a internet y evite cerrar la aplicación.';
+
+  @override
+  String get deviceNotCompatibleMessage =>
+      'Su dispositivo no es compatible con la verificación facial. Por favor, contacte con soporte técnico o intente con otro dispositivo.';
+
+  @override
+  String get imageProcessingErrorTitle => 'Error de Procesamiento de Imagen';
+
+  @override
+  String get imageProcessingErrorMessage =>
+      'Ocurrió un error al procesar su imagen. Por favor, inténtelo de nuevo más tarde.';
+
+  @override
+  String get cameraPermissionPermanentlyDeniedTitle =>
+      'Permiso de Cámara Requerido';
+
+  @override
+  String get cameraPermissionPermanentlyDeniedMessage =>
+      'El acceso a la cámara ha sido denegado permanentemente. Para usar la verificación de identidad, por favor habilite el permiso de cámara en la configuración de su dispositivo.';
+
+  @override
+  String get goToSettingsButton => 'Ir a Configuración';
 }

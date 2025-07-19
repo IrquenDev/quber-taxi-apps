@@ -225,6 +225,24 @@
       "quberCreditsLabel": "Crédito de Quber acumulado:",
       "nextPayLabel": "Próxima fecha de pago:",
       "valuationLabel": "Valoración acumulada:",
-      "androidOnlyText": "-"
+      "androidOnlyText": "-",
+
+      "cameraPermissionDenied": "Permiso de cámara denegado.",
+      "goBackButton": "Regresar",
+      "faceDetectionStep": "1. Detección de rostro",
+      "livenessDetectionStep": "2. Detección de vida",
+      "selfieCapturingStep": "3. Captura de selfie",
+      "compatibilityErrorTitle": "Error de compatibilidad",
+      "faceDetectionInstruction": "Le aconsejamos que coloque su rostro en la zona indicada.",
+      "livenessDetectionInstruction": "Le aconsejamos que no actúe de forma rígida, sin pestañear o respirar de manera natural, para asegurar una detección precisa del rostro.",
+      "selfieProcessingInstruction": "Nuestra inteligencia artificial está procesando la selfie. Por favor, manténgase conectado a internet y evite cerrar la aplicación.",
+      "deviceNotCompatibleMessage": "Su dispositivo no es compatible con la verificación facial. Por favor, contacte con soporte técnico o intente con otro dispositivo.",
+      "imageProcessingErrorTitle": "Error de Procesamiento de Imagen",
+      "imageProcessingErrorMessage": "Ocurrió un error al procesar su imagen. Por favor, inténtelo de nuevo más tarde.",
+      "acceptButton": "Aceptar",
+      "cameraPermissionPermanentlyDeniedTitle": "Permiso de Cámara Requerido",
+      "cameraPermissionPermanentlyDeniedMessage": "El acceso a la cámara ha sido denegado permanentemente. Para usar la verificación de identidad, por favor habilite el permiso de cámara en la configuración de su dispositivo.",
+      "goToSettingsButton": "Ir a Configuración",
+      "cancelButton": "Cancelar"
 
 }

@@ -28,8 +28,7 @@ class VerificationIdentityPage extends StatelessWidget {
                         padding: EdgeInsets.symmetric(horizontal: 24.0),
                         child: Text(
                           AppLocalizations.of(context)!.confirmIdentityHeader,
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              fontSize: 24,
+                          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).colorScheme.secondary
                           ),
@@ -41,8 +40,7 @@ class VerificationIdentityPage extends StatelessWidget {
                         padding: EdgeInsets.symmetric(horizontal: 24.0),
                         child: Text(
                           AppLocalizations.of(context)!.takeSelfieInstruction,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              fontSize: 18,
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                               color: Theme.of(context).colorScheme.secondary
                           ),
                           textAlign: TextAlign.left,
@@ -53,8 +51,7 @@ class VerificationIdentityPage extends StatelessWidget {
                         padding: EdgeInsets.symmetric(horizontal: 24.0),
                         child: Text(
                           AppLocalizations.of(context)!.selfieUsageNote,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              fontSize: 18,
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                               color: Theme.of(context).colorScheme.secondary
                           ),
                           textAlign: TextAlign.left,
@@ -65,8 +62,7 @@ class VerificationIdentityPage extends StatelessWidget {
                         padding: EdgeInsets.symmetric(horizontal: 24.0),
                         child: Text(
                           AppLocalizations.of(context)!.verificationPurpose,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              fontSize: 18,
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                               color: Theme.of(context).colorScheme.secondary
                           ),
                           textAlign: TextAlign.left,

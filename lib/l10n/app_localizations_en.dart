@@ -620,4 +620,56 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get androidOnlyText => '-';
+
+  @override
+  String get cameraPermissionDenied => 'Camera permission denied.';
+
+  @override
+  String get goBackButton => 'Go Back';
+
+  @override
+  String get faceDetectionStep => '1. Face detection';
+
+  @override
+  String get livenessDetectionStep => '2. Liveness detection';
+
+  @override
+  String get selfieCapturingStep => '3. Selfie capture';
+
+  @override
+  String get compatibilityErrorTitle => 'Compatibility error';
+
+  @override
+  String get faceDetectionInstruction =>
+      'We recommend placing your face in the indicated area.';
+
+  @override
+  String get livenessDetectionInstruction =>
+      'We recommend that you do not act rigidly, without blinking or breathing naturally, to ensure accurate face detection.';
+
+  @override
+  String get selfieProcessingInstruction =>
+      'Our artificial intelligence is processing the selfie. Please stay connected to the internet and avoid closing the application.';
+
+  @override
+  String get deviceNotCompatibleMessage =>
+      'Your device is not compatible with facial verification. Please contact technical support or try with another device.';
+
+  @override
+  String get imageProcessingErrorTitle => 'Image Processing Error';
+
+  @override
+  String get imageProcessingErrorMessage =>
+      'An error occurred while processing your image. Please try again later.';
+
+  @override
+  String get cameraPermissionPermanentlyDeniedTitle =>
+      'Camera Permission Required';
+
+  @override
+  String get cameraPermissionPermanentlyDeniedMessage =>
+      'Camera access is permanently denied. To use identity verification, please enable camera permission in your device settings.';
+
+  @override
+  String get goToSettingsButton => 'Go to Settings';
 }
