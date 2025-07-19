@@ -140,15 +140,12 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                           child: Column(children: [
                             // First Card
                             Container(
-                                margin: const EdgeInsets.symmetric(horizontal: 16),
+                                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                                 padding: const EdgeInsets.all(12.0),
                                 decoration: BoxDecoration(
                                   color: colorScheme.surfaceContainerLowest,
                                   borderRadius: BorderRadius.circular(dimensions.borderRadius),
-                                  border: Border.all(
-                                    color: colorScheme.outline,
-                                    width: 1,
-                                  ),
+
                                 ),
                                 child: Column(
                                   children: [
@@ -252,16 +249,12 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                             // ),
                             // Vehicle Section
                             Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 16),
+                              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                               child: Card(
-                                color: colorScheme.surface,
+                                color: colorScheme.surfaceContainerLowest,
                                 elevation: 0,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusLarge),
-                                  side: BorderSide(
-                                    color: colorScheme.outline,
-                                    width: 1,
-                                  ),
                                 ),
                                 child: Theme(
                                   data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
@@ -275,9 +268,14 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                                           style: textTheme.bodyLarge?.copyWith(color: colorScheme.secondary),
                                         ),
                                       ),
-                                      ...List.generate(TaxiType.values.length, (index) {
-                                        return _buildTaxiCardItem(index);
-                                      })
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                        child: Column(
+                                          children: List.generate(TaxiType.values.length, (index) {
+                                            return _buildTaxiCardItem(index);
+                                          }),
+                                        ),
+                                      )
                                     ]
                                   ),
                                 ),
@@ -285,7 +283,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                             ),
                             // Password Section
                             Container(
-                                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                                 padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
                                   color: colorScheme.surfaceContainerLowest,
@@ -437,13 +435,13 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
               borderSide: BorderSide(
-                color: colorScheme.outline,
+                color: colorScheme.outlineVariant,
                 width: 1,
               ),
             ),
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: colorScheme.outline,
+                color: colorScheme.outlineVariant,
                 width: 1,
               ),
             ),
@@ -546,13 +544,13 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
               borderSide: BorderSide(
-                color: colorScheme.outline,
+                color: colorScheme.outlineVariant,
                 width: 1,
               ),
             ),
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: colorScheme.outline,
+                color: colorScheme.outlineVariant,
                 width: 1,
               ),
             ),
@@ -604,8 +602,8 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
           bottom: 0,
           right: 0,
           child: Container(
-            width: 33,
-            height: 33,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
               color: colorScheme.surface,
               shape: BoxShape.circle,
