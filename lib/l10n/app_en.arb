@@ -243,5 +243,12 @@
             "cameraPermissionPermanentlyDeniedTitle": "Camera Permission Required",
             "cameraPermissionPermanentlyDeniedMessage": "Camera access is permanently denied. To use identity verification, please enable camera permission in your device settings.",
             "goToSettingsButton": "Go to Settings",
-            "cancelButton": "Cancel"
+            "cancelButton": "Cancel",
+
+            "confirmExitTitle": "Confirm Exit",
+            "confirmExitMessage": "Are you sure you want to exit? You will lose all progress made so far.",
+            "passwordMinLengthError": "Password must be at least 6 characters",
+            "passwordsDoNotMatch": "Passwords do not match",
+            "phoneAlreadyRegistered": "Phone number is already registered",
+            "registrationError": "We could not complete your registration. Please try again later"
 }

@@ -1363,6 +1363,42 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Ir a Configuración'**
   String get goToSettingsButton;
+
+  /// No description provided for @confirmExitTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirmar salida'**
+  String get confirmExitTitle;
+
+  /// No description provided for @confirmExitMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Está seguro que desea salir? Perderá todo el progreso realizado hasta ahora.'**
+  String get confirmExitMessage;
+
+  /// No description provided for @passwordMinLengthError.
+  ///
+  /// In es, this message translates to:
+  /// **'La contraseña debe tener al menos 6 caracteres'**
+  String get passwordMinLengthError;
+
+  /// No description provided for @passwordsDoNotMatch.
+  ///
+  /// In es, this message translates to:
+  /// **'Las contraseñas no coinciden'**
+  String get passwordsDoNotMatch;
+
+  /// No description provided for @phoneAlreadyRegistered.
+  ///
+  /// In es, this message translates to:
+  /// **'El número de teléfono ya se encuentra registrado'**
+  String get phoneAlreadyRegistered;
+
+  /// No description provided for @registrationError.
+  ///
+  /// In es, this message translates to:
+  /// **'No pudimos completar su registro. Por favor inténtelo más tarde'**
+  String get registrationError;
 }
 
 class _AppLocalizationsDelegate

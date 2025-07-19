@@ -12,6 +12,7 @@ import 'package:quber_taxi/enums/asset_dpi.dart';
 import 'package:quber_taxi/enums/taxi_type.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/driver_routes.dart';
+import 'package:quber_taxi/navigation/routes/common_routes.dart';
 import 'package:quber_taxi/storage/session_manger.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/utils/image/image_utils.dart';
@@ -50,9 +51,37 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
   bool get _canSubmit => _formKey.currentState!.validate()
       && _selectedTaxi != null
       && _taxiImage != null;
-  // && _licenseImage != null;
+      // && _licenseImage != null;
 
   bool _isProcessingImage = false;
+
+  void _showExitConfirmationDialog() {
+    final localizations = AppLocalizations.of(context)!;
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(localizations.confirmExitTitle),
+          content: Text(localizations.confirmExitMessage),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text(localizations.cancelButton),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                context.go(CommonRoutes.login);
+              },
+              child: Text(localizations.acceptButton),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +105,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                     borderRadius: BorderRadius.vertical(bottom: Radius.circular(dimensions.borderRadius)),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
+                        color: colorScheme.shadow.withValues(alpha: 0.2),
                         spreadRadius: 2,
                         blurRadius: 5,
                         offset: const Offset(0, 3),
@@ -88,12 +117,12 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Row(
                         children: [
-                          // IconButton(onPressed: () => context.pop(), icon: Icon(Icons.arrow_back), color: Theme.of(context).colorScheme.shadow),
+                          IconButton(onPressed: _showExitConfirmationDialog, icon: Icon(Icons.arrow_back), color: Theme.of(context).colorScheme.onPrimaryContainer),
                           const SizedBox(width: 8),
                           Text(
                             AppLocalizations.of(context)!.createAccountTitle,
-                            style: textTheme.titleLarge?.copyWith(
-                                fontSize: 26, fontWeight: FontWeight.bold, color: colorScheme.onPrimaryContainer),
+                            style: textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.bold, color: colorScheme.onPrimaryContainer),
                           ),
                         ],
                       ),
@@ -115,9 +144,9 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                                 padding: const EdgeInsets.all(12.0),
                                 decoration: BoxDecoration(
                                   color: colorScheme.surfaceContainerLowest,
-                                  borderRadius: BorderRadius.circular(25),
+                                  borderRadius: BorderRadius.circular(dimensions.borderRadius),
                                   border: Border.all(
-                                    color: Colors.grey.shade200,
+                                    color: colorScheme.outline,
                                     width: 1,
                                   ),
                                 ),
@@ -183,6 +212,10 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                             //   decoration: BoxDecoration(
                             //     color: colorScheme.surfaceContainerLowest,
                             //     borderRadius: BorderRadius.circular(16),
+                            //     border: Border.all(
+                            //       color: Colors.grey.shade200,
+                            //       width: 1,
+                            //     ),
                             //   ),
                             //   child: Row(
                             //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -221,12 +254,12 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                             Container(
                               margin: const EdgeInsets.symmetric(horizontal: 16),
                               child: Card(
-                                color: Colors.white,
+                                color: colorScheme.surface,
                                 elevation: 0,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15),
+                                  borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusLarge),
                                   side: BorderSide(
-                                    color: Colors.grey.shade200,
+                                    color: colorScheme.outline,
                                     width: 1,
                                   ),
                                 ),
@@ -235,9 +268,12 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        AppLocalizations.of(context)!.vehicleTypeLabel,
-                                        style: textTheme.bodyLarge?.copyWith(fontSize: 18, color: colorScheme.secondary),
+                                      Padding(
+                                        padding: const EdgeInsets.all(16.0),
+                                        child: Text(
+                                          AppLocalizations.of(context)!.vehicleTypeLabel,
+                                          style: textTheme.bodyLarge?.copyWith(color: colorScheme.secondary),
+                                        ),
                                       ),
                                       ...List.generate(TaxiType.values.length, (index) {
                                         return _buildTaxiCardItem(index);
@@ -253,7 +289,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                                 padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
                                   color: colorScheme.surfaceContainerLowest,
-                                  borderRadius: BorderRadius.circular(16),
+                                  borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusLarge),
                                 ),
                                 child: Column(
                                     spacing: 12.0,
@@ -261,24 +297,26 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                                       _buildPasswordField(
                                           controller: _passwordTFController,
                                           label: localizations.passwordLabel,
+                                          hint: localizations.passwordHint,
                                           visible: _isPasswordVisible,
                                           onToggle: (v) => setState(() => _isPasswordVisible = v),
                                           validationWorkflow: Workflow<String?>()
                                               .step(RequiredStep(errorMessage: localizations.requiredField))
-                                              .step(MinLengthStep(min: 6, errorMessage: "La contraseña debe tener al menos 6 carateres"))
+                                              .step(MinLengthStep(min: 6, errorMessage: localizations.passwordMinLengthError))
                                               .breakOnFirstApply(true)
                                               .withDefault((_) => null)
                                       ),
                                       _buildPasswordField(
                                           controller: _confirmPasswordTFController,
                                           label: localizations.confirmPasswordLabel,
+                                          hint: localizations.confirmPasswordHint,
                                           visible: _isConfirmPasswordVisible,
                                           onToggle: (v) => setState(() => _isConfirmPasswordVisible = v),
                                           validationWorkflow: Workflow<String?>()
                                               .step(RequiredStep(errorMessage: localizations.requiredField))
                                               .step(MatchOtherStep(
                                                 other: _passwordTFController.text,
-                                                errorMessage: "Las contraseñas no coinciden"))
+                                                errorMessage: localizations.passwordsDoNotMatch))
                                               .breakOnFirstApply(true)
                                               .withDefault((_) => null)
                                       )
@@ -304,7 +342,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                     onPressed: () async {
                       if (!_canSubmit) return;
                       if(!hasConnection(context)) {
-                        showToast(context: context, message: "Revise su conexión a internet");
+                        showToast(context: context, message: localizations.checkConnection);
                         return;
                       }
                       // Make the register request
@@ -337,13 +375,13 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                       }
                       // CONFLICT
                       else if(response.statusCode == 409) {
-                        showToast(context: context, message: "El número de teléfono ya se encuentra regitrado");
+                        showToast(context: context, message: localizations.phoneAlreadyRegistered);
                       }
                       // ANY OTHER STATUS CODE
                       else {
                         showToast(
                             context: context,
-                            message: "No pudimos completar su registro. Por favor inténtelo más tarde"
+                            message: localizations.registrationError
                         );
                       }
                     },
@@ -365,16 +403,17 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
     TextInputType? inputType,
     int? maxLength,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final dimensions = Theme.of(context).extension<DimensionExtension>()!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         RichText(
           text: TextSpan(
             text: label,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
               fontWeight: FontWeight.normal,
-              fontSize: 18,
-              color: Colors.black,
+              color: colorScheme.onSurface,
             ),
           ),
         ),
@@ -390,25 +429,27 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                   .withDefault((_) => null)
                   .proceed(value),
           decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
             filled: true,
-            fillColor: Colors.white,
+            fillColor: colorScheme.surface,
             contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
               borderSide: BorderSide(
-                color: Colors.grey.shade300,
+                color: colorScheme.outline,
                 width: 1,
               ),
             ),
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: Colors.grey.shade300,
+                color: colorScheme.outline,
                 width: 1,
               ),
             ),
             errorBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: Colors.red.shade400,
+                color: colorScheme.error,
                 width: 1,
               ),
             ),
@@ -426,7 +467,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
     final taxi = TaxiType.values[index];
     final isSelected = _selectedTaxi == taxi;
     return Card(
-      color: isSelected ? colorScheme.primaryFixed : Colors.white,
+      color: isSelected ? colorScheme.primaryFixed : colorScheme.surface,
       child: ExpansionTile(
         title: GestureDetector(
           onTap: () => setState(()=> _selectedTaxi = taxi),
@@ -462,11 +503,14 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
   Widget _buildPasswordField({
     required TextEditingController controller,
     required String label,
+    required String hint,
     required bool visible,
     required Function(bool) onToggle,
     required Workflow<String?> validationWorkflow,
     int? maxLength,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final dimensions = Theme.of(context).extension<DimensionExtension>()!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -475,8 +519,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
             text: label,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              fontSize: 16,
-              color: Colors.grey.shade700,
+              color: colorScheme.onSurface,
             ),
           ),
         ),
@@ -488,32 +531,34 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
           buildCounter: (context, {required currentLength, required isFocused, maxLength}) => const SizedBox.shrink(),
           validator: (value) => validationWorkflow.proceed(value),
           decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
             filled: true,
-            fillColor: Colors.white,
+            fillColor: colorScheme.surface,
             contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             suffixIcon: IconButton(
               icon: Icon(
                 visible ? Icons.visibility : Icons.visibility_off,
-                color: Colors.grey.shade600,
+                color: colorScheme.onSurfaceVariant,
               ),
               onPressed: () => onToggle(!visible),
             ),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
               borderSide: BorderSide(
-                color: Colors.grey.shade300,
+                color: colorScheme.outline,
                 width: 1,
               ),
             ),
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: Colors.grey.shade300,
+                color: colorScheme.outline,
                 width: 1,
               ),
             ),
             errorBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: Colors.red.shade400,
+                color: colorScheme.error,
                 width: 1,
               ),
             ),
@@ -534,7 +579,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
+                color: colorScheme.shadow.withOpacity(0.2),
                 spreadRadius: 2,
                 blurRadius: 5,
                 offset: const Offset(0, 3),
@@ -562,11 +607,11 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
             width: 33,
             height: 33,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: colorScheme.surface,
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.3),
+                  color: colorScheme.shadow.withOpacity(0.15),
                   spreadRadius: 1,
                   blurRadius: 3,
                   offset: const Offset(0, 2),
@@ -603,8 +648,8 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
               },
               child: CircleAvatar(
                 radius: 16,
-                backgroundColor: Colors.red,
-                child: Icon(Icons.close, color: Colors.white, size: 16),
+                backgroundColor: colorScheme.error,
+                child: Icon(Icons.close, color: colorScheme.onError, size: 16),
               ),
             ),
           ),
