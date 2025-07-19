@@ -4,6 +4,7 @@ import 'package:quber_taxi/common/models/driver.dart';
 enum DriverAccountState {
 
   notConfirmed(apiValue: "NOT_CONFIRMED"),
+  canPay(apiValue: "CAN_PAY"),
   paymentRequired(apiValue: "PAYMENT_REQUIRED"),
   enabled(apiValue: "ENABLED"),
   disabled(apiValue: "DISABLED");
@@ -13,6 +14,7 @@ enum DriverAccountState {
   static IconData iconOf(DriverAccountState state) {
     return switch (state) {
       DriverAccountState.notConfirmed => Icons.watch_later_outlined,
+      DriverAccountState.canPay => Icons.payment_outlined,
       DriverAccountState.paymentRequired => Icons.payment_outlined,
       DriverAccountState.enabled => Icons.done_outline,
       DriverAccountState.disabled => Icons.lock_outline

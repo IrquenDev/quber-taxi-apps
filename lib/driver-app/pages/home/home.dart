@@ -121,10 +121,13 @@ class _DriverHomePageState extends State<DriverHomePage> {
       _driver = Driver.fromJson(jsonDecode(response.body));
       // Always update session
       await SessionManager.instance.save(_driver);
-      // Show payment reminder (will show nothing if doesn't applies)
-      await _showPaymentReminder();
+      // Show payment reminder (if applies)
+      if(_driver.credit > 0.0 && _driver.paymentDate != null) {
+        await _showPaymentReminder();
+      }
       switch (_driver.accountState) {
         case DriverAccountState.notConfirmed: await _showNeedsConfirmationDialog();
+        case DriverAccountState.canPay: setState(() => _isAccountEnabled = true);
         case DriverAccountState.paymentRequired: break;
         case DriverAccountState.enabled: setState(() => _isAccountEnabled = true);
         case DriverAccountState.disabled: break;
@@ -160,8 +163,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
   }
 
   Future<void> _showPaymentReminder() async {
-    final credit = _driver.credit;
-    if (credit == 0.0) return;
     final now = DateTime.now();
     final paymentDate = _driver.paymentDate!;
     final today = DateTime(now.year, now.month, now.day);

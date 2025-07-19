@@ -123,7 +123,14 @@ class _DriversListPageState extends State<DriversListPage> {
                 spacing: 8.0,
                 children: [
                   Text(driver.name, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)),
-                  Text(driver.phone)
+                  Row(
+                      spacing: 8.0,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.phone_outlined),
+                        Text(driver.phone)
+                      ]
+                  )
                 ]
             ),
             Spacer(),
@@ -138,10 +145,7 @@ class _DriversListPageState extends State<DriversListPage> {
             child: GestureDetector(
                 onTap: () async {
                   if(!hasConnection(context)) return;
-                  final newState = driver.accountState != DriverAccountState.enabled
-                      ? DriverAccountState.enabled
-                      : DriverAccountState.disabled;
-                  final response = await DriverService().changeState(driverId: driver.id, state: newState);
+                  final response = await DriverService().changeState(driverId: driver.id);
                   if(!mounted) return;
                   if(response.statusCode == 200) {
                     _refreshDrivers();
@@ -153,17 +157,18 @@ class _DriversListPageState extends State<DriversListPage> {
                 child: Text(
                     switch (driver.accountState) {
                       DriverAccountState.notConfirmed => "Confirmar Cuenta",
+                      DriverAccountState.canPay => "Confirmar Pago",
                       DriverAccountState.paymentRequired => "Confirmar Pago",
                       DriverAccountState.enabled => "Bloquear cuenta",
-                      DriverAccountState.disabled => "Habilitar cuenta",
+                      DriverAccountState.disabled => "Habilitar cuenta"
                     },
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.primaryContainer
                     )
                 )
-            ),
-          ),
+            )
+          )
         )
       ]
     );

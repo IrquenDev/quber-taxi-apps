@@ -38,11 +38,8 @@ class DriverService {
     return await http.post(url, headers: headers);
   }
 
-  Future<http.Response> changeState({
-    required int driverId,
-    required DriverAccountState state,
-  }) async {
-    final url = Uri.parse("${_apiConfig.baseUrl}/$_endpoint/$driverId?state=${state.apiValue}");
+  Future<http.Response> changeState({required int driverId}) async {
+    final url = Uri.parse("${_apiConfig.baseUrl}/$_endpoint/$driverId");
     final headers = {'Content-Type': 'application/json'};
     return await http.patch(url, headers: headers);
   }
