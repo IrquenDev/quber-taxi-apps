@@ -1202,12 +1202,6 @@ abstract class AppLocalizations {
   /// **'Guardar'**
   String get save;
 
-  /// No description provided for @logout.
-  ///
-  /// In es, this message translates to:
-  /// **'Cerrar Sesión'**
-  String get logout;
-
   /// No description provided for @aboutUs.
   ///
   /// In es, this message translates to:

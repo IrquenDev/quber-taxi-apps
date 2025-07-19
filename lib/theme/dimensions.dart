@@ -47,6 +47,18 @@ class DimensionExtension extends ThemeExtension<DimensionExtension> {
   /// Default border radius used across the app.
   final double borderRadius;
 
+  /// Border radius for buttons.
+  final double buttonBorderRadius;
+
+  /// Border radius for small cards and components.
+  final double cardBorderRadiusSmall;
+
+  /// Border radius for medium cards and components.
+  final double cardBorderRadiusMedium;
+
+  /// Border radius for large cards and components.
+  final double cardBorderRadiusLarge;
+
   /// Standard elevation value used for shadows or raised surfaces.
   final double elevation;
 
@@ -55,6 +67,10 @@ class DimensionExtension extends ThemeExtension<DimensionExtension> {
   /// {@macro dimension_extension}
   const DimensionExtension({
     required this.borderRadius,
+    required this.buttonBorderRadius,
+    required this.cardBorderRadiusSmall,
+    required this.cardBorderRadiusMedium,
+    required this.cardBorderRadiusLarge,
     required this.elevation,
     required this.contentPadding
   });
@@ -62,11 +78,19 @@ class DimensionExtension extends ThemeExtension<DimensionExtension> {
   @override
   DimensionExtension copyWith({
     double? borderRadius,
+    double? buttonBorderRadius,
+    double? cardBorderRadiusSmall,
+    double? cardBorderRadiusMedium,
+    double? cardBorderRadiusLarge,
     double? elevation,
     EdgeInsets? contentPadding
   }) {
     return DimensionExtension(
       borderRadius: borderRadius ?? this.borderRadius,
+      buttonBorderRadius: buttonBorderRadius ?? this.buttonBorderRadius,
+      cardBorderRadiusSmall: cardBorderRadiusSmall ?? this.cardBorderRadiusSmall,
+      cardBorderRadiusMedium: cardBorderRadiusMedium ?? this.cardBorderRadiusMedium,
+      cardBorderRadiusLarge: cardBorderRadiusLarge ?? this.cardBorderRadiusLarge,
       elevation: elevation ?? this.elevation,
       contentPadding: contentPadding ?? this.contentPadding
     );
@@ -77,6 +101,10 @@ class DimensionExtension extends ThemeExtension<DimensionExtension> {
     if (other is! DimensionExtension) return this;
     return DimensionExtension(
       borderRadius: lerpDouble(borderRadius, other.borderRadius, t)!,
+      buttonBorderRadius: lerpDouble(buttonBorderRadius, other.buttonBorderRadius, t)!,
+      cardBorderRadiusSmall: lerpDouble(cardBorderRadiusSmall, other.cardBorderRadiusSmall, t)!,
+      cardBorderRadiusMedium: lerpDouble(cardBorderRadiusMedium, other.cardBorderRadiusMedium, t)!,
+      cardBorderRadiusLarge: lerpDouble(cardBorderRadiusLarge, other.cardBorderRadiusLarge, t)!,
       elevation: lerpDouble(elevation, other.elevation, t)!,
       contentPadding: EdgeInsets.lerp(contentPadding, other.contentPadding, t)!,
     );
