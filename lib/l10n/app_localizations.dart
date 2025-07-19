@@ -1273,6 +1273,96 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'-'**
   String get androidOnlyText;
+
+  /// No description provided for @cameraPermissionDenied.
+  ///
+  /// In es, this message translates to:
+  /// **'Permiso de cámara denegado.'**
+  String get cameraPermissionDenied;
+
+  /// No description provided for @goBackButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Regresar'**
+  String get goBackButton;
+
+  /// No description provided for @faceDetectionStep.
+  ///
+  /// In es, this message translates to:
+  /// **'1. Detección de rostro'**
+  String get faceDetectionStep;
+
+  /// No description provided for @livenessDetectionStep.
+  ///
+  /// In es, this message translates to:
+  /// **'2. Detección de vida'**
+  String get livenessDetectionStep;
+
+  /// No description provided for @selfieCapturingStep.
+  ///
+  /// In es, this message translates to:
+  /// **'3. Captura de selfie'**
+  String get selfieCapturingStep;
+
+  /// No description provided for @compatibilityErrorTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Error de compatibilidad'**
+  String get compatibilityErrorTitle;
+
+  /// No description provided for @faceDetectionInstruction.
+  ///
+  /// In es, this message translates to:
+  /// **'Le aconsejamos que coloque su rostro en la zona indicada.'**
+  String get faceDetectionInstruction;
+
+  /// No description provided for @livenessDetectionInstruction.
+  ///
+  /// In es, this message translates to:
+  /// **'Le aconsejamos que no actúe de forma rígida, sin pestañear o respirar de manera natural, para asegurar una detección precisa del rostro.'**
+  String get livenessDetectionInstruction;
+
+  /// No description provided for @selfieProcessingInstruction.
+  ///
+  /// In es, this message translates to:
+  /// **'Nuestra inteligencia artificial está procesando la selfie. Por favor, manténgase conectado a internet y evite cerrar la aplicación.'**
+  String get selfieProcessingInstruction;
+
+  /// No description provided for @deviceNotCompatibleMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Su dispositivo no es compatible con la verificación facial. Por favor, contacte con soporte técnico o intente con otro dispositivo.'**
+  String get deviceNotCompatibleMessage;
+
+  /// No description provided for @imageProcessingErrorTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Error de Procesamiento de Imagen'**
+  String get imageProcessingErrorTitle;
+
+  /// No description provided for @imageProcessingErrorMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Ocurrió un error al procesar su imagen. Por favor, inténtelo de nuevo más tarde.'**
+  String get imageProcessingErrorMessage;
+
+  /// No description provided for @cameraPermissionPermanentlyDeniedTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Permiso de Cámara Requerido'**
+  String get cameraPermissionPermanentlyDeniedTitle;
+
+  /// No description provided for @cameraPermissionPermanentlyDeniedMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'El acceso a la cámara ha sido denegado permanentemente. Para usar la verificación de identidad, por favor habilite el permiso de cámara en la configuración de su dispositivo.'**
+  String get cameraPermissionPermanentlyDeniedMessage;
+
+  /// No description provided for @goToSettingsButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Ir a Configuración'**
+  String get goToSettingsButton;
 }
 
 class _AppLocalizationsDelegate

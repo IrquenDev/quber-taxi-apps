@@ -82,6 +82,9 @@ dependencies:
   # Camera access and control.
   camera: ^0.10.5+2
 
+  # Permission handling for iOS and Android.
+  permission_handler: ^11.3.1
+
   # Image and video picker from gallery or camera.
   image_picker: ^1.1.2
 
