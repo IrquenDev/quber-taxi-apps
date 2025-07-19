@@ -94,6 +94,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
   void _handleNetworkScopeAndListener() {
     _scope = NetworkScope.of(context); // save the scope (depends on context) to safely access on dispose.
     _listener = _scope.registerListener(_checkDriverAccountStateListener);
+    // Check account state immediately when entering the home page
+    _checkDriverAccountStateListener(NetworkScope.statusOf(context));
   }
 
   void _checkDriverAccountStateListener(ConnectionStatus status) async {
@@ -156,7 +158,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
             bodyMessage: "Su cuenta está en proceso de activación. Para continuar, por favor preséntese en nuestras "
                 "oficinas para la revisión técnica de su vehículo y la firma del contrato. Nos encontramos en Calle "
                 "4ta / Central y mercado, reparto Martín Pérez, San Miguel del Padrón. Una vez complete este paso, "
-                "podrá comenzar a usar la app normalmente.",
+                "podrá comenzar a usar la app normalmente y se mostrarán las peticiones de viaje disponibles.",
             footerMessage: "¡Le esperamos!"
         )
     );
@@ -234,38 +236,52 @@ class _DriverHomePageState extends State<DriverHomePage> {
   }
 
   void _startStreamingLocation() async {
+    // If already streaming, don't create duplicate markers
+    if (_isLocationStreaming) return;
+    
     // Get current position
     final position = await g.Geolocator.getCurrentPosition();
     final coords = Position(position.longitude, position.latitude);
     // Update class's field coord references
     _coords = coords;
     _lastKnownCoords = coords;
-    // Add driver marker to map
-    await _pointAnnotationManager?.create(
-      PointAnnotationOptions(
-        geometry: Point(coordinates: coords),
-        image: _driverMarkerImage,
-        iconAnchor: IconAnchor.CENTER,
-      ),
-    ).then((annotation) {
-      _driverAnnotation ??= annotation;
-      // Listen for real location updates
-      _locationStreamSubscription = _locationBroadcast.listen((position) async {
-        // Update coords
-        final coords = Position(position.longitude, position.latitude);
-        _lastKnownCoords = _coords;
-        _coords = coords;
-        // Adjust bearing
-        final bearing = mb_util.calculateBearing(
-            _lastKnownCoords.lat, _lastKnownCoords.lng,
-            coords.lat, coords.lng
-        );
-        final adjustedBearing = (bearing - _mapBearing + 360) % 360;
-        _driverAnnotation!.iconRotate = adjustedBearing;
-        _driverAnnotation!.geometry = Point(coordinates: coords);
-        _pointAnnotationManager?.update(_driverAnnotation!);
-      });
+    
+    // Only create marker if we don't have one yet
+    if (_driverAnnotation == null) {
+      // Add driver marker to map
+      _driverAnnotation = await _pointAnnotationManager?.create(
+        PointAnnotationOptions(
+          geometry: Point(coordinates: coords),
+          image: _driverMarkerImage,
+          iconAnchor: IconAnchor.CENTER,
+        ),
+      );
+    } else {
+      // Update existing marker position
+      _driverAnnotation!.geometry = Point(coordinates: coords);
+      _pointAnnotationManager?.update(_driverAnnotation!);
+    }
+    
+    // Cancel existing subscription to avoid duplicates
+    _locationStreamSubscription?.cancel();
+    
+    // Listen for real location updates
+    _locationStreamSubscription = _locationBroadcast.listen((position) async {
+      // Update coords
+      final coords = Position(position.longitude, position.latitude);
+      _lastKnownCoords = _coords;
+      _coords = coords;
+      // Adjust bearing
+      final bearing = mb_util.calculateBearing(
+          _lastKnownCoords.lat, _lastKnownCoords.lng,
+          coords.lat, coords.lng
+      );
+      final adjustedBearing = (bearing - _mapBearing + 360) % 360;
+      _driverAnnotation!.iconRotate = adjustedBearing;
+      _driverAnnotation!.geometry = Point(coordinates: coords);
+      _pointAnnotationManager?.update(_driverAnnotation!);
     });
+    
     _isLocationStreaming = true;
   }
 
@@ -376,6 +392,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
                 // Update some mapbox component
                 await controller.location.updateSettings(LocationComponentSettings(enabled: false));
                 await controller.scaleBar.updateSettings(ScaleBarSettings(enabled: false));
+                // Disable pitch/tilt gestures to keep map flat
+                await controller.gestures.updateSettings(GesturesSettings(pitchEnabled: false));
                 // Create PAM
                 _pointAnnotationManager = await controller.annotations.createPointAnnotationManager();
                 // Load Taxi Marker
@@ -391,7 +409,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                 // disable it if you want (you should).
                 // To do that set -dart-define=ALLOW_FDA=FALSE.
                 // Just care running "flutter build apk" including this flag as FALSE.
-                String definedAllowFDA = const String.fromEnvironment("ALLOW_FDA", defaultValue: "TRUE");
+                String definedAllowFDA = const String.fromEnvironment("ALLOW_FDA", defaultValue: "FALSE"); // Temporarily disabled to debug marker overlap
                 final fdaAllowed = definedAllowFDA == "TRUE";
                 if (fdaAllowed) {
                   for (int i = 1; i <= 5; i++) {
