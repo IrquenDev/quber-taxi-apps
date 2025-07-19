@@ -673,4 +673,29 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get goToSettingsButton => 'Ir a Configuración';
+
+  @override
+  String get confirmExitTitle => 'Confirmar salida';
+
+  @override
+  String get confirmExitMessage =>
+      '¿Está seguro que desea salir? Perderá todo el progreso realizado hasta ahora.';
+
+  @override
+  String get passwordMinLengthError =>
+      'La contraseña debe tener al menos 6 caracteres';
+
+  @override
+  String get passwordsDoNotMatch => 'Las contraseñas no coinciden';
+
+  @override
+  String get phoneAlreadyRegistered =>
+      'El número de teléfono ya se encuentra registrado';
+
+  @override
+  String get registrationError =>
+      'No pudimos completar su registro. Por favor inténtelo más tarde';
+
+  @override
+  String get creatingAccount => 'Creando cuenta...';
 }

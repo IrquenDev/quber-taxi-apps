@@ -243,6 +243,14 @@
       "cameraPermissionPermanentlyDeniedTitle": "Permiso de Cámara Requerido",
       "cameraPermissionPermanentlyDeniedMessage": "El acceso a la cámara ha sido denegado permanentemente. Para usar la verificación de identidad, por favor habilite el permiso de cámara en la configuración de su dispositivo.",
       "goToSettingsButton": "Ir a Configuración",
-      "cancelButton": "Cancelar"
+      "cancelButton": "Cancelar",
+
+      "confirmExitTitle": "Confirmar salida",
+      "confirmExitMessage": "¿Está seguro que desea salir? Perderá todo el progreso realizado hasta ahora.",
+      "passwordMinLengthError": "La contraseña debe tener al menos 6 caracteres",
+      "passwordsDoNotMatch": "Las contraseñas no coinciden",
+      "phoneAlreadyRegistered": "El número de teléfono ya se encuentra registrado",
+      "registrationError": "No pudimos completar su registro. Por favor inténtelo más tarde",
+      "creatingAccount": "Creando cuenta..."
 
 }
