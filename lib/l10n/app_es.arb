@@ -250,6 +250,7 @@
       "passwordMinLengthError": "La contraseña debe tener al menos 6 caracteres",
       "passwordsDoNotMatch": "Las contraseñas no coinciden",
       "phoneAlreadyRegistered": "El número de teléfono ya se encuentra registrado",
-      "registrationError": "No pudimos completar su registro. Por favor inténtelo más tarde"
+      "registrationError": "No pudimos completar su registro. Por favor inténtelo más tarde",
+      "creatingAccount": "Creando cuenta..."
 
 }

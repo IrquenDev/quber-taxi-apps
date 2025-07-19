@@ -692,4 +692,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get registrationError =>
       'We could not complete your registration. Please try again later';
+
+  @override
+  String get creatingAccount => 'Creating account...';
 }

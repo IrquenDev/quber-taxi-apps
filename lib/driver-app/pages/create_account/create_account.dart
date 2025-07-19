@@ -48,12 +48,19 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
   XFile? _taxiImage;
   // XFile? _licenseImage;
 
+  bool _showVehicleTypeError = false;
+  bool _showImageError = false;
+
   bool get _canSubmit => _formKey.currentState!.validate()
       && _selectedTaxi != null
       && _taxiImage != null;
       // && _licenseImage != null;
 
   bool _isProcessingImage = false;
+  bool _isSubmitting = false;
+  final ScrollController _scrollController = ScrollController();
+  final GlobalKey _imageKey = GlobalKey();
+  final GlobalKey _vehicleTypeKey = GlobalKey();
 
   void _showExitConfirmationDialog() {
     final localizations = AppLocalizations.of(context)!;
@@ -81,6 +88,126 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
         );
       },
     );
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollToFirstError() {
+    // Scroll to the first error found
+    if (!_formKey.currentState!.validate()) {
+      // If there are errors in TextFormFields, scroll to the top of the form
+      _scrollController.animateTo(
+        0,
+        duration: Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    } else if (_taxiImage == null) {
+      // Scroll to vehicle image
+      _scrollToWidget(_imageKey);
+    } else if (_selectedTaxi == null) {
+      // Scroll to vehicle type section
+      _scrollToWidget(_vehicleTypeKey);
+    }
+  }
+
+  void _scrollToWidget(GlobalKey key) {
+    final context = key.currentContext;
+    if (context != null) {
+      Scrollable.ensureVisible(
+        context,
+        duration: Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
+  void _validateAndSubmit() {
+    final localizations = AppLocalizations.of(context)!;
+    setState(() {
+      _showImageError = _taxiImage == null;
+      _showVehicleTypeError = _selectedTaxi == null;
+    });
+
+    if (!_canSubmit) {
+      _scrollToFirstError();
+      return;
+    }
+
+    _submitForm();
+  }
+
+  Future<void> _submitForm() async {
+    final localizations = AppLocalizations.of(context)!;
+    
+    if(!hasConnection(context)) {
+      showToast(context: context, message: localizations.checkConnection);
+      return;
+    }
+
+    setState(() {
+      _isSubmitting = true;
+    });
+
+    try {
+      // Make the register request
+      final response = await AccountService().registerDriver(
+          name: _nameTFController.text,
+          phone: _phoneTFController.text,
+          password: _passwordTFController.text,
+          plate: _plateTFController.text,
+          type: _selectedTaxi!,
+          seats: int.parse(_seatsTFController.text),
+          taxiImage: _taxiImage!,
+          // licenseImage: _licenseImage!,
+          faceIdImage: widget.faceIdImage
+      );
+      
+      // Avoid context's gaps
+      if(!context.mounted) return;
+      
+      // Handle responses (depends on status code)
+      // OK
+      if(response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        final driver = Driver.fromJson(json);
+        // Save the user's session
+        final success = await SessionManager.instance.save(driver);
+        if(success) {
+          // Avoid context's gaps
+          if(!context.mounted) return;
+          // Navigate to home safely
+          context.go(DriverRoutes.home);
+        } else {
+          showToast(context: context, message: localizations.registrationError);
+        }
+      }
+      // CONFLICT
+      else if(response.statusCode == 409) {
+        showToast(context: context, message: localizations.phoneAlreadyRegistered);
+      }
+      // ANY OTHER STATUS CODE
+      else {
+        showToast(
+            context: context,
+            message: localizations.registrationError
+        );
+      }
+    } catch (e) {
+      // Handle any network or parsing errors
+      if(context.mounted) {
+        showToast(context: context, message: localizations.registrationError);
+      }
+    } finally {
+      if(mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
+      }
+    }
   }
 
   @override
@@ -134,6 +261,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
               Positioned(
                   top: 120, left: 0, right: 0, bottom: 0,
                   child: SingleChildScrollView(
+                      controller: _scrollController,
                       physics: const BouncingScrollPhysics(),
                       child: Form(
                           key: _formKey,
@@ -150,21 +278,38 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                                 child: Column(
                                   children: [
                                     Center(
-                                        child: GestureDetector(
-                                            onTap: () async {
-                                              final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
-                                              if (pickedImage != null) {
-                                                setState(() => _isProcessingImage = true);
-                                                final compressedImage = await compressXFileToTargetSize(pickedImage, 5);
-                                                setState(() => _isProcessingImage = false);
-                                                if (compressedImage != null) {
-                                                  setState(() {
-                                                    _taxiImage = compressedImage;
-                                                  });
-                                                }
-                                              }
-                                            },
-                                            child: _buildCircleImagePicker()
+                                        child: Column(
+                                          key: _imageKey,
+                                          children: [
+                                            GestureDetector(
+                                                onTap: () async {
+                                                  final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
+                                                  if (pickedImage != null) {
+                                                    setState(() => _isProcessingImage = true);
+                                                    final compressedImage = await compressXFileToTargetSize(pickedImage, 5);
+                                                    setState(() => _isProcessingImage = false);
+                                                    if (compressedImage != null) {
+                                                      setState(() {
+                                                        _taxiImage = compressedImage;
+                                                        _showImageError = false; // Clear error when selecting
+                                                      });
+                                                    }
+                                                  }
+                                                },
+                                                child: _buildCircleImagePicker()
+                                            ),
+                                            if (_showImageError)
+                                              Padding(
+                                                padding: const EdgeInsets.only(top: 8.0),
+                                                child: Text(
+                                                  localizations.requiredField,
+                                                  style: TextStyle(
+                                                    color: colorScheme.error,
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
+                                              ),
+                                          ],
                                         )
                                     ),
                                     // Form
@@ -241,7 +386,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                             //         child: Text(
                             //           _licenseImage == null
                             //               ? AppLocalizations.of(context)!.attachButton
-                            //               : "Cambiar"
+                            //               : "Change"
                             //         )
                             //       )
                             //     ]
@@ -249,6 +394,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                             // ),
                             // Vehicle Section
                             Container(
+                              key: _vehicleTypeKey,
                               margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                               child: Card(
                                 color: colorScheme.surfaceContainerLowest,
@@ -263,9 +409,25 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                                     children: [
                                       Padding(
                                         padding: const EdgeInsets.all(16.0),
-                                        child: Text(
-                                          AppLocalizations.of(context)!.vehicleTypeLabel,
-                                          style: textTheme.bodyLarge?.copyWith(color: colorScheme.secondary),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              AppLocalizations.of(context)!.vehicleTypeLabel,
+                                              style: textTheme.bodyLarge?.copyWith(color: colorScheme.secondary),
+                                            ),
+                                            if (_showVehicleTypeError)
+                                              Padding(
+                                                padding: const EdgeInsets.only(top: 4.0),
+                                                child: Text(
+                                                  localizations.requiredField,
+                                                  style: TextStyle(
+                                                    color: colorScheme.error,
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
+                                              ),
+                                          ],
                                         ),
                                       ),
                                       Padding(
@@ -326,7 +488,31 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                   )
               ),
               if(_isProcessingImage)
-                Positioned.fill(child: Center(child: CircularProgressIndicator()))
+                Positioned.fill(child: Center(child: CircularProgressIndicator())),
+              if(_isSubmitting)
+                Positioned.fill(
+                  child: Container(
+                    color: colorScheme.scrim.withOpacity(0.6),
+                    child: Center(
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              CircularProgressIndicator(),
+                              SizedBox(height: 16),
+                              Text(
+                                localizations.creatingAccount,
+                                style: textTheme.bodyLarge,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                )
             ]),
           ),
             // Submit Button
@@ -337,52 +523,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                     style: ElevatedButton.styleFrom(
                         backgroundColor: colorScheme.primaryContainer,
                         shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero)),
-                    onPressed: () async {
-                      if (!_canSubmit) return;
-                      if(!hasConnection(context)) {
-                        showToast(context: context, message: localizations.checkConnection);
-                        return;
-                      }
-                      // Make the register request
-                      final response = await AccountService().registerDriver(
-                          name: _nameTFController.text,
-                          phone: _phoneTFController.text,
-                          password: _passwordTFController.text,
-                          plate: _plateTFController.text,
-                          type: _selectedTaxi!,
-                          seats: int.parse(_seatsTFController.text),
-                          taxiImage: _taxiImage!,
-                          // licenseImage: _licenseImage!,
-                          faceIdImage: widget.faceIdImage
-                      );
-                      // Avoid context's gaps
-                      if(!context.mounted) return;
-                      // Handle responses (depends on status code)
-                      // OK
-                      if(response.statusCode == 200) {
-                        final json = jsonDecode(response.body);
-                        final driver = Driver.fromJson(json);
-                        // Save the user's session
-                        final success = await SessionManager.instance.save(driver);
-                        if(success) {
-                          // Avoid context's gaps
-                          if(!context.mounted) return;
-                          // Navigate to home safely
-                          context.go(DriverRoutes.home);
-                        }
-                      }
-                      // CONFLICT
-                      else if(response.statusCode == 409) {
-                        showToast(context: context, message: localizations.phoneAlreadyRegistered);
-                      }
-                      // ANY OTHER STATUS CODE
-                      else {
-                        showToast(
-                            context: context,
-                            message: localizations.registrationError
-                        );
-                      }
-                    },
+                    onPressed: _isSubmitting ? null : _validateAndSubmit,
                     child: Text(
                       AppLocalizations.of(context)!.finishButton,
                       style:
@@ -468,7 +609,10 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
       color: isSelected ? colorScheme.primaryFixed : colorScheme.surface,
       child: ExpansionTile(
         title: GestureDetector(
-          onTap: () => setState(()=> _selectedTaxi = taxi),
+          onTap: () => setState(() {
+            _selectedTaxi = taxi;
+            _showVehicleTypeError = false; // Clear error when selecting
+          }),
           child: ListTile(
               title: Row(
                   spacing: 12.0,
@@ -597,7 +741,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                 : null,
           ),
         ),
-        // Camera icon positioned at bottom right (similar to first code)
+        // Camera icon positioned at bottom right
         Positioned(
           bottom: 0,
           right: 0,
@@ -630,7 +774,10 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                 final image = await ImagePicker().pickImage(
                     source: ImageSource.gallery);
                 if (image != null) {
-                  setState(() => _taxiImage = image);
+                  setState(() {
+                    _taxiImage = image;
+                    _showImageError = false; // Clear error when selecting
+                  });
                 }
               },
             ),
@@ -642,7 +789,10 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
             right: 8.0,
             child: GestureDetector(
               onTap: () {
-                setState(() => _taxiImage = null);
+                setState(() {
+                  _taxiImage = null;
+                  _showImageError = false; // Don't show error immediately when removing
+                });
               },
               child: CircleAvatar(
                 radius: 16,

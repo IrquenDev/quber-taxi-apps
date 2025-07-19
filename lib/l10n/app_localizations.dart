@@ -1399,6 +1399,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'No pudimos completar su registro. Por favor inténtelo más tarde'**
   String get registrationError;
+
+  /// No description provided for @creatingAccount.
+  ///
+  /// In es, this message translates to:
+  /// **'Creando cuenta...'**
+  String get creatingAccount;
 }
 
 class _AppLocalizationsDelegate

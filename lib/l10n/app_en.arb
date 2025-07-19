@@ -250,5 +250,6 @@
             "passwordMinLengthError": "Password must be at least 6 characters",
             "passwordsDoNotMatch": "Passwords do not match",
             "phoneAlreadyRegistered": "Phone number is already registered",
-            "registrationError": "We could not complete your registration. Please try again later"
+            "registrationError": "We could not complete your registration. Please try again later",
+            "creatingAccount": "Creating account..."
 }
