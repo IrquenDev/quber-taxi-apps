@@ -46,7 +46,7 @@ class AuthService {
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
       final client = Client.fromJson(json);
-      SessionManager.instance.save(client);
+      await SessionManager.instance.save(client);
     }
     return response;
   }
@@ -61,7 +61,7 @@ class AuthService {
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
       final driver = Driver.fromJson(json);
-      SessionManager.instance.save(driver);
+      await SessionManager.instance.save(driver);
     }
     return response;
   }
