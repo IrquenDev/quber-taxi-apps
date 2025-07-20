@@ -31,6 +31,14 @@ import 'package:quber_taxi/utils/websocket/core/websocket_service.dart';
 import 'package:quber_taxi/utils/websocket/impl/travel_request_handler.dart';
 import 'package:quber_taxi/utils/websocket/impl/travel_state_handler.dart';
 
+// Wrapper class to keep travel and its creation timestamp
+class TravelNotification {
+  final Travel travel;
+  final DateTime createdAt;
+  
+  TravelNotification(this.travel) : createdAt = DateTime.now();
+}
+
 class DriverHomePage extends StatefulWidget {
 
   final Position? coords;
@@ -75,7 +83,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
 
   // Handling new travel requests
   late final TravelRequestHandler _newTravelRequestHandler;
-  final List<Travel> _newTravels = [];
+  final List<TravelNotification> _newTravels = [];
 
   // Websocket for travel state changed (Here we must wait for the client to accept the pickup confirmation).
   TravelStateHandler? _travelStateHandler;
@@ -324,13 +332,16 @@ class _DriverHomePageState extends State<DriverHomePage> {
   }
 
   void _onNewTravel(Travel travel) {
-    if(_newTravels.isEmpty || _newTravels.length < 2) {
-      _newTravels.add(travel);
-    }
-    else {
+    final travelNotification = TravelNotification(travel);
+    
+    // Si ya hay 2 elementos, remove el último (más viejo)
+    if(_newTravels.length >= 2) {
       _newTravels.removeLast();
-      _newTravels.insert(0, travel);
     }
+    
+    // Siempre inserta la nueva notificación al principio (posición dominante)
+    _newTravels.insert(0, travelNotification);
+    
     setState(() {});
   }
 
@@ -536,24 +547,46 @@ class _DriverHomePageState extends State<DriverHomePage> {
                 child: Container(
                     margin: EdgeInsets.all(12.0),
                     child: Column(
-                        children: List.generate(_newTravels.length, (index) {
-                          return AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 400),
-                              switchInCurve: Curves.easeInOut,
-                              transitionBuilder: (child, animation) {
-                                return SlideTransition(
-                                    position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero).animate(animation),
-                                    child: FadeTransition(opacity: animation, child: child)
-                                );
-                              },
-                              child: TripNotification(
-                                key: ValueKey(_newTravels[index].id),
-                                travel: _newTravels[index],
-                                index: index,
-                                onDismissed: () => setState(() => _newTravels.removeAt(index)),
-                              )
-                          );
-                        })
+                        children: List.generate(
+                          _newTravels.length > 2 ? 2 : _newTravels.length, 
+                          (index) {
+                            final isSecondary = index == 1;
+                            
+                            return AnimatedContainer(
+                              duration: const Duration(milliseconds: 300),
+                              margin: EdgeInsets.only(
+                                left: isSecondary ? 8.0 : 0.0,
+                                right: isSecondary ? 8.0 : 0.0,
+                                top: index == 0 ? 0.0 : 4.0,
+                              ),
+                              child: AnimatedOpacity(
+                                duration: const Duration(milliseconds: 300),
+                                opacity: isSecondary ? 0.9 : 1.0,
+                                child: AnimatedScale(
+                                  duration: const Duration(milliseconds: 300),
+                                  scale: isSecondary ? 0.9 : 1.0,
+                                  child: AnimatedSwitcher(
+                                    duration: const Duration(milliseconds: 400),
+                                    switchInCurve: Curves.easeInOut,
+                                    transitionBuilder: (child, animation) {
+                                      return SlideTransition(
+                                        position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero).animate(animation),
+                                        child: FadeTransition(opacity: animation, child: child)
+                                      );
+                                    },
+                                    child: TripNotification(
+                                      key: ValueKey(_newTravels[index].travel.id),
+                                      travel: _newTravels[index].travel,
+                                      index: index,
+                                      createdAt: _newTravels[index].createdAt,
+                                      onDismissed: () => setState(() => _newTravels.removeAt(index)),
+                                    )
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+                        ),
                     )
                 )
             ),

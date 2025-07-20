@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
@@ -8,13 +9,15 @@ class TripNotification extends StatelessWidget {
   final Travel travel;
   final VoidCallback onDismissed;
   final int index;
+  final DateTime createdAt;
 
-  const TripNotification({
+  TripNotification({
     super.key,
     required this.travel,
     required this.onDismissed,
-    required this.index
-  });
+    required this.index,
+    DateTime? createdAt,
+  }) : createdAt = createdAt ?? DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +26,7 @@ class TripNotification extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final localizations = AppLocalizations.of(context)!;
     final surface = colorScheme.surface;
-    final opacity = index == 0 ? 230 : 100;
+    final opacity = index == 0 ? 230 : 180;
 
     return Dismissible(
       key: ValueKey(travel.id),
@@ -58,10 +61,11 @@ class TripNotification extends StatelessWidget {
                                     color: colorScheme.onSurfaceVariant,
                                     size: (textTheme.bodyMedium?.fontSize ?? 14) * 1.2
                                 ),
+                                const SizedBox(width: 4.0),
                                 Flexible(
                                   child: RichText(
                                       text: TextSpan(
-                                          style: textTheme.bodyMedium,
+                                          style: textTheme.bodySmall,
                                           children: [
                                             TextSpan(
                                               text: localizations.from, 
@@ -81,10 +85,11 @@ class TripNotification extends StatelessWidget {
                                     color: colorScheme.onSurfaceVariant,
                                     size: (textTheme.bodyMedium?.fontSize ?? 14) * 1.2
                                 ),
+                                const SizedBox(width: 4.0),
                                 Flexible(
                                   child: RichText(
                                       text: TextSpan(
-                                          style: textTheme.bodyMedium,
+                                          style: textTheme.bodySmall,
                                           children: [
                                             TextSpan(
                                               text: localizations.until, 
@@ -104,10 +109,9 @@ class TripNotification extends StatelessWidget {
                       children: [
                         Icon(
                           Icons.notifications_outlined,
-                          color: colorScheme.primary,
                         ),
                         Text(
-                          DateTime.now().toString().substring(11, 16),
+                          DateFormat('h:mm a').format(createdAt),
                           style: textTheme.bodySmall?.copyWith(
                             color: colorScheme.onSurfaceVariant,
                           ),
