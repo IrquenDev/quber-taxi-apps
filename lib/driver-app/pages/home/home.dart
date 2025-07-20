@@ -35,8 +35,10 @@ import 'package:quber_taxi/utils/websocket/impl/travel_state_handler.dart';
 class TravelNotification {
   final Travel travel;
   final DateTime createdAt;
-  
-  TravelNotification(this.travel) : createdAt = DateTime.now();
+  final String id;
+  TravelNotification(this.travel) 
+    : createdAt = DateTime.now(),
+      id = DateTime.now().millisecondsSinceEpoch.toString();
 }
 
 class DriverHomePage extends StatefulWidget {
@@ -84,6 +86,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
   // Handling new travel requests
   late final TravelRequestHandler _newTravelRequestHandler;
   final List<TravelNotification> _newTravels = [];
+  final Map<String, Timer> _notificationTimers = {}; // Timers para auto-eliminar notificaciones
 
   // Websocket for travel state changed (Here we must wait for the client to accept the pickup confirmation).
   TravelStateHandler? _travelStateHandler;
@@ -331,16 +334,30 @@ class _DriverHomePageState extends State<DriverHomePage> {
     }
   }
 
+  void _removeNotificationById(String notificationId) {
+    _notificationTimers[notificationId]?.cancel();
+    _notificationTimers.remove(notificationId);
+
+    _newTravels.removeWhere((notification) => notification.id == notificationId);
+    setState(() {});
+  }
+
   void _onNewTravel(Travel travel) {
     final travelNotification = TravelNotification(travel);
-    
-    // Si ya hay 2 elementos, remove el último (más viejo)
+
     if(_newTravels.length >= 2) {
-      _newTravels.removeLast();
+      final removedNotification = _newTravels.removeLast();
+      _notificationTimers[removedNotification.id]?.cancel();
+      _notificationTimers.remove(removedNotification.id);
     }
     
-    // Siempre inserta la nueva notificación al principio (posición dominante)
+
     _newTravels.insert(0, travelNotification);
+    
+
+    _notificationTimers[travelNotification.id] = Timer(const Duration(seconds: 10), () {
+      _removeNotificationById(travelNotification.id);
+    });
     
     setState(() {});
   }
@@ -368,6 +385,13 @@ class _DriverHomePageState extends State<DriverHomePage> {
     _locationShareSubscription?.cancel();
     _locationStreamSubscription?.cancel();
     _pointAnnotationManager?.deleteAll();
+    
+    // Cancelar todos los timers de notificaciones
+    for (final timer in _notificationTimers.values) {
+      timer.cancel();
+    }
+    _notificationTimers.clear();
+    
     super.dispose();
   }
 
@@ -579,7 +603,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                                       travel: _newTravels[index].travel,
                                       index: index,
                                       createdAt: _newTravels[index].createdAt,
-                                      onDismissed: () => setState(() => _newTravels.removeAt(index)),
+                                      onDismissed: () => _removeNotificationById(_newTravels[index].id),
                                     )
                                   ),
                                 ),
