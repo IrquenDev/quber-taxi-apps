@@ -155,30 +155,30 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
                                     )
                                 ),
                                 // Scrollable Mocked List
-                                FutureBuilder(
-                                    future: futureTravels,
-                                    builder: (context, snapshot) {
-                                      if (snapshot.connectionState == ConnectionState.waiting) {
-                                        return const Center(child: CircularProgressIndicator());
+                                Expanded(
+                                  child: FutureBuilder(
+                                      future: futureTravels,
+                                      builder: (context, snapshot) {
+                                        if (snapshot.connectionState == ConnectionState.waiting) {
+                                          return const Center(child: CircularProgressIndicator());
+                                        }
+                                        else if(snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
+                                          return Center(child: Text(AppLocalizations.of(context)!.noTravel),);
+                                        }
+                                        else {
+                                          final travels = snapshot.data!;
+                                          return ListView.builder(
+                                              padding: EdgeInsets.symmetric(horizontal: 4.0),
+                                              itemCount: travels.length,
+                                              controller: scrollController,
+                                              itemBuilder: (context, index) => TripCard(
+                                                  travel: travels[index],
+                                                  onTravelSelected: widget.onTravelSelected
+                                              )
+                                          );
+                                        }
                                       }
-                                      else if(snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
-                                        return Center(child: Text(AppLocalizations.of(context)!.noTravel),);
-                                      }
-                                      else {
-                                        final travels = snapshot.data!;
-                                        return Expanded(
-                                            child: ListView.builder(
-                                                padding: EdgeInsets.symmetric(horizontal: 4.0),
-                                                itemCount: travels.length,
-                                                controller: scrollController,
-                                                itemBuilder: (context, index) => TripCard(
-                                                    travel: travels[index],
-                                                    onTravelSelected: widget.onTravelSelected
-                                                )
-                                            )
-                                        );
-                                      }
-                                    }
+                                  ),
                                 )
                               ]
                           )
