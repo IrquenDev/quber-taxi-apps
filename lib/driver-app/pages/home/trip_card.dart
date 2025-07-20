@@ -94,6 +94,11 @@ class _TripCardState extends State<TripCard> {
                       Align(
                         alignment: Alignment.centerRight,
                         child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+                            ),
+                          ),
                           onPressed: hasConnection(context) ? () async {
                             // ConfirmDialog
                             final result = await showDialog<bool>(

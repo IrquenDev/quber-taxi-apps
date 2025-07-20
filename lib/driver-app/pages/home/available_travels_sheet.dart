@@ -58,6 +58,13 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
   void initState() {
     super.initState();
     taxi = Driver.fromJson(loggedInUser).taxi;
+
+    // Initialize ghost container
+    ghostContainer = Container(
+      width: 24.0,
+      color: Colors.transparent
+    );
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _sheetController.addListener(() {
         setState(() {
@@ -74,13 +81,7 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final localizations = AppLocalizations.of(context)!;
-    
-    // Initialize ghost container with theme dimensions
-    ghostContainer = Container(
-      width: 24.0, 
-      color: Colors.transparent
-    );
-    
+
     return DraggableScrollableSheet(
       controller: _sheetController,
       initialChildSize: 0.15,
@@ -121,11 +122,11 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
               // Main Container with Content
               Positioned.fill(
                   child: Padding(
-                                                padding: const EdgeInsets.only(top: 24.0),
+                                                padding: const EdgeInsets.only(top: 56.0),
                       child: Container(
                           decoration: BoxDecoration(
                             color: colorScheme.surfaceContainer,
-                            borderRadius: BorderRadius.vertical(top: Radius.circular(dimensions.cardBorderRadiusMedium)),
+                            borderRadius: BorderRadius.vertical(top: Radius.circular(dimensions.cardBorderRadiusLarge)),
                           ),
                           child: Column(
                               children: [
@@ -140,7 +141,7 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
                                       _sheetController.jumpTo(newSize);
                                     },
                                     child: SizedBox(
-                                                                                          height: 24.0,
+                                                                                          height: 48.0,
                                       child: Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
@@ -188,7 +189,7 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
                                       else {
                                         final travels = snapshot.data!;
                                         return ListView.builder(
-                                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                            padding: const EdgeInsets.only(left: 8.0, top: 8.0, right: 8.0),
                                             itemCount: travels.length,
                                             controller: scrollController,
                                             itemBuilder: (context, index) => TripCard(
