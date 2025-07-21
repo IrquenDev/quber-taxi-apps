@@ -2,18 +2,23 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:quber_taxi/common/models/quber_config.dart';
 import 'package:quber_taxi/config/api_config.dart';
+import 'package:quber_taxi/enums/taxi_type.dart';
 
 class AdminService {
 
   final _apiConfig = ApiConfig();
   final _endpoint = "admin";
 
-  Future<http.Response> updateConfig({required double travelPrice, required double driverCredit}) async {
+  Future<http.Response> updateConfig({
+    required double driverCredit, 
+    required Map<TaxiType, double> vehiclePrices
+  }) async {
     final url = Uri.parse("${_apiConfig.baseUrl}/$_endpoint");
     final headers = {'Content-Type': 'application/json'};
+    final vehiclePricesJson = vehiclePrices.map((key, value) => MapEntry(key.apiValue, value));
     return await http.post(url, headers: headers, body: jsonEncode({
-      "travelPrice": travelPrice,
-      "driverCredit": driverCredit
+      "driverCredit": driverCredit,
+      "travelPrice": vehiclePricesJson
     }));
   }
 

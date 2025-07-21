@@ -701,13 +701,13 @@ abstract class AppLocalizations {
   /// No description provided for @driverCreditPercentage.
   ///
   /// In es, this message translates to:
-  /// **'Porciento de crédito para conductores:'**
+  /// **'Porciento de crédito para Quber:'**
   String get driverCreditPercentage;
 
   /// No description provided for @tripPricePerKm.
   ///
   /// In es, this message translates to:
-  /// **'Precio de viaje por KM:'**
+  /// **'Precio de viaje por KM y vehículo:'**
   String get tripPricePerKm;
 
   /// No description provided for @saveButtonPanel.
@@ -1405,6 +1405,24 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Creando cuenta...'**
   String get creatingAccount;
+
+  /// No description provided for @invalidCreditPercentage.
+  ///
+  /// In es, this message translates to:
+  /// **'El porcentaje debe estar entre 0 y 100'**
+  String get invalidCreditPercentage;
+
+  /// No description provided for @invalidPrice.
+  ///
+  /// In es, this message translates to:
+  /// **'El precio debe ser mayor a 0'**
+  String get invalidPrice;
+
+  /// No description provided for @passwordMinLength.
+  ///
+  /// In es, this message translates to:
+  /// **'La contraseña debe tener al menos 6 caracteres'**
+  String get passwordMinLength;
 }
 
 class _AppLocalizationsDelegate

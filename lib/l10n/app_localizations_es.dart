@@ -321,10 +321,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get pricesSectionTitle => 'Precios';
 
   @override
-  String get driverCreditPercentage => 'Porciento de crédito para conductores:';
+  String get driverCreditPercentage => 'Porciento de crédito para Quber:';
 
   @override
-  String get tripPricePerKm => 'Precio de viaje por KM:';
+  String get tripPricePerKm => 'Precio de viaje por KM y vehículo:';
 
   @override
   String get saveButtonPanel => 'Guardar';
@@ -698,4 +698,15 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get creatingAccount => 'Creando cuenta...';
+
+  @override
+  String get invalidCreditPercentage =>
+      'El porcentaje debe estar entre 0 y 100';
+
+  @override
+  String get invalidPrice => 'El precio debe ser mayor a 0';
+
+  @override
+  String get passwordMinLength =>
+      'La contraseña debe tener al menos 6 caracteres';
 }

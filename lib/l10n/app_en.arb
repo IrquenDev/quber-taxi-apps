@@ -118,9 +118,9 @@
 
     "adminSettingsTitle": "Admin Settings",
     "pricesSectionTitle": "Prices",
-    "driverCreditPercentage": "Driver credit percentage:",
-    "tripPricePerKm": "Trip price per KM:",
-    "saveButtonPanel": "Save",
+    "driverCreditPercentage": "Quber credit percentage:",
+      "tripPricePerKm": "Trip price per KM and vehicle:",
+  "saveButtonPanel": "Save",
     "passwordsSectionTitle": "Passwords",
     "newPassword": "New password:",
     "confirmPassword": "Confirm password:",
@@ -251,5 +251,9 @@
             "passwordsDoNotMatch": "Passwords do not match",
             "phoneAlreadyRegistered": "Phone number is already registered",
             "registrationError": "We could not complete your registration. Please try again later",
-            "creatingAccount": "Creating account..."
+            "creatingAccount": "Creating account...",
+  "invalidCreditPercentage": "Percentage must be between 0 and 100",
+  "invalidPrice": "Price must be greater than 0",
+  "passwordMinLength": "Password must be at least 6 characters",
+  "passwordsDoNotMatch": "Passwords do not match"
 }

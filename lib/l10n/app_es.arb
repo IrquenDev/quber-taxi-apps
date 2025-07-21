@@ -117,8 +117,8 @@
 
   "adminSettingsTitle": "Ajustes del Administrador",
   "pricesSectionTitle": "Precios",
-  "driverCreditPercentage": "Porciento de crédito para conductores:",
-  "tripPricePerKm": "Precio de viaje por KM:",
+  "driverCreditPercentage": "Porciento de crédito para Quber:",
+  "tripPricePerKm": "Precio de viaje por KM y vehículo:",
   "saveButtonPanel": "Guardar",
   "passwordsSectionTitle": "Contraseñas",
   "newPassword": "Nueva contraseña:",
@@ -251,6 +251,10 @@
       "passwordsDoNotMatch": "Las contraseñas no coinciden",
       "phoneAlreadyRegistered": "El número de teléfono ya se encuentra registrado",
       "registrationError": "No pudimos completar su registro. Por favor inténtelo más tarde",
-      "creatingAccount": "Creando cuenta..."
+      "creatingAccount": "Creando cuenta...",
+  "invalidCreditPercentage": "El porcentaje debe estar entre 0 y 100",
+  "invalidPrice": "El precio debe ser mayor a 0",
+  "passwordMinLength": "La contraseña debe tener al menos 6 caracteres",
+  "passwordsDoNotMatch": "Las contraseñas no coinciden"
 
 }
