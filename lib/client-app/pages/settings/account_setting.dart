@@ -42,6 +42,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
   XFile? _profileImage;
   bool get _shouldUpdateImage => _profileImage != null || (_profileImage == null && _client.profileImageUrl != null);
   bool _isProcessingImage = false;
+  bool _isSavingProfile = false;
 
   @override
   void initState() {
@@ -54,6 +55,14 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final radius = Theme.of(context).extension<DimensionExtension>()!.borderRadius;
+    final isProfileValid = _nameTFController.text.trim().isNotEmpty &&
+      _phoneTFController.text.trim().isNotEmpty &&
+      _phoneTFController.text.trim().length == 8 &&
+      RegExp(r'^\d{8}$').hasMatch(_phoneTFController.text.trim());
+    final isPasswordValid = _passwordTFController.text.isNotEmpty &&
+      _confirmPasswordTFController.text.isNotEmpty &&
+      _passwordTFController.text.length >= 6 &&
+      _passwordTFController.text == _confirmPasswordTFController.text;
     return Scaffold(
       backgroundColor: colorScheme.surfaceContainer,
       body: Stack(
@@ -81,11 +90,8 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                     padding: const EdgeInsets.only(left: 20.0),
                     child: Row(
                       children: [
-                        IconButton(
-                          icon: Icon(Icons.arrow_back), onPressed: () => context.pop(),
-                        ),
-                        const SizedBox(width: 8),
-                        Text('Ajustes',
+                        const SizedBox(width: 28, height: 80,),
+                        Text(AppLocalizations.of(context)!.settingsHome,
                             style: Theme.of(context).textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: colorScheme.secondary,
@@ -119,13 +125,14 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                         children: [
                           // Circle Image
                           _buildCircleImage(),
-                          _buildTextField('Nombre:', 'Introduzca su nombre', _nameTFController),
-                          _buildTextField('Num. teléfono:', 'Introduzca su numero de teléfono', _phoneTFController),
+                          _buildTextField(AppLocalizations.of(context)!.name, AppLocalizations.of(context)!.nameAndLastName, _nameTFController),
+                          _buildTextField(AppLocalizations.of(context)!.phoneNumber, AppLocalizations.of(context)!.phoneNumber, _phoneTFController),
                           Align(
                               alignment: Alignment.centerLeft,
                               child: OutlinedButton(
-                                  onPressed: () async {
+                                  onPressed: isProfileValid && !_isSavingProfile ? () async {
                                     FocusScope.of(context).unfocus();
+                                    setState(() { _isSavingProfile = true; });
                                     if(hasConnection(context)) {
                                       if (_formKey.currentState!.validate()) {
                                         final response = await _accountService.updateClient(
@@ -141,26 +148,28 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                                           // Update session's data
                                           SessionManager.instance.save(client);
                                           _profileImage = null;
-                                          showToast(context: context, message: "Hecho");
+                                          showToast(context: context, message: AppLocalizations.of(context)!.saveInformation);
                                         }
                                         else if(response.statusCode == 409) {
                                           showToast(
                                               context: context,
-                                              message: "El número de teléfono ya se encuentra registrado"
+                                              message: AppLocalizations.of(context)!.phoneAlreadyRegistered
                                           );
                                         }
                                         else {
                                           showToast(
                                               context: context,
-                                              message: "Algo salió mal, por favor inténtelo más tarde"
+                                              message: AppLocalizations.of(context)!.somethingWentWrong
                                           );
                                         }
+                                        setState(() { _isSavingProfile = false; });
                                       }
                                     } else {
-                                      showToast(context: context, message: "Revise su conexión a internet");
+                                      showToast(context: context, message: AppLocalizations.of(context)!.checkConnection);
+                                      setState(() { _isSavingProfile = false; });
                                     }
                                   },
-                                  child: Text(AppLocalizations.of(context)!.saveButtonPanel)
+                                  child: Text(AppLocalizations.of(context)!.saveButtonPanel, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colorScheme.secondary, fontWeight: FontWeight.bold))
                               )
                           )
                         ]
@@ -181,19 +190,19 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildPasswordField(
-                              label: 'Contraseña',
+                              label: AppLocalizations.of(context)!.passwordLabel,
                               visible: passwordVisible,
                               onToggle: (v) => setState(() => passwordVisible = v),
                               controller: _passwordTFController,
                               validator: Workflow<String?>()
                                   .step(RequiredStep(errorMessage: AppLocalizations.of(context)!.requiredField))
-                                  .step(MinLengthStep(min: 6, errorMessage: "Requiere al menos 6 caracteres"))
+                                  .step(MinLengthStep(min: 6, errorMessage: AppLocalizations.of(context)!.passwordMinLength))
                                   .breakOnFirstApply(true)
                                   .withDefault((_) => null)
                                   .proceed
                           ),
                           _buildPasswordField(
-                              label: 'Confirme contraseña:',
+                              label: AppLocalizations.of(context)!.confirmPasswordLabel,
                               visible: confirmPasswordVisible,
                               onToggle: (v) => setState(() => confirmPasswordVisible = v),
                               controller: _confirmPasswordTFController,
@@ -201,14 +210,14 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                                   .step(RequiredStep(errorMessage: AppLocalizations.of(context)!.requiredField))
                                   .step(MatchOtherStep(
                                     other: _passwordTFController.text,
-                                    errorMessage: "Las contraseñas no coinciden"
+                                    errorMessage: AppLocalizations.of(context)!.passwordsDoNotMatch
                                   ))
                                   .breakOnFirstApply(true)
                                   .withDefault((_) => null)
                                   .proceed
                           ),
                           OutlinedButton(
-                              onPressed: () async {
+                              onPressed: isPasswordValid && !_isSavingProfile ? () async {
                                 FocusScope.of(context).unfocus();
                                 if(hasConnection(context)) {
                                   if (_passFormKey.currentState!.validate()) {
@@ -219,20 +228,20 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                                     if(response.statusCode == 200) {
                                       _passwordTFController.clear();
                                       _confirmPasswordTFController.clear();
-                                      showToast(context: context, message: "Hecho");
+                                      showToast(context: context, message: AppLocalizations.of(context)!.saveButtonPanel);
                                     }
                                     else {
                                       showToast(
                                           context: context,
-                                          message: "Algo salió mal, por favor inténtelo más tarde"
+                                          message: AppLocalizations.of(context)!.somethingWentWrong
                                       );
                                     }
                                   }
                                 } else {
-                                  showToast(context: context, message: "Revise su conexión a internet");
+                                  showToast(context: context, message: AppLocalizations.of(context)!.checkConnection);
                                 }
                               },
-                              child: Text(AppLocalizations.of(context)!.saveButtonPanel))
+                              child: Text(AppLocalizations.of(context)!.saveButtonPanel, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colorScheme.secondary, fontWeight: FontWeight.bold)))
                         ]
                       )
                     )
@@ -248,14 +257,14 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       spacing: 8.0,
                       children: [
-                        Text('Mi código de descuento:',
+                        Text(AppLocalizations.of(context)!.myDiscountCode,
                             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: colorScheme.secondary
                             )
                         ),
                         Text(
-                          'Invita a un amigo a usar la app y pídele que ingrese tu código al registrarse o desde Ajustes. Así recibirá un 10% de descuento en su próximo viaje.',
+                          AppLocalizations.of(context)!.inviteFriendDiscount,
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colorScheme.secondary)
                         ),
                         Row(
@@ -264,7 +273,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                               child: Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                                 decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.grey),
+                                  border: Border.all(color: colorScheme.outline),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: Text(_client.referralCode)
@@ -274,7 +283,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                               icon: const Icon(Icons.copy),
                               onPressed: () {
                                 Clipboard.setData(ClipboardData(text: _client.referralCode));
-                                showToast(context: context, message: "Copiado");
+                                showToast(context: context, message: AppLocalizations.of(context)!.copied);
                               },
                             )
                           ]
@@ -293,13 +302,13 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                       children: [
                         ListTile(
                           leading: const Icon(Icons.local_taxi),
-                          title: const Text('Sobre Nosotros'),
+                          title: Text(AppLocalizations.of(context)!.aboutUs, style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: colorScheme.secondary, fontWeight: FontWeight.bold)),
                           onTap: () => context.push(CommonRoutes.aboutUs),
                         ),
                         const Divider(height: 1),
                         ListTile(
                           leading: const Icon(Icons.code),
-                          title: const Text('Sobre el desarrollador'),
+                          title: Text(AppLocalizations.of(context)!.aboutDeveloper, style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: colorScheme.secondary, fontWeight: FontWeight.bold)),
                           onTap: () => context.push(CommonRoutes.aboutDev),
                         ),
                       ],
@@ -317,7 +326,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                                   textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
                                 ),
                                 icon: Icon(Icons.logout, color: colorScheme.errorContainer),
-                                label: const Text('Cerrar Sesión'),
+                                label: Text(AppLocalizations.of(context)!.logout),
                                 onPressed: () async {
                                   await SessionManager.instance.clear();
                                   if(!context.mounted) return;
@@ -335,7 +344,12 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
             )
           ),
           if(_isProcessingImage)
-          Positioned.fill(child: Center(child: CircularProgressIndicator()))
+          Positioned.fill(child: Center(child: CircularProgressIndicator())),
+          if(_isSavingProfile)
+          Positioned.fill(child: Container(
+            color: Colors.black.withOpacity(0.2),
+            child: Center(child: CircularProgressIndicator()),
+          ))
         ]
       )
     );
@@ -390,15 +404,31 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
           Text(label),
           TextFormField(
               controller: controller,
+              keyboardType: label == AppLocalizations.of(context)!.phoneNumber ? TextInputType.phone : TextInputType.text,
+              maxLength: label == AppLocalizations.of(context)!.phoneNumber ? 8 : null,
               decoration: InputDecoration(
                   hintText: hint,
                   fillColor: Theme.of(context).colorScheme.surfaceContainerLowest,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  counterText: label == AppLocalizations.of(context)!.phoneNumber ? '' : null,
               ),
-              validator: (value) => Workflow<String?>()
-                  .step(RequiredStep(errorMessage: AppLocalizations.of(context)!.requiredField))
-                  .withDefault((_) => null)
-                  .proceed(value)
+              validator: (value) {
+                if (label == AppLocalizations.of(context)!.phoneNumber) {
+                  if (value == null || value.trim().isEmpty) {
+                    return AppLocalizations.of(context)!.requiredField;
+                  }
+                  final normalizedPhone = value.trim().replaceAll(' ', '');
+                  if (normalizedPhone.length != 8 || !RegExp(r'^\d{8}$').hasMatch(normalizedPhone)) {
+                    return AppLocalizations.of(context)!.invalidPhoneMessage;
+                  }
+                  return null;
+                } else {
+                  return Workflow<String?>()
+                      .step(RequiredStep(errorMessage: AppLocalizations.of(context)!.requiredField))
+                      .withDefault((_) => null)
+                      .proceed(value);
+                }
+              }
           )
         ]
     );
@@ -420,7 +450,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
             controller: controller,
             obscureText: !visible,
             decoration: InputDecoration(
-              hintText: 'Introduzca la contraseña deseada',
+              hintText: AppLocalizations.of(context)!.hintPassword,
               fillColor: Theme.of(context).colorScheme.surfaceContainerLowest,
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),

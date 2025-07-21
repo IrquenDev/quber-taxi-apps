@@ -709,4 +709,14 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get passwordMinLength =>
       'La contraseña debe tener al menos 6 caracteres';
+
+  @override
+  String get myDiscountCode => 'Mi código de descuento:';
+
+  @override
+  String get inviteFriendDiscount =>
+      'Invita a un amigo a usar la app y pídele que ingrese tu código al registrarse o desde Ajustes. Así recibirá un 10% de descuento en su próximo viaje.';
+
+  @override
+  String get copied => 'Copiado';
 }
