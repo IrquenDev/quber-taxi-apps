@@ -12,8 +12,16 @@ class ClientTripCompleted extends StatefulWidget {
 
   final Travel travel;
   final int duration;
-  final num distance;
-  const ClientTripCompleted({super.key, required this.travel, required this.duration, required this.distance});
+  final int distance;
+  final double travelPriceByTaxiType;
+
+  const ClientTripCompleted({
+    super.key,
+    required this.travel,
+    required this.duration,
+    required this.distance,
+    required this.travelPriceByTaxiType
+  });
 
   @override
   State<ClientTripCompleted> createState() => _ClientTripCompletedState();
@@ -205,7 +213,10 @@ class _ClientTripCompletedState extends State<ClientTripCompleted> {
                     spacing: 8.0,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      TripDetailRow(label: 'Precio del Viaje', text: '${(widget.distance * 100).toStringAsFixed(0)} CUP'),
+                      TripDetailRow(
+                          label: 'Precio del Viaje',
+                          text: '${(widget.distance * widget.travelPriceByTaxiType).toStringAsFixed(0)} CUP'
+                      ),
                       TripDetailRow(label: 'Tiempo Transcurrido', text: '${widget.duration.toStringAsFixed(0)} minutos'),
                       TripDetailRow(label: 'Distancia Recorrida', text: '${widget.distance.toStringAsFixed(0)} Km'),
                       TripDetailRow(label: 'Origen', text: widget.travel.originName),

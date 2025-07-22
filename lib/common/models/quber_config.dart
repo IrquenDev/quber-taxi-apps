@@ -5,17 +5,17 @@ import 'package:quber_taxi/enums/taxi_type.dart';
 @immutable
 class QuberConfig implements Encodable {
 
-  final double driverCredit;
+  final double quberCredit;
   final Map<TaxiType, double> travelPrice;
 
   const QuberConfig({
-    required this.driverCredit, 
+    required this.quberCredit,
     required this.travelPrice
   });
 
   @override
   Map<String, dynamic> toJson() => {
-    "driverCredit": driverCredit, 
+    "driverCredit": quberCredit,
     "travelPrice": travelPrice.map((key, value) => MapEntry(key.apiValue, value))
   };
 
@@ -29,7 +29,7 @@ class QuberConfig implements Encodable {
     }
     
     return QuberConfig(
-      driverCredit: json["driverCredit"], 
+      quberCredit: json["driverCredit"],
       travelPrice: vehiclePricesMap
     );
   }

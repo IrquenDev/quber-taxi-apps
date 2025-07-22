@@ -183,7 +183,7 @@ final GoRouter appRouter = GoRouter(
     ),
 
     GoRoute(path: AdminRoutes.tripsList,
-        builder: (context, state) => const TripsPage()
+        builder: (context, state) => const CompletedTripsPage()
     ),
 
     GoRoute(path: AdminRoutes.driversList,

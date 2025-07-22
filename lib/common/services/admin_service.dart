@@ -22,7 +22,7 @@ class AdminService {
     }));
   }
 
-  Future<QuberConfig?> getQuberConfigIfExists() async {
+  Future<QuberConfig?> getQuberConfig() async {
     final url = Uri.parse('${_apiConfig.baseUrl}/$_endpoint');
     final response = await http.get(url);
     if(response.statusCode == 200) {

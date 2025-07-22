@@ -112,4 +112,21 @@ class TravelService {
     final headers = {'Content-Type': 'application/json'};
     return await http.patch(url, headers: headers);
   }
+
+  Future<http.Response> markAsCompleted({
+    required int travelId,
+    required double finalPrice,
+    required int finalDistance,
+    required int finalDuration,
+    required double quberCredit
+  }) async {
+    final url = Uri.parse("${_apiConfig.baseUrl}/$_endpoint/complete/$travelId");
+    final headers = {'Content-Type': 'application/json'};
+    return await http.post(url, headers: headers, body: jsonEncode({
+      "finalPrice": finalPrice,
+      "finalDistance": finalDistance,
+      "finalDuration": finalDuration,
+      "credit": quberCredit
+    }));
+  }
 }
