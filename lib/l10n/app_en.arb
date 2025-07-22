@@ -292,6 +292,8 @@
             "invalidPrice": "Price must be greater than 0",
             "passwordMinLength": "Password must be at least 6 characters",
             "passwordsDoNotMatch": "Passwords do not match",
+            "tripDescription": "Trip Description",
+            "passwordsDoNotMatch": "Passwords do not match",
             "invalidCreditPercentage": "Percentage must be between 0 and 100",
             "invalidPrice": "Price must be greater than 0",
             "passwordMinLength": "Password must be at least 6 characters",

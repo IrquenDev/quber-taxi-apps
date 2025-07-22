@@ -38,6 +38,8 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
       }
     }
     setState(() {
+      // Order per requestedDate (more recent first)
+      newTravels.sort((a, b) => b.requestedDate.compareTo(a.requestedDate));
       futureTravels = Future.value(newTravels);
       _isActionPending = false;
     });
@@ -46,7 +48,11 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
   void _loadTravels() {
     setState(() {
       _isActionPending = true;
-      futureTravels = travelService.fetchAvailableTravels(taxi.seats, taxi.type).whenComplete(() {
+      futureTravels = travelService.fetchAvailableTravels(taxi.seats, taxi.type).then((travels) {
+        // Order per requestedDate (more recent first)
+        travels.sort((a, b) => b.requestedDate.compareTo(a.requestedDate));
+        return travels;
+      }).whenComplete(() {
         if (mounted) {
           setState(() => _isActionPending = false);
         }
@@ -167,9 +173,9 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
                                 // Scrollable Mocked List
                                 Expanded(
                                   child: FutureBuilder(
-                                      future: futureTravels,
-                                      builder: (context, snapshot) {
-                                        if (snapshot.connectionState == ConnectionState.waiting) {
+                                    future: futureTravels,
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState == ConnectionState.waiting) {
                                                                                   return Center(
                                           child: CircularProgressIndicator(
                                             color: colorScheme.primary,
@@ -190,15 +196,15 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
                                         final travels = snapshot.data!;
                                         return ListView.builder(
                                             padding: const EdgeInsets.only(left: 8.0, top: 8.0, right: 8.0),
-                                            itemCount: travels.length,
-                                            controller: scrollController,
-                                            itemBuilder: (context, index) => TripCard(
-                                                travel: travels[index],
-                                                onTravelSelected: widget.onTravelSelected
+                                                itemCount: travels.length,
+                                                controller: scrollController,
+                                                itemBuilder: (context, index) => TripCard(
+                                                    travel: travels[index],
+                                                    onTravelSelected: widget.onTravelSelected
                                             )
                                         );
                                       }
-                                      }
+                                    }
                                   ),
                                 )
                               ]

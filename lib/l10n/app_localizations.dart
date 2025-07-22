@@ -1406,24 +1406,6 @@ abstract class AppLocalizations {
   /// **'Creando cuenta...'**
   String get creatingAccount;
 
-  /// No description provided for @invalidCreditPercentage.
-  ///
-  /// In es, this message translates to:
-  /// **'El porcentaje debe estar entre 0 y 100'**
-  String get invalidCreditPercentage;
-
-  /// No description provided for @invalidPrice.
-  ///
-  /// In es, this message translates to:
-  /// **'El precio debe ser mayor a 0'**
-  String get invalidPrice;
-
-  /// No description provided for @passwordMinLength.
-  ///
-  /// In es, this message translates to:
-  /// **'La contraseña debe tener al menos 6 caracteres'**
-  String get passwordMinLength;
-
   /// No description provided for @newTrip.
   ///
   /// In es, this message translates to:
@@ -1627,6 +1609,30 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Permiso de ubicación bloqueado. Habilitar nuevamente en ajustes'**
   String get locationPermissionBlocked;
+
+  /// No description provided for @invalidCreditPercentage.
+  ///
+  /// In es, this message translates to:
+  /// **'El porcentaje debe estar entre 0 y 100'**
+  String get invalidCreditPercentage;
+
+  /// No description provided for @invalidPrice.
+  ///
+  /// In es, this message translates to:
+  /// **'El precio debe ser mayor a 0'**
+  String get invalidPrice;
+
+  /// No description provided for @passwordMinLength.
+  ///
+  /// In es, this message translates to:
+  /// **'La contraseña debe tener al menos 6 caracteres'**
+  String get passwordMinLength;
+
+  /// No description provided for @tripDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Descripción del viaje'**
+  String get tripDescription;
 
   /// No description provided for @myDiscountCode.
   ///

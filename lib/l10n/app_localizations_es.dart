@@ -842,6 +842,9 @@ class AppLocalizationsEs extends AppLocalizations {
       'La contraseña debe tener al menos 6 caracteres';
 
   @override
+  String get tripDescription => 'Descripción del viaje';
+
+  @override
   String get myDiscountCode => 'Mi código de descuento:';
 
   @override

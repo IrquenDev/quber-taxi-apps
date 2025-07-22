@@ -18,6 +18,7 @@ import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
 import 'package:quber_taxi/common/widgets/dialogs/info_dialog.dart';
 import 'package:quber_taxi/driver-app/pages/home/available_travels_sheet.dart';
 import 'package:quber_taxi/driver-app/pages/home/info_travel_sheet.dart';
+import 'package:quber_taxi/driver-app/pages/home/trip_card.dart';
 import 'package:quber_taxi/driver-app/pages/home/trip_notification.dart';
 import 'package:quber_taxi/enums/driver_account_state.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
@@ -37,8 +38,8 @@ class TravelNotification {
   final DateTime createdAt;
   final String id;
   TravelNotification(this.travel) 
-    : createdAt = DateTime.now(),
-      id = DateTime.now().millisecondsSinceEpoch.toString();
+    : createdAt = travel.requestedDate, // Use requestedDate from backend
+      id = travel.requestedDate.millisecondsSinceEpoch.toString();
 }
 
 class DriverHomePage extends StatefulWidget {
@@ -86,7 +87,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
   // Handling new travel requests
   late final TravelRequestHandler _newTravelRequestHandler;
   final List<TravelNotification> _newTravels = [];
-  final Map<String, Timer> _notificationTimers = {}; // Timers para auto-eliminar notificaciones
+  final Map<String, Timer> _notificationTimers = {}; // Timers for auto-removing notifications
 
   // Websocket for travel state changed (Here we must wait for the client to accept the pickup confirmation).
   TravelStateHandler? _travelStateHandler;
@@ -136,7 +137,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
       await SessionManager.instance.save(_driver);
       // Show payment reminder (if applies)
       if(_driver.credit > 0.0 && _driver.paymentDate != null) {
-        await _showPaymentReminder();
+      await _showPaymentReminder();
       }
       switch (_driver.accountState) {
         case DriverAccountState.notConfirmed: await _showNeedsConfirmationDialog();
@@ -342,18 +343,71 @@ class _DriverHomePageState extends State<DriverHomePage> {
     setState(() {});
   }
 
+  void _showTripDetailsDialog(Travel travel) {
+    final localizations = AppLocalizations.of(context)!;
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.0),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Header with title and close button
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    localizations.tripDescription,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: Icon(Icons.close),
+                    iconSize: 24.0,
+                  ),
+                ],
+              ),
+            ),
+            // Trip card content
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 16.0),
+              child: TripCard(
+                travel: travel,
+                onTravelSelected: (selectedTravel) {
+                  Navigator.of(context).pop(); // Close dialog first
+                  _onTravelSelected(selectedTravel); // Then handle travel selection
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+
+
   void _onNewTravel(Travel travel) {
     final travelNotification = TravelNotification(travel);
 
-    if(_newTravels.length >= 2) {
+    // Add new notification
+    _newTravels.add(travelNotification);
+    
+    // Sort by requestedDate (most recent first)
+    _newTravels.sort((a, b) => b.travel.requestedDate.compareTo(a.travel.requestedDate));
+    
+    // Keep maximum 2 notifications, remove the oldest ones
+    while(_newTravels.length > 2) {
       final removedNotification = _newTravels.removeLast();
       _notificationTimers[removedNotification.id]?.cancel();
       _notificationTimers.remove(removedNotification.id);
     }
-    
-
-    _newTravels.insert(0, travelNotification);
-    
 
     _notificationTimers[travelNotification.id] = Timer(const Duration(seconds: 10), () {
       _removeNotificationById(travelNotification.id);
@@ -386,7 +440,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
     _locationStreamSubscription?.cancel();
     _pointAnnotationManager?.deleteAll();
     
-    // Cancelar todos los timers de notificaciones
+    // Cancel all notification timers
     for (final timer in _notificationTimers.values) {
       timer.cancel();
     }
@@ -590,25 +644,26 @@ class _DriverHomePageState extends State<DriverHomePage> {
                                   duration: const Duration(milliseconds: 300),
                                   scale: isSecondary ? 0.9 : 1.0,
                                   child: AnimatedSwitcher(
-                                    duration: const Duration(milliseconds: 400),
-                                    switchInCurve: Curves.easeInOut,
-                                    transitionBuilder: (child, animation) {
-                                      return SlideTransition(
-                                        position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero).animate(animation),
-                                        child: FadeTransition(opacity: animation, child: child)
-                                      );
-                                    },
-                                    child: TripNotification(
+                              duration: const Duration(milliseconds: 400),
+                              switchInCurve: Curves.easeInOut,
+                              transitionBuilder: (child, animation) {
+                                return SlideTransition(
+                                    position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero).animate(animation),
+                                    child: FadeTransition(opacity: animation, child: child)
+                                );
+                              },
+                              child: TripNotification(
                                       key: ValueKey(_newTravels[index].travel.id),
                                       travel: _newTravels[index].travel,
-                                      index: index,
+                                index: index,
                                       createdAt: _newTravels[index].createdAt,
                                       onDismissed: () => _removeNotificationById(_newTravels[index].id),
-                                    )
+                                      onTap: () => _showTripDetailsDialog(_newTravels[index].travel)
+                              )
                                   ),
                                 ),
                               ),
-                            );
+                          );
                           }
                         ),
                     )

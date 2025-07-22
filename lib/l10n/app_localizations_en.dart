@@ -697,15 +697,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get creatingAccount => 'Creating account...';
 
   @override
-  String get invalidCreditPercentage => 'Percentage must be between 0 and 100';
-
-  @override
-  String get invalidPrice => 'Price must be greater than 0';
-
-  @override
-  String get passwordMinLength => 'Password must be at least 6 characters';
-
-  @override
   String get newTrip => 'New Trip';
 
   @override
@@ -835,6 +826,18 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get locationPermissionBlocked =>
       'Location permission blocked. Please enable again in settings';
+
+  @override
+  String get invalidCreditPercentage => 'Percentage must be between 0 and 100';
+
+  @override
+  String get invalidPrice => 'Price must be greater than 0';
+
+  @override
+  String get passwordMinLength => 'Password must be at least 6 characters';
+
+  @override
+  String get tripDescription => 'Trip Description';
 
   @override
   String get myDiscountCode => 'My discount code:';

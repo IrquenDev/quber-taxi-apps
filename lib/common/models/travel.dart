@@ -24,6 +24,7 @@ class Travel implements Encodable{
   final int? finalDuration;
   final double? finalPrice;
   final DateTime? endDate;
+  final DateTime requestedDate;
 
   Travel({
     required this.id,
@@ -39,6 +40,7 @@ class Travel implements Encodable{
     required this.maxPrice,
     required this.state,
     required this.client,
+    required this.requestedDate,
     this.driver,
     this.finalDistance,
     this.finalPrice,
@@ -61,6 +63,7 @@ class Travel implements Encodable{
         maxPrice: json["maxPrice"],
         state: TravelState.resolve(json["state"]),
         client: Client.fromJson(json["client"]),
+        requestedDate: DateTime.parse(json["requestedDate"]),
         driver: json["driver"] != null ? Driver.fromJson(json["driver"]) : null,
         finalDuration: json["finalDuration"],
         finalPrice: json["finalPrice"],
@@ -84,6 +87,7 @@ class Travel implements Encodable{
     "maxPrice": maxPrice,
     "state": state.apiValue,
     "client": client.toJson(),
+    "requestedDate": requestedDate.toIso8601String(),
     "driver": driver?.toJson(),
     "finalPrice": finalPrice,
     "finalDistance": finalDistance,

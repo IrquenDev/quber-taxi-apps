@@ -146,7 +146,7 @@ class TravelInfoSheet extends StatelessWidget {
                 )
               ]
             )
-                            ),
+          ),
                   const SizedBox(height: 12.0),
           // Start Travel Button
           SizedBox(
