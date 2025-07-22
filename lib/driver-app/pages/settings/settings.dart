@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/common_routes.dart';
 import 'package:quber_taxi/storage/session_manger.dart';
+import 'package:quber_taxi/theme/dimensions.dart';
 
 import '../../../common/models/driver.dart';
 import '../../../common/models/taxi.dart';
@@ -28,7 +29,7 @@ class DriverSettingsPage extends StatefulWidget {
 }
 
 class _DriverAccountSettingPage extends State<DriverSettingsPage> {
-  final _formKey = GlobalKey<FormState>();
+  final _personalInfoFormKey = GlobalKey<FormState>();
   final _passwordFormKey = GlobalKey<FormState>();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -43,33 +44,207 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
   bool confirmPasswordVisible = false;
 
   XFile? _profileImage;
-  bool get _shouldUpdateImage =>_taxi.imageUrl != null;
+  bool get _shouldUpdateImage => _taxi.imageUrl != null;
   bool _isProcessingImage = false;
+  bool _isSubmittingPersonalInfo = false;
+  bool _isSubmittingPasswords = false;
+
+  // Error states for grouped validation
+  bool _showImageError = false;
+  bool _showPersonalInfoErrors = false;
+  bool _showPasswordErrors = false;
+
+  // Scroll controller and keys for error navigation
+  final ScrollController _scrollController = ScrollController();
+  final GlobalKey _imageKey = GlobalKey();
+  final GlobalKey _personalInfoKey = GlobalKey();
+  final GlobalKey _passwordKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
     _taxi = _driver.taxi;
     _nameTFController = TextEditingController(text: _driver.name);
-    print(_driver.name);
-    print(_taxi.imageUrl);
     _plateTFController = TextEditingController(text: _taxi.plate);
     _phoneTFController = TextEditingController(text: _driver.phone);
     _seatTFController = TextEditingController(text: _taxi.seats.toString());
   }
 
   @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollToWidget(GlobalKey key) {
+    final context = key.currentContext;
+    if (context != null) {
+      Scrollable.ensureVisible(
+        context,
+        duration: Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
+  void _scrollToFirstPersonalInfoError() {
+    if (!_personalInfoFormKey.currentState!.validate()) {
+      _scrollToWidget(_personalInfoKey);
+    } else if (_profileImage == null && _taxi.imageUrl == null) {
+      _scrollToWidget(_imageKey);
+    }
+  }
+
+  void _scrollToFirstPasswordError() {
+    if (!_passwordFormKey.currentState!.validate()) {
+      _scrollToWidget(_passwordKey);
+    }
+  }
+
+  void _validateAndSavePersonalInfo() {
+    setState(() {
+      _showPersonalInfoErrors = true;
+      _showImageError = _profileImage == null && _taxi.imageUrl == null;
+    });
+
+    if (_personalInfoFormKey.currentState!.validate() && 
+        (_profileImage != null || _taxi.imageUrl != null)) {
+      _savePersonalInfo();
+    } else {
+      _scrollToFirstPersonalInfoError();
+    }
+  }
+
+  void _validateAndSavePasswords() {
+    setState(() {
+      _showPasswordErrors = true;
+    });
+
+    if (_passwordFormKey.currentState!.validate()) {
+      _savePasswords();
+    } else {
+      _scrollToFirstPasswordError();
+    }
+  }
+
+  Future<void> _savePersonalInfo() async {
+    final localization = AppLocalizations.of(context)!;
+    
+    if (!hasConnection(context)) {
+      showToast(context: context, message: localization.checkConnection);
+      return;
+    }
+
+    setState(() {
+      _isSubmittingPersonalInfo = true;
+    });
+
+    try {
+      final seats = int.tryParse(_seatTFController.text) ?? 0;
+      final response = await _accountService.updateDriver(
+          _driver.id,
+          _nameTFController.text,
+          _phoneTFController.text,
+          seats,
+          _plateTFController.text,
+          _profileImage,
+          _shouldUpdateImage
+      );
+      
+      if (!context.mounted) return;
+      
+      if (response.statusCode == 200) {
+        final driver = Driver.fromJson(jsonDecode(response.body));
+        await SessionManager.instance.save(driver);
+        setState(() {
+          _profileImage = null;
+          _showImageError = false;
+          _showPersonalInfoErrors = false;
+        });
+        showToast(context: context, message: "Profile updated successfully");
+      } else if (response.statusCode == 409) {
+        showToast(
+            context: context,
+            message: localization.phoneAlreadyRegistered
+        );
+      } else {
+        showToast(
+            context: context,
+            message: localization.somethingWentWrong
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        showToast(context: context, message: localization.somethingWentWrong);
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSubmittingPersonalInfo = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _savePasswords() async {
+    final localization = AppLocalizations.of(context)!;
+    
+    if (!hasConnection(context)) {
+      showToast(context: context, message: localization.checkConnection);
+      return;
+    }
+
+    setState(() {
+      _isSubmittingPasswords = true;
+    });
+
+    try {
+      final response = await _accountService.updateDriverPassword(
+          _driver.id,
+          _passwordController.text
+      );
+      
+      if (!context.mounted) return;
+      
+      if (response.statusCode == 200) {
+        setState(() {
+          _passwordController.clear();
+          _confirmPasswordController.clear();
+          _showPasswordErrors = false;
+        });
+        showToast(context: context, message: localization.updatePasswordSuccess);
+      } else {
+        showToast(
+            context: context,
+            message: localization.somethingWentWrong
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        showToast(context: context, message: localization.somethingWentWrong);
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSubmittingPasswords = false;
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final dimensions = Theme.of(context).extension<DimensionExtension>()!;
     final localization = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: Stack(
         children: [
-
           Container(color: colorScheme.onSecondary),
 
+          // Header Background
           Positioned(
             top: 0,
             left: 0,
@@ -78,109 +253,164 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
               height: 180,
               decoration: BoxDecoration(
                 color: colorScheme.primaryContainer,
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(15),
-                  bottomRight: Radius.circular(15),
-                ),
+                borderRadius: BorderRadius.vertical(bottom: Radius.circular(dimensions.borderRadius)),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
+                    color: colorScheme.shadow.withValues(alpha: 0.2),
                     spreadRadius: 2,
                     blurRadius: 5,
                     offset: const Offset(0, 3),
                   ),
-                ]
+                ],
               ),
             ),
           ),
 
-
+          // Content
           Positioned(
             top: 120,
             left: 0,
             right: 0,
             bottom: 0,
             child: SingleChildScrollView(
+              controller: _scrollController,
               physics: const BouncingScrollPhysics(),
               child: Column(
                 children: [
                   // Card 1: Personal Information
                   Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        Card(
-                          color: colorScheme.onSecondary,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25),
-                            side: BorderSide(
-                              color: Colors.grey.shade200,
-                              width: 1,
-                            ),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 120, left: 16, right: 16, bottom: 16),
+                    key: _personalInfoKey,
+                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    padding: const EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                      color: colorScheme.surfaceContainerLowest,
+                      borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusLarge),
+                    ),
                             child: Form(
-                              key: _formKey,
+                      key: _personalInfoFormKey,
                               child: Column(
                                 children: [
+                          Center(
+                            child: Column(
+                              key: _imageKey,
+                              children: [
+                                GestureDetector(
+                                  onTap: () async {
+                                    final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
+                                    if (pickedImage != null) {
+                                      setState(() => _isProcessingImage = true);
+                                      final compressedImage = await compressXFileToTargetSize(pickedImage, 5);
+                                      setState(() => _isProcessingImage = false);
+                                      if (compressedImage != null) {
+                                        setState(() {
+                                          _profileImage = compressedImage;
+                                          _showImageError = false;
+                                        });
+                                      }
+                                    }
+                                  },
+                                  child: _buildCircleImagePicker(),
+                                ),
+                                if (_showImageError)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 8.0),
+                                    child: Text(
+                                      localization.requiredField,
+                                      style: textTheme.labelSmall?.copyWith(
+                                        color: colorScheme.error,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
                                   const SizedBox(height: 20),
-                                  _buildCircleImage(),
-                                  _buildLabeledField(AppLocalizations.of(context)!.nameDriver, _nameTFController),
-                                  _buildLabeledField(AppLocalizations.of(context)!.carRegistration, _plateTFController),
-                                  _buildLabeledFieldNum(AppLocalizations.of(context)!.phoneNumberDriver, _phoneTFController),
-                                  _buildLabeledFieldNum(AppLocalizations.of(context)!.numberOfSeats, _seatTFController),
-                                  const SizedBox(height: 16),
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: _buildGuardarButton(_formKey, localization.save),
+                          Column(
+                            spacing: 12.0,
+                            children: [
+                              _buildTextField(
+                                controller: _nameTFController,
+                                label: localization.nameDriver,
+                                hint: localization.nameHint,
+                                maxLength: 50,
+                              ),
+                              _buildTextField(
+                                controller: _plateTFController,
+                                label: localization.carRegistration,
+                                hint: localization.plateHint,
+                                maxLength: 7,
+                              ),
+                              _buildTextField(
+                                controller: _phoneTFController,
+                                label: localization.phoneNumberDriver,
+                                hint: localization.phoneHint,
+                                inputType: TextInputType.phone,
+                                maxLength: 8,
+                              ),
+                              _buildTextField(
+                                controller: _seatTFController,
+                                label: localization.numberOfSeats,
+                                hint: localization.seatsHint,
+                                inputType: TextInputType.number,
+                                maxLength: 3,
                                   ),
                                 ],
                               ),
+                          const SizedBox(height: 16),
+                          SizedBox(
+                            width: double.infinity,
+                            height: 48,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: colorScheme.primaryContainer,
+                                foregroundColor: colorScheme.onPrimaryContainer,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+                                ),
+                              ),
+                              onPressed: _isSubmittingPersonalInfo ? null : _validateAndSavePersonalInfo,
+                              child: _isSubmittingPersonalInfo
+                                  ? SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor: AlwaysStoppedAnimation<Color>(colorScheme.onPrimaryContainer),
+                                      ),
+                                    )
+                                  : Text(
+                                      localization.save,
+                                      style: textTheme.bodyLarge?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                      ),
                             ),
                           ),
                         ),
                       ],
+                      ),
                     ),
                   ),
 
                   // Card 2: Balance
                   Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    child: Card(
-                      color: colorScheme.onSecondary,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        side: BorderSide(
-                          color: Colors.grey.shade200,
-                          width: 1,
-                        ),
-                      ),
-                      child: Padding(
+                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                         padding: const EdgeInsets.all(16),
-                        child: _buildBalanceBox(),
-                      ),
+                    decoration: BoxDecoration(
+                      color: colorScheme.surfaceContainerLowest,
+                      borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusLarge),
                     ),
+                        child: _buildBalanceBox(),
                   ),
 
                   // Card 3: Passwords
                   Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    child: Card(
-                      color: colorScheme.onSecondary,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        side: BorderSide(
-                          color: Colors.grey.shade200,
-                          width: 1,
-                        ),
-                      ),
-                      child: Padding(
+                    key: _passwordKey,
+                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                         padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: colorScheme.surfaceContainerLowest,
+                      borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusLarge),
+                    ),
                           child: Form(
                               key: _passwordFormKey,
                               child: Column(
@@ -188,80 +418,72 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     _buildPasswordField(
+                            controller: _passwordController,
                                         label: localization.passwordLabel,
+                            hint: localization.passwordHint,
                                         visible: passwordVisible,
                                         onToggle: (v) => setState(() => passwordVisible = v),
-                                        controller: _passwordController,
-                                        validator: Workflow<String?>()
-                                            .step(RequiredStep(errorMessage: AppLocalizations.of(context)!.requiredField))
-                                            .step(MinLengthStep(min: 6, errorMessage: "Requiere al menos 6 caracteres"))
+                            validationWorkflow: Workflow<String?>()
+                                .step(RequiredStep(errorMessage: localization.requiredField))
+                                .step(MinLengthStep(min: 6, errorMessage: localization.passwordMinLengthError))
                                             .breakOnFirstApply(true)
-                                            .withDefault((_) => null)
-                                            .proceed
+                                .withDefault((_) => null),
                                     ),
                                     _buildPasswordField(
+                            controller: _confirmPasswordController,
                                         label: localization.confirmPasswordLabel,
+                            hint: localization.confirmPasswordHint,
                                         visible: confirmPasswordVisible,
                                         onToggle: (v) => setState(() => confirmPasswordVisible = v),
-                                        controller: _confirmPasswordController,
-                                        validator: Workflow<String?>()
-                                            .step(RequiredStep(errorMessage: AppLocalizations.of(context)!.requiredField))
+                            validationWorkflow: Workflow<String?>()
+                                .step(RequiredStep(errorMessage: localization.requiredField))
                                             .step(MatchOtherStep(
                                             other: _passwordController.text,
-                                            errorMessage: "Las contraseñas no coinciden"
+                                  errorMessage: localization.passwordsDoNotMatch,
                                         ))
                                             .breakOnFirstApply(true)
-                                            .withDefault((_) => null)
-                                            .proceed
-                                    ),
-                                    OutlinedButton(
-                                        onPressed: () async {
-                                          FocusScope.of(context).unfocus();
-                                          if(hasConnection(context)) {
-                                            if (_passwordFormKey.currentState!
-                                                .validate()) {
-                                              final response = await
-                                              _accountService
-                                                  .updateDriverPassword(
-                                                  _driver.id,
-                                                  _passwordController.text
-                                              );
-                                              if(!context.mounted) return;
-                                              if(response.statusCode == 200) {
-                                                _passwordController.clear();
-                                                _confirmPasswordController.clear();
-                                                showToast(context: context,
-                                                    message: localization.updatePasswordSuccess);
-                                              }
-                                              else {
-                                                showToast(
-                                                    context: context,
-                                                    message: localization.somethingWentWrong
-                                                );
-                                              }
-                                            }
-                                          } else {
-                                            showToast(context: context, message: localization.checkConnection);
-                                          }
-                                        },
-                                        child: Text(AppLocalizations.of(context)!.saveButtonPanel))
-                                  ]
-                              )
-                          )
+                                .withDefault((_) => null),
+                          ),
+                          SizedBox(
+                            width: double.infinity,
+                            height: 48,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: colorScheme.primaryContainer,
+                                foregroundColor: colorScheme.onPrimaryContainer,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+                                ),
+                              ),
+                              onPressed: _isSubmittingPasswords ? null : _validateAndSavePasswords,
+                              child: _isSubmittingPasswords
+                                  ? SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor: AlwaysStoppedAnimation<Color>(colorScheme.onPrimaryContainer),
+                                      ),
+                                    )
+                                  : Text(
+                                      localization.saveButtonPanel,
+                                      style: textTheme.bodyLarge?.copyWith(
+                                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // Additional Options Card
                   Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                    child: Card(
-                      color: colorScheme.onSecondary,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                        side: BorderSide(
-                          color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                          width: 1,
-                        ),
+                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: colorScheme.surfaceContainerLowest,
+                      borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusLarge),
                       ),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -269,37 +491,33 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
                           _buildMenuItem(
                             icon: Icons.drive_eta_outlined,
                             text: localization.aboutUs,
-                            onTap: () => context.push(CommonRoutes.aboutUs)
+                          onTap: () => context.push(CommonRoutes.aboutUs),
                           ),
-
-                          Divider(height: 1, color: Colors.grey.shade200, indent: 12, endIndent: 12),
-
+                        Divider(height: 1, color: colorScheme.outlineVariant, indent: 12, endIndent: 12),
                           _buildMenuItem(
                             icon: Icons.code,
                             text: localization.aboutDeveloper,
-                            onTap: () => context.push(CommonRoutes.aboutDev)
+                          onTap: () => context.push(CommonRoutes.aboutDev),
                           ),
                         ],
-                      ),
                     ),
                   ),
 
+                  // Logout
                   Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-
+                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                     child: _buildLogoutItem(
                       text: localization.logout,
                       icon: Icons.logout,
-                      textColor: colorScheme.errorContainer,
-                      iconColor: colorScheme.errorContainer,
+                      textColor: colorScheme.error,
+                      iconColor: colorScheme.error,
                         onTap: () async {
                           await SessionManager.instance.clear();
-                          if(!context.mounted) return;
+                        if (!context.mounted) return;
                           context.go(CommonRoutes.login);
-                        }
+                      },
                     ),
                   ),
-
                 ],
               ),
             ),
@@ -308,23 +526,24 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
           // Header
           Positioned(
             top: 0,
-            left: 30,
+            left: 0,
             right: 0,
             child: SafeArea(
-              child: Container(
-                height: 80,
-                padding: const EdgeInsets.only(left: 20.0),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
                   children: [
                     IconButton(
-                      icon: Icon(Icons.arrow_back), onPressed: () => context.pop(),
+                      icon: Icon(Icons.arrow_back),
+                      color: colorScheme.onPrimaryContainer,
+                      onPressed: () => context.pop(),
                     ),
-                    const SizedBox(width: 10),
+                    const SizedBox(width: 8),
                     Text(
-                      AppLocalizations.of(context)!.myAccount,
-                      style: textTheme.headlineSmall?.copyWith(
+                      localization.myAccount,
+                      style: textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: colorScheme.shadow,
+                        color: colorScheme.onPrimaryContainer,
                       ),
                     ),
                   ],
@@ -332,147 +551,254 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
               ),
             ),
           ),
-          if(_isProcessingImage)
-            Positioned.fill(child: Center(child: CircularProgressIndicator()))
+
+          // Loading overlay for image processing
+          if (_isProcessingImage)
+            Positioned.fill(
+              child: Container(
+                color: colorScheme.scrim.withOpacity(0.6),
+                child: Center(child: CircularProgressIndicator()),
+              ),
+            ),
         ],
       ),
     );
   }
 
-  Widget _buildLabeledField(String label, TextEditingController controller) {
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    TextInputType? inputType,
+    int? maxLength,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final dimensions = Theme.of(context).extension<DimensionExtension>()!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+        RichText(
+          text: TextSpan(
+            text: label,
+            style: textTheme.bodyLarge?.copyWith(
             fontWeight: FontWeight.normal,
-            fontSize: 18,
-            color: Theme.of(context).colorScheme.secondary,
+              color: colorScheme.onSurface,
+            ),
           ),
         ),
         const SizedBox(height: 6),
         TextFormField(
+          keyboardType: inputType ?? TextInputType.text,
           controller: controller,
+          maxLength: maxLength,
+          buildCounter: (context, {required currentLength, required isFocused, maxLength}) => const SizedBox.shrink(),
+          validator: (value) =>
+              Workflow<String?>()
+                  .step(RequiredStep(errorMessage: AppLocalizations.of(context)!.requiredField))
+                  .withDefault((_) => null)
+                  .proceed(value),
           decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
             filled: true,
-            fillColor: Theme.of(context).colorScheme.surface,
+            fillColor: colorScheme.surface,
             contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
                 borderSide: BorderSide(
-                    color: Colors.white54,
-                    width: 0.1
-                )
+                color: colorScheme.outlineVariant,
+                width: 1,
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+              borderSide: BorderSide(
+                color: colorScheme.outlineVariant,
+                width: 1,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+              borderSide: BorderSide(
+                color: colorScheme.error,
+                width: 1,
+              ),
             ),
           ),
-            validator: (value) => Workflow<String?>()
-                .step(RequiredStep(errorMessage: AppLocalizations.of(context)!.requiredField))
-                .withDefault((_) => null)
-                .proceed(value)
         ),
-        const SizedBox(height: 12),
       ],
     );
   }
 
-  Widget _buildLabeledFieldNum(String label, TextEditingController controller) {
+  Widget _buildPasswordField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    required bool visible,
+    required Function(bool) onToggle,
+    required Workflow<String?> validationWorkflow,
+    int? maxLength,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final dimensions = Theme.of(context).extension<DimensionExtension>()!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.normal,
-            fontSize: 18,
-            color: Theme.of(context).colorScheme.secondary,
+        RichText(
+          text: TextSpan(
+            text: label,
+            style: textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: colorScheme.onSurface,
+            ),
           ),
         ),
         const SizedBox(height: 6),
         TextFormField(
             controller: controller,
-            keyboardType: TextInputType.number,
-            maxLength: 8,
+          obscureText: !visible,
+          maxLength: maxLength,
+          buildCounter: (context, {required currentLength, required isFocused, maxLength}) => const SizedBox.shrink(),
+          validator: (value) => validationWorkflow.proceed(value),
             decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
               filled: true,
-              fillColor: Theme.of(context).colorScheme.surface,
+            fillColor: colorScheme.surface,
               contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            suffixIcon: IconButton(
+              icon: Icon(
+                visible ? Icons.visibility : Icons.visibility_off,
+                color: colorScheme.onSurfaceVariant,
+              ),
+              onPressed: () => onToggle(!visible),
+            ),
               border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
                   borderSide: BorderSide(
-                      color: Colors.white54,
-                      width: 0.1
-                  )
+                color: colorScheme.outlineVariant,
+                width: 1,
               ),
             ),
-            validator: (value) => Workflow<String?>()
-                .step(RequiredStep(errorMessage: AppLocalizations.of(context)!.requiredField))
-                .withDefault((_) => null)
-                .proceed(value)
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+              borderSide: BorderSide(
+                color: colorScheme.outlineVariant,
+                width: 1,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+              borderSide: BorderSide(
+                color: colorScheme.error,
+                width: 1,
+              ),
+            ),
+          ),
         ),
-        const SizedBox(height: 12),
       ],
     );
   }
 
-  Widget _buildGuardarButton(GlobalKey<FormState> formKey, String text) {
-    final localization = AppLocalizations.of(context)!;
-    return SizedBox(
-      width: 180,
-      child: ElevatedButton(
-          onPressed: () async {
-            FocusScope.of(context).unfocus();
-            if(hasConnection(context)) {
-              if (_formKey.currentState!.validate()) {
-                final seats = int.tryParse(_seatTFController.text) ?? 0;
-                final response = await _accountService.updateDriver(
-                    _driver.id,
-                    _nameTFController.text,
-                    _phoneTFController.text,
-                    seats,
-                    _plateTFController.text,
-                    _profileImage,
-                    _shouldUpdateImage
-                );
-                if(!context.mounted) return;
-                if(response.statusCode == 200) {
-                  final driver = Driver.fromJson(jsonDecode(response.body));
-                  // Update session's data
-                  SessionManager.instance.save(driver);
-                  _profileImage = null;
-                  showToast(context: context, message: "Datos actualizados");
-                }
-                else if(response.statusCode == 409) {
-                  showToast(
-                      context: context,
-                      message: "El número de teléfono ya se encuentra registrado"
-                  );
-                }
-                else {
-                  showToast(
-                      context: context,
-                      message: localization.somethingWentWrong
-                  );
-                }
-              }
-            } else {
-              showToast(context: context, message: localization.checkConnection);
-            }
-          },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-          foregroundColor: Colors.black,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
+  Widget _buildCircleImagePicker() {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Stack(
+      children: [
+        // Main Circle with shadow
+        Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: colorScheme.shadow.withOpacity(0.2),
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: const Offset(0, 3),
+              ),
+            ],
           ),
-          elevation: 2,
+          child: CircleAvatar(
+            radius: 80,
+            backgroundColor: colorScheme.onSecondary,
+            backgroundImage: _profileImage != null 
+                ? FileImage(File(_profileImage!.path))
+                : _taxi.imageUrl != null 
+                    ? NetworkImage("${ApiConfig().baseUrl}/${_taxi.imageUrl}")
+                    : null,
+            child: (_profileImage == null && _taxi.imageUrl == null)
+                ? SvgPicture.asset(
+                    "assets/icons/taxi.svg",
+                    width: Theme.of(context).iconTheme.size! * 3,
+                    color: colorScheme.onSecondaryContainer,
+                  )
+                : null,
+          ),
         ),
-        child: Text(
-          text,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        // Camera icon positioned at bottom right
+        Positioned(
+          bottom: 0,
+          right: 0,
+          child: Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: colorScheme.surface,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: colorScheme.shadow.withOpacity(0.15),
+                  spreadRadius: 1,
+                  blurRadius: 3,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: IconButton(
+              padding: EdgeInsets.zero,
+              icon: SvgPicture.asset(
+                "assets/icons/camera.svg",
+                color: colorScheme.onSecondaryContainer,
+                fit: BoxFit.scaleDown,
+              ),
+          onPressed: () async {
+                final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
+                if (pickedImage != null) {
+                  setState(() => _isProcessingImage = true);
+                  final compressedImage = await compressXFileToTargetSize(pickedImage, 5);
+                  setState(() => _isProcessingImage = false);
+                  if (compressedImage != null) {
+                    setState(() {
+                      _profileImage = compressedImage;
+                      _showImageError = false;
+                    });
+                  }
+                }
+              },
+            ),
+          ),
         ),
-      ),
+        // Remove button if image is selected
+        if (_profileImage != null)
+          Positioned(
+            top: 8.0,
+            right: 8.0,
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  _profileImage = null;
+                  _showImageError = false;
+                });
+              },
+              child: CircleAvatar(
+                radius: 16,
+                backgroundColor: colorScheme.error,
+                child: Icon(Icons.close, color: colorScheme.onError, size: 16),
+              ),
+            ),
+          ),
+      ],
     );
   }
 
@@ -582,38 +908,6 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
 
 
 
-  Widget _buildPasswordField({
-    required String label,
-    required bool visible,
-    required Function(bool) onToggle,
-    required TextEditingController controller,
-    required String? Function(String?) validator
-  }) {
-    final localization = AppLocalizations.of(context)!;
-    return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 8.0,
-        children: [
-          Text(label),
-          TextFormField(
-            controller: controller,
-            obscureText: !visible,
-            decoration: InputDecoration(
-              hintText: localization.hintPassword,
-              fillColor: Theme.of(context).colorScheme.surfaceContainerLowest,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              suffixIcon: IconButton(
-                icon: Icon(visible ? Icons.visibility : Icons.visibility_off),
-                onPressed: () => onToggle(!visible),
-              ),
-            ),
-            validator: validator,
-          )
-        ]
-    );
-  }
-
   Widget _buildMenuItem({
 
     required String text,
@@ -685,46 +979,6 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
           ],
         ),
       ),
-    );
-  }
-  Widget _buildCircleImage() {
-    return Stack(
-        alignment: Alignment.bottomRight,
-        children: [
-          ClipOval(
-              child: SizedBox(
-                  height: 160, width: 160,
-                  child: _profileImage != null
-                      ? Image.file(File(_profileImage!.path), fit: BoxFit.cover)
-                      : _taxi.imageUrl != null
-                      ? Image.network("${ApiConfig().baseUrl}/${_taxi.imageUrl}", fit: BoxFit.cover)
-                      : ColoredBox(color: randomColor())
-              )
-          ),
-          Positioned(
-              bottom: 8.0, right: 8.0,
-              child: GestureDetector(
-                onTap: () async {
-                  final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
-                  if (pickedImage != null) {
-                    setState(() => _isProcessingImage = true);
-                    final compressedImage = await compressXFileToTargetSize(pickedImage, 5);
-                    setState(() => _isProcessingImage = false);
-                    if (compressedImage != null) {
-                      setState(() {
-                        _profileImage = compressedImage;
-                      });
-                    }
-                  }
-                },
-                child: CircleAvatar(
-                    radius: 20,
-                    backgroundColor: Theme.of(context).colorScheme.surface,
-                    child: Icon(Icons.add_a_photo)
-                ),
-              )
-          )
-        ]
     );
   }
 }
