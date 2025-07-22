@@ -8,6 +8,9 @@ import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
+import '../../../common/models/client.dart';
+import '../../../utils/runtime.dart';
+
 class ClientHomePage extends StatefulWidget {
   const ClientHomePage({super.key, this.position});
 
@@ -20,6 +23,7 @@ class ClientHomePage extends StatefulWidget {
 class _ClientHomePageState extends State<ClientHomePage> {
   int _currentIndex = 0;
   final _navKey = GlobalKey<CurvedNavigationBarState>();
+  final _client = Client.fromJson(loggedInUser);
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +65,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                    '56',
+                    _client.quberPoints.toString(),
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,

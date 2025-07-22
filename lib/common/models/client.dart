@@ -9,13 +9,15 @@ class Client implements Encodable{
   final String phone;
   final String? profileImageUrl;
   final String referralCode;
+  final double quberPoints;
 
   const Client({
     required this.id,
     required this.name,
     required this.phone,
     this.profileImageUrl,
-    required this.referralCode
+    required this.referralCode,
+    required this.quberPoints
   });
 
   @override
@@ -24,7 +26,8 @@ class Client implements Encodable{
     "name": name,
     "phone": phone,
     "profileImageUrl": profileImageUrl,
-    "referralCode": referralCode
+    "referralCode": referralCode,
+    "quberPoints": quberPoints
   };
 
   factory Client.fromJson(Map<String, dynamic> json) {
@@ -33,7 +36,8 @@ class Client implements Encodable{
         name: json["name"],
         phone: json["phone"],
         profileImageUrl: json["profileImageUrl"],
-        referralCode: json["referralCode"]
+        referralCode: json["referralCode"],
+        quberPoints: (json["quberPoints"] as num).toDouble()
     );
   }
 }
