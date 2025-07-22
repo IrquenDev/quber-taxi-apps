@@ -22,8 +22,8 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
 
   final DraggableScrollableController _sheetController = DraggableScrollableController();
   final travelService = TravelService();
-  // Just for simplify alignment
-  final ghostContainer = Container(width: 40, color: Colors.transparent);
+  // Just for simplify alignment - using theme-based dimensions
+  late final Widget ghostContainer;
   double _currentSize = 0.15;
   bool _isActionPending = true;
 
@@ -71,6 +71,16 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
   @override
   Widget build(BuildContext context) {
     final dimensions = Theme.of(context).extension<DimensionExtension>()!;
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final localizations = AppLocalizations.of(context)!;
+    
+    // Initialize ghost container with theme dimensions
+    ghostContainer = Container(
+      width: 24.0, 
+      color: Colors.transparent
+    );
+    
     return DraggableScrollableSheet(
       controller: _sheetController,
       initialChildSize: 0.15,
@@ -84,13 +94,12 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
               // Background Container With Header
               Positioned.fill(
                 child: Container(decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(dimensions.borderRadius))),
+                  color: colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(dimensions.cardBorderRadiusMedium))),
                   child: Align(
                     alignment: Alignment.topCenter,
                     child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        spacing: 8.0,
                         children: [
                           IconButton(
                               onPressed: () {
@@ -102,8 +111,8 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
                                   : Icons.keyboard_double_arrow_down
                               )
                           ),
-                          Text(AppLocalizations.of(context)!.selectTravel, style: Theme.of(context).textTheme
-                              .titleMedium)
+                          const SizedBox(width: 8.0),
+                          Text(localizations.selectTravel, style: textTheme.titleMedium)
                         ]
                     )
                   )
@@ -112,11 +121,11 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
               // Main Container with Content
               Positioned.fill(
                   child: Padding(
-                      padding: EdgeInsets.only(top: 48),
+                                                padding: const EdgeInsets.only(top: 24.0),
                       child: Container(
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.surfaceContainer,
-                            borderRadius: BorderRadius.vertical(top: Radius.circular(dimensions.borderRadius)),
+                            color: colorScheme.surfaceContainer,
+                            borderRadius: BorderRadius.vertical(top: Radius.circular(dimensions.cardBorderRadiusMedium)),
                           ),
                           child: Column(
                               children: [
@@ -131,23 +140,23 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
                                       _sheetController.jumpTo(newSize);
                                     },
                                     child: SizedBox(
-                                      height: 40.0,
+                                                                                          height: 24.0,
                                       child: Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
                                             ghostContainer,
                                             Container(
-                                                width: 40,
+                                                width: 24.0,
                                                 height: 8.0,
                                                 decoration: BoxDecoration(
-                                                    color: Colors.grey.shade400,
-                                                    borderRadius: BorderRadius.circular(12)
+                                                    color: colorScheme.onSurfaceVariant.withOpacity(0.4),
+                                                    borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusSmall)
                                                 )
                                             ),
                                             !_isActionPending ?
                                             IconButton(
                                                 icon: const Icon(Icons.refresh),
-                                                tooltip: AppLocalizations.of(context)!.updateTravel,
+                                                tooltip: localizations.updateTravel,
                                                 onPressed: hasConnection(context) ? _refreshTravels : null
                                             ) : ghostContainer
                                           ]
@@ -160,23 +169,34 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
                                       future: futureTravels,
                                       builder: (context, snapshot) {
                                         if (snapshot.connectionState == ConnectionState.waiting) {
-                                          return const Center(child: CircularProgressIndicator());
-                                        }
-                                        else if(snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
-                                          return Center(child: Text(AppLocalizations.of(context)!.noTravel),);
-                                        }
-                                        else {
-                                          final travels = snapshot.data!;
-                                          return ListView.builder(
-                                              padding: EdgeInsets.symmetric(horizontal: 4.0),
-                                              itemCount: travels.length,
-                                              controller: scrollController,
-                                              itemBuilder: (context, index) => TripCard(
-                                                  travel: travels[index],
-                                                  onTravelSelected: widget.onTravelSelected
-                                              )
-                                          );
-                                        }
+                                                                                  return Center(
+                                          child: CircularProgressIndicator(
+                                            color: colorScheme.primary,
+                                          )
+                                        );
+                                      }
+                                      else if(snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
+                                        return Center(
+                                          child: Text(
+                                            localizations.noTravel,
+                                            style: textTheme.bodyMedium?.copyWith(
+                                              color: colorScheme.onSurfaceVariant,
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                      else {
+                                        final travels = snapshot.data!;
+                                        return ListView.builder(
+                                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                            itemCount: travels.length,
+                                            controller: scrollController,
+                                            itemBuilder: (context, index) => TripCard(
+                                                travel: travels[index],
+                                                onTravelSelected: widget.onTravelSelected
+                                            )
+                                        );
+                                      }
                                       }
                                   ),
                                 )

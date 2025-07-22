@@ -51,7 +51,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
   late double _mapBearing;
 
   // Fake drivers animation control
-  final _frameInterval = Duration(milliseconds: 100);
+  static const _frameInterval = Duration(milliseconds: 100);
   late Ticker _ticker;
   Duration _lastUpdate = Duration.zero;
   late final List<AnimatedFakeDriver> _taxis = [];
@@ -138,33 +138,33 @@ class _DriverHomePageState extends State<DriverHomePage> {
   }
 
   Future<void> _showNoConnectionDialog() async {
+    final localizations = AppLocalizations.of(context)!;
     return await showDialog(
         context: context,
         barrierDismissible: false,
         builder: (_) => InfoDialog(
-          title: "Sin conexión",
-          bodyMessage: "La app no podrá continuar sin conexión a internet",
+          title: localizations.noConnection,
+          bodyMessage: localizations.noConnectionMessage,
           onAccept: ()=> SystemNavigator.pop(),
         ),
     );
   }
 
   Future<void> _showNeedsConfirmationDialog() async {
+    final localizations = AppLocalizations.of(context)!;
     showDialog(
         context: context,
         barrierDismissible: false,
         builder: (_) => InfoDialog(
-            title: "Necesita Aprobación",
-            bodyMessage: "Su cuenta está en proceso de activación. Para continuar, por favor preséntese en nuestras "
-                "oficinas para la revisión técnica de su vehículo y la firma del contrato. Nos encontramos en Calle "
-                "4ta / Central y mercado, reparto Martín Pérez, San Miguel del Padrón. Una vez complete este paso, "
-                "podrá comenzar a usar la app normalmente y se mostrarán las peticiones de viaje disponibles.",
-            footerMessage: "¡Le esperamos!"
+            title: localizations.needsApproval,
+            bodyMessage: localizations.needsApprovalMessage,
+            footerMessage: localizations.weWaitForYou
         )
     );
   }
 
   Future<void> _showPaymentReminder() async {
+    final localizations = AppLocalizations.of(context)!;
     final now = DateTime.now();
     final paymentDate = _driver.paymentDate!;
     final today = DateTime(now.year, now.month, now.day);
@@ -181,20 +181,20 @@ class _DriverHomePageState extends State<DriverHomePage> {
     if (isPaymentSoon) {
       String remainingTimeText;
       if (difference == 3) {
-        remainingTimeText = "en 3 días";
+        remainingTimeText = localizations.inThreeDays;
       } else if (difference == 2) {
-        remainingTimeText = "pasado mañana";
+        remainingTimeText = localizations.dayAfterTomorrow;
       }
       else {
-        remainingTimeText = "mañana";
+        remainingTimeText = localizations.tomorrow;
       }
-      title = "Pago próximo";
-      dynamicMessage = "Le recordamos que su próxima fecha de pago es $remainingTimeText.";
+      title = localizations.paymentSoon;
+      dynamicMessage = localizations.paymentReminderSoon(remainingTimeText);
 
       // ---- Same Day ----
     } else if (isSameDay) {
-      title = "Pago pendiente";
-      dynamicMessage = "La fecha de pago programada para hoy ha llegado. Tiene hasta 4 días para realizar el pago.";
+      title = localizations.paymentPending;
+      dynamicMessage = localizations.paymentReminderToday;
 
       // ---- The Payment Date Has Already Passed ----
     } else if (!today.isBefore(paymentDay)) {
@@ -202,35 +202,28 @@ class _DriverHomePageState extends State<DriverHomePage> {
       // Before four days
       if (daysSince < 3) {
         int daysLeft = 3 - daysSince;
-        dynamicMessage = "La fecha de pago programada fue el $formattedPaymentDate. "
-            "Tiene $daysLeft ${daysLeft == 1 ? "día" : "días"} para realizar el pago.";
+        String daysText = daysLeft == 1 ? localizations.day : localizations.days;
+        dynamicMessage = localizations.paymentOverdue(formattedPaymentDate, daysLeft.toString(), daysText);
         // Last Day
       } else if(daysSince == 3) {
-        dynamicMessage = "La fecha de pago programada fue el $formattedPaymentDate. "
-            "Hoy es su último día para realizar el pago.";
+        dynamicMessage = localizations.paymentLastDay(formattedPaymentDate);
       }
       // Deadline Expired
       else {
-        dynamicMessage = "La fecha límite para el pago previamente fijado para el día "
-            "$formattedPaymentDate ha expirado.";
+        dynamicMessage = localizations.paymentExpired(formattedPaymentDate);
       }
-      title = "Pago pendiente";
+      title = localizations.paymentPending;
 
       // ---- No Condition Applies, We Don't Show Anything ----
     } else {return;}
-
-    // Static part of the message
-    const staticBody =
-        " Por favor, diríjase a nuestra oficina en Calle 4ta / Central y mercado, reparto Martín Pérez, "
-        "San Miguel del Padrón para realizarlo. Puede consultar el monto accediendo a su perfil en la app.";
 
     await showDialog(
       context: context,
       barrierDismissible: false,
       builder: (_) => InfoDialog(
         title: title,
-        bodyMessage: "$dynamicMessage$staticBody",
-        footerMessage: "Gracias por su atención.",
+        bodyMessage: "$dynamicMessage${localizations.paymentOfficeInfo}",
+        footerMessage: localizations.thanksForAttention,
       ),
     );
   }

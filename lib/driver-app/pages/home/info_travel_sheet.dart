@@ -15,91 +15,166 @@ class TravelInfoSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dimension = Theme.of(context).extension<DimensionExtension>()!;
+    final dimensions = Theme.of(context).extension<DimensionExtension>()!;
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final localizations = AppLocalizations.of(context)!;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0, right: 12.0, left: 12.0),
+      padding: const EdgeInsets.all(16.0),
       child: Column(
-        spacing: 16.0,
         mainAxisSize: MainAxisSize.min,
         children: [
           // Card Header
           Card(
             margin: EdgeInsets.zero,
-            color: Theme.of(context).colorScheme.surfaceContainer,
-            elevation: dimension.elevation,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(dimension.borderRadius * 0.5)),
+            color: colorScheme.surfaceContainer,
+            elevation: dimensions.elevation,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusSmall)),
             child: Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(16.0),
               child: Row(
-                spacing: 24.0, // matches left padding
                 children: [
-                  // @Temporal Client Profile Image
-                  CircleAvatar(radius: 28.0),
+                  // Client Profile Image
+                  CircleAvatar(
+                    radius: 16.8,
+                    backgroundColor: colorScheme.primaryContainer,
+                                          child: Icon(
+                        Icons.person,
+                        size: 19.2,
+                        color: colorScheme.onPrimaryContainer,
+                    ),
+                  ),
+                  const SizedBox(width: 16.0),
                   // Client's Name & Phone
                   Expanded(
                     child: Column(
-                      spacing: 4.0,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(travel.client.name, style: Theme.of(context).textTheme.titleMedium),
-                        Text(travel.client.phone)
+                        Text(travel.client.name, style: textTheme.titleMedium),
+                        const SizedBox(height: 8.0),
+                        Text(
+                          travel.client.phone,
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        )
                       ]
                     )
                   ),
                   // Contact Icon
                   IconButton(
                     onPressed: () {},
-                    icon: Image.asset("assets/icons/phone.png"),
+                    icon: Icon(
+                      Icons.phone,
+                      color: colorScheme.primary,
+                    ),
                   )
                 ]
               )
             )
           ),
+          const SizedBox(height: 12.0),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Column(
-              spacing: 8.0,
               children: [
                 // Travel Origin
                 Row(
-                  spacing: 8.0,
-                  children: [const Icon(Icons.my_location), Text(travel.originName)]
+                  children: [
+                    Icon(
+                      Icons.my_location, 
+                      color: colorScheme.primary,
+                      size: 19.2,
+                    ),
+                    const SizedBox(width: 8.0),
+                    Expanded(
+                      child: Text(
+                        travel.originName,
+                        style: textTheme.bodyMedium,
+                      ),
+                    ),
+                  ]
                 ),
+                const SizedBox(height: 8.0),
                 // Travel Destination
                 Row(
-                  spacing: 8.0,
-                  children: [const Icon(Icons.location_on_outlined), Text(travel.destinationName),],
+                  children: [
+                    Icon(
+                      Icons.location_on_outlined, 
+                      color: colorScheme.error,
+                      size: 19.2,
+                    ),
+                    const SizedBox(width: 8.0),
+                    Expanded(
+                      child: Text(
+                        travel.destinationName,
+                        style: textTheme.bodyMedium,
+                      ),
+                    ),
+                  ],
                 ),
+                const SizedBox(height: 12.0),
                 // Additional Info
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Column(
-                    spacing: 4.0,
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('${localizations.standardVehicle} ${travel.requiredSeats}'),
-                      Text('${localizations.pet} ${travel.hasPets ? 'Sí' : 'No'}'),
-                      Text('${localizations.typeVehicle} ${TaxiType.nameOf(travel.taxiType, localizations)
-                      }'),
+                      Text(
+                        '${localizations.countPeople} ${travel.requiredSeats}',
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: 8.0),
+                      Text(
+                        '${localizations.pet} ${travel.hasPets ? localizations.withPet : localizations.withoutPet}',
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: 8.0),
+                      Text(
+                        '${localizations.typeVehicle} ${TaxiType.nameOf(travel.taxiType, localizations)}',
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
                     ]
                   )
                 )
               ]
             )
-          ),
+                            ),
+                  const SizedBox(height: 12.0),
           // Start Travel Button
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: colorScheme.primary,
+                foregroundColor: colorScheme.onPrimary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+                ),
+                padding: EdgeInsets.symmetric(
+                  vertical: 12.0,
+                ),
+              ),
               onPressed: hasConnection(context) ? () {
                 WebSocketService.instance.send(
                     "/app/travels/${travel.id}/pick-up-confirmation", null // no body needed
                 );
                 onPickUpConfirmationRequest.call();
               } : null,
-              child: Text(localizations.startTrip)
+              child: Text(
+                localizations.startTrip,
+                style: textTheme.labelLarge?.copyWith(
+                  color: colorScheme.onPrimary,
+                  fontWeight: FontWeight.bold,
+                ),
+              )
             )
           )
         ]
