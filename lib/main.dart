@@ -6,6 +6,7 @@ import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:quber_taxi/config/api_config.dart';
 import 'package:quber_taxi/config/build_config.dart';
 import 'package:quber_taxi/storage/prefs_manager.dart';
+import 'package:quber_taxi/storage/session_manger.dart';
 import 'package:quber_taxi/utils/websocket/core/websocket_service.dart';
 import 'app.dart';
 

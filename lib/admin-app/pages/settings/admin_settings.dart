@@ -39,8 +39,6 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
   final adminService = AdminService();
   late Future<QuberConfig?> futureQuberConfigs;
 
-  // TODO("yapmDev": @Reminder)
-  // - Probably a more secure password typing
   bool get canSubmitNewPassword => _newPasswordController.text.isNotEmpty
       && (_confirmPasswordController.text == _newPasswordController.text);
 
@@ -91,63 +89,60 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
     final dimensions = Theme.of(context).extension<DimensionExtension>()!;
     final localizations = AppLocalizations.of(context)!;
     return Scaffold(
-      backgroundColor: theme.colorScheme.surfaceContainer,
+        backgroundColor: theme.colorScheme.surfaceContainer,
         body: Stack(
             children: [
               // Curved Yellow Header
               Positioned(
-                top: -100,
-                left: 0,
-                right: 0,
-                child: Container(
-                  height: 360,
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(dimensions.borderRadius),
-                      bottomRight: Radius.circular(dimensions.borderRadius),
+                  top: 0.0, left: 0, right: 0,
+                  child: Container(
+                    height: 240.0,
+                    decoration: BoxDecoration(
+                        color: theme.colorScheme.primaryContainer,
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(dimensions.borderRadius),
+                          bottomRight: Radius.circular(dimensions.borderRadius),
+                        )
                     ),
-                  ),
-                  child: SafeArea(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 26, vertical: 10),
-                      child: Center(
-                        child: Text(
-                          localizations.adminSettingsTitle,
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            color: theme.colorScheme.onPrimaryContainer,
-                            fontWeight: FontWeight.bold,
+                    child: SafeArea(
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 30),
+                          child: Text(
+                            localizations.adminSettingsTitle,
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              color: theme.colorScheme.onPrimaryContainer,
+                              fontWeight: FontWeight.bold,
+                            )
                           ),
                         ),
                       )
                     )
                   )
-                )
               ),
-              // Content as Card with ClipRRect to maintain rounded top border
-              Positioned.fill(
-                  top: 140,
+              // Scrollable Content
+              Positioned(
+                  right: 20.0, left: 20.0, bottom: 0.0, top: 120,
                   child: ClipRRect(
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(dimensions.borderRadius),
                       topRight: Radius.circular(dimensions.borderRadius),
                     ),
                     child: SingleChildScrollView(
-                        padding: EdgeInsets.symmetric(horizontal: 20.0),
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             spacing: 20.0,
                             children: [
                               // Configurations Section
                               Container(
-                                  width: double.infinity,
-                                  margin: EdgeInsets.symmetric(horizontal: 0),
-                                  padding: EdgeInsets.all(20),
-                                  decoration: BoxDecoration(
-                                    color: theme.colorScheme.surfaceContainerLowest,
-                                    borderRadius: BorderRadius.circular(dimensions.borderRadius),
-                                  ),
-                                  child: Form(
+                                width: double.infinity,
+                                padding: EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.surfaceContainerLowest,
+                                  borderRadius: BorderRadius.circular(dimensions.borderRadius),
+                                ),
+                                child: Form(
                                     key: _formKey,
                                     child: FutureBuilder(
                                       future: futureQuberConfigs,
@@ -179,28 +174,28 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                   children: [
                                                     SizedBox(
-                                                      width: 120,
-                                                      child: TextFormField(
-                                                        keyboardType: TextInputType.number,
-                                                        controller: _driverCreditController,
-                                                        decoration: InputDecoration(
-                                                          errorMaxLines: 3,
-                                                            fillColor: theme.colorScheme.surface,
-                                                            border: OutlineInputBorder(
-                                                              borderRadius: BorderRadius.circular(dimensions.borderRadius * 0.5),
+                                                        width: 100,
+                                                        child: TextFormField(
+                                                            keyboardType: TextInputType.number,
+                                                            controller: _driverCreditController,
+                                                            decoration: InputDecoration(
+                                                              errorMaxLines: 3,
+                                                              fillColor: theme.colorScheme.surface,
+                                                              border: OutlineInputBorder(
+                                                                borderRadius: BorderRadius.circular(dimensions.borderRadius * 0.5),
+                                                              ),
+                                                              suffixText: '%',
+                                                              suffixStyle: theme.textTheme.bodyMedium?.copyWith(
+                                                                color: theme.colorScheme.onSurfaceVariant,
+                                                              ),
                                                             ),
-                                                            hintText: "0%",
-                                                            hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                                                              color: theme.colorScheme.onSurfaceVariant,
-                                                            ),
-                                                        ),
-                                                        validator: (value) => Workflow<String?>()
-                                                            .step(RequiredStep(errorMessage: localizations.requiredField))
-                                                            .step(ValidPercentageStep(errorMessage: localizations.invalidCreditPercentage))
-                                                            .withDefault((_) => null)
-                                                            .proceed(value),
-                                                        onChanged: (s) => setState(()=> _driverCreditController.text = s)
-                                                      )
+                                                            validator: (value) => Workflow<String?>()
+                                                                .step(RequiredStep(errorMessage: localizations.requiredField))
+                                                                .step(ValidPercentageStep(errorMessage: localizations.invalidCreditPercentage))
+                                                                .withDefault((_) => null)
+                                                                .proceed(value),
+                                                            onChanged: (s) => setState(()=> _driverCreditController.text = s)
+                                                        )
                                                     ),
                                                   ],
                                                 ),
@@ -214,11 +209,11 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                                                 ),
                                                 // Price fields by vehicle type
                                                 ...TaxiType.values.map((vehicleType) =>
-                                                  Padding(
-                                                    padding: EdgeInsets.only(top: 8.0),
-                                                    child: Row(
-                                                      children: [
-                                                        SizedBox(
+                                                    Padding(
+                                                      padding: EdgeInsets.only(top: 8.0),
+                                                      child: Row(
+                                                        children: [
+                                                          SizedBox(
                                                             width: 80.0,
                                                             child: Text(
                                                               "${TaxiType.nameOf(vehicleType, localizations)}:",
@@ -228,42 +223,43 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                                                               ),
                                                             ),
                                                           ),
-                                                        SizedBox(
-                                                          width: 140,
-                                                          child: TextFormField(
-                                                            keyboardType: TextInputType.number,
-                                                            controller: _vehiclePriceControllers[vehicleType],
-                                                            decoration: InputDecoration(
-                                                              errorMaxLines: 3,
-                                                              fillColor: theme.colorScheme.surface,
-                                                              border: OutlineInputBorder(
-                                                                borderRadius: BorderRadius.circular(dimensions.borderRadius * 0.5),
-                                                              ),
-                                                              hintText: "0 CUP",
-                                                              hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                                                                color: theme.colorScheme.onSurfaceVariant,
-                                                              ),
+                                                          SizedBox(
+                                                            width: 120,
+                                                            child: TextFormField(
+                                                                keyboardType: TextInputType.number,
+                                                                controller: _vehiclePriceControllers[vehicleType],
+                                                                decoration: InputDecoration(
+                                                                  errorMaxLines: 3,
+                                                                  fillColor: theme.colorScheme.surface,
+                                                                  border: OutlineInputBorder(
+                                                                    borderRadius: BorderRadius.circular(dimensions.borderRadius * 0.5),
+                                                                  ),
+                                                                  suffixText: 'CUP',
+                                                                  suffixStyle: theme.textTheme.bodyMedium?.copyWith(
+                                                                    color: theme.colorScheme.onSurfaceVariant,
+                                                                  ),
+                                                                ),
+                                                                validator: (value) => Workflow<String?>()
+                                                                    .step(RequiredStep(errorMessage: localizations.requiredField))
+                                                                    .step(ValidPositiveNumberStep(errorMessage: localizations.invalidPrice))
+                                                                    .breakOnFirstApply(true)
+                                                                    .withDefault((_) => null)
+                                                                    .proceed(value),
+                                                                onChanged: (s) => setState(() {
+                                                                  _vehiclePriceControllers[vehicleType]!.text = s;
+                                                                })
                                                             ),
-                                                            validator: (value) => Workflow<String?>()
-                                                                .step(RequiredStep(errorMessage: localizations.requiredField))
-                                                                .step(ValidPositiveNumberStep(errorMessage: localizations.invalidPrice))
-                                                                .withDefault((_) => null)
-                                                                .proceed(value),
-                                                            onChanged: (s) => setState(() {
-                                                              _vehiclePriceControllers[vehicleType]!.text = s;
-                                                            })
                                                           ),
-                                                        ),
-                                                      ],
+                                                        ],
+                                                      ),
                                                     ),
-                                                  ),
                                                 ),
-                                                SizedBox(height: 16),
                                                 // Save button (aligned to right)
                                                 Align(
                                                     alignment: Alignment.centerRight,
                                                     child: OutlinedButton(
                                                         onPressed: () async {
+                                                          FocusScope.of(context).unfocus();
                                                           if(!_formKey.currentState!.validate()) return;
                                                           if(!runtime.hasConnection(context) || !canSubmitNewConfigs) return;
                                                           final vehiclePrices = <TaxiType, double>{};
@@ -300,255 +296,241 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                               ),
                               // Password Section
                               Container(
-                                width: double.infinity,
-                                margin: EdgeInsets.symmetric(horizontal: 0),
-                                padding: EdgeInsets.all(20),
-                                decoration: BoxDecoration(
-                                  color: theme.colorScheme.surfaceContainerLowest,
-                                  borderRadius: BorderRadius.circular(dimensions.borderRadius),
-
-                                ),
-                                child: Form(
-                                  key: _passwordFormKey,
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        localizations.passwordsSectionTitle,
-                                        style: theme.textTheme.titleMedium?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: theme.colorScheme.onSurface,
-                                        ),
-                                      ),
-                                      SizedBox(height: 20),
-                                      // New password
-                                      Text(
-                                        localizations.newPassword,
-                                        style: theme.textTheme.bodyMedium?.copyWith(
-                                          color: theme.colorScheme.onSurface,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      SizedBox(height: 8),
-                                      SizedBox(
-                                        child: TextFormField(
-                                          controller: _newPasswordController,
-                                          obscureText: !_isNewPasswordVisible,
-                                          decoration: InputDecoration(
-                                            errorMaxLines: 3,
-                                            border: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(dimensions.borderRadius),
-                                              borderSide: BorderSide(color: theme.colorScheme.outlineVariant),
-                                            ),
-                                            enabledBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(dimensions.borderRadius),
-                                              borderSide: BorderSide(color: theme.colorScheme.outlineVariant),
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(dimensions.borderRadius),
-                                              borderSide: BorderSide(color: theme.colorScheme.primary),
-                                            ),
-                                            contentPadding: dimensions.contentPadding,
-                                            filled: true,
-                                            fillColor: theme.colorScheme.surfaceContainerLowest,
-                                            suffixIcon: IconButton(
-                                              icon: Icon(
-                                                _isNewPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                                                color: theme.colorScheme.onSurfaceVariant,
-                                                size: 20,
+                                  width: double.infinity,
+                                  padding: EdgeInsets.all(20),
+                                  decoration: BoxDecoration(
+                                    color: theme.colorScheme.surfaceContainerLowest,
+                                    borderRadius: BorderRadius.circular(dimensions.borderRadius)
+                                  ),
+                                  child: Form(
+                                      key: _passwordFormKey,
+                                      child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              localizations.passwordsSectionTitle,
+                                              style: theme.textTheme.titleMedium?.copyWith(
+                                                fontWeight: FontWeight.bold,
+                                                color: theme.colorScheme.onSurface,
                                               ),
-                                              onPressed: () {
-                                                setState(() {
-                                                  _isNewPasswordVisible = !_isNewPasswordVisible;
-                                                });
-                                              },
                                             ),
-                                          ),
-                                          validator: (value) => Workflow<String?>()
-                                              .step(RequiredStep(errorMessage: localizations.requiredField))
-                                              .step(MinLengthStep(min: 6, errorMessage: localizations.passwordMinLength))
-                                              .withDefault((_) => null)
-                                              .proceed(value),
-                                        )
-                                      ),
-                                      SizedBox(height: 20),
-
-                                      // Confirm password
-                                      Text(
-                                        localizations.confirmPassword,
-                                        style: theme.textTheme.bodyMedium?.copyWith(
-                                          color: theme.colorScheme.onSurface,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      SizedBox(height: 8),
-                                      SizedBox(
-                                        child: TextFormField(
-                                          controller: _confirmPasswordController,
-                                          obscureText: !_isConfirmPasswordVisible,
-                                          decoration: InputDecoration(
-                                            errorMaxLines: 3,
-                                            border: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(dimensions.borderRadius),
-                                              borderSide: BorderSide(color: theme.colorScheme.outlineVariant),
-                                            ),
-                                            enabledBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(dimensions.borderRadius),
-                                              borderSide: BorderSide(color: theme.colorScheme.outlineVariant),
-                                            ),
-                                            focusedBorder: OutlineInputBorder(
-                                              borderRadius: BorderRadius.circular(dimensions.borderRadius),
-                                              borderSide: BorderSide(color: theme.colorScheme.primary),
-                                            ),
-                                            contentPadding: dimensions.contentPadding,
-                                            filled: true,
-                                            fillColor: theme.colorScheme.surfaceContainerLowest,
-                                            suffixIcon: IconButton(
-                                              icon: Icon(
-                                                _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                                                color: theme.colorScheme.onSurfaceVariant,
-                                                size: 20,
+                                            SizedBox(height: 20),
+                                            // New password
+                                            Text(
+                                              localizations.newPassword,
+                                              style: theme.textTheme.bodyMedium?.copyWith(
+                                                color: theme.colorScheme.onSurface,
+                                                fontWeight: FontWeight.bold,
                                               ),
-                                              onPressed: () {
-                                                setState(() {
-                                                  _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
-                                                });
-                                              },
                                             ),
-                                          ),
-                                          validator: (value) => Workflow<String?>()
-                                              .step(RequiredStep(errorMessage: localizations.requiredField))
-                                              .step(MatchOtherStep(other: _newPasswordController.text, errorMessage: localizations.passwordsDoNotMatch))
-                                              .withDefault((_) => null)
-                                              .proceed(value),
-                                        ),
-                                      ),
-                                      SizedBox(height: 20),
-                                                                        // Save button (aligned to right)
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: OutlinedButton(
-                                        onPressed: () async {
-                                          if(!_passwordFormKey.currentState!.validate()) return;
-                                          if(!runtime.hasConnection(context) || !canSubmitNewPassword) return;
-                                              final admin = Admin.fromJson(runtime.loggedInUser);
-                                              final response = await adminService.updatePassword(
-                                                admin.id,
-                                                _newPasswordController.text,
-                                              );
-                                              if(!context.mounted) return;
-                                              if(response.statusCode == 200) {
-                                                showToast(context: context, message: "Hecho");
-                                              } else {
-                                                showToast(context: context, message: "No se puedo cambiar la "
-                                                    "contraseña");
-                                              }
-                                            },
-                                            child: Text(
-                                                localizations.saveButtonPanel,
-                                                style: theme.textTheme.labelLarge?.copyWith(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 16
+                                            SizedBox(height: 8),
+                                            SizedBox(
+                                                child: TextFormField(
+                                                  controller: _newPasswordController,
+                                                  obscureText: !_isNewPasswordVisible,
+                                                  decoration: InputDecoration(
+                                                    errorMaxLines: 3,
+                                                    border: OutlineInputBorder(
+                                                      borderRadius: BorderRadius.circular(dimensions.borderRadius),
+                                                      borderSide: BorderSide(color: theme.colorScheme.outlineVariant),
+                                                    ),
+                                                    enabledBorder: OutlineInputBorder(
+                                                      borderRadius: BorderRadius.circular(dimensions.borderRadius),
+                                                      borderSide: BorderSide(color: theme.colorScheme.outlineVariant),
+                                                    ),
+                                                    focusedBorder: OutlineInputBorder(
+                                                      borderRadius: BorderRadius.circular(dimensions.borderRadius),
+                                                      borderSide: BorderSide(color: theme.colorScheme.primary),
+                                                    ),
+                                                    contentPadding: dimensions.contentPadding,
+                                                    filled: true,
+                                                    fillColor: theme.colorScheme.surfaceContainerLowest,
+                                                    suffixIcon: IconButton(
+                                                      icon: Icon(
+                                                        _isNewPasswordVisible ? Icons.visibility_outlined : Icons
+                                                            .visibility_off_outlined,
+                                                        color: theme.colorScheme.onSurfaceVariant,
+                                                        size: 20,
+                                                      ),
+                                                      onPressed: () {
+                                                        setState(() {
+                                                          _isNewPasswordVisible = !_isNewPasswordVisible;
+                                                        });
+                                                      },
+                                                    ),
+                                                  ),
+                                                  validator: (value) => Workflow<String?>()
+                                                      .step(RequiredStep(errorMessage: localizations.requiredField))
+                                                      .step(MinLengthStep(min: 6, errorMessage: localizations.passwordMinLength))
+                                                      .withDefault((_) => null)
+                                                      .proceed(value),
+                                                )
+                                            ),
+                                            SizedBox(height: 20),
+                                            // Confirm password
+                                            Text(
+                                              localizations.confirmPassword,
+                                              style: theme.textTheme.bodyMedium?.copyWith(
+                                                color: theme.colorScheme.onSurface,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            SizedBox(height: 8),
+                                            SizedBox(
+                                              child: TextFormField(
+                                                controller: _confirmPasswordController,
+                                                obscureText: !_isConfirmPasswordVisible,
+                                                decoration: InputDecoration(
+                                                  errorMaxLines: 3,
+                                                  border: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.circular(dimensions.borderRadius),
+                                                    borderSide: BorderSide(color: theme.colorScheme.outlineVariant),
+                                                  ),
+                                                  enabledBorder: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.circular(dimensions.borderRadius),
+                                                    borderSide: BorderSide(color: theme.colorScheme.outlineVariant),
+                                                  ),
+                                                  focusedBorder: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.circular(dimensions.borderRadius),
+                                                    borderSide: BorderSide(color: theme.colorScheme.primary),
+                                                  ),
+                                                  contentPadding: dimensions.contentPadding,
+                                                  filled: true,
+                                                  fillColor: theme.colorScheme.surfaceContainerLowest,
+                                                  suffixIcon: IconButton(
+                                                    icon: Icon(
+                                                      _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                                                      color: theme.colorScheme.onSurfaceVariant,
+                                                      size: 20,
+                                                    ),
+                                                    onPressed: () {
+                                                      setState(() {
+                                                        _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                                                      });
+                                                    },
+                                                  ),
+                                                ),
+                                                validator: (value) => Workflow<String?>()
+                                                    .step(RequiredStep(errorMessage: localizations.requiredField))
+                                                    .step(MatchOtherStep(other: _newPasswordController.text, errorMessage: localizations.passwordsDoNotMatch))
+                                                    .withDefault((_) => null)
+                                                    .breakOnFirstApply(true)
+                                                    .proceed(value),
+                                              ),
+                                            ),
+                                            SizedBox(height: 20),
+                                            Align(
+                                                alignment: Alignment.centerRight,
+                                                child: OutlinedButton(
+                                                    onPressed: () async {
+                                                      FocusScope.of(context).unfocus();
+                                                      if(!_passwordFormKey.currentState!.validate()) return;
+                                                      if(!runtime.hasConnection(context) || !canSubmitNewPassword) return;
+                                                      final admin = Admin.fromJson(runtime.loggedInUser);
+                                                      final response = await adminService.updatePassword(
+                                                        admin.id,
+                                                        _newPasswordController.text,
+                                                      );
+                                                      if(!context.mounted) return;
+                                                      if(response.statusCode == 200) {
+                                                        showToast(context: context, message: "Hecho");
+                                                      } else {
+                                                        showToast(context: context, message: "No se puedo cambiar la "
+                                                            "contraseña");
+                                                      }
+                                                    },
+                                                    child: Text(
+                                                        localizations.saveButtonPanel,
+                                                        style: theme.textTheme.labelLarge?.copyWith(
+                                                            fontWeight: FontWeight.bold,
+                                                            fontSize: 16
+                                                        )
+                                                    )
                                                 )
                                             )
-                                        )
+                                          ]
                                       )
-                                    ]
                                   )
-                                )
                               ),
-                              // Navigate to other sections
+                              // Navigate to Other Sections
                               Container(
-                                width: double.infinity,
-                                margin: EdgeInsets.symmetric(horizontal: 0),
-                                decoration: BoxDecoration(
-                                  color: theme.colorScheme.surfaceContainerLowest,
-                                  borderRadius: BorderRadius.circular(dimensions.borderRadius),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding: EdgeInsets.all(20),
-                                      child: Text(
-                                        localizations.otherActionsTitle,
-                                        style: theme.textTheme.titleMedium?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: theme.colorScheme.onSurface,
-                                        ),
-                                      ),
-                                    ),
-                                    // Ver todos los viajes con borde inferior
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        border: Border(
-                                          bottom: BorderSide(
-                                            color: theme.colorScheme.outlineVariant,
-                                            width: 1.0,
+                                  padding: EdgeInsets.symmetric(vertical: 20.0),
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                      color: theme.colorScheme.surfaceContainerLowest,
+                                      borderRadius: BorderRadius.circular(dimensions.borderRadius)
+                                  ),
+                                  child: Column(
+                                      spacing: 12.0,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Padding(
+                                          padding: EdgeInsets.symmetric(horizontal: 20.0),
+                                          child: Text(
+                                            localizations.otherActionsTitle,
+                                            style: theme.textTheme.titleMedium?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              color: theme.colorScheme.onSurface,
+                                              fontSize: 18,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      child: InkWell(
-                                        onTap: () => context.push(AdminRoutes.tripsList),
-                                        child: Padding(
-                                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                                          child: Row(
-                                            children: [
-                                              // Reemplaza esto con tu SVG
-                                              SvgPicture.asset(
-                                                'assets/icons/location_on_black.svg',
-                                                width: 24,
-                                                height: 24
-                                              ),
-                                              SizedBox(width: 12),
-                                              Text(
-                                                localizations.viewAllTrips,
-                                                style: theme.textTheme.bodyLarge?.copyWith(
-                                                  color: theme.colorScheme.onSurface,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ],
+                                        // Go to travels
+                                        Padding(
+                                          padding: EdgeInsets.symmetric(horizontal: 20.0),
+                                          child: InkWell(
+                                              onTap: () {
+                                                context.push(AdminRoutes.tripsList);
+                                              },
+                                              child: Row(
+                                                  spacing: 12.0,
+                                                  children: [
+                                                    SvgPicture.asset(
+                                                      'assets/icons/location_on_black.svg',
+                                                      width: 22,
+                                                      height: 22,
+                                                    ),
+                                                    Text(
+                                                        localizations.viewAllTrips,
+                                                        style: theme.textTheme.bodyLarge
+                                                    )
+                                                  ]
+                                              )
                                           ),
                                         ),
-                                      ),
-                                    ),
-                                    // Ver todos los conductores con borde superior
-                                    Container(
-                                      decoration: BoxDecoration(
-                                      ),
-                                      child: InkWell(
-                                        onTap: () => context.push(AdminRoutes.driversList),
-                                        child: Padding(
-                                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                                          child: Row(
-                                            children: [
-                                              // Reemplaza esto con tu SVG
-                                              SvgPicture.asset(
-                                                'assets/icons/group.svg',
-                                                width: 24,
-                                                height: 24,
-                                              ),
-                                              SizedBox(width: 12),
-                                              Text(
-                                                localizations.viewAllDrivers,
-                                                style: theme.textTheme.bodyLarge?.copyWith(
-                                                  color: theme.colorScheme.onSurface,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
+                                        // Divider
+                                        Divider(
+                                          height: 1.0, thickness: 3.0,
+                                          color: Theme.of(context).colorScheme.surfaceContainer,
                                         ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              )
+                                        // Go to drivers
+                                        Padding(
+                                          padding: EdgeInsets.symmetric(horizontal: 20.0),
+                                          child: InkWell(
+                                              onTap: () {
+                                                context.push(AdminRoutes.driversList);
+                                              },
+                                              child: Row(
+                                                  spacing: 12.0,
+                                                  children: [
+                                                    SvgPicture.asset(
+                                                      'assets/icons/group.svg',
+                                                      width: 22, height: 22,
+                                                    ),
+                                                    Text(localizations.viewAllDrivers, style: theme.textTheme.bodyLarge)
+                                                  ]
+                                              )
+                                          ),
+                                        )
+                                      ]
+                                  )
+                              ),
+                              // Extra spacing
+                              SizedBox(height: 10.0)
                             ]
                         )
-                    )
-                )
+                    ),
+                  )
               )
             ]
         )
