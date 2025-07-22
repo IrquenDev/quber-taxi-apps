@@ -46,11 +46,11 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
       && _vehiclePriceControllers.values.every((priceController) => priceController.text.isNotEmpty);
 
   void _loadQuberConfigs() {
-    futureQuberConfigs = adminService.getQuberConfigIfExists().then((config) {
+    futureQuberConfigs = adminService.getQuberConfig().then((config) {
       setState(() {
         futureQuberConfigs = Future.value(config);
         if (config != null) {
-          _driverCreditController.text = config.driverCredit.toString();
+          _driverCreditController.text = config.quberCredit.toString();
           for (final vehicleType in TaxiType.values) {
             final price = config.travelPrice[vehicleType] ?? 50.0;
             _vehiclePriceControllers[vehicleType]!.text = price.toString();

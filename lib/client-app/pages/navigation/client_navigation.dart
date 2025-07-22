@@ -2,10 +2,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/client-app/pages/navigation/trip_completed.dart';
+import 'package:quber_taxi/common/services/admin_service.dart';
 import 'package:quber_taxi/common/services/travel_service.dart';
 import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
 import 'package:quber_taxi/common/widgets/dialogs/confirm_dialog.dart';
-import 'package:quber_taxi/enums/travel_state.dart';
 import 'package:quber_taxi/utils/map/mapbox.dart' as mb_util;
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart' as g;
@@ -38,10 +38,14 @@ class _ClientNavigationState extends State<ClientNavigation> {
   // Real time distance calculation
   final List<turf.Position> _realTimeRoute = [];
   late final StreamSubscription<g.Position> _locationStream;
-  num _distanceInKm = 0;
+  num _finalDistance = 0;
   Stopwatch? _stopwatch;
   late final FinishConfirmationHandler _confirmationHandler;
   final _travelService = TravelService();
+  double? _travelPriceByTaxiType;
+  double get _finalPrice => _finalDistance * _travelPriceByTaxiType!;
+  int get _finalDuration => _stopwatch?.elapsed.inMinutes ?? 0;
+  late final double _creditForQuber;
 
   void _startTrackingDistance() {
     _locationStream = g.Geolocator.getPositionStream(
@@ -60,7 +64,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
     final point1 = turf.Point(coordinates: _realTimeRoute.last);
     final point2 = turf.Point(coordinates: turf.Position(newPosition.longitude, newPosition.latitude));
     final segmentDistance = td.distance(point1, point2, Unit.kilometers);
-    setState(() => _distanceInKm += segmentDistance);
+    setState(() => _finalDistance += segmentDistance);
   }
 
   void _updateTaxiMarker(g.Position newPosition) async {
@@ -124,8 +128,13 @@ class _ClientNavigationState extends State<ClientNavigation> {
   }
 
   void _markTravelAsCompleted() async {
-    final response = await _travelService.changeState(
-        travelId: widget.travel.id, state: TravelState.completed
+
+    final response = await _travelService.markAsCompleted(
+      travelId: widget.travel.id,
+      finalDistance: _finalDistance.toInt(),
+      finalDuration: _finalDuration,
+      finalPrice: _finalPrice,
+      quberCredit: (_finalPrice * _creditForQuber) / 100,
     );
     if(response.statusCode == 200) {
       _stopwatch?.stop();
@@ -138,8 +147,9 @@ class _ClientNavigationState extends State<ClientNavigation> {
           showDragHandle: true,
           builder: (context) => ClientTripCompleted(
             travel: widget.travel,
-            duration: _stopwatch?.elapsed.inMinutes ?? 0,
-            distance: _distanceInKm,
+            duration: _finalDuration,
+            distance: _finalDistance.toInt(),
+            travelPriceByTaxiType: _travelPriceByTaxiType!,
           )
       );
     }
@@ -148,6 +158,11 @@ class _ClientNavigationState extends State<ClientNavigation> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final quberConfig = await AdminService().getQuberConfig();
+      _travelPriceByTaxiType = quberConfig!.travelPrice[widget.travel.taxiType]!;
+      _creditForQuber = quberConfig.quberCredit;
+    });
     _confirmationHandler = FinishConfirmationHandler(
         travelId: widget.travel.id,
         onConfirmationRequested: () async {
@@ -219,7 +234,8 @@ class _ClientNavigationState extends State<ClientNavigation> {
           child: Icon(Icons.done_outline)
         ),
         bottomSheet: ClientTripInfo(
-          distance: _distanceInKm,
+          distance: _finalDistance.toInt(),
+          travelPriceByTaxiType: _travelPriceByTaxiType,
           originName: widget.travel.originName,
           destinationName: widget.travel.destinationName,
           taxiType: widget.travel.taxiType

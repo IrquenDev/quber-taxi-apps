@@ -7,15 +7,15 @@ import 'package:quber_taxi/common/services/travel_service.dart';
 import 'package:quber_taxi/common/widgets/dashed_line.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 
-class TripsPage extends StatefulWidget {
+class CompletedTripsPage extends StatefulWidget {
 
-  const TripsPage({super.key});
+  const CompletedTripsPage({super.key});
 
   @override
-  State<TripsPage> createState() => _TripsPageState();
+  State<CompletedTripsPage> createState() => _CompletedTripsPageState();
 }
 
-class _TripsPageState extends State<TripsPage> {
+class _CompletedTripsPageState extends State<CompletedTripsPage> {
 
   final _travelService = TravelService();
   late Future<List<Travel>> _futureTravels;
