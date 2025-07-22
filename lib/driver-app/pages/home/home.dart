@@ -24,6 +24,7 @@ import 'package:quber_taxi/enums/driver_account_state.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/driver_routes.dart';
+import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/storage/session_manger.dart';
 import 'package:quber_taxi/utils/map/geolocator.dart' as g_util;
 import 'package:quber_taxi/utils/map/mapbox.dart' as mb_util;
@@ -345,11 +346,12 @@ class _DriverHomePageState extends State<DriverHomePage> {
 
   void _showTripDetailsDialog(Travel travel) {
     final localizations = AppLocalizations.of(context)!;
+    final dimensions = Theme.of(context).extension<DimensionExtension>()!;
     showDialog(
       context: context,
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.0),
+          borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusMedium),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
