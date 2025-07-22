@@ -125,7 +125,7 @@ class TripNotification extends StatelessWidget {
                     )
                   ]
               )
-          )
+            )
         )
     );
   }

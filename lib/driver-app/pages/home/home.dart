@@ -396,6 +396,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
   void _onNewTravel(Travel travel) {
     final travelNotification = TravelNotification(travel);
 
+    // Play notification sound
+    SystemSound.play(SystemSoundType.alert);
+
     // Add new notification
     _newTravels.add(travelNotification);
     
