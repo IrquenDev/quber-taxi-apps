@@ -123,6 +123,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get people => 'Personas';
 
   @override
+  String get profileUpdatedSuccessfully => 'Perfil actualizado exitosamente';
+
+  @override
   String get from => 'Desde: ';
 
   @override
