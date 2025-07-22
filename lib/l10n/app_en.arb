@@ -255,5 +255,8 @@
   "invalidCreditPercentage": "Percentage must be between 0 and 100",
   "invalidPrice": "Price must be greater than 0",
   "passwordMinLength": "Password must be at least 6 characters",
-  "passwordsDoNotMatch": "Passwords do not match"
+  "passwordsDoNotMatch": "Passwords do not match",
+  "myDiscountCode": "My discount code:",
+  "inviteFriendDiscount": "Invite a friend to use the app and ask them to enter your code when registering or from Settings. They will receive a 10% discount on their next trip.",
+  "copied": "Copied"
 }

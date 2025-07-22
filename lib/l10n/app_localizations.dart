@@ -1423,6 +1423,24 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'La contraseña debe tener al menos 6 caracteres'**
   String get passwordMinLength;
+
+  /// No description provided for @myDiscountCode.
+  ///
+  /// In es, this message translates to:
+  /// **'Mi código de descuento:'**
+  String get myDiscountCode;
+
+  /// No description provided for @inviteFriendDiscount.
+  ///
+  /// In es, this message translates to:
+  /// **'Invita a un amigo a usar la app y pídele que ingrese tu código al registrarse o desde Ajustes. Así recibirá un 10% de descuento en su próximo viaje.'**
+  String get inviteFriendDiscount;
+
+  /// No description provided for @copied.
+  ///
+  /// In es, this message translates to:
+  /// **'Copiado'**
+  String get copied;
 }
 
 class _AppLocalizationsDelegate
