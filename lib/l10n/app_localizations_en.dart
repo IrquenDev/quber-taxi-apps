@@ -697,6 +697,137 @@ class AppLocalizationsEn extends AppLocalizations {
   String get creatingAccount => 'Creating account...';
 
   @override
+  String get newTrip => 'New Trip';
+
+  @override
+  String get noConnection => 'No Connection';
+
+  @override
+  String get noConnectionMessage =>
+      'The app cannot continue without internet connection';
+
+  @override
+  String get needsApproval => 'Needs Approval';
+
+  @override
+  String get needsApprovalMessage =>
+      'Your account is in the process of activation. To continue, please visit our offices for the technical review of your vehicle and contract signing. We are located at 4th Street / Central and Market, Martín Pérez neighborhood, San Miguel del Padrón. Once you complete this step, you will be able to use the app normally and available trip requests will be displayed.';
+
+  @override
+  String get weWaitForYou => 'We are waiting for you!';
+
+  @override
+  String get paymentSoon => 'Payment Soon';
+
+  @override
+  String get paymentPending => 'Payment Pending';
+
+  @override
+  String get inThreeDays => 'in 3 days';
+
+  @override
+  String get dayAfterTomorrow => 'day after tomorrow';
+
+  @override
+  String get tomorrow => 'tomorrow';
+
+  @override
+  String paymentReminderSoon(Object timeText) {
+    return 'We remind you that your next payment date is $timeText.';
+  }
+
+  @override
+  String get paymentReminderToday =>
+      'Today\'s scheduled payment date has arrived. You have up to 4 days to make the payment.';
+
+  @override
+  String paymentExpired(Object date) {
+    return 'The deadline for the payment previously set for $date has expired.';
+  }
+
+  @override
+  String paymentOverdue(Object date, Object days, Object daysText) {
+    return 'The scheduled payment date was $date. You have $days $daysText to make the payment.';
+  }
+
+  @override
+  String paymentLastDay(Object date) {
+    return 'The scheduled payment date was $date. Today is your last day to make the payment.';
+  }
+
+  @override
+  String get day => 'day';
+
+  @override
+  String get days => 'days';
+
+  @override
+  String get paymentOfficeInfo =>
+      ' Please go to our office at 4th Street / Central and Market, Martín Pérez neighborhood, San Miguel del Padrón to make it. You can check the amount by accessing your profile in the app.';
+
+  @override
+  String get thanksForAttention => 'Thank you for your attention.';
+
+  @override
+  String distanceMinimum(Object distance) {
+    return 'Minimum Distance: ${distance}km';
+  }
+
+  @override
+  String distanceMaximum(Object distance) {
+    return 'Maximum Distance: ${distance}km';
+  }
+
+  @override
+  String priceMinimumCost(Object price) {
+    return 'Minimum price: $price CUP';
+  }
+
+  @override
+  String priceMaximumCost(Object price) {
+    return 'Maximum price: $price CUP';
+  }
+
+  @override
+  String peopleCount(Object count) {
+    return '$count people';
+  }
+
+  @override
+  String get withPet => 'With pet';
+
+  @override
+  String get withoutPet => 'Without pet';
+
+  @override
+  String fromLocation(Object location) {
+    return 'From: $location';
+  }
+
+  @override
+  String toLocation(Object location) {
+    return 'To: $location';
+  }
+
+  @override
+  String get acceptTrip => 'Accept Trip';
+
+  @override
+  String get acceptTripConfirmMessage =>
+      'The client will be notified that their trip request has been accepted. Your location will start being shared only with them.';
+
+  @override
+  String get accept => 'Accept';
+
+  @override
+  String get locationPermissionRequired =>
+      'Location permission is required to start sharing your location with the client';
+
+  @override
+  String get locationPermissionBlocked =>
+      'Location permission blocked. Please enable again in settings';
+
+  @override
   String get invalidCreditPercentage => 'Percentage must be between 0 and 100';
 
   @override
@@ -704,6 +835,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get passwordMinLength => 'Password must be at least 6 characters';
+
+  @override
+  String get tripDescription => 'Trip Description';
 
   @override
   String get myDiscountCode => 'My discount code:';

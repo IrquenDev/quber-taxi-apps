@@ -18,11 +18,13 @@ import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
 import 'package:quber_taxi/common/widgets/dialogs/info_dialog.dart';
 import 'package:quber_taxi/driver-app/pages/home/available_travels_sheet.dart';
 import 'package:quber_taxi/driver-app/pages/home/info_travel_sheet.dart';
+import 'package:quber_taxi/driver-app/pages/home/trip_card.dart';
 import 'package:quber_taxi/driver-app/pages/home/trip_notification.dart';
 import 'package:quber_taxi/enums/driver_account_state.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/driver_routes.dart';
+import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/storage/session_manger.dart';
 import 'package:quber_taxi/utils/map/geolocator.dart' as g_util;
 import 'package:quber_taxi/utils/map/mapbox.dart' as mb_util;
@@ -30,6 +32,16 @@ import 'package:quber_taxi/utils/runtime.dart';
 import 'package:quber_taxi/utils/websocket/core/websocket_service.dart';
 import 'package:quber_taxi/utils/websocket/impl/travel_request_handler.dart';
 import 'package:quber_taxi/utils/websocket/impl/travel_state_handler.dart';
+
+// Wrapper class to keep travel and its creation timestamp
+class TravelNotification {
+  final Travel travel;
+  final DateTime createdAt;
+  final String id;
+  TravelNotification(this.travel) 
+    : createdAt = travel.requestedDate, // Use requestedDate from backend
+      id = travel.requestedDate.millisecondsSinceEpoch.toString();
+}
 
 class DriverHomePage extends StatefulWidget {
 
@@ -51,7 +63,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
   late double _mapBearing;
 
   // Fake drivers animation control
-  final _frameInterval = Duration(milliseconds: 100);
+  static const _frameInterval = Duration(milliseconds: 100);
   late Ticker _ticker;
   Duration _lastUpdate = Duration.zero;
   late final List<AnimatedFakeDriver> _taxis = [];
@@ -75,7 +87,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
 
   // Handling new travel requests
   late final TravelRequestHandler _newTravelRequestHandler;
-  final List<Travel> _newTravels = [];
+  final List<TravelNotification> _newTravels = [];
+  final Map<String, Timer> _notificationTimers = {}; // Timers for auto-removing notifications
 
   // Websocket for travel state changed (Here we must wait for the client to accept the pickup confirmation).
   TravelStateHandler? _travelStateHandler;
@@ -94,6 +107,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
   void _handleNetworkScopeAndListener() {
     _scope = NetworkScope.of(context); // save the scope (depends on context) to safely access on dispose.
     _listener = _scope.registerListener(_checkDriverAccountStateListener);
+    // Check account state immediately when entering the home page
+    _checkDriverAccountStateListener(NetworkScope.statusOf(context));
   }
 
   void _checkDriverAccountStateListener(ConnectionStatus status) async {
@@ -123,7 +138,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
       await SessionManager.instance.save(_driver);
       // Show payment reminder (if applies)
       if(_driver.credit > 0.0 && _driver.paymentDate != null) {
-        await _showPaymentReminder();
+      await _showPaymentReminder();
       }
       switch (_driver.accountState) {
         case DriverAccountState.notConfirmed: await _showNeedsConfirmationDialog();
@@ -136,33 +151,33 @@ class _DriverHomePageState extends State<DriverHomePage> {
   }
 
   Future<void> _showNoConnectionDialog() async {
+    final localizations = AppLocalizations.of(context)!;
     return await showDialog(
         context: context,
         barrierDismissible: false,
         builder: (_) => InfoDialog(
-          title: "Sin conexión",
-          bodyMessage: "La app no podrá continuar sin conexión a internet",
+          title: localizations.noConnection,
+          bodyMessage: localizations.noConnectionMessage,
           onAccept: ()=> SystemNavigator.pop(),
         ),
     );
   }
 
   Future<void> _showNeedsConfirmationDialog() async {
+    final localizations = AppLocalizations.of(context)!;
     showDialog(
         context: context,
         barrierDismissible: false,
         builder: (_) => InfoDialog(
-            title: "Necesita Aprobación",
-            bodyMessage: "Su cuenta está en proceso de activación. Para continuar, por favor preséntese en nuestras "
-                "oficinas para la revisión técnica de su vehículo y la firma del contrato. Nos encontramos en Calle "
-                "4ta / Central y mercado, reparto Martín Pérez, San Miguel del Padrón. Una vez complete este paso, "
-                "podrá comenzar a usar la app normalmente.",
-            footerMessage: "¡Le esperamos!"
+            title: localizations.needsApproval,
+            bodyMessage: localizations.needsApprovalMessage,
+            footerMessage: localizations.weWaitForYou
         )
     );
   }
 
   Future<void> _showPaymentReminder() async {
+    final localizations = AppLocalizations.of(context)!;
     final now = DateTime.now();
     final paymentDate = _driver.paymentDate!;
     final today = DateTime(now.year, now.month, now.day);
@@ -179,20 +194,20 @@ class _DriverHomePageState extends State<DriverHomePage> {
     if (isPaymentSoon) {
       String remainingTimeText;
       if (difference == 3) {
-        remainingTimeText = "en 3 días";
+        remainingTimeText = localizations.inThreeDays;
       } else if (difference == 2) {
-        remainingTimeText = "pasado mañana";
+        remainingTimeText = localizations.dayAfterTomorrow;
       }
       else {
-        remainingTimeText = "mañana";
+        remainingTimeText = localizations.tomorrow;
       }
-      title = "Pago próximo";
-      dynamicMessage = "Le recordamos que su próxima fecha de pago es $remainingTimeText.";
+      title = localizations.paymentSoon;
+      dynamicMessage = localizations.paymentReminderSoon(remainingTimeText);
 
       // ---- Same Day ----
     } else if (isSameDay) {
-      title = "Pago pendiente";
-      dynamicMessage = "La fecha de pago programada para hoy ha llegado. Tiene hasta 4 días para realizar el pago.";
+      title = localizations.paymentPending;
+      dynamicMessage = localizations.paymentReminderToday;
 
       // ---- The Payment Date Has Already Passed ----
     } else if (!today.isBefore(paymentDay)) {
@@ -200,72 +215,79 @@ class _DriverHomePageState extends State<DriverHomePage> {
       // Before four days
       if (daysSince < 3) {
         int daysLeft = 3 - daysSince;
-        dynamicMessage = "La fecha de pago programada fue el $formattedPaymentDate. "
-            "Tiene $daysLeft ${daysLeft == 1 ? "día" : "días"} para realizar el pago.";
+        String daysText = daysLeft == 1 ? localizations.day : localizations.days;
+        dynamicMessage = localizations.paymentOverdue(formattedPaymentDate, daysLeft.toString(), daysText);
         // Last Day
       } else if(daysSince == 3) {
-        dynamicMessage = "La fecha de pago programada fue el $formattedPaymentDate. "
-            "Hoy es su último día para realizar el pago.";
+        dynamicMessage = localizations.paymentLastDay(formattedPaymentDate);
       }
       // Deadline Expired
       else {
-        dynamicMessage = "La fecha límite para el pago previamente fijado para el día "
-            "$formattedPaymentDate ha expirado.";
+        dynamicMessage = localizations.paymentExpired(formattedPaymentDate);
       }
-      title = "Pago pendiente";
+      title = localizations.paymentPending;
 
       // ---- No Condition Applies, We Don't Show Anything ----
     } else {return;}
-
-    // Static part of the message
-    const staticBody =
-        " Por favor, diríjase a nuestra oficina en Calle 4ta / Central y mercado, reparto Martín Pérez, "
-        "San Miguel del Padrón para realizarlo. Puede consultar el monto accediendo a su perfil en la app.";
 
     await showDialog(
       context: context,
       barrierDismissible: false,
       builder: (_) => InfoDialog(
         title: title,
-        bodyMessage: "$dynamicMessage$staticBody",
-        footerMessage: "Gracias por su atención.",
+        bodyMessage: "$dynamicMessage${localizations.paymentOfficeInfo}",
+        footerMessage: localizations.thanksForAttention,
       ),
     );
   }
 
   void _startStreamingLocation() async {
+    // If already streaming, don't create duplicate markers
+    if (_isLocationStreaming) return;
+    
     // Get current position
     final position = await g.Geolocator.getCurrentPosition();
     final coords = Position(position.longitude, position.latitude);
     // Update class's field coord references
     _coords = coords;
     _lastKnownCoords = coords;
-    // Add driver marker to map
-    await _pointAnnotationManager?.create(
-      PointAnnotationOptions(
-        geometry: Point(coordinates: coords),
-        image: _driverMarkerImage,
-        iconAnchor: IconAnchor.CENTER,
-      ),
-    ).then((annotation) {
-      _driverAnnotation ??= annotation;
-      // Listen for real location updates
-      _locationStreamSubscription = _locationBroadcast.listen((position) async {
-        // Update coords
-        final coords = Position(position.longitude, position.latitude);
-        _lastKnownCoords = _coords;
-        _coords = coords;
-        // Adjust bearing
-        final bearing = mb_util.calculateBearing(
-            _lastKnownCoords.lat, _lastKnownCoords.lng,
-            coords.lat, coords.lng
-        );
-        final adjustedBearing = (bearing - _mapBearing + 360) % 360;
-        _driverAnnotation!.iconRotate = adjustedBearing;
-        _driverAnnotation!.geometry = Point(coordinates: coords);
-        _pointAnnotationManager?.update(_driverAnnotation!);
-      });
+    
+    // Only create marker if we don't have one yet
+    if (_driverAnnotation == null) {
+      // Add driver marker to map
+      _driverAnnotation = await _pointAnnotationManager?.create(
+        PointAnnotationOptions(
+          geometry: Point(coordinates: coords),
+          image: _driverMarkerImage,
+          iconAnchor: IconAnchor.CENTER,
+        ),
+      );
+    } else {
+      // Update existing marker position
+      _driverAnnotation!.geometry = Point(coordinates: coords);
+      _pointAnnotationManager?.update(_driverAnnotation!);
+    }
+    
+    // Cancel existing subscription to avoid duplicates
+    _locationStreamSubscription?.cancel();
+    
+    // Listen for real location updates
+    _locationStreamSubscription = _locationBroadcast.listen((position) async {
+      // Update coords
+      final coords = Position(position.longitude, position.latitude);
+      _lastKnownCoords = _coords;
+      _coords = coords;
+      // Adjust bearing
+      final bearing = mb_util.calculateBearing(
+          _lastKnownCoords.lat, _lastKnownCoords.lng,
+          coords.lat, coords.lng
+      );
+      final adjustedBearing = (bearing - _mapBearing + 360) % 360;
+      _driverAnnotation!.iconRotate = adjustedBearing;
+      _driverAnnotation!.geometry = Point(coordinates: coords);
+      _pointAnnotationManager?.update(_driverAnnotation!);
     });
+    
     _isLocationStreaming = true;
   }
 
@@ -314,14 +336,88 @@ class _DriverHomePageState extends State<DriverHomePage> {
     }
   }
 
+  void _removeNotificationById(String notificationId) {
+    _notificationTimers[notificationId]?.cancel();
+    _notificationTimers.remove(notificationId);
+
+    _newTravels.removeWhere((notification) => notification.id == notificationId);
+    setState(() {});
+  }
+
+  void _showTripDetailsDialog(Travel travel) {
+    final localizations = AppLocalizations.of(context)!;
+    final dimensions = Theme.of(context).extension<DimensionExtension>()!;
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusMedium),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Header with title and close button
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    localizations.tripDescription,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: Icon(Icons.close),
+                    iconSize: 24.0,
+                  ),
+                ],
+              ),
+            ),
+            // Trip card content
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 16.0),
+              child: TripCard(
+                travel: travel,
+                onTravelSelected: (selectedTravel) {
+                  Navigator.of(context).pop(); // Close dialog first
+                  _onTravelSelected(selectedTravel); // Then handle travel selection
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+
+
   void _onNewTravel(Travel travel) {
-    if(_newTravels.isEmpty || _newTravels.length < 2) {
-      _newTravels.add(travel);
+    final travelNotification = TravelNotification(travel);
+
+    // Play notification sound
+    SystemSound.play(SystemSoundType.alert);
+
+    // Add new notification
+    _newTravels.add(travelNotification);
+    
+    // Sort by requestedDate (most recent first)
+    _newTravels.sort((a, b) => b.travel.requestedDate.compareTo(a.travel.requestedDate));
+    
+    // Keep maximum 2 notifications, remove the oldest ones
+    while(_newTravels.length > 2) {
+      final removedNotification = _newTravels.removeLast();
+      _notificationTimers[removedNotification.id]?.cancel();
+      _notificationTimers.remove(removedNotification.id);
     }
-    else {
-      _newTravels.removeLast();
-      _newTravels.insert(0, travel);
-    }
+
+    _notificationTimers[travelNotification.id] = Timer(const Duration(seconds: 10), () {
+      _removeNotificationById(travelNotification.id);
+    });
+    
     setState(() {});
   }
 
@@ -348,6 +444,13 @@ class _DriverHomePageState extends State<DriverHomePage> {
     _locationShareSubscription?.cancel();
     _locationStreamSubscription?.cancel();
     _pointAnnotationManager?.deleteAll();
+    
+    // Cancel all notification timers
+    for (final timer in _notificationTimers.values) {
+      timer.cancel();
+    }
+    _notificationTimers.clear();
+    
     super.dispose();
   }
 
@@ -376,6 +479,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
                 // Update some mapbox component
                 await controller.location.updateSettings(LocationComponentSettings(enabled: false));
                 await controller.scaleBar.updateSettings(ScaleBarSettings(enabled: false));
+                // Disable pitch/tilt gestures to keep map flat
+                await controller.gestures.updateSettings(GesturesSettings(pitchEnabled: false));
                 // Create PAM
                 _pointAnnotationManager = await controller.annotations.createPointAnnotationManager();
                 // Load Taxi Marker
@@ -391,7 +496,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                 // disable it if you want (you should).
                 // To do that set -dart-define=ALLOW_FDA=FALSE.
                 // Just care running "flutter build apk" including this flag as FALSE.
-                String definedAllowFDA = const String.fromEnvironment("ALLOW_FDA", defaultValue: "TRUE");
+                String definedAllowFDA = const String.fromEnvironment("ALLOW_FDA", defaultValue: "FALSE"); // Temporarily disabled to debug marker overlap
                 final fdaAllowed = definedAllowFDA == "TRUE";
                 if (fdaAllowed) {
                   for (int i = 1; i <= 5; i++) {
@@ -525,8 +630,25 @@ class _DriverHomePageState extends State<DriverHomePage> {
                 child: Container(
                     margin: EdgeInsets.all(12.0),
                     child: Column(
-                        children: List.generate(_newTravels.length, (index) {
-                          return AnimatedSwitcher(
+                        children: List.generate(
+                          _newTravels.length > 2 ? 2 : _newTravels.length, 
+                          (index) {
+                            final isSecondary = index == 1;
+                            
+                            return AnimatedContainer(
+                              duration: const Duration(milliseconds: 300),
+                              margin: EdgeInsets.only(
+                                left: isSecondary ? 8.0 : 0.0,
+                                right: isSecondary ? 8.0 : 0.0,
+                                top: index == 0 ? 0.0 : 4.0,
+                              ),
+                              child: AnimatedOpacity(
+                                duration: const Duration(milliseconds: 300),
+                                opacity: isSecondary ? 0.9 : 1.0,
+                                child: AnimatedScale(
+                                  duration: const Duration(milliseconds: 300),
+                                  scale: isSecondary ? 0.9 : 1.0,
+                                  child: AnimatedSwitcher(
                               duration: const Duration(milliseconds: 400),
                               switchInCurve: Curves.easeInOut,
                               transitionBuilder: (child, animation) {
@@ -536,13 +658,19 @@ class _DriverHomePageState extends State<DriverHomePage> {
                                 );
                               },
                               child: TripNotification(
-                                key: ValueKey(_newTravels[index].id),
-                                travel: _newTravels[index],
+                                      key: ValueKey(_newTravels[index].travel.id),
+                                      travel: _newTravels[index].travel,
                                 index: index,
-                                onDismissed: () => setState(() => _newTravels.removeAt(index)),
+                                      createdAt: _newTravels[index].createdAt,
+                                      onDismissed: () => _removeNotificationById(_newTravels[index].id),
+                                      onTap: () => _showTripDetailsDialog(_newTravels[index].travel)
                               )
+                                  ),
+                                ),
+                              ),
                           );
-                        })
+                          }
+                        ),
                     )
                 )
             ),

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:quber_taxi/common/models/page.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/config/api_config.dart';
 import 'package:quber_taxi/enums/taxi_type.dart';
@@ -69,28 +70,96 @@ class TravelService {
 
   /// Fetches all available travels that match the driver's capabilities.
   ///
-  /// Filters by [seats] and [type].
+  /// Filters by [seats] and [type] with pagination support.
   ///
-  /// Returns a list of [Travel] objects.
-  Future<List<Travel>> fetchAvailableTravels(int seats, TaxiType type) async {
-    final url = Uri.parse('${_apiConfig.baseUrl}/$_endpoint?seats=$seats&type=${type.apiValue}');
+  /// Returns a [Page] of [Travel] objects.
+  Future<Page<Travel>> fetchAvailableTravels(int seats, TaxiType type, {int page = 0, int size = 20}) async {
+    final url = Uri.parse('${_apiConfig.baseUrl}/$_endpoint?seats=$seats&type=${type.apiValue}&page=$page&size=$size');
     final response = await http.get(url);
-    if (response.body.trim().isEmpty) return [];
-    final List<dynamic> jsonList = jsonDecode(response.body);
-    return jsonList.map((json) => Travel.fromJson(json)).toList();
+    if (response.body.trim().isEmpty) {
+      return Page<Travel>(
+        content: [],
+        number: 0,
+        size: size,
+        totalElements: 0,
+        totalPages: 0,
+        first: true,
+        last: true,
+        empty: true,
+      );
+    }
+    final Map<String, dynamic> jsonMap = jsonDecode(response.body);
+    return Page.fromJson(jsonMap, (json) => Travel.fromJson(json));
   }
 
   /// Fetches all travels that have been completed.
   ///
-  /// Filters by the state `completed` on the backend.
+  /// Filters by the state `completed` on the backend with pagination support.
   ///
-  /// Returns a list of [Travel] objects.
-  Future<List<Travel>> fetchAllCompletedTravels() async {
-    final url = Uri.parse('${_apiConfig.baseUrl}/$_endpoint/state/${TravelState.completed.apiValue}');
+  /// Returns a [Page] of [Travel] objects.
+  Future<Page<Travel>> fetchAllCompletedTravels({int page = 0, int size = 20}) async {
+    final url = Uri.parse('${_apiConfig.baseUrl}/$_endpoint/state/${TravelState.completed.apiValue}?page=$page&size=$size');
     final response = await http.get(url);
-    if (response.body.trim().isEmpty) return [];
-    final List<dynamic> jsonList = jsonDecode(response.body);
-    return jsonList.map((json) => Travel.fromJson(json)).toList();
+    if (response.body.trim().isEmpty) {
+      return Page<Travel>(
+        content: [],
+        number: 0,
+        size: size,
+        totalElements: 0,
+        totalPages: 0,
+        first: true,
+        last: true,
+        empty: true,
+      );
+    }
+    final Map<String, dynamic> jsonMap = jsonDecode(response.body);
+    return Page.fromJson(jsonMap, (json) => Travel.fromJson(json));
+  }
+
+  /// Fetches all travels by state with pagination support.
+  ///
+  /// Filters by the given [state] on the backend.
+  ///
+  /// Returns a [Page] of [Travel] objects.
+  Future<Page<Travel>> fetchTravelsByState(TravelState state, {int page = 0, int size = 20}) async {
+    final url = Uri.parse('${_apiConfig.baseUrl}/$_endpoint/state/${state.apiValue}?page=$page&size=$size');
+    final response = await http.get(url);
+    if (response.body.trim().isEmpty) {
+      return Page<Travel>(
+        content: [],
+        number: 0,
+        size: size,
+        totalElements: 0,
+        totalPages: 0,
+        first: true,
+        last: true,
+        empty: true,
+      );
+    }
+    final Map<String, dynamic> jsonMap = jsonDecode(response.body);
+    return Page.fromJson(jsonMap, (json) => Travel.fromJson(json));
+  }
+
+  /// Fetches all travels (for development purposes) with pagination support.
+  ///
+  /// Returns a [Page] of [Travel] objects.
+  Future<Page<Travel>> fetchAllTravels({int page = 0, int size = 20}) async {
+    final url = Uri.parse('${_apiConfig.baseUrl}/$_endpoint/dev?page=$page&size=$size');
+    final response = await http.get(url);
+    if (response.body.trim().isEmpty) {
+      return Page<Travel>(
+        content: [],
+        number: 0,
+        size: size,
+        totalElements: 0,
+        totalPages: 0,
+        first: true,
+        last: true,
+        empty: true,
+      );
+    }
+    final Map<String, dynamic> jsonMap = jsonDecode(response.body);
+    return Page.fromJson(jsonMap, (json) => Travel.fromJson(json));
   }
 
   /// Changes the state of a specific travel to the given [state].

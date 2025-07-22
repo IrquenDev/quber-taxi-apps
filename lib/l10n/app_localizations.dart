@@ -1406,6 +1406,210 @@ abstract class AppLocalizations {
   /// **'Creando cuenta...'**
   String get creatingAccount;
 
+  /// No description provided for @newTrip.
+  ///
+  /// In es, this message translates to:
+  /// **'Nuevo Viaje'**
+  String get newTrip;
+
+  /// No description provided for @noConnection.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin conexión'**
+  String get noConnection;
+
+  /// No description provided for @noConnectionMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'La app no podrá continuar sin conexión a internet'**
+  String get noConnectionMessage;
+
+  /// No description provided for @needsApproval.
+  ///
+  /// In es, this message translates to:
+  /// **'Necesita Aprobación'**
+  String get needsApproval;
+
+  /// No description provided for @needsApprovalMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Su cuenta está en proceso de activación. Para continuar, por favor preséntese en nuestras oficinas para la revisión técnica de su vehículo y la firma del contrato. Nos encontramos en Calle 4ta / Central y mercado, reparto Martín Pérez, San Miguel del Padrón. Una vez complete este paso, podrá comenzar a usar la app normalmente y se mostrarán las peticiones de viaje disponibles.'**
+  String get needsApprovalMessage;
+
+  /// No description provided for @weWaitForYou.
+  ///
+  /// In es, this message translates to:
+  /// **'¡Le esperamos!'**
+  String get weWaitForYou;
+
+  /// No description provided for @paymentSoon.
+  ///
+  /// In es, this message translates to:
+  /// **'Pago próximo'**
+  String get paymentSoon;
+
+  /// No description provided for @paymentPending.
+  ///
+  /// In es, this message translates to:
+  /// **'Pago pendiente'**
+  String get paymentPending;
+
+  /// No description provided for @inThreeDays.
+  ///
+  /// In es, this message translates to:
+  /// **'en 3 días'**
+  String get inThreeDays;
+
+  /// No description provided for @dayAfterTomorrow.
+  ///
+  /// In es, this message translates to:
+  /// **'pasado mañana'**
+  String get dayAfterTomorrow;
+
+  /// No description provided for @tomorrow.
+  ///
+  /// In es, this message translates to:
+  /// **'mañana'**
+  String get tomorrow;
+
+  /// No description provided for @paymentReminderSoon.
+  ///
+  /// In es, this message translates to:
+  /// **'Le recordamos que su próxima fecha de pago es {timeText}.'**
+  String paymentReminderSoon(Object timeText);
+
+  /// No description provided for @paymentReminderToday.
+  ///
+  /// In es, this message translates to:
+  /// **'La fecha de pago programada para hoy ha llegado. Tiene hasta 4 días para realizar el pago.'**
+  String get paymentReminderToday;
+
+  /// No description provided for @paymentExpired.
+  ///
+  /// In es, this message translates to:
+  /// **'La fecha límite para el pago previamente fijado para el día {date} ha expirado.'**
+  String paymentExpired(Object date);
+
+  /// No description provided for @paymentOverdue.
+  ///
+  /// In es, this message translates to:
+  /// **'La fecha de pago programada fue el {date}. Tiene {days} {daysText} para realizar el pago.'**
+  String paymentOverdue(Object date, Object days, Object daysText);
+
+  /// No description provided for @paymentLastDay.
+  ///
+  /// In es, this message translates to:
+  /// **'La fecha de pago programada fue el {date}. Hoy es su último día para realizar el pago.'**
+  String paymentLastDay(Object date);
+
+  /// No description provided for @day.
+  ///
+  /// In es, this message translates to:
+  /// **'día'**
+  String get day;
+
+  /// No description provided for @days.
+  ///
+  /// In es, this message translates to:
+  /// **'días'**
+  String get days;
+
+  /// No description provided for @paymentOfficeInfo.
+  ///
+  /// In es, this message translates to:
+  /// **' Por favor, diríjase a nuestra oficina en Calle 4ta / Central y mercado, reparto Martín Pérez, San Miguel del Padrón para realizarlo. Puede consultar el monto accediendo a su perfil en la app.'**
+  String get paymentOfficeInfo;
+
+  /// No description provided for @thanksForAttention.
+  ///
+  /// In es, this message translates to:
+  /// **'Gracias por su atención.'**
+  String get thanksForAttention;
+
+  /// No description provided for @distanceMinimum.
+  ///
+  /// In es, this message translates to:
+  /// **'Distancia Mínima: {distance}km'**
+  String distanceMinimum(Object distance);
+
+  /// No description provided for @distanceMaximum.
+  ///
+  /// In es, this message translates to:
+  /// **'Distancia Máxima: {distance}km'**
+  String distanceMaximum(Object distance);
+
+  /// No description provided for @priceMinimumCost.
+  ///
+  /// In es, this message translates to:
+  /// **'Precio mínimo que puede costar: {price} CUP'**
+  String priceMinimumCost(Object price);
+
+  /// No description provided for @priceMaximumCost.
+  ///
+  /// In es, this message translates to:
+  /// **'Precio máximo que puede costar: {price} CUP'**
+  String priceMaximumCost(Object price);
+
+  /// No description provided for @peopleCount.
+  ///
+  /// In es, this message translates to:
+  /// **'{count} personas'**
+  String peopleCount(Object count);
+
+  /// No description provided for @withPet.
+  ///
+  /// In es, this message translates to:
+  /// **'Con mascota'**
+  String get withPet;
+
+  /// No description provided for @withoutPet.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin mascota'**
+  String get withoutPet;
+
+  /// No description provided for @fromLocation.
+  ///
+  /// In es, this message translates to:
+  /// **'Desde: {location}'**
+  String fromLocation(Object location);
+
+  /// No description provided for @toLocation.
+  ///
+  /// In es, this message translates to:
+  /// **'Hasta: {location}'**
+  String toLocation(Object location);
+
+  /// No description provided for @acceptTrip.
+  ///
+  /// In es, this message translates to:
+  /// **'Aceptar Viaje'**
+  String get acceptTrip;
+
+  /// No description provided for @acceptTripConfirmMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Se le notificará al cliente que se ha aceptado su solicitud de viaje. Su ubicación se comenzará a compartir solo con él.'**
+  String get acceptTripConfirmMessage;
+
+  /// No description provided for @accept.
+  ///
+  /// In es, this message translates to:
+  /// **'Aceptar'**
+  String get accept;
+
+  /// No description provided for @locationPermissionRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Para comenzar a compartir su ubicación con el cliente se necesita su acceso explícito'**
+  String get locationPermissionRequired;
+
+  /// No description provided for @locationPermissionBlocked.
+  ///
+  /// In es, this message translates to:
+  /// **'Permiso de ubicación bloqueado. Habilitar nuevamente en ajustes'**
+  String get locationPermissionBlocked;
+
   /// No description provided for @invalidCreditPercentage.
   ///
   /// In es, this message translates to:
@@ -1423,6 +1627,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'La contraseña debe tener al menos 6 caracteres'**
   String get passwordMinLength;
+
+  /// No description provided for @tripDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Descripción del viaje'**
+  String get tripDescription;
 
   /// No description provided for @myDiscountCode.
   ///

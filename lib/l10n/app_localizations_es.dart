@@ -700,6 +700,137 @@ class AppLocalizationsEs extends AppLocalizations {
   String get creatingAccount => 'Creando cuenta...';
 
   @override
+  String get newTrip => 'Nuevo Viaje';
+
+  @override
+  String get noConnection => 'Sin conexión';
+
+  @override
+  String get noConnectionMessage =>
+      'La app no podrá continuar sin conexión a internet';
+
+  @override
+  String get needsApproval => 'Necesita Aprobación';
+
+  @override
+  String get needsApprovalMessage =>
+      'Su cuenta está en proceso de activación. Para continuar, por favor preséntese en nuestras oficinas para la revisión técnica de su vehículo y la firma del contrato. Nos encontramos en Calle 4ta / Central y mercado, reparto Martín Pérez, San Miguel del Padrón. Una vez complete este paso, podrá comenzar a usar la app normalmente y se mostrarán las peticiones de viaje disponibles.';
+
+  @override
+  String get weWaitForYou => '¡Le esperamos!';
+
+  @override
+  String get paymentSoon => 'Pago próximo';
+
+  @override
+  String get paymentPending => 'Pago pendiente';
+
+  @override
+  String get inThreeDays => 'en 3 días';
+
+  @override
+  String get dayAfterTomorrow => 'pasado mañana';
+
+  @override
+  String get tomorrow => 'mañana';
+
+  @override
+  String paymentReminderSoon(Object timeText) {
+    return 'Le recordamos que su próxima fecha de pago es $timeText.';
+  }
+
+  @override
+  String get paymentReminderToday =>
+      'La fecha de pago programada para hoy ha llegado. Tiene hasta 4 días para realizar el pago.';
+
+  @override
+  String paymentExpired(Object date) {
+    return 'La fecha límite para el pago previamente fijado para el día $date ha expirado.';
+  }
+
+  @override
+  String paymentOverdue(Object date, Object days, Object daysText) {
+    return 'La fecha de pago programada fue el $date. Tiene $days $daysText para realizar el pago.';
+  }
+
+  @override
+  String paymentLastDay(Object date) {
+    return 'La fecha de pago programada fue el $date. Hoy es su último día para realizar el pago.';
+  }
+
+  @override
+  String get day => 'día';
+
+  @override
+  String get days => 'días';
+
+  @override
+  String get paymentOfficeInfo =>
+      ' Por favor, diríjase a nuestra oficina en Calle 4ta / Central y mercado, reparto Martín Pérez, San Miguel del Padrón para realizarlo. Puede consultar el monto accediendo a su perfil en la app.';
+
+  @override
+  String get thanksForAttention => 'Gracias por su atención.';
+
+  @override
+  String distanceMinimum(Object distance) {
+    return 'Distancia Mínima: ${distance}km';
+  }
+
+  @override
+  String distanceMaximum(Object distance) {
+    return 'Distancia Máxima: ${distance}km';
+  }
+
+  @override
+  String priceMinimumCost(Object price) {
+    return 'Precio mínimo que puede costar: $price CUP';
+  }
+
+  @override
+  String priceMaximumCost(Object price) {
+    return 'Precio máximo que puede costar: $price CUP';
+  }
+
+  @override
+  String peopleCount(Object count) {
+    return '$count personas';
+  }
+
+  @override
+  String get withPet => 'Con mascota';
+
+  @override
+  String get withoutPet => 'Sin mascota';
+
+  @override
+  String fromLocation(Object location) {
+    return 'Desde: $location';
+  }
+
+  @override
+  String toLocation(Object location) {
+    return 'Hasta: $location';
+  }
+
+  @override
+  String get acceptTrip => 'Aceptar Viaje';
+
+  @override
+  String get acceptTripConfirmMessage =>
+      'Se le notificará al cliente que se ha aceptado su solicitud de viaje. Su ubicación se comenzará a compartir solo con él.';
+
+  @override
+  String get accept => 'Aceptar';
+
+  @override
+  String get locationPermissionRequired =>
+      'Para comenzar a compartir su ubicación con el cliente se necesita su acceso explícito';
+
+  @override
+  String get locationPermissionBlocked =>
+      'Permiso de ubicación bloqueado. Habilitar nuevamente en ajustes';
+
+  @override
   String get invalidCreditPercentage =>
       'El porcentaje debe estar entre 0 y 100';
 
@@ -709,6 +840,9 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get passwordMinLength =>
       'La contraseña debe tener al menos 6 caracteres';
+
+  @override
+  String get tripDescription => 'Descripción del viaje';
 
   @override
   String get myDiscountCode => 'Mi código de descuento:';
