@@ -65,7 +65,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                    _client.quberPoints.toString(),
+                    _client.quberPoints.toInt().toString(),
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
