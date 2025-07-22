@@ -20,6 +20,8 @@ import '../../../utils/image/image_utils.dart';
 import '../../../utils/runtime.dart';
 import '../../../utils/workflow/core/workflow.dart';
 import '../../../utils/workflow/impl/form_validations.dart';
+import '../../../common/widgets/cached_profile_image.dart';
+import '../../../utils/image/image_cache_service.dart';
 
 class DriverSettingsPage extends StatefulWidget {
   const DriverSettingsPage({super.key});
@@ -156,6 +158,12 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
       if (response.statusCode == 200) {
         final driver = Driver.fromJson(jsonDecode(response.body));
         await SessionManager.instance.save(driver);
+        
+        // Clear old image from cache if a new image was uploaded
+        if (_shouldUpdateImage && _taxi.imageUrl != null) {
+          await ImageCacheService().removeFromCache("${ApiConfig().baseUrl}/${_taxi.imageUrl}");
+        }
+        
         setState(() {
           _profileImage = null;
           _showImageError = false;
@@ -719,22 +727,21 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
               ),
             ],
           ),
-          child: CircleAvatar(
-            radius: 80,
-            backgroundColor: colorScheme.onSecondary,
-            backgroundImage: _profileImage != null 
-                ? FileImage(File(_profileImage!.path))
-                : _taxi.imageUrl != null 
-                    ? NetworkImage("${ApiConfig().baseUrl}/${_taxi.imageUrl}")
-                    : null,
-            child: (_profileImage == null && _taxi.imageUrl == null)
-                ? SvgPicture.asset(
-                    "assets/icons/taxi.svg",
-                    width: Theme.of(context).iconTheme.size! * 3,
-                    color: colorScheme.onSecondaryContainer,
-                  )
-                : null,
-          ),
+          child: _profileImage != null
+              ? CircleAvatar(
+                  radius: 80,
+                  backgroundColor: colorScheme.onSecondary,
+                  backgroundImage: FileImage(File(_profileImage!.path)),
+                )
+              : CachedProfileImage(
+                  radius: 80,
+                  imageUrl: _taxi.imageUrl != null 
+                      ? "${ApiConfig().baseUrl}/${_taxi.imageUrl}"
+                      : null,
+                  backgroundColor: colorScheme.onSecondary,
+                  placeholderAsset: "assets/icons/taxi.svg",
+                  placeholderColor: colorScheme.onSecondaryContainer,
+                ),
         ),
         // Camera icon positioned at bottom right
         Positioned(
