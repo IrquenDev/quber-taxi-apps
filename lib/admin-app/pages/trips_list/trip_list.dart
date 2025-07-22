@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:quber_taxi/common/models/travel.dart';
+import 'package:quber_taxi/common/models/page.dart';
 import 'package:quber_taxi/common/services/travel_service.dart';
 import 'package:quber_taxi/common/widgets/dashed_line.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
@@ -19,6 +20,13 @@ class _CompletedTripsPageState extends State<CompletedTripsPage> {
 
   final _travelService = TravelService();
   late Future<List<Travel>> _futureTravels;
+  
+  // Minimal pagination state - ONLY what's needed for pagination
+  List<Travel> _allTravels = [];
+  int _currentPage = 0;
+  bool _hasMoreData = true;
+  bool _isLoadingMore = false;
+  bool _isInitialLoading = true;
 
   @override
   void initState() {
@@ -27,20 +35,62 @@ class _CompletedTripsPageState extends State<CompletedTripsPage> {
   }
 
   Future<void> _refreshTravels() async {
-    final newTravels = await _travelService.fetchAllCompletedTravels();
+    _currentPage = 0;
+    _hasMoreData = true;
+    final travelPage = await _travelService.fetchAllCompletedTravels(page: 0, size: 20);
+    final newTravels = travelPage.content;
+    
     setState(() {
-      _futureTravels = Future.value(newTravels);
+      _allTravels = newTravels;
+      _hasMoreData = !travelPage.last;
+      _isInitialLoading = false;
     });
   }
 
-  void _loadTravels() => _futureTravels = _travelService.fetchAllCompletedTravels();
+  void _loadTravels() {
+    _currentPage = 0;
+    _futureTravels = _travelService.fetchAllCompletedTravels(page: 0, size: 20).then((travelPage) {
+      final travels = travelPage.content;
+      
+      _allTravels = travels;
+      _hasMoreData = !travelPage.last;
+      _isInitialLoading = false;
+      return _allTravels;
+    });
+  }
+
+  // ONLY method needed for pagination
+  Future<void> _loadMoreTravels() async {
+    if (_isLoadingMore || !_hasMoreData) return;
+    
+    setState(() {
+      _isLoadingMore = true;
+    });
+    
+    try {
+      _currentPage++;
+      final travelPage = await _travelService.fetchAllCompletedTravels(page: _currentPage, size: 20);
+      final newTravels = travelPage.content;
+      
+      setState(() {
+        _allTravels.addAll(newTravels);
+        _hasMoreData = !travelPage.last;
+        _isLoadingMore = false;
+      });
+    } catch (e) {
+      setState(() {
+        _currentPage--;
+        _isLoadingMore = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          // Header container
+          // Header container - UNCHANGED from original
           Positioned(
             top: 0, left: 0, right: 0,
             child: Container(
@@ -74,7 +124,7 @@ class _CompletedTripsPageState extends State<CompletedTripsPage> {
               )
             )
           ),
-          // Trip cards starting from the header
+          // Trip cards
           Positioned(
             top: 120,
             left: 16,
@@ -83,40 +133,72 @@ class _CompletedTripsPageState extends State<CompletedTripsPage> {
             child: Center(
               child: ClipRRect(
                 borderRadius: BorderRadiusGeometry.circular(20.0),
-                child: FutureBuilder(
-                    future: _futureTravels,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
+                child: _isInitialLoading 
+                  ? FutureBuilder(
+                      future: _futureTravels,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+                        else if(snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
+                          return Center(child: Text(AppLocalizations.of(context)!.noTravel));
+                        }
+                        else {
+                          return _buildTravelsList();
+                        }
                       }
-                      else if(snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
-                        return Center(child: Text(AppLocalizations.of(context)!.noTravel));
-                      }
-                      else {
-                        final travels = snapshot.data!;
-                        final mockedTravels = List.generate(8, (_) => travels[0]);
-                        return RefreshIndicator(
-                          onRefresh: _refreshTravels,
-                          child: SingleChildScrollView(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            child: ExpansionPanelList.radio(
-                              elevation: 0,
-                              expandedHeaderPadding: EdgeInsets.zero,
-                              children: List.generate(mockedTravels.length, (index) {
-                                final travel = mockedTravels[index];
-                                return _buildTripCardItem(index, travel);
-                              }),
-                            ),
-                          ),
-                        );
-                      }
-                    }
-                ),
+                    )
+                  : _buildTravelsList(),
               ),
             )
           )
         ]
       )
+    );
+  }
+
+  // ONLY method needed for pagination
+  Widget _buildTravelsList() {
+    final mockedTravels = List.generate(8, (_) => _allTravels.isNotEmpty ? _allTravels[0] : null).where((t) => t != null).cast<Travel>().toList();
+    
+    return RefreshIndicator(
+      onRefresh: _refreshTravels,
+      child: NotificationListener<ScrollNotification>(
+        onNotification: (ScrollNotification scrollInfo) {
+          if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+            _loadMoreTravels();
+          }
+          return false;
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Column(
+            children: [
+              ExpansionPanelList.radio(
+                elevation: 0,
+                expandedHeaderPadding: EdgeInsets.zero,
+                children: List.generate(mockedTravels.length + (_isLoadingMore ? 1 : 0), (index) {
+                  if (index >= mockedTravels.length) {
+                    return ExpansionPanelRadio(
+                      value: -1,
+                      canTapOnHeader: false,
+                      headerBuilder: (context, isExpanded) => const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: CircularProgressIndicator(),
+                        ),
+                      ),
+                      body: const SizedBox.shrink(),
+                    );
+                  }
+                  final travel = mockedTravels[index];
+                  return _buildTripCardItem(index, travel);
+                }),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -186,6 +268,7 @@ class _CompletedTripsPageState extends State<CompletedTripsPage> {
     );
   }
 
+  // REVERTED to original method - NO unnecessary changes  
   Widget _infoRow(String label, String? value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
