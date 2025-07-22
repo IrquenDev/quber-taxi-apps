@@ -48,6 +48,8 @@
   "startTrip": "Start Trip",
 
   "people": "people",
+  
+  "profileUpdatedSuccessfully": "Profile updated successfully",
   "from": "From: ",
   "until": "To: ",
 

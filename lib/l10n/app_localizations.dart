@@ -320,6 +320,12 @@ abstract class AppLocalizations {
   /// **'Personas'**
   String get people;
 
+  /// No description provided for @profileUpdatedSuccessfully.
+  ///
+  /// In es, this message translates to:
+  /// **'Perfil actualizado exitosamente'**
+  String get profileUpdatedSuccessfully;
+
   /// No description provided for @from.
   ///
   /// In es, this message translates to:

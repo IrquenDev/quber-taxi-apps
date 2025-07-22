@@ -83,7 +83,7 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
     if (context != null) {
       Scrollable.ensureVisible(
         context,
-        duration: Duration(milliseconds: 500),
+        duration: const Duration(milliseconds: 500),
         curve: Curves.easeInOut,
       );
     }
@@ -109,7 +109,7 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
       _showImageError = _profileImage == null && _taxi.imageUrl == null;
     });
 
-    if (_personalInfoFormKey.currentState!.validate() && 
+    if (_personalInfoFormKey.currentState!.validate() &&
         (_profileImage != null || _taxi.imageUrl != null)) {
       _savePersonalInfo();
     } else {
@@ -131,7 +131,7 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
 
   Future<void> _savePersonalInfo() async {
     final localization = AppLocalizations.of(context)!;
-    
+
     if (!hasConnection(context)) {
       showToast(context: context, message: localization.checkConnection);
       return;
@@ -150,36 +150,32 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
           seats,
           _plateTFController.text,
           _profileImage,
-          _shouldUpdateImage
-      );
-      
+          _shouldUpdateImage);
+
       if (!context.mounted) return;
-      
+
       if (response.statusCode == 200) {
         final driver = Driver.fromJson(jsonDecode(response.body));
         await SessionManager.instance.save(driver);
-        
+
         // Clear old image from cache if a new image was uploaded
         if (_shouldUpdateImage && _taxi.imageUrl != null) {
-          await ImageCacheService().removeFromCache("${ApiConfig().baseUrl}/${_taxi.imageUrl}");
+          await ImageCacheService()
+              .removeFromCache("${ApiConfig().baseUrl}/${_taxi.imageUrl}");
         }
-        
+
         setState(() {
           _profileImage = null;
           _showImageError = false;
           _showPersonalInfoErrors = false;
         });
-        showToast(context: context, message: "Profile updated successfully");
+        showToast(
+            context: context, message: localization.profileUpdatedSuccessfully);
       } else if (response.statusCode == 409) {
         showToast(
-            context: context,
-            message: localization.phoneAlreadyRegistered
-        );
+            context: context, message: localization.phoneAlreadyRegistered);
       } else {
-        showToast(
-            context: context,
-            message: localization.somethingWentWrong
-        );
+        showToast(context: context, message: localization.somethingWentWrong);
       }
     } catch (e) {
       if (context.mounted) {
@@ -196,7 +192,7 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
 
   Future<void> _savePasswords() async {
     final localization = AppLocalizations.of(context)!;
-    
+
     if (!hasConnection(context)) {
       showToast(context: context, message: localization.checkConnection);
       return;
@@ -208,24 +204,20 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
 
     try {
       final response = await _accountService.updateDriverPassword(
-          _driver.id,
-          _passwordController.text
-      );
-      
+          _driver.id, _passwordController.text);
+
       if (!context.mounted) return;
-      
+
       if (response.statusCode == 200) {
         setState(() {
           _passwordController.clear();
           _confirmPasswordController.clear();
           _showPasswordErrors = false;
         });
-        showToast(context: context, message: localization.updatePasswordSuccess);
-      } else {
         showToast(
-            context: context,
-            message: localization.somethingWentWrong
-        );
+            context: context, message: localization.updatePasswordSuccess);
+      } else {
+        showToast(context: context, message: localization.somethingWentWrong);
       }
     } catch (e) {
       if (context.mounted) {
@@ -261,7 +253,8 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
               height: 180,
               decoration: BoxDecoration(
                 color: colorScheme.primaryContainer,
-                borderRadius: BorderRadius.vertical(bottom: Radius.circular(dimensions.borderRadius)),
+                borderRadius: BorderRadius.vertical(
+                    bottom: Radius.circular(dimensions.borderRadius)),
                 boxShadow: [
                   BoxShadow(
                     color: colorScheme.shadow.withValues(alpha: 0.2),
@@ -288,27 +281,33 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
                   // Card 1: Personal Information
                   Container(
                     key: _personalInfoKey,
-                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
                     padding: const EdgeInsets.all(16.0),
                     decoration: BoxDecoration(
                       color: colorScheme.surfaceContainerLowest,
-                      borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusLarge),
+                      borderRadius: BorderRadius.circular(
+                          dimensions.cardBorderRadiusLarge),
                     ),
-                            child: Form(
+                    child: Form(
                       key: _personalInfoFormKey,
-                              child: Column(
-                                children: [
+                      child: Column(
+                        children: [
                           Center(
                             child: Column(
                               key: _imageKey,
                               children: [
                                 GestureDetector(
                                   onTap: () async {
-                                    final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
+                                    final pickedImage = await ImagePicker()
+                                        .pickImage(source: ImageSource.gallery);
                                     if (pickedImage != null) {
                                       setState(() => _isProcessingImage = true);
-                                      final compressedImage = await compressXFileToTargetSize(pickedImage, 5);
-                                      setState(() => _isProcessingImage = false);
+                                      final compressedImage =
+                                          await compressXFileToTargetSize(
+                                              pickedImage, 5);
+                                      setState(
+                                          () => _isProcessingImage = false);
                                       if (compressedImage != null) {
                                         setState(() {
                                           _profileImage = compressedImage;
@@ -332,7 +331,7 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
                               ],
                             ),
                           ),
-                                  const SizedBox(height: 20),
+                          const SizedBox(height: 20),
                           Column(
                             spacing: 12.0,
                             children: [
@@ -361,9 +360,9 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
                                 hint: localization.seatsHint,
                                 inputType: TextInputType.number,
                                 maxLength: 3,
-                                  ),
-                                ],
                               ),
+                            ],
+                          ),
                           const SizedBox(height: 16),
                           SizedBox(
                             width: double.infinity,
@@ -373,17 +372,22 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
                                 backgroundColor: colorScheme.primaryContainer,
                                 foregroundColor: colorScheme.onPrimaryContainer,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+                                  borderRadius: BorderRadius.circular(
+                                      dimensions.buttonBorderRadius),
                                 ),
                               ),
-                              onPressed: _isSubmittingPersonalInfo ? null : _validateAndSavePersonalInfo,
+                              onPressed: _isSubmittingPersonalInfo
+                                  ? null
+                                  : _validateAndSavePersonalInfo,
                               child: _isSubmittingPersonalInfo
                                   ? SizedBox(
                                       height: 20,
                                       width: 20,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
-                                        valueColor: AlwaysStoppedAnimation<Color>(colorScheme.onPrimaryContainer),
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                colorScheme.onPrimaryContainer),
                                       ),
                                     )
                                   : Text(
@@ -391,65 +395,77 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
                                       style: textTheme.bodyLarge?.copyWith(
                                         fontWeight: FontWeight.bold,
                                       ),
+                                    ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
                       ),
                     ),
                   ),
 
                   // Card 2: Balance
                   Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                        padding: const EdgeInsets.all(16),
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: colorScheme.surfaceContainerLowest,
-                      borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusLarge),
+                      borderRadius: BorderRadius.circular(
+                          dimensions.cardBorderRadiusLarge),
                     ),
-                        child: _buildBalanceBox(),
+                    child: _buildBalanceBox(),
                   ),
 
                   // Card 3: Passwords
                   Container(
                     key: _passwordKey,
-                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                        padding: const EdgeInsets.all(16),
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: colorScheme.surfaceContainerLowest,
-                      borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusLarge),
+                      borderRadius: BorderRadius.circular(
+                          dimensions.cardBorderRadiusLarge),
                     ),
-                          child: Form(
-                              key: _passwordFormKey,
-                              child: Column(
-                                  spacing: 12.0,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    _buildPasswordField(
+                    child: Form(
+                      key: _passwordFormKey,
+                      child: Column(
+                        spacing: 12.0,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildPasswordField(
                             controller: _passwordController,
-                                        label: localization.passwordLabel,
+                            label: localization.passwordLabel,
                             hint: localization.passwordHint,
-                                        visible: passwordVisible,
-                                        onToggle: (v) => setState(() => passwordVisible = v),
+                            visible: passwordVisible,
+                            onToggle: (v) =>
+                                setState(() => passwordVisible = v),
                             validationWorkflow: Workflow<String?>()
-                                .step(RequiredStep(errorMessage: localization.requiredField))
-                                .step(MinLengthStep(min: 6, errorMessage: localization.passwordMinLengthError))
-                                            .breakOnFirstApply(true)
+                                .step(RequiredStep(
+                                    errorMessage: localization.requiredField))
+                                .step(MinLengthStep(
+                                    min: 6,
+                                    errorMessage:
+                                        localization.passwordMinLengthError))
+                                .breakOnFirstApply(true)
                                 .withDefault((_) => null),
-                                    ),
-                                    _buildPasswordField(
+                          ),
+                          _buildPasswordField(
                             controller: _confirmPasswordController,
-                                        label: localization.confirmPasswordLabel,
+                            label: localization.confirmPasswordLabel,
                             hint: localization.confirmPasswordHint,
-                                        visible: confirmPasswordVisible,
-                                        onToggle: (v) => setState(() => confirmPasswordVisible = v),
+                            visible: confirmPasswordVisible,
+                            onToggle: (v) =>
+                                setState(() => confirmPasswordVisible = v),
                             validationWorkflow: Workflow<String?>()
-                                .step(RequiredStep(errorMessage: localization.requiredField))
-                                            .step(MatchOtherStep(
-                                            other: _passwordController.text,
-                                  errorMessage: localization.passwordsDoNotMatch,
-                                        ))
-                                            .breakOnFirstApply(true)
+                                .step(RequiredStep(
+                                    errorMessage: localization.requiredField))
+                                .step(MatchOtherStep(
+                                  other: _passwordController.text,
+                                  errorMessage:
+                                      localization.passwordsDoNotMatch,
+                                ))
+                                .breakOnFirstApply(true)
                                 .withDefault((_) => null),
                           ),
                           SizedBox(
@@ -460,26 +476,31 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
                                 backgroundColor: colorScheme.primaryContainer,
                                 foregroundColor: colorScheme.onPrimaryContainer,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+                                  borderRadius: BorderRadius.circular(
+                                      dimensions.buttonBorderRadius),
                                 ),
                               ),
-                              onPressed: _isSubmittingPasswords ? null : _validateAndSavePasswords,
+                              onPressed: _isSubmittingPasswords
+                                  ? null
+                                  : _validateAndSavePasswords,
                               child: _isSubmittingPasswords
                                   ? SizedBox(
                                       height: 20,
                                       width: 20,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
-                                        valueColor: AlwaysStoppedAnimation<Color>(colorScheme.onPrimaryContainer),
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                colorScheme.onPrimaryContainer),
                                       ),
                                     )
                                   : Text(
                                       localization.saveButtonPanel,
                                       style: textTheme.bodyLarge?.copyWith(
                                         fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
+                                      ),
+                                    ),
+                            ),
                           ),
                         ],
                       ),
@@ -488,41 +509,48 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
 
                   // Additional Options Card
                   Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
                     decoration: BoxDecoration(
                       color: colorScheme.surfaceContainerLowest,
-                      borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusLarge),
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          _buildMenuItem(
-                            icon: Icons.drive_eta_outlined,
-                            text: localization.aboutUs,
+                      borderRadius: BorderRadius.circular(
+                          dimensions.cardBorderRadiusLarge),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _buildMenuItem(
+                          icon: Icons.drive_eta_outlined,
+                          text: localization.aboutUs,
                           onTap: () => context.push(CommonRoutes.aboutUs),
-                          ),
-                        Divider(height: 1, color: colorScheme.outlineVariant, indent: 12, endIndent: 12),
-                          _buildMenuItem(
-                            icon: Icons.code,
-                            text: localization.aboutDeveloper,
+                        ),
+                        Divider(
+                            height: 1,
+                            color: colorScheme.outlineVariant,
+                            indent: 12,
+                            endIndent: 12),
+                        _buildMenuItem(
+                          icon: Icons.code,
+                          text: localization.aboutDeveloper,
                           onTap: () => context.push(CommonRoutes.aboutDev),
-                          ),
-                        ],
+                        ),
+                      ],
                     ),
                   ),
 
                   // Logout
                   Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
                     child: _buildLogoutItem(
                       text: localization.logout,
                       icon: Icons.logout,
                       textColor: colorScheme.error,
                       iconColor: colorScheme.error,
-                        onTap: () async {
-                          await SessionManager.instance.clear();
+                      onTap: () async {
+                        await SessionManager.instance.clear();
                         if (!context.mounted) return;
-                          context.go(CommonRoutes.login);
+                        context.go(CommonRoutes.login);
                       },
                     ),
                   ),
@@ -590,7 +618,7 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
           text: TextSpan(
             text: label,
             style: textTheme.bodyLarge?.copyWith(
-            fontWeight: FontWeight.normal,
+              fontWeight: FontWeight.normal,
               color: colorScheme.onSurface,
             ),
           ),
@@ -600,34 +628,41 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
           keyboardType: inputType ?? TextInputType.text,
           controller: controller,
           maxLength: maxLength,
-          buildCounter: (context, {required currentLength, required isFocused, maxLength}) => const SizedBox.shrink(),
-          validator: (value) =>
-              Workflow<String?>()
-                  .step(RequiredStep(errorMessage: AppLocalizations.of(context)!.requiredField))
-                  .withDefault((_) => null)
-                  .proceed(value),
+          buildCounter: (context,
+                  {required currentLength, required isFocused, maxLength}) =>
+              const SizedBox.shrink(),
+          validator: (value) => Workflow<String?>()
+              .step(RequiredStep(
+                  errorMessage: AppLocalizations.of(context)!.requiredField))
+              .withDefault((_) => null)
+              .proceed(value),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
+            hintStyle: textTheme.bodyMedium
+                ?.copyWith(color: colorScheme.onSurfaceVariant),
             filled: true,
             fillColor: colorScheme.surface,
-            contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
-                borderSide: BorderSide(
+              borderRadius:
+                  BorderRadius.circular(dimensions.buttonBorderRadius),
+              borderSide: BorderSide(
                 color: colorScheme.outlineVariant,
                 width: 1,
               ),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+              borderRadius:
+                  BorderRadius.circular(dimensions.buttonBorderRadius),
               borderSide: BorderSide(
                 color: colorScheme.outlineVariant,
                 width: 1,
               ),
             ),
             errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+              borderRadius:
+                  BorderRadius.circular(dimensions.buttonBorderRadius),
               borderSide: BorderSide(
                 color: colorScheme.error,
                 width: 1,
@@ -665,17 +700,21 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
         ),
         const SizedBox(height: 6),
         TextFormField(
-            controller: controller,
+          controller: controller,
           obscureText: !visible,
           maxLength: maxLength,
-          buildCounter: (context, {required currentLength, required isFocused, maxLength}) => const SizedBox.shrink(),
+          buildCounter: (context,
+                  {required currentLength, required isFocused, maxLength}) =>
+              const SizedBox.shrink(),
           validator: (value) => validationWorkflow.proceed(value),
-            decoration: InputDecoration(
+          decoration: InputDecoration(
             hintText: hint,
-            hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
-              filled: true,
+            hintStyle: textTheme.bodyMedium
+                ?.copyWith(color: colorScheme.onSurfaceVariant),
+            filled: true,
             fillColor: colorScheme.surface,
-              contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             suffixIcon: IconButton(
               icon: Icon(
                 visible ? Icons.visibility : Icons.visibility_off,
@@ -683,22 +722,25 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
               ),
               onPressed: () => onToggle(!visible),
             ),
-              border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
-                  borderSide: BorderSide(
+            border: OutlineInputBorder(
+              borderRadius:
+                  BorderRadius.circular(dimensions.buttonBorderRadius),
+              borderSide: BorderSide(
                 color: colorScheme.outlineVariant,
                 width: 1,
               ),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+              borderRadius:
+                  BorderRadius.circular(dimensions.buttonBorderRadius),
               borderSide: BorderSide(
                 color: colorScheme.outlineVariant,
                 width: 1,
               ),
             ),
             errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+              borderRadius:
+                  BorderRadius.circular(dimensions.buttonBorderRadius),
               borderSide: BorderSide(
                 color: colorScheme.error,
                 width: 1,
@@ -735,7 +777,7 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
                 )
               : CachedProfileImage(
                   radius: 80,
-                  imageUrl: _taxi.imageUrl != null 
+                  imageUrl: _taxi.imageUrl != null
                       ? "${ApiConfig().baseUrl}/${_taxi.imageUrl}"
                       : null,
                   backgroundColor: colorScheme.onSecondary,
@@ -769,11 +811,13 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
                 color: colorScheme.onSecondaryContainer,
                 fit: BoxFit.scaleDown,
               ),
-          onPressed: () async {
-                final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
+              onPressed: () async {
+                final pickedImage =
+                    await ImagePicker().pickImage(source: ImageSource.gallery);
                 if (pickedImage != null) {
                   setState(() => _isProcessingImage = true);
-                  final compressedImage = await compressXFileToTargetSize(pickedImage, 5);
+                  final compressedImage =
+                      await compressXFileToTargetSize(pickedImage, 5);
                   setState(() => _isProcessingImage = false);
                   if (compressedImage != null) {
                     setState(() {
@@ -816,33 +860,39 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
         Text(
           AppLocalizations.of(context)!.balance,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-            color: Colors.grey.shade700,
-          ),
+                fontWeight: FontWeight.bold,
+                fontSize: Theme.of(context).textTheme.headlineSmall?.fontSize,
+                color: Colors.grey.shade700,
+              ),
         ),
-
         const SizedBox(height: 8),
-        _buildBalanceRow(AppLocalizations.of(context)!.quberCredits, "${_driver.credit} CUP", null),
+        _buildBalanceRow(AppLocalizations.of(context)!.quberCredits,
+            "${_driver.credit} CUP", null),
         const SizedBox(height: 8),
         const Divider(
           color: Colors.grey,
           thickness: 0.5,
         ),
-        _buildBalanceRow(AppLocalizations.of(context)!.nextPay, _driver.paymentDate != null ? DateFormat('dd/MM/yyyy').format(_driver.paymentDate!) : '-', null),
+        _buildBalanceRow(
+            AppLocalizations.of(context)!.nextPay,
+            _driver.paymentDate != null
+                ? DateFormat('dd/MM/yyyy').format(_driver.paymentDate!)
+                : '-',
+            null),
         const SizedBox(height: 12),
         const Divider(
           color: Colors.grey,
           thickness: 0.5,
         ),
-        _buildBalanceRow(AppLocalizations.of(context)!.valuation, _driver.rating.toString(), "assets/icons/yelow_star.svg"),
+        _buildBalanceRow(AppLocalizations.of(context)!.valuation,
+            _driver.rating.toString(), "assets/icons/yelow_star.svg"),
       ],
     );
   }
 
   Widget _buildBalanceRow(String label, String value, String? iconPath) {
-    // Solo aplicamos la lógica de estrellas si es la fila de valoración
-    if (label == "Valoración acumulada:") {
+    // Apply star logic only for rating row
+    if (label == AppLocalizations.of(context)!.valuation) {
       final rating = double.tryParse(value) ?? 0.0;
       return Row(
         children: [
@@ -867,7 +917,7 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
       );
     }
 
-    // Para las demás filas mantenemos el comportamiento original
+    // For other rows maintain original behavior
     return Row(
       children: [
         Expanded(
@@ -879,8 +929,7 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
             ),
           ),
         ),
-        if (iconPath != null)
-          SvgPicture.asset(iconPath, height: 20),
+        if (iconPath != null) SvgPicture.asset(iconPath, height: 20),
         Text(
           " $value",
           style: TextStyle(
@@ -897,13 +946,13 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
       mainAxisSize: MainAxisSize.min,
       children: List.generate(5, (index) {
         if (index < rating.floor()) {
-          // Estrella amarilla completa
+          // Full yellow star
           return SvgPicture.asset(
             'assets/icons/yelow_star.svg',
-            height: 20,
+            height: Theme.of(context).iconTheme.size! * 0.8,
           );
         } else {
-          // Estrella gris (vacía)
+          // Empty gray star
           return SvgPicture.asset(
             'assets/icons/gray_star.svg',
             height: 20,
@@ -913,10 +962,7 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
     );
   }
 
-
-
   Widget _buildMenuItem({
-
     required String text,
     required IconData icon,
     required VoidCallback onTap,
@@ -927,7 +973,7 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
           children: [
             Icon(
@@ -935,12 +981,12 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
               size: 20,
               color: iconColor ?? Colors.grey[600],
             ),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
             Expanded(
               child: Text(
                 text,
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
                   color: textColor ?? Colors.black87,
                   fontWeight: FontWeight.bold,
                 ),
@@ -951,8 +997,8 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
       ),
     );
   }
-  Widget _buildLogoutItem({
 
+  Widget _buildLogoutItem({
     required String text,
     required IconData icon,
     required VoidCallback onTap,
@@ -963,16 +1009,15 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
           children: [
-
-            SizedBox(width: 180),
+            const Spacer(),
             Expanded(
               child: Text(
                 text,
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize,
                   color: textColor ?? Colors.black87,
                   fontWeight: FontWeight.bold,
                 ),
