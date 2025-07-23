@@ -362,6 +362,11 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+                        ),
+                      ),
                       onPressed: (!isSendingCode && !isVerifying) ? () {
                         final code = codeController.text.trim();
                         if (code.isNotEmpty) {
