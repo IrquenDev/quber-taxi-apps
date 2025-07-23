@@ -302,6 +302,12 @@
       "passwordsDoNotMatch": "Las contraseñas no coinciden",
       "myDiscountCode": "Mi código de descuento:",
       "inviteFriendDiscount": "Invita a un amigo a usar la app y pídele que ingrese tu código al registrarse o desde Ajustes. Así recibirá un 10% de descuento en su próximo viaje.",
-      "copied": "Copiado"
+      "copied": "Copiado",
+      "accountVerification": "Verificación de cuenta",
+      "verificationCodeMessage": "Le hemos enviado un código de verificación a su número de teléfono por WhatsApp, por favor coloque el código a continuación.",
+      "verificationCodeLabel": "Código de verificación",
+      "verificationCodeHint": "Ingrese el código",
+      "sendCode": "Enviar",
+      "resendCode": "Reenviar código"
 
 }

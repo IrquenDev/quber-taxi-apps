@@ -302,5 +302,11 @@
              "passwordsDoNotMatch": "Passwords do not match",
              "myDiscountCode": "My discount code:",
             "inviteFriendDiscount": "Invite a friend to use the app and ask them to enter your code when registering or from Settings. They will receive a 10% discount on their next trip.",
-             "copied": "Copied"
+             "copied": "Copied",
+             "accountVerification": "Account Verification",
+             "verificationCodeMessage": "We have sent a verification code to your phone number via WhatsApp, please enter the code below.",
+             "verificationCodeLabel": "Verification code",
+             "verificationCodeHint": "Enter the code",
+             "sendCode": "Send",
+             "resendCode": "Resend code"
 }

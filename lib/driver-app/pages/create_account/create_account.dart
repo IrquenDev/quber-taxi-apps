@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -88,6 +89,147 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
         );
       },
     );
+  }
+
+  Future<void> _showVerificationDialog() async {
+    final localizations = AppLocalizations.of(context)!;
+    final dimensions = Theme.of(context).extension<DimensionExtension>()!;
+    final TextEditingController codeController = TextEditingController();
+
+    // Resend code timer logic
+    bool canResendCode = false;
+    int resendCount = 0; // Track how many times code has been resent
+    int resendTimeoutSeconds = 180; // 3 minutes initially
+    Timer? resendTimer;
+    
+    // Function to format time as mm:ss
+    String formatTime(int seconds) {
+      final minutes = seconds ~/ 60;
+      final remainingSeconds = seconds % 60;
+      return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
+    }
+
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (dialogContext) => WillPopScope(
+          onWillPop: () async => false, // Prevent back button from closing dialog
+          child: StatefulBuilder(
+            builder: (context, setDialogState) {
+              // Start countdown timer
+              resendTimer ??= Timer.periodic(const Duration(seconds: 1), (timer) {
+                  setDialogState(() {
+                    if (resendTimeoutSeconds > 0) {
+                      resendTimeoutSeconds--;
+                    } else {
+                      canResendCode = true;
+                      timer.cancel();
+                    }
+                  });
+                });
+
+              return AlertDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusMedium),
+                ),
+                title: Text(
+                  localizations.accountVerification,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      localizations.verificationCodeMessage,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 16.0),
+                    TextField(
+                      controller: codeController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        labelText: localizations.verificationCodeLabel,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusSmall),
+                        ),
+                        hintText: localizations.verificationCodeHint,
+                      ),
+                      maxLength: 6,
+                    ),
+                    const SizedBox(height: 8.0),
+                    Row(
+                      children: [
+                        TextButton(
+                          onPressed: canResendCode ? () {
+                            setDialogState(() {
+                              canResendCode = false;
+                              resendCount++; // Increment resend counter
+                              // Calculate new timeout: initial 3 min + 2 min for each resend
+                              resendTimeoutSeconds = 180 + (resendCount * 120);
+                              resendTimer?.cancel();
+                              resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+                                setDialogState(() {
+                                  if (resendTimeoutSeconds > 0) {
+                                    resendTimeoutSeconds--;
+                                  } else {
+                                    canResendCode = true;
+                                    timer.cancel();
+                                  }
+                                });
+                              });
+                            });
+                            // TODO: Implement resend code logic here
+                          } : null,
+                          child: Text(
+                            localizations.resendCode,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: canResendCode 
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context).textTheme.bodyMedium?.color,
+                            ),
+                          ),
+                        ),
+                        if (!canResendCode) ...[
+                          const SizedBox(width: 8.0),
+                          Text(
+                            formatTime(resendTimeoutSeconds),
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ],
+                ),
+                actions: [
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // TODO: Implement verification logic
+                        final code = codeController.text.trim();
+                        if (code.isNotEmpty) {
+                          // Clean up timer before closing
+                          resendTimer?.cancel();
+                          // Close dialog
+                          Navigator.of(context).pop();
+                        }
+                      },
+                      child: Text(localizations.sendCode),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        )
+    ).then((_) {
+      // Clean up timer if dialog is closed by any other means
+      resendTimer?.cancel();
+    });
   }
 
   @override
