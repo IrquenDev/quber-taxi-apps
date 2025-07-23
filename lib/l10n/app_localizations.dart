@@ -446,12 +446,6 @@ abstract class AppLocalizations {
   /// **'Restablecer Contraseña'**
   String get resetPasswordTitle;
 
-  /// No description provided for @verificationCodeHint.
-  ///
-  /// In es, this message translates to:
-  /// **'Código de verificación'**
-  String get verificationCodeHint;
-
   /// No description provided for @newPasswordHint.
   ///
   /// In es, this message translates to:
@@ -1657,6 +1651,78 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Copiado'**
   String get copied;
+
+  /// No description provided for @accountVerification.
+  ///
+  /// In es, this message translates to:
+  /// **'Verificación de cuenta'**
+  String get accountVerification;
+
+  /// No description provided for @verificationCodeMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Le hemos enviado un código de verificación a su número de teléfono por WhatsApp, por favor coloque el código a continuación.'**
+  String get verificationCodeMessage;
+
+  /// No description provided for @verificationCodeLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Código de verificación'**
+  String get verificationCodeLabel;
+
+  /// No description provided for @verificationCodeHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Ingrese el código'**
+  String get verificationCodeHint;
+
+  /// No description provided for @sendCode.
+  ///
+  /// In es, this message translates to:
+  /// **'Enviar'**
+  String get sendCode;
+
+  /// No description provided for @resendCode.
+  ///
+  /// In es, this message translates to:
+  /// **'Reenviar código'**
+  String get resendCode;
+
+  /// No description provided for @sendingCode.
+  ///
+  /// In es, this message translates to:
+  /// **'Enviando código...'**
+  String get sendingCode;
+
+  /// No description provided for @verifying.
+  ///
+  /// In es, this message translates to:
+  /// **'Verificando...'**
+  String get verifying;
+
+  /// No description provided for @sendCodeError.
+  ///
+  /// In es, this message translates to:
+  /// **'Error al enviar el código. Intente nuevamente.'**
+  String get sendCodeError;
+
+  /// No description provided for @verifyCodeError.
+  ///
+  /// In es, this message translates to:
+  /// **'Error al verificar el código. Intente nuevamente.'**
+  String get verifyCodeError;
+
+  /// No description provided for @invalidVerificationCode.
+  ///
+  /// In es, this message translates to:
+  /// **'Código de verificación inválido'**
+  String get invalidVerificationCode;
+
+  /// No description provided for @verificationCodeExpired.
+  ///
+  /// In es, this message translates to:
+  /// **'Código de verificación expirado'**
+  String get verificationCodeExpired;
 }
 
 class _AppLocalizationsDelegate

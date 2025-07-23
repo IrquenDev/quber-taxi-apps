@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:quber_taxi/common/models/driver.dart';
 import 'package:quber_taxi/common/services/account_service.dart';
+import 'package:quber_taxi/common/services/auth_service.dart';
 import 'package:quber_taxi/enums/asset_dpi.dart';
 import 'package:quber_taxi/enums/taxi_type.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
@@ -62,6 +63,9 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
   final ScrollController _scrollController = ScrollController();
   final GlobalKey _imageKey = GlobalKey();
   final GlobalKey _vehicleTypeKey = GlobalKey();
+  
+  // SMS Verification
+  final _authService = AuthService();
 
   void _showExitConfirmationDialog() {
     final localizations = AppLocalizations.of(context)!;
@@ -98,15 +102,114 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
 
     // Resend code timer logic
     bool canResendCode = false;
-    int resendCount = 0; // Track how many times code has been resent
-    int resendTimeoutSeconds = 180; // 3 minutes initially
+    int resendTimeoutSeconds = 240; // 4 minutes fixed
     Timer? resendTimer;
+    
+    // SMS states
+    bool isSendingCode = false;
+    bool isVerifying = false;
+    String? errorMessage;
     
     // Function to format time as mm:ss
     String formatTime(int seconds) {
       final minutes = seconds ~/ 60;
       final remainingSeconds = seconds % 60;
       return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
+    }
+
+    // Function to send verification code (for resend only)
+    Future<void> sendVerificationCode(Function setDialogState) async {
+      // Prevent multiple simultaneous calls
+      if (isSendingCode) return;
+      
+      if(!hasConnection(context)) {
+        setDialogState(() {
+          errorMessage = localizations.checkConnection;
+        });
+        return;
+      }
+
+      setDialogState(() {
+        isSendingCode = true;
+        errorMessage = null;
+      });
+
+      try {
+        final response = await _authService.requestPhoneVerificationCode(_phoneTFController.text);
+        
+        if (!mounted) return;
+        
+        setDialogState(() {
+          isSendingCode = false;
+          if (response.statusCode == 200) {
+            errorMessage = null;
+          } else {
+            errorMessage = localizations.sendCodeError;
+          }
+        });
+      } catch (e) {
+        if (mounted) {
+          setDialogState(() {
+            isSendingCode = false;
+            errorMessage = localizations.checkConnection;
+          });
+        }
+      }
+    }
+
+    // Function to verify code
+    Future<void> verifyCode(String code, Function setDialogState) async {
+      if(!hasConnection(context)) {
+        setDialogState(() {
+          errorMessage = localizations.checkConnection;
+        });
+        return;
+      }
+
+      setDialogState(() {
+        isVerifying = true;
+        errorMessage = null;
+      });
+
+      try {
+        final response = await _authService.verifyPhoneNumber(_phoneTFController.text, code);
+        
+        if (!mounted) return;
+        
+        setDialogState(() {
+          isVerifying = false;
+          if (response.statusCode == 200) {
+            // Success - proceed with registration
+            resendTimer?.cancel();
+            resendTimer = null;
+            Navigator.of(context).pop();
+            // Wait a bit to ensure dialog is fully closed before submitting
+            Future.delayed(const Duration(milliseconds: 100), () {
+              if (mounted) {
+                _submitForm();
+              }
+            });
+          } else if (response.statusCode == 400) {
+            final responseBody = response.body;
+            if (responseBody.contains("Invalid verification code")) {
+              errorMessage = localizations.invalidVerificationCode;
+            } else if (responseBody.contains("Verification code expired")) {
+              errorMessage = localizations.verificationCodeExpired;
+            } else {
+              errorMessage = localizations.invalidVerificationCode;
+            }
+          } else {
+            errorMessage = localizations.verifyCodeError;
+          }
+        });
+      } catch (e) {
+        if (mounted) {
+          setDialogState(() {
+            isVerifying = false;
+            errorMessage = localizations.checkConnection;
+          });
+        }
+      }
     }
 
     showDialog(
@@ -147,9 +250,61 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     const SizedBox(height: 16.0),
+                    
+                    // Loading indicator for sending code
+                    if (isSendingCode) ...[
+                      Row(
+                        children: [
+                          SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                          const SizedBox(width: 8.0),
+                          Text(
+                            localizations.sendingCode,
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16.0),
+                    ],
+                    
+                    // Error message
+                    if (errorMessage != null) ...[
+                      Container(
+                        padding: const EdgeInsets.all(8.0),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.errorContainer,
+                          borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusSmall),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.error_outline,
+                              color: Theme.of(context).colorScheme.error,
+                              size: 16,
+                            ),
+                            const SizedBox(width: 8.0),
+                            Expanded(
+                              child: Text(
+                                errorMessage!,
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.error,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16.0),
+                    ],
+                    
                     TextField(
                       controller: codeController,
                       keyboardType: TextInputType.number,
+                      enabled: !isSendingCode && !isVerifying,
                       decoration: InputDecoration(
                         labelText: localizations.verificationCodeLabel,
                         border: OutlineInputBorder(
@@ -163,12 +318,11 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                     Row(
                       children: [
                         TextButton(
-                          onPressed: canResendCode ? () {
+                          onPressed: (canResendCode && !isSendingCode && !isVerifying) ? () {
                             setDialogState(() {
                               canResendCode = false;
-                              resendCount++; // Increment resend counter
-                              // Calculate new timeout: initial 3 min + 2 min for each resend
-                              resendTimeoutSeconds = 180 + (resendCount * 120);
+                              // Reset timeout to 4 minutes
+                              resendTimeoutSeconds = 240;
                               resendTimer?.cancel();
                               resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
                                 setDialogState(() {
@@ -181,13 +335,14 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                                 });
                               });
                             });
-                            // TODO: Implement resend code logic here
+                            // Send verification code again
+                            sendVerificationCode(setDialogState);
                           } : null,
                           child: Text(
                             localizations.resendCode,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: canResendCode 
+                              color: (canResendCode && !isSendingCode && !isVerifying)
                                 ? Theme.of(context).colorScheme.primary
                                 : Theme.of(context).textTheme.bodyMedium?.color,
                             ),
@@ -208,17 +363,31 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: () {
-                        // TODO: Implement verification logic
+                      onPressed: (!isSendingCode && !isVerifying) ? () {
                         final code = codeController.text.trim();
                         if (code.isNotEmpty) {
-                          // Clean up timer before closing
-                          resendTimer?.cancel();
-                          // Close dialog
-                          Navigator.of(context).pop();
+                          verifyCode(code, setDialogState);
                         }
-                      },
-                      child: Text(localizations.sendCode),
+                      } : null,
+                      child: isVerifying
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Theme.of(context).colorScheme.onPrimary,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8.0),
+                              Text(localizations.verifying),
+                            ],
+                          )
+                        : Text(localizations.sendCode),
                     ),
                   ),
                 ],
@@ -229,6 +398,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
     ).then((_) {
       // Clean up timer if dialog is closed by any other means
       resendTimer?.cancel();
+      resendTimer = null;
     });
   }
 
@@ -267,7 +437,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
     }
   }
 
-  void _validateAndSubmit() {
+  void _validateAndSubmit() async {
     final localizations = AppLocalizations.of(context)!;
     setState(() {
       _showImageError = _taxiImage == null;
@@ -279,7 +449,46 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
       return;
     }
 
-    _submitForm();
+    // Send verification code first, then show dialog
+    await _sendVerificationCodeAndShowDialog();
+  }
+
+  Future<void> _sendVerificationCodeAndShowDialog() async {
+    final localizations = AppLocalizations.of(context)!;
+    
+    if(!hasConnection(context)) {
+      showToast(context: context, message: localizations.checkConnection);
+      return;
+    }
+
+    // Show loading state
+    setState(() {
+      _isSubmitting = true;
+    });
+
+    try {
+      final response = await _authService.requestPhoneVerificationCode(_phoneTFController.text);
+      
+      if (!mounted) return;
+      
+      setState(() {
+        _isSubmitting = false;
+      });
+      
+      if (response.statusCode == 200) {
+        // Success - show verification dialog
+        _showVerificationDialog();
+      } else {
+        showToast(context: context, message: localizations.sendCodeError);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
+        showToast(context: context, message: localizations.checkConnection);
+      }
+    }
   }
 
   Future<void> _submitForm() async {
@@ -606,19 +815,21 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                                               .breakOnFirstApply(true)
                                               .withDefault((_) => null)
                                       ),
-                                      _buildPasswordField(
+                                      _buildPasswordFieldWithDynamicValidation(
                                           controller: _confirmPasswordTFController,
                                           label: localizations.confirmPasswordLabel,
                                           hint: localizations.confirmPasswordHint,
                                           visible: _isConfirmPasswordVisible,
                                           onToggle: (v) => setState(() => _isConfirmPasswordVisible = v),
-                                          validationWorkflow: Workflow<String?>()
-                                              .step(RequiredStep(errorMessage: localizations.requiredField))
-                                              .step(MatchOtherStep(
-                                                other: _passwordTFController.text,
-                                                errorMessage: localizations.passwordsDoNotMatch))
-                                              .breakOnFirstApply(true)
-                                              .withDefault((_) => null)
+                                          validator: (value) {
+                                            if (value == null || value.trim().isEmpty) {
+                                              return localizations.requiredField;
+                                            }
+                                            if (value != _passwordTFController.text) {
+                                              return localizations.passwordsDoNotMatch;
+                                            }
+                                            return null;
+                                          }
                                       )
                                     ]
                                 )
@@ -814,6 +1025,76 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
           maxLength: maxLength,
           buildCounter: (context, {required currentLength, required isFocused, maxLength}) => const SizedBox.shrink(),
           validator: (value) => validationWorkflow.proceed(value),
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
+            filled: true,
+            fillColor: colorScheme.surface,
+            contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            suffixIcon: IconButton(
+              icon: Icon(
+                visible ? Icons.visibility : Icons.visibility_off,
+                color: colorScheme.onSurfaceVariant,
+              ),
+              onPressed: () => onToggle(!visible),
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+              borderSide: BorderSide(
+                color: colorScheme.outlineVariant,
+                width: 1,
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: colorScheme.outlineVariant,
+                width: 1,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: colorScheme.error,
+                width: 1,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+      ],
+    );
+  }
+
+  Widget _buildPasswordFieldWithDynamicValidation({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    required bool visible,
+    required Function(bool) onToggle,
+    required String? Function(String?) validator,
+    int? maxLength,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final dimensions = Theme.of(context).extension<DimensionExtension>()!;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        RichText(
+          text: TextSpan(
+            text: label,
+            style: textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: colorScheme.onSurface,
+            ),
+          ),
+        ),
+        const SizedBox(height: 6),
+        TextFormField(
+          controller: controller,
+          obscureText: !visible,
+          maxLength: maxLength,
+          buildCounter: (context, {required currentLength, required isFocused, maxLength}) => const SizedBox.shrink(),
+          validator: validator,
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),

@@ -71,7 +71,6 @@
   "reviewTextHint": "Ayúdanos a mejorar dejando tu opinión",
   "tripCompleted": "Viaje Finalizado",
   "resetPasswordTitle": "Restablecer Contraseña",
-  "verificationCodeHint": "Código de verificación",
   "newPasswordHint": "Nueva contraseña",
   "confirmPasswordHint": "Confirmar contraseña",
   "resetButton": "Restablecer",
@@ -295,11 +294,6 @@
       "passwordMinLength": "La contraseña debe tener al menos 6 caracteres",
       "passwordsDoNotMatch": "Las contraseñas no coinciden",
       "tripDescription": "Descripción del viaje",
-      "passwordsDoNotMatch": "Las contraseñas no coinciden",
-      "invalidCreditPercentage": "El porcentaje debe estar entre 0 y 100",
-      "invalidPrice": "El precio debe ser mayor a 0",
-      "passwordMinLength": "La contraseña debe tener al menos 6 caracteres",
-      "passwordsDoNotMatch": "Las contraseñas no coinciden",
       "myDiscountCode": "Mi código de descuento:",
       "inviteFriendDiscount": "Invita a un amigo a usar la app y pídele que ingrese tu código al registrarse o desde Ajustes. Así recibirá un 10% de descuento en su próximo viaje.",
       "copied": "Copiado",
@@ -308,6 +302,12 @@
       "verificationCodeLabel": "Código de verificación",
       "verificationCodeHint": "Ingrese el código",
       "sendCode": "Enviar",
-      "resendCode": "Reenviar código"
+      "resendCode": "Reenviar código",
+      "sendingCode": "Enviando código...",
+      "verifying": "Verificando...",
+      "sendCodeError": "Error al enviar el código. Intente nuevamente.",
+      "verifyCodeError": "Error al verificar el código. Intente nuevamente.",
+      "invalidVerificationCode": "Código de verificación inválido",
+      "verificationCodeExpired": "Código de verificación expirado"
 
 }

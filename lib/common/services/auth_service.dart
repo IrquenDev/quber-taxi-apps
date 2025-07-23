@@ -110,5 +110,36 @@ class AuthService {
     return response;
   }
 
+  /// Requests a phone verification code to be sent via SMS.
+  ///
+  /// Returns the HTTP response. Success is indicated by HTTP 200.
+  Future<http.Response> requestPhoneVerificationCode(String phone) async {
+    final url = Uri.parse("$_endpoint/phone-verification/request?phone=$phone");
+    final response = await http.post(url);
+    return response;
+  }
+
+  /// Verifies a phone number using the provided verification code.
+  ///
+  /// Returns the HTTP response. Success is indicated by HTTP 200.
+  /// Possible responses:
+  /// - 200: Phone number verified successfully
+  /// - 400: Invalid verification code or code expired
+  /// - 500: Internal server error
+  Future<http.Response> verifyPhoneNumber(String phone, String code) async {
+    final url = Uri.parse("$_endpoint/phone-verification/verify");
+    final body = jsonEncode({
+      "phone": phone,
+      "code": code,
+    });
+    final response = await http.post(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: body,
+    );
+    return response;
+  }
 
 }

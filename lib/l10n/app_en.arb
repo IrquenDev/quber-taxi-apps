@@ -71,7 +71,6 @@
   "reviewTextHint": "Help us improve by leaving your opinion",
   "tripCompleted": "Trip completed",
   "resetPasswordTitle": "Reset Password",
-  "verificationCodeHint": "Verification Code",
   "newPasswordHint": "New Password",
   "confirmPasswordHint": "Confirm Password",
   "resetButton": "Reset",
@@ -295,11 +294,6 @@
             "passwordMinLength": "Password must be at least 6 characters",
             "passwordsDoNotMatch": "Passwords do not match",
             "tripDescription": "Trip Description",
-            "passwordsDoNotMatch": "Passwords do not match",
-            "invalidCreditPercentage": "Percentage must be between 0 and 100",
-            "invalidPrice": "Price must be greater than 0",
-            "passwordMinLength": "Password must be at least 6 characters",
-             "passwordsDoNotMatch": "Passwords do not match",
              "myDiscountCode": "My discount code:",
             "inviteFriendDiscount": "Invite a friend to use the app and ask them to enter your code when registering or from Settings. They will receive a 10% discount on their next trip.",
              "copied": "Copied",
@@ -308,5 +302,11 @@
              "verificationCodeLabel": "Verification code",
              "verificationCodeHint": "Enter the code",
              "sendCode": "Send",
-             "resendCode": "Resend code"
+             "resendCode": "Resend code",
+             "sendingCode": "Sending code...",
+             "verifying": "Verifying...",
+             "sendCodeError": "Error sending code. Please try again.",
+             "verifyCodeError": "Error verifying code. Please try again.",
+             "invalidVerificationCode": "Invalid verification code",
+             "verificationCodeExpired": "Verification code expired"
 }

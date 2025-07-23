@@ -187,9 +187,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get resetPasswordTitle => 'Reset Password';
 
   @override
-  String get verificationCodeHint => 'Verification Code';
-
-  @override
   String get newPasswordHint => 'New Password';
 
   @override
@@ -851,4 +848,41 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get copied => 'Copied';
+
+  @override
+  String get accountVerification => 'Account Verification';
+
+  @override
+  String get verificationCodeMessage =>
+      'We have sent a verification code to your phone number via WhatsApp, please enter the code below.';
+
+  @override
+  String get verificationCodeLabel => 'Verification code';
+
+  @override
+  String get verificationCodeHint => 'Enter the code';
+
+  @override
+  String get sendCode => 'Send';
+
+  @override
+  String get resendCode => 'Resend code';
+
+  @override
+  String get sendingCode => 'Sending code...';
+
+  @override
+  String get verifying => 'Verifying...';
+
+  @override
+  String get sendCodeError => 'Error sending code. Please try again.';
+
+  @override
+  String get verifyCodeError => 'Error verifying code. Please try again.';
+
+  @override
+  String get invalidVerificationCode => 'Invalid verification code';
+
+  @override
+  String get verificationCodeExpired => 'Verification code expired';
 }
