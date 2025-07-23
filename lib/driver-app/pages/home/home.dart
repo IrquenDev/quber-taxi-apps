@@ -496,7 +496,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                 // disable it if you want (you should).
                 // To do that set -dart-define=ALLOW_FDA=FALSE.
                 // Just care running "flutter build apk" including this flag as FALSE.
-                String definedAllowFDA = const String.fromEnvironment("ALLOW_FDA", defaultValue: "FALSE"); // Temporarily disabled to debug marker overlap
+                String definedAllowFDA = const String.fromEnvironment("ALLOW_FDA", defaultValue: "TRUE"); // Temporarily disabled to debug marker overlap
                 final fdaAllowed = definedAllowFDA == "TRUE";
                 if (fdaAllowed) {
                   for (int i = 1; i <= 5; i++) {
