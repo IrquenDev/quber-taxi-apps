@@ -556,7 +556,7 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
                             decoration: InputDecoration(
                               filled: true,
                               fillColor: Colors.white,
-                              hintText: localizations.phoneNumberHint,
+                              hintText: localizations.phoneHint,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
                                 borderSide: BorderSide.none,
@@ -606,7 +606,7 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
                             decoration: InputDecoration(
                               filled: true,
                               fillColor: Colors.white,
-                              hintText: localizations.passwordConfirmHint,
+                              hintText: localizations.passwordConfirm,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
                                 borderSide: BorderSide.none,
