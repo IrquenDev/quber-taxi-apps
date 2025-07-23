@@ -289,9 +289,8 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                             Expanded(
                               child: Text(
                                 errorMessage!,
-                                style: TextStyle(
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                   color: Theme.of(context).colorScheme.error,
-                                  fontSize: 12,
                                 ),
                               ),
                             ),
@@ -843,7 +842,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
               if(_isSubmitting)
                 Positioned.fill(
                   child: Container(
-                    color: colorScheme.scrim.withOpacity(0.6),
+                    color: colorScheme.scrim.withValues(alpha: 0.6),
                     child: Center(
                       child: Card(
                         child: Padding(
@@ -873,7 +872,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                 child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                         backgroundColor: colorScheme.primaryContainer,
-                        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius))),
                     onPressed: _isSubmitting ? null : _validateAndSubmit,
                     child: Text(
                       AppLocalizations.of(context)!.finishButton,
@@ -1144,7 +1143,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: colorScheme.shadow.withOpacity(0.2),
+                color: colorScheme.shadow.withValues(alpha: 0.2),
                 spreadRadius: 2,
                 blurRadius: 5,
                 offset: const Offset(0, 3),
@@ -1176,7 +1175,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: colorScheme.shadow.withOpacity(0.15),
+                  color: colorScheme.shadow.withValues(alpha: 0.15),
                   spreadRadius: 1,
                   blurRadius: 3,
                   offset: const Offset(0, 2),
