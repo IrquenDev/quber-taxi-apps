@@ -44,8 +44,6 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
   final _authService = AuthService();
 
   void _validateAndSubmit() async {
-    final localizations = AppLocalizations.of(context)!;
-    
     // Hide keyboard
     FocusScope.of(context).unfocus();
     // Validate form
@@ -213,8 +211,8 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
     showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (dialogContext) => WillPopScope(
-          onWillPop: () async => false, // Prevent back button from closing dialog
+        builder: (dialogContext) => PopScope(
+          canPop: false, // Prevent back button from closing dialog
           child: StatefulBuilder(
             builder: (context, setDialogState) {
               // Start countdown timer
@@ -427,7 +425,7 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
       );
       
       // Avoid context's gaps
-      if(!context.mounted) return;
+      if(!mounted) return;
       
       // Handle responses (depends on status code)
       // OK
@@ -438,27 +436,33 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
         final success = await SessionManager.instance.save(client);
         if(success) {
           // Avoid context's gaps
-          if(!context.mounted) return;
+          if(!mounted) return;
           // Navigate to home safely
           context.go(ClientRoutes.home);
         } else {
-          showToast(context: context, message: localizations.registrationError);
+          if(mounted) {
+            showToast(context: context, message: localizations.registrationError);
+          }
         }
       }
       // CONFLICT
       else if(response.statusCode == 409) {
-        showToast(context: context, message: localizations.phoneAlreadyRegistered);
+        if(mounted) {
+          showToast(context: context, message: localizations.phoneAlreadyRegistered);
+        }
       }
       // ANY OTHER STATUS CODE
       else {
-        showToast(
-            context: context,
-            message: localizations.registrationError
-        );
+        if(mounted) {
+          showToast(
+              context: context,
+              message: localizations.registrationError
+          );
+        }
       }
     } catch (e) {
       // Handle any network or parsing errors
-      if(context.mounted) {
+      if(mounted) {
         showToast(context: context, message: localizations.registrationError);
       }
     } finally {
@@ -505,7 +509,6 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
     late final TextTheme textTheme = Theme.of(context).textTheme;
     late final localizations = AppLocalizations.of(context)!;
     late final iconTheme = Theme.of(context).iconTheme;
-    final dimensions = Theme.of(context).extension<DimensionExtension>()!;
     return Scaffold(
         body: Stack(children: [
       Column(
@@ -523,7 +526,7 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: colorScheme.shadow.withOpacity(0.2),
+                    color: colorScheme.shadow.withValues(alpha: 0.2),
                     spreadRadius: 2,
                     blurRadius: 8,
                     offset: const Offset(0, 4),
@@ -748,48 +751,48 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
         )
       );
     }
-  }
 
-  Widget _buildCircleImagePicker(
-      ColorScheme colorScheme, IconThemeData iconTheme) {
-    return Stack(alignment: Alignment.center, children: [
-      // Main Circle
-      Container(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: colorScheme.shadow.withOpacity(0.2),
-              spreadRadius: 2,
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: CircleAvatar(
-          radius: 80,
-          backgroundColor: colorScheme.surfaceContainerLowest,
-          foregroundImage:
-              _profileImage != null ? FileImage(File(_profileImage!.path)) : null,
-          child: _profileImage == null
-              ? SvgPicture.asset("assets/icons/camera.svg",
-                  width: iconTheme.size! * 3)
-              : null,
-        ),
-      ),
-      if (_profileImage != null)
-        Positioned(
-          top: 8.0,
-          right: 8.0,
-          child: GestureDetector(
-            onTap: () => setState(() => _profileImage = null),
-            child: CircleAvatar(
-              radius: 16,
-              backgroundColor: colorScheme.error,
-              child: Icon(Icons.close, color: colorScheme.onError, size: 16),
-            ),
+    Widget _buildCircleImagePicker(
+        ColorScheme colorScheme, IconThemeData iconTheme) {
+      return Stack(alignment: Alignment.center, children: [
+        // Main Circle
+        Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: colorScheme.shadow.withValues(alpha: 0.2),
+                spreadRadius: 2,
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-        )
-    ]);
+          child: CircleAvatar(
+            radius: 80,
+            backgroundColor: colorScheme.surfaceContainerLowest,
+            foregroundImage:
+                _profileImage != null ? FileImage(File(_profileImage!.path)) : null,
+            child: _profileImage == null
+                ? SvgPicture.asset("assets/icons/camera.svg",
+                    width: iconTheme.size! * 3,
+                    colorFilter: ColorFilter.mode(colorScheme.onSurface, BlendMode.srcIn))
+                : null,
+          ),
+        ),
+        if (_profileImage != null)
+          Positioned(
+            top: 8.0,
+            right: 8.0,
+            child: GestureDetector(
+              onTap: () => setState(() => _profileImage = null),
+              child: CircleAvatar(
+                radius: 16,
+                backgroundColor: colorScheme.error,
+                child: Icon(Icons.close, color: colorScheme.onError, size: 16),
+              ),
+            ),
+          )
+      ]);
+    }
   }
-}
