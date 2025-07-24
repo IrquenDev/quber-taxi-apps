@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/client-app/pages/home/map.dart';
-import 'package:quber_taxi/client-app/pages/home/request_travel_sheet.dart';
+import 'package:quber_taxi/client-app/pages/home/request_travel_screen.dart';
 import 'package:quber_taxi/client-app/pages/settings/account_setting.dart';
 import 'package:quber_taxi/common/services/app_announcement_service.dart';
 import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
@@ -189,7 +189,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
   Widget _getCurrentScreen() {
     switch (_currentIndex) {
       case 0: return const MapView(usingExtendedScaffold: true);
-      case 1: return const RequestTravelSheet();
+      case 1: return const RequestTravelScreen();
       case 2: return const ClientSettingsPage();
       case 3: return const SizedBox();
       default: return const SizedBox();
