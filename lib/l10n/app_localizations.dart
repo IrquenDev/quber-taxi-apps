@@ -182,12 +182,6 @@ abstract class AppLocalizations {
   /// **'Mapa'**
   String get map;
 
-  /// No description provided for @quberPoints.
-  ///
-  /// In es, this message translates to:
-  /// **'P. Quber'**
-  String get quberPoints;
-
   /// No description provided for @mapBottomItem.
   ///
   /// In es, this message translates to:
@@ -209,7 +203,7 @@ abstract class AppLocalizations {
   /// No description provided for @quberPointsBottomItem.
   ///
   /// In es, this message translates to:
-  /// **'Puntos Quber'**
+  /// **'P. Quber'**
   String get quberPointsBottomItem;
 
   /// No description provided for @ubicationFailed.

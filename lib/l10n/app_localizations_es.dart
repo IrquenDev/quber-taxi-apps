@@ -51,9 +51,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get map => 'Mapa';
 
   @override
-  String get quberPoints => 'P. Quber';
-
-  @override
   String get mapBottomItem => 'Mapa';
 
   @override
@@ -63,7 +60,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get settingsBottomItem => 'Ajustes';
 
   @override
-  String get quberPointsBottomItem => 'Puntos Quber';
+  String get quberPointsBottomItem => 'P. Quber';
 
   @override
   String get ubicationFailed =>

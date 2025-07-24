@@ -16,12 +16,11 @@
   "settingsHome": "Ajustes",
 
   "map": "Mapa",
-  "quberPoints": "P. Quber",
 
    "mapBottomItem": "Mapa",
    "requestTaxiBottomItem": "Pedir Taxi",
    "settingsBottomItem": "Ajustes",
-   "quberPointsBottomItem": "Puntos Quber",
+   "quberPointsBottomItem": "P. Quber",
 
   "ubicationFailed": "Su ubicación actual está fuera de los límites de La Habana",
   "permissionsDenied": "Permiso de ubicación denegado",

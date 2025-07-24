@@ -69,23 +69,19 @@ class _ClientHomePageState extends State<ClientHomePage> {
               children: [
                 Text(
                   _client.quberPoints.toInt().toString(),
-                  style: TextStyle(
-                    fontSize: 24,
+                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).colorScheme.onPrimaryContainer,
                   ),
                 ),
-                Transform.translate(
-                  offset: const Offset(0, 2.0),
-                  child: Text(
-                    localizations.quberPoints,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    Text(
+                      localizations.quberPointsBottomItem,
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                      ),
                     ),
-                  ),
-                ),
+
               ],
             )
           ],
@@ -104,7 +100,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
   }
 
   Widget _buildNavItem(IconData icon, String text, int index) {
-    final double iconSize = 32;
+    final double iconSize = Theme.of(context).iconTheme.size ?? 32;
 
     return SizedBox(
       width: double.infinity,
@@ -118,13 +114,11 @@ class _ClientHomePageState extends State<ClientHomePage> {
               size: iconSize,
               color: Theme.of(context).colorScheme.onPrimaryContainer,
             ),
-
               Transform.translate(
                 offset: const Offset(0, 2.0),
                 child: Text(
                   text,
-                  style: TextStyle(
-                    fontSize: 12,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).colorScheme.onPrimaryContainer,
                   ),
