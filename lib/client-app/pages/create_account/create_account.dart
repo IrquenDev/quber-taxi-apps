@@ -20,7 +20,6 @@ import 'package:quber_taxi/utils/workflow/core/workflow.dart';
 import 'package:quber_taxi/utils/workflow/impl/form_validations.dart';
 
 class CreateClientAccountPage extends StatefulWidget {
-
   final Uint8List faceIdImage;
 
   const CreateClientAccountPage({super.key, required this.faceIdImage});
@@ -30,7 +29,6 @@ class CreateClientAccountPage extends StatefulWidget {
 }
 
 class _CreateClientAccountPage extends State<CreateClientAccountPage> {
-
   // Form
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
@@ -46,8 +44,6 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
   final _authService = AuthService();
 
   void _validateAndSubmit() async {
-    final localizations = AppLocalizations.of(context)!;
-    
     // Hide keyboard
     FocusScope.of(context).unfocus();
     // Validate form
@@ -215,8 +211,8 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
     showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (dialogContext) => WillPopScope(
-          onWillPop: () async => false, // Prevent back button from closing dialog
+        builder: (dialogContext) => PopScope(
+          canPop: false, // Prevent back button from closing dialog
           child: StatefulBuilder(
             builder: (context, setDialogState) {
               // Start countdown timer
@@ -429,7 +425,7 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
       );
       
       // Avoid context's gaps
-      if(!context.mounted) return;
+      if(!mounted) return;
       
       // Handle responses (depends on status code)
       // OK
@@ -440,27 +436,33 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
         final success = await SessionManager.instance.save(client);
         if(success) {
           // Avoid context's gaps
-          if(!context.mounted) return;
+          if(!mounted) return;
           // Navigate to home safely
           context.go(ClientRoutes.home);
         } else {
-          showToast(context: context, message: localizations.registrationError);
+          if(mounted) {
+            showToast(context: context, message: localizations.registrationError);
+          }
         }
       }
       // CONFLICT
       else if(response.statusCode == 409) {
-        showToast(context: context, message: localizations.phoneAlreadyRegistered);
+        if(mounted) {
+          showToast(context: context, message: localizations.phoneAlreadyRegistered);
+        }
       }
       // ANY OTHER STATUS CODE
       else {
-        showToast(
-            context: context,
-            message: localizations.registrationError
-        );
+        if(mounted) {
+          showToast(
+              context: context,
+              message: localizations.registrationError
+          );
+        }
       }
     } catch (e) {
       // Handle any network or parsing errors
-      if(context.mounted) {
+      if(mounted) {
         showToast(context: context, message: localizations.registrationError);
       }
     } finally {
@@ -473,274 +475,324 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _nameController.addListener(_onFieldChanged);
+    _phoneController.addListener(_onFieldChanged);
+    _passwordController.addListener(_onFieldChanged);
+    _confirmPasswordController.addListener(_onFieldChanged);
+  }
+
+  bool _areFieldsValid = false;
+
+  void _onFieldChanged() {
+    final nameValid = _nameController.text.trim().isNotEmpty;
+    final phoneValid = _phoneController.text.trim().length == 8 &&
+        RegExp(r'^\d{8}$').hasMatch(_phoneController.text.trim());
+    final passwordValid = _passwordController.text.length >= 6;
+    final confirmPasswordValid = _confirmPasswordController.text.isNotEmpty &&
+        _passwordController.text == _confirmPasswordController.text;
+
+    final allValid =
+        nameValid && phoneValid && passwordValid && confirmPasswordValid;
+
+    if (_areFieldsValid != allValid) {
+      setState(() {
+        _areFieldsValid = allValid;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     late final ColorScheme colorScheme = Theme.of(context).colorScheme;
     late final TextTheme textTheme = Theme.of(context).textTheme;
     late final localizations = AppLocalizations.of(context)!;
     late final iconTheme = Theme.of(context).iconTheme;
     return Scaffold(
-      body: Stack(
+        body: Stack(children: [
+      Column(
+        spacing: 20.0,
         children: [
-          Column(
-            spacing: 20.0,
-            children: [
-              // App Bar as Header
-              Container(
-                width: double.infinity,
-                height: 200,
-                decoration: BoxDecoration(
-                  color: colorScheme.primaryContainer,
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(20),
-                    bottomRight: Radius.circular(20),
-                  )
+          // App Bar as Header
+          Container(
+            width: double.infinity,
+            height: 200,
+            decoration: BoxDecoration(
+                color: colorScheme.primaryContainer,
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
                 ),
-                child: SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 30.0, bottom: 90, top: 20),
-                    child: Row(
-                      children: [
-                        // Icon(Icons.arrow_back, color: colorScheme.shadow),
-                        const SizedBox(width: 8),
-                        Text(
-                          AppLocalizations.of(context)!.createAccount,
-                          style: textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: colorScheme.shadow,
-                          ),
-                        ),
-                      ],
-                    ),
+                boxShadow: [
+                  BoxShadow(
+                    color: colorScheme.shadow.withValues(alpha: 0.2),
+                    spreadRadius: 2,
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
                   ),
+                ],
+            ),
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 30.0, bottom: 90, top: 20),
+                child: Row(
+                  children: [
+                    // Icon(Icons.arrow_back, color: colorScheme.shadow),
+                    const SizedBox(width: 38),
+                    Text(
+                      AppLocalizations.of(context)!.createAccount,
+                      style: textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.shadow,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              // Form
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(40.0),
-                  child: Form(
-                    key: _formKey,
-                    child: ListView(
-                      children: [
-                        Text(AppLocalizations.of(context)!.name,
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurface,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        TextFormField(
-                            controller: _nameController,
-                            decoration: InputDecoration(
-                              fillColor: Colors.white,
-                              hintText: AppLocalizations.of(context)!.nameAndLastName,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: BorderSide.none,
-                              )
-                            ),
-                            validator: (value) => Workflow<String?>()
-                                .step(RequiredStep(errorMessage: localizations.requiredField))
-                                .withDefault((_) => null)
-                                .proceed(value)
-                        ),
-                        const SizedBox(height: 20),
-                        Text(AppLocalizations.of(context)!.phoneNumber,
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurface,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        TextFormField(
-                            controller: _phoneController,
-                            keyboardType: TextInputType.phone,
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.white,
-                              hintText: localizations.phoneHint,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: BorderSide.none,
-                              ),
-                            ),
-                            validator: (value) => Workflow<String?>()
-                                .step(RequiredStep(errorMessage: localizations.requiredField))
-                                .withDefault((_) => null)
-                                .proceed(value)
-                        ),
-                        const SizedBox(height: 20),
-                        Text(AppLocalizations.of(context)!.password,
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurface,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        TextFormField(
-                            controller: _passwordController,
-                            obscureText: true,
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.white,
-                              hintText: localizations.passwordHint,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: BorderSide.none,
-                              ),
-                            ),
-                            validator: (value) => Workflow<String?>()
-                                .step(RequiredStep(errorMessage: localizations.requiredField))
-                                .step(MinLengthStep(min: 6, errorMessage: localizations.passwordMinLength))
-                                .breakOnFirstApply(true)
-                                .withDefault((_) => null)
-                                .proceed(value)
-                        ),
-                        const SizedBox(height: 20),
-                        Text(AppLocalizations.of(context)!.passwordConfirm,
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurface,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        TextFormField(
-                            controller: _confirmPasswordController,
-                            obscureText: true,
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.white,
-                              hintText: localizations.passwordConfirm,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                borderSide: BorderSide.none,
-                              ),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return localizations.requiredField;
-                              }
-                              if (value != _passwordController.text) {
-                                return localizations.passwordsDoNotMatch;
-                              }
-                              return null;
-                            }
-                        ),
-                        const SizedBox(height: 30),
-                      ],
+            ),
+          ),
+          // Form
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(40.0),
+              child: Form(
+                key: _formKey,
+                child: ListView(
+                  children: [
+                    Text(AppLocalizations.of(context)!.name,
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurface,
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 8),
+                    TextFormField(
+                        controller: _nameController,
+                        decoration: InputDecoration(
+                          fillColor: Colors.white,
+                          hintText: AppLocalizations.of(context)!.nameAndLastName,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide.none,
+                          )
+                        ),
+                        validator: (value) => Workflow<String?>()
+                            .step(RequiredStep(errorMessage: localizations.requiredField))
+                            .withDefault((_) => null)
+                            .proceed(value)
+                    ),
+                    const SizedBox(height: 20),
+                    Text(AppLocalizations.of(context)!.phoneNumber,
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    TextFormField(
+                        controller: _phoneController,
+                        keyboardType: TextInputType.phone,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white,
+                          hintText: localizations.phoneHint,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        validator: (value) => Workflow<String?>()
+                            .step(RequiredStep(errorMessage: localizations.requiredField))
+                            .withDefault((_) => null)
+                            .proceed(value)
+                    ),
+                    const SizedBox(height: 20),
+                    Text(AppLocalizations.of(context)!.password,
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    TextFormField(
+                        controller: _passwordController,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white,
+                          hintText: localizations.passwordHint,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        validator: (value) => Workflow<String?>()
+                            .step(RequiredStep(errorMessage: localizations.requiredField))
+                            .step(MinLengthStep(min: 6, errorMessage: localizations.passwordMinLength))
+                            .breakOnFirstApply(true)
+                            .withDefault((_) => null)
+                            .proceed(value)
+                    ),
+                    const SizedBox(height: 20),
+                    Text(AppLocalizations.of(context)!.passwordConfirm,
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    TextFormField(
+                        controller: _confirmPasswordController,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white,
+                          hintText: localizations.passwordConfirm,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return localizations.requiredField;
+                          }
+                          if (value != _passwordController.text) {
+                            return localizations.passwordsDoNotMatch;
+                          }
+                          return null;
+                        }
+                    ),
+                    const SizedBox(height: 30),
+                  ],
                 ),
               ),
-            ],
+            ),
           ),
-          // Camera Button
-          Positioned(
-            top: 120,
-            left: 0,
-            right: 0,
-            child: Center(
-                child: GestureDetector(
-                  onTap: () async {
-                    final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
-                    if (pickedImage != null) {
-                      setState(() => _isProcessingImage = true);
-                      final compressedImage = await compressXFileToTargetSize(pickedImage, 5);
-                      setState(() => _isProcessingImage = false);
-                      if (compressedImage != null) {
-                        setState(() {
-                          _profileImage = compressedImage;
-                        });
-                      }
-                    }
-                  },
-                  child: _buildCircleImagePicker(colorScheme, iconTheme),
-              )
-            )
-          ),
-          // Submit Form Button
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: SizedBox(
+        ],
+      ),
+      // Camera Button
+      Positioned(
+          top: 120,
+          left: 0,
+          right: 0,
+          child: Center(
+              child: GestureDetector(
+            onTap: () async {
+              final pickedImage =
+                  await ImagePicker().pickImage(source: ImageSource.gallery);
+              if (pickedImage != null) {
+                setState(() => _isProcessingImage = true);
+                final compressedImage =
+                    await compressXFileToTargetSize(pickedImage, 5);
+                setState(() => _isProcessingImage = false);
+                if (compressedImage != null) {
+                  setState(() {
+                    _profileImage = compressedImage;
+                  });
+                }
+              }
+            },
+            child: _buildCircleImagePicker(colorScheme, iconTheme),
+          ))),
+      // Submit Form Button
+      Positioned(
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: SizedBox(
               width: double.infinity,
               height: 56,
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                  foregroundColor: Theme.of(context).colorScheme.secondary,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.zero,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        Theme.of(context).colorScheme.primaryContainer,
+                    foregroundColor: Theme.of(context).colorScheme.secondary,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.zero,
+                    ),
+                    elevation: 0,
                   ),
-                  elevation: 0,
-                ),
-                onPressed: _isSubmitting ? null : _validateAndSubmit,
-                child: _isSubmitting
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Theme.of(context).colorScheme.secondary,
+                  onPressed: _isSubmitting ? null : _validateAndSubmit,
+                  child: _isSubmitting
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Theme.of(context).colorScheme.secondary,
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 8.0),
-                        Text(
-                          AppLocalizations.of(context)!.sendingCode,
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.secondary
+                          const SizedBox(width: 8.0),
+                          Text(
+                            AppLocalizations.of(context)!.sendingCode,
+                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.secondary
+                            ),
                           ),
-                        ),
-                      ],
-                    )
-                  : Text(
-                      AppLocalizations.of(context)!.endRegistration,
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.secondary
+                        ],
                       )
-                    )
+                    : Text(
+                        AppLocalizations.of(context)!.endRegistration,
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.secondary
+                        )
+                      )
+                )
               )
-            )
-          ),
-          if(_isProcessingImage)
-          Positioned.fill(child: Center(child: CircularProgressIndicator()))
-        ]
-      )
-    );
-  }
+            ),
+            if(_isProcessingImage)
+            Positioned.fill(child: Center(child: CircularProgressIndicator()))
+          ]
+        )
+      );
+    }
 
-  Widget _buildCircleImagePicker(ColorScheme colorScheme, IconThemeData iconTheme) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
+    Widget _buildCircleImagePicker(
+        ColorScheme colorScheme, IconThemeData iconTheme) {
+      return Stack(alignment: Alignment.center, children: [
         // Main Circle
-        CircleAvatar(
-          radius: 80,
-          backgroundColor: colorScheme.surfaceContainerLowest,
-          foregroundImage: _profileImage != null
-              ? FileImage(File(_profileImage!.path))
-              : null,
-          child: _profileImage == null
-              ? SvgPicture.asset("assets/icons/camera.svg", width: iconTheme.size! * 3)
-              : null,
+        Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: colorScheme.shadow.withValues(alpha: 0.2),
+                spreadRadius: 2,
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: CircleAvatar(
+            radius: 80,
+            backgroundColor: colorScheme.surfaceContainerLowest,
+            foregroundImage:
+                _profileImage != null ? FileImage(File(_profileImage!.path)) : null,
+            child: _profileImage == null
+                ? SvgPicture.asset("assets/icons/camera.svg",
+                    width: iconTheme.size! * 3,
+                    colorFilter: ColorFilter.mode(colorScheme.onSurface, BlendMode.srcIn))
+                : null,
+          ),
         ),
         if (_profileImage != null)
           Positioned(
-            top: 8.0, right: 8.0,
+            top: 8.0,
+            right: 8.0,
             child: GestureDetector(
-              onTap: ()=> setState(()=> _profileImage = null),
+              onTap: () => setState(() => _profileImage = null),
               child: CircleAvatar(
                 radius: 16,
-                backgroundColor: Colors.red,
-                child: Icon(Icons.close, color: Colors.white, size: 16),
+                backgroundColor: colorScheme.error,
+                child: Icon(Icons.close, color: colorScheme.onError, size: 16),
               ),
             ),
           )
-      ]
-    );
+      ]);
+    }
   }
-}
