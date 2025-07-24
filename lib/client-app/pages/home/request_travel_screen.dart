@@ -29,7 +29,8 @@ class RequestTravelScreen extends StatelessWidget {
               return Container(
                 decoration: BoxDecoration(
                   color: Theme.of(context).scaffoldBackgroundColor,
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                  borderRadius:
+                      const BorderRadius.vertical(top: Radius.circular(16)),
                   boxShadow: [BoxShadow(blurRadius: 8, color: Colors.black26)],
                 ),
                 child: SingleChildScrollView(
@@ -48,7 +49,6 @@ class RequestTravelScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-
                       RequestTravelSheet(
                         originName: originName,
                         originCoords: originCoords,

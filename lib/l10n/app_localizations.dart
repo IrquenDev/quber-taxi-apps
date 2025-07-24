@@ -1735,6 +1735,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Código de verificación expirado'**
   String get verificationCodeExpired;
+
+  /// No description provided for @tripRequestCancelled.
+  ///
+  /// In es, this message translates to:
+  /// **'Se ha cancelado la solicitud de este viaje'**
+  String get tripRequestCancelled;
 }
 
 class _AppLocalizationsDelegate

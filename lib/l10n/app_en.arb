@@ -311,5 +311,6 @@
              "sendCodeError": "Error sending code. Please try again.",
              "verifyCodeError": "Error verifying code. Please try again.",
              "invalidVerificationCode": "Invalid verification code",
-             "verificationCodeExpired": "Verification code expired"
+             "verificationCodeExpired": "Verification code expired",
+             "tripRequestCancelled": "The request for this trip has been cancelled"
 }
