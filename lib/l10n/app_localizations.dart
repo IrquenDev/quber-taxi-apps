@@ -185,7 +185,7 @@ abstract class AppLocalizations {
   /// No description provided for @quberPoints.
   ///
   /// In es, this message translates to:
-  /// **'Puntos Quber'**
+  /// **'P. Quber'**
   String get quberPoints;
 
   /// No description provided for @mapBottomItem.

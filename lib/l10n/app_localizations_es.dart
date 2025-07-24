@@ -51,7 +51,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get map => 'Mapa';
 
   @override
-  String get quberPoints => 'Puntos Quber';
+  String get quberPoints => 'P. Quber';
 
   @override
   String get mapBottomItem => 'Mapa';
