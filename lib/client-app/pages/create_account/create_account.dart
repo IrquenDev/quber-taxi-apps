@@ -40,6 +40,10 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
   bool _isProcessingImage = false;
   bool _isSubmitting = false;
 
+  // Password visibility states
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
+
   // SMS Verification
   final _authService = AuthService();
 
@@ -561,20 +565,41 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
                 child: ListView(
                   children: [
                     Text(AppLocalizations.of(context)!.name,
-                      style: textTheme.bodyMedium?.copyWith(
+                      style: textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.normal,
                         color: colorScheme.onSurface,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 6),
                     TextFormField(
                         controller: _nameController,
                         decoration: InputDecoration(
-                          fillColor: Colors.white,
                           hintText: AppLocalizations.of(context)!.nameAndLastName,
+                          hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
+                          filled: true,
+                          fillColor: colorScheme.surface,
+                          contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide.none,
-                          )
+                            borderSide: BorderSide(
+                              color: colorScheme.outlineVariant,
+                              width: 1,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                              color: colorScheme.outlineVariant,
+                              width: 1,
+                            ),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                              color: colorScheme.error,
+                              width: 1,
+                            ),
+                          ),
                         ),
                         validator: (value) => Workflow<String?>()
                             .step(RequiredStep(errorMessage: localizations.requiredField))
@@ -583,21 +608,41 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
                     ),
                     const SizedBox(height: 20),
                     Text(AppLocalizations.of(context)!.phoneNumber,
-                      style: textTheme.bodyMedium?.copyWith(
+                      style: textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.normal,
                         color: colorScheme.onSurface,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 6),
                     TextFormField(
                         controller: _phoneController,
                         keyboardType: TextInputType.phone,
                         decoration: InputDecoration(
-                          filled: true,
-                          fillColor: Colors.white,
                           hintText: localizations.phoneHint,
+                          hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
+                          filled: true,
+                          fillColor: colorScheme.surface,
+                          contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide.none,
+                            borderSide: BorderSide(
+                              color: colorScheme.outlineVariant,
+                              width: 1,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                              color: colorScheme.outlineVariant,
+                              width: 1,
+                            ),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                              color: colorScheme.error,
+                              width: 1,
+                            ),
                           ),
                         ),
                         validator: (value) => Workflow<String?>()
@@ -607,21 +652,48 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
                     ),
                     const SizedBox(height: 20),
                     Text(AppLocalizations.of(context)!.password,
-                      style: textTheme.bodyMedium?.copyWith(
+                      style: textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.normal,
                         color: colorScheme.onSurface,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 6),
                     TextFormField(
                         controller: _passwordController,
-                        obscureText: true,
+                        obscureText: !_isPasswordVisible,
                         decoration: InputDecoration(
-                          filled: true,
-                          fillColor: Colors.white,
                           hintText: localizations.passwordHint,
+                          hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
+                          filled: true,
+                          fillColor: colorScheme.surface,
+                          contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                          suffixIcon: IconButton(
+                            onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
+                            icon: Icon(
+                              _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide.none,
+                            borderSide: BorderSide(
+                              color: colorScheme.outlineVariant,
+                              width: 1,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                              color: colorScheme.outlineVariant,
+                              width: 1,
+                            ),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                              color: colorScheme.error,
+                              width: 1,
+                            ),
                           ),
                         ),
                         validator: (value) => Workflow<String?>()
@@ -633,21 +705,48 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
                     ),
                     const SizedBox(height: 20),
                     Text(AppLocalizations.of(context)!.passwordConfirm,
-                      style: textTheme.bodyMedium?.copyWith(
+                      style: textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.normal,
                         color: colorScheme.onSurface,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 6),
                     TextFormField(
                         controller: _confirmPasswordController,
-                        obscureText: true,
+                        obscureText: !_isConfirmPasswordVisible,
                         decoration: InputDecoration(
-                          filled: true,
-                          fillColor: Colors.white,
                           hintText: localizations.passwordConfirm,
+                          hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
+                          filled: true,
+                          fillColor: colorScheme.surface,
+                          contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                          suffixIcon: IconButton(
+                            onPressed: () => setState(() => _isConfirmPasswordVisible = !_isConfirmPasswordVisible),
+                            icon: Icon(
+                              _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide.none,
+                            borderSide: BorderSide(
+                              color: colorScheme.outlineVariant,
+                              width: 1,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                              color: colorScheme.outlineVariant,
+                              width: 1,
+                            ),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                              color: colorScheme.error,
+                              width: 1,
+                            ),
                           ),
                         ),
                         validator: (value) {
