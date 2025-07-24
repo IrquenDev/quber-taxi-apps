@@ -4,23 +4,23 @@ import 'package:quber_taxi/common/models/encodable.dart';
 @immutable
 class AnnouncementMetadata implements Encodable {
   final String? appVersion;
-  final bool conditionalAnnouncement;
+  final bool conditional;
 
   const AnnouncementMetadata({
     this.appVersion,
-    this.conditionalAnnouncement = false,
+    this.conditional = false,
   });
 
   @override
   Map<String, dynamic> toJson() => {
     "appVersion": appVersion,
-    "conditionalAnnouncement": conditionalAnnouncement,
+    "conditionalAnnouncement": conditional,
   };
 
   factory AnnouncementMetadata.fromJson(Map<String, dynamic> json) {
     return AnnouncementMetadata(
       appVersion: json["appVersion"],
-      conditionalAnnouncement: json["conditionalAnnouncement"] ?? false,
+      conditional: json["conditional"] ?? false,
     );
   }
 } 

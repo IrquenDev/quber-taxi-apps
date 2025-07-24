@@ -11,7 +11,7 @@ class AnnouncementConditionService {
     final metadata = announcement.metadata ?? const AnnouncementMetadata();
     
     // If not conditional, always show
-    if (!metadata.conditionalAnnouncement) return true;
+    if (!metadata.conditional) return true;
     
     // If conditional, check app version condition
     return await _checkAppVersionCondition(metadata);
