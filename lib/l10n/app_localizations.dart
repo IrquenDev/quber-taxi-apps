@@ -1034,6 +1034,18 @@ abstract class AppLocalizations {
   /// **'Crear Cuenta'**
   String get createAccountButton;
 
+  /// No description provided for @titlePlaceholder.
+  ///
+  /// In es, this message translates to:
+  /// **'Aquí debería aparecer un texto, pero parece que no se ha cargado.'**
+  String get titlePlaceholder;
+
+  /// No description provided for @descriptionPlaceholder.
+  ///
+  /// In es, this message translates to:
+  /// **'Aquí debería aparecer una descripción, pero parece que no se ha cargado. Por favor, espere un momento. Si el problema persiste, cierre la aplicación y vuelva a abrirla.'**
+  String get descriptionPlaceholder;
+
   /// No description provided for @createAccountTitle.
   ///
   /// In es, this message translates to:

@@ -12,10 +12,12 @@ import 'package:quber_taxi/client-app/pages/navigation/quber_reviews.dart';
 import 'package:quber_taxi/client-app/pages/search_driver/search_driver.dart';
 import 'package:quber_taxi/client-app/pages/settings/account_setting.dart';
 import 'package:quber_taxi/client-app/pages/track_driver/track_driver.dart';
+import 'package:quber_taxi/common/models/app_announcement.dart';
 import 'package:quber_taxi/common/models/review.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/pages/about_dev/about_dev.dart';
 import 'package:quber_taxi/common/pages/about_us/about_us.dart';
+import 'package:quber_taxi/common/pages/app_announcement/announcement.dart';
 import 'package:quber_taxi/common/pages/identity_verification/confirmed_selfie.dart';
 import 'package:quber_taxi/common/pages/identity_verification/face_detection.dart';
 import 'package:quber_taxi/common/pages/identity_verification/identity_verification.dart';
@@ -195,6 +197,14 @@ final GoRouter appRouter = GoRouter(
         builder: (context, state) {
           final driverId = state.extra as int;
           return DriverInfoPage(driverId: driverId);
+        }
+    ),
+
+    GoRoute(
+        path: CommonRoutes.announcement,
+        builder: (context, state) {
+          final announcement = state.extra as AppAnnouncement?;
+          return AppAnnouncementPage(announcement: announcement);
         }
     )
   ]
