@@ -78,7 +78,7 @@ class MaterialTheme {
   static ColorScheme lightMediumContrastScheme() {
     return const ColorScheme(
       brightness: Brightness.light,
-      primary: Color(0xff4a3100),
+      primary: Color(0xffd50000),
       surfaceTint: Color(0xfffbb735),
       onPrimary: Color(0xff151515),
       primaryContainer: Color(0xff916500),
@@ -134,7 +134,7 @@ class MaterialTheme {
   static ColorScheme lightHighContrastScheme() {
     return const ColorScheme(
       brightness: Brightness.light,
-      primary: Color(0xff3d2800),
+      primary: Color(0xfffd0000),
       surfaceTint: Color(0xfffbb735),
       onPrimary: Color(0xff151515),
       primaryContainer: Color(0xff634300),
@@ -248,7 +248,7 @@ class MaterialTheme {
       brightness: Brightness.dark,
       primary: Color(0xffffdaa1),
       surfaceTint: Color(0xffffba38),
-      onPrimary: Color(0xff372400),
+      onPrimary: Color(0xffff0000),
       primaryContainer: Color(0xfffbb735),
       onPrimaryContainer: Color(0xff472f00),
       secondary: Color(0xffdedcdb),
@@ -276,7 +276,7 @@ class MaterialTheme {
       primaryFixed: Color(0xffffdeac),
       onPrimaryFixed: Color(0xff1a0f00),
       primaryFixedDim: Color(0xffffba38),
-      onPrimaryFixedVariant: Color(0xff4a3100),
+      onPrimaryFixedVariant: Color(0xffcf0707),
       secondaryFixed: Color(0xffe5e2e1),
       onSecondaryFixed: Color(0xff111111),
       secondaryFixedDim: Color(0xffc8c6c5),
