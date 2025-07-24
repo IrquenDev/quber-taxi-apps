@@ -23,10 +23,4 @@ class AnnouncementMetadata implements Encodable {
       conditionalAnnouncement: json["conditionalAnnouncement"] ?? false,
     );
   }
-
-  // Helper method to create from generic metadata map
-  factory AnnouncementMetadata.fromMetadata(Map<String, dynamic>? metadata) {
-    if (metadata == null) return const AnnouncementMetadata();
-    return AnnouncementMetadata.fromJson(metadata);
-  }
 } 

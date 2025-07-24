@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:quber_taxi/common/models/encodable.dart';
+import 'package:quber_taxi/common/models/announcement_metadata.dart';
 import 'package:quber_taxi/enums/linkable_type.dart';
 
 @immutable
@@ -13,7 +14,7 @@ class AppAnnouncement implements Encodable {
   final String? linkableUrl;
   final LinkableType linkableType;
   final bool isDismissible;
-  final Map<String, dynamic>? metadata;
+  final AnnouncementMetadata? metadata;
 
   const AppAnnouncement({
     required this.id,
@@ -39,7 +40,7 @@ class AppAnnouncement implements Encodable {
     "linkableUrl": linkableUrl,
     "linkableType": linkableType.value,
     "dismissible": isDismissible,
-    "metadata": metadata,
+    "metadata": metadata?.toJson(),
   };
 
   factory AppAnnouncement.fromJson(Map<String, dynamic> json) {
@@ -53,7 +54,9 @@ class AppAnnouncement implements Encodable {
       linkableUrl: json["linkableUrl"],
       linkableType: LinkableTypeExtension.fromString(json["linkableType"] ?? "NONE"),
       isDismissible: json["dismissible"] ?? false,
-      metadata: json["metadata"] != null ? Map<String, dynamic>.from(json["metadata"]) : null,
+      metadata: json["metadata"] != null 
+          ? AnnouncementMetadata.fromJson(Map<String, dynamic>.from(json["metadata"]))
+          : null,
     );
   }
 } 

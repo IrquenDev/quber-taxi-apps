@@ -7,8 +7,8 @@ class AnnouncementConditionService {
   
   /// Checks if a conditional announcement should be shown based on its conditions
   static Future<bool> shouldShowConditionalAnnouncement(AppAnnouncement announcement) async {
-    // Parse metadata to get conditional settings
-    final metadata = AnnouncementMetadata.fromMetadata(announcement.metadata);
+    // Get metadata directly (now it's already of type AnnouncementMetadata?)
+    final metadata = announcement.metadata ?? const AnnouncementMetadata();
     
     // If not conditional, always show
     if (!metadata.conditionalAnnouncement) return true;
