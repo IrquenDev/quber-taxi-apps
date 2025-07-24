@@ -20,7 +20,6 @@ class App extends StatelessWidget {
       supportedLocales: AppLocalizations.supportedLocales,
       debugShowCheckedModeBanner: false,
       theme: theme.light(),
-      darkTheme: theme.dark(),
       routerConfig: appRouter,
       builder: (context, child) =>
           NetworkChecker(

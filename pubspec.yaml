@@ -144,10 +144,18 @@ flutter_intl:
   enabled: true
 
 flutter_native_splash:
-   color: "#fbb635"
-   image: assets/launch/splash_client.png
-   android: true
-   ios: false
-   web: true
-   android_12:
-     image: assets/launch/splash_client.png
+  color: "#fbb635"
+  color_dark: "#151515"
+  image: assets/launch/splash_client.png
+  image_dark: assets/launch/icon_app_flutter_dark.png
+  android: true
+  ios: false
+  web: true
+  android_12:
+    image: assets/launch/splash_client.png
+    color: "#fbb635"
+    icon_background_color: "#fbb635"
+    color_dark: "#151515"
+    icon_background_color_dark: "#151515"
+    image_dark: assets/launch/icon_app_flutter_dark.png
+
