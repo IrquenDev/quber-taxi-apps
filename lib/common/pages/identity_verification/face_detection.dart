@@ -28,6 +28,7 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
   FaceDetectorState status = FaceDetectorState.waitingFace;
   bool _cameraInitialized = false;
   bool _isProcessing = false;
+  bool _hasValidImageForCurrentFace = false;
 
   int _faceDetectedCount = 0;
   int _noFaceCount = 0;
@@ -212,27 +213,84 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
         final left = face.leftEyeOpenProbability ?? 1.0;
         final right = face.rightEyeOpenProbability ?? 1.0;
 
-        if (status == FaceDetectorState.faceDetected &&
-            left < 0.3 && right < 0.3) {
-          setState(() {
-            status = FaceDetectorState.blinkDetected;
-            _isProcessing = true;
-          });
+        // SECURITY: Only proceed if face is detected AND valid blink
+        // Verify that we have real eye probabilities (not default values)
+        final hasValidEyeData = face.leftEyeOpenProbability != null && 
+                               face.rightEyeOpenProbability != null;
+        
+        // Verify face has reasonable minimum size (not noise)
+        final faceSize = face.boundingBox.width * face.boundingBox.height;
+        final imageSize = inputImage.metadata!.size.width * inputImage.metadata!.size.height;
+        final faceSizeRatio = faceSize / imageSize;
+        final hasValidFaceSize = faceSizeRatio > 0.02; // At least 2% of image
+        
+        // Verify face is centered
+        final imageWidth = inputImage.metadata!.size.width;
+        final imageHeight = inputImage.metadata!.size.height;
+        final faceCenterX = face.boundingBox.left + (face.boundingBox.width / 2);
+        final faceCenterY = face.boundingBox.top + (face.boundingBox.height / 2);
+        final imageCenterX = imageWidth / 2;
+        final imageCenterY = imageHeight / 2;
+        
+        // Calculate distance from face center to image center
+        final distanceFromCenter = ((faceCenterX - imageCenterX).abs() / imageWidth) + 
+                                  ((faceCenterY - imageCenterY).abs() / imageHeight);
+        final isFaceCentered = distanceFromCenter < 0.5; // Allow up to 50% deviation from center
+        
+        // Debug: positioning information
+        if (kDebugMode && !isFaceCentered) {
+          debugPrint('Face not centered - Distance from center: ${(distanceFromCenter * 100).toStringAsFixed(1)}%');
+        }
+        
+        // Take photo when valid face is detected (only if we don't have one already)
+        if (status == FaceDetectorState.faceDetected && 
+            hasValidEyeData && 
+            hasValidFaceSize && 
+            isFaceCentered &&
+            !_hasValidImageForCurrentFace) {
           try {
             final XFile file = await _cameraController.takePicture();
             _capturedImageBytes = await file.readAsBytes();
-            _progressController.forward();
+            _hasValidImageForCurrentFace = true;
+            debugPrint('Image captured for centered and detected face');
           } catch (e) {
             debugPrint('Error capturing image: $e');
             await _cameraController.stopImageStream();
             _showImageProcessingErrorDialog();
             return;
           }
+        }
+
+        // Verify blink only if we already have a valid image
+        if (status == FaceDetectorState.faceDetected &&
+            hasValidEyeData &&
+            hasValidFaceSize &&
+            isFaceCentered &&
+            _hasValidImageForCurrentFace &&
+            (left < 0.7 || right < 0.7)) {
+          setState(() {
+            status = FaceDetectorState.blinkDetected;
+            _isProcessing = true;
+          });
+          _progressController.forward();
         } else if (_faceDetectedCount >= _requiredFrames &&
-            status == FaceDetectorState.waitingFace) {
+            status == FaceDetectorState.waitingFace &&
+            hasValidEyeData &&
+            hasValidFaceSize &&
+            isFaceCentered) {
           setState(() => status = FaceDetectorState.faceDetected);
+          // Reset image flag when entering detection mode
+          _hasValidImageForCurrentFace = false;
+          _capturedImageBytes = null;
         }
       } else {
+        // If no face, discard captured image and reset state
+        if (_hasValidImageForCurrentFace) {
+          _capturedImageBytes = null;
+          _hasValidImageForCurrentFace = false;
+          debugPrint('Face lost - image discarded');
+        }
+        
         _faceDetectedCount = 0;
         _noFaceCount++;
 
