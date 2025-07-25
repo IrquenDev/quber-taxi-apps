@@ -639,7 +639,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                     : "assets/icons/camera.svg",
                 color: colorScheme.onSecondaryContainer,
                 fit: BoxFit.scaleDown,
-                width: 28, // Fuerza el tamaño del SVG
+                width: 28, // Forces the SVG size
                 height: 28,
               ),
               onPressed: () async {
@@ -678,7 +678,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(Theme.of(context).extension<DimensionExtension>()!.buttonBorderRadius),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
@@ -686,7 +686,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
             Icon(
               icon,
               size: 20,
-              color: iconColor ?? Colors.grey[600],
+              color: iconColor ?? Theme.of(context).colorScheme.onSurface,
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -694,7 +694,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                 text,
                 style: TextStyle(
                   fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
-                  color: textColor ?? Colors.black87,
+                  color: textColor ?? Theme.of(context).colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -714,7 +714,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(Theme.of(context).extension<DimensionExtension>()!.buttonBorderRadius),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
@@ -725,7 +725,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                 text,
                 style: TextStyle(
                   fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize,
-                  color: textColor ?? Colors.black87,
+                  color: textColor ?? Theme.of(context).colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -733,7 +733,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
             Icon(
               icon,
               size: 20,
-              color: iconColor ?? Colors.grey[600],
+              color: iconColor ?? Theme.of(context).colorScheme.onSurface,
             ),
           ],
         ),
