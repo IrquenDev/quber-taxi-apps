@@ -40,7 +40,9 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
 
   XFile? _profileImage;
   String? _initialProfileImageUrl;
-  bool get _shouldUpdateImage => _profileImage != null || (_profileImage == null && _initialProfileImageUrl != null && _client.profileImageUrl == null);
+  bool get _shouldUpdateImage =>
+    _profileImage != null ||
+    (_profileImage == null && _initialProfileImageUrl == null && _client.profileImageUrl != null);
   bool _isProcessingImage = false;
   bool _isSubmittingPersonalInfo = false;
   bool _isSubmittingPasswords = false;
@@ -88,7 +90,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
       _isSubmittingPersonalInfo = true;
     });
     try {
-      final shouldUpdateImage = _profileImage != null || (_profileImage == null && _initialProfileImageUrl != null && _client.profileImageUrl == null);
+      final shouldUpdateImage = _shouldUpdateImage;
       final response = await _accountService.updateClient(
         _client.id,
         _nameTFController.text,
@@ -221,22 +223,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                             child: Column(
                               key: _imageKey,
                               children: [
-                                GestureDetector(
-                                  onTap: () async {
-                                    final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
-                                    if (pickedImage != null) {
-                                      setState(() => _isProcessingImage = true);
-                                      final compressedImage = await compressXFileToTargetSize(pickedImage, 5);
-                                      setState(() => _isProcessingImage = false);
-                                      if (compressedImage != null) {
-                                        setState(() {
-                                          _profileImage = compressedImage;
-                                        });
-                                      }
-                                    }
-                                  },
-                                  child: _buildCircleImagePicker(),
-                                ),
+                                _buildCircleImagePicker(),
                               ],
                             ),
                           ),
@@ -618,8 +605,8 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                 )
               : CachedProfileImage(
                   radius: 80,
-                  imageUrl: _client.profileImageUrl != null
-                      ? "${ApiConfig().baseUrl}/${_client.profileImageUrl}"
+                  imageUrl: _initialProfileImageUrl != null
+                      ? "${ApiConfig().baseUrl}/${_initialProfileImageUrl}"
                       : null,
                   backgroundColor: colorScheme.onSecondary,
                   placeholderAsset: "assets/icons/user.svg",
@@ -647,43 +634,37 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
             child: IconButton(
               padding: EdgeInsets.zero,
               icon: SvgPicture.asset(
-                "assets/icons/camera.svg",
+                (_profileImage != null || _initialProfileImageUrl != null)
+                    ? "assets/icons/close.svg"
+                    : "assets/icons/camera.svg",
                 color: colorScheme.onSecondaryContainer,
                 fit: BoxFit.scaleDown,
+                width: 28, // Fuerza el tamaño del SVG
+                height: 28,
               ),
               onPressed: () async {
-                final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
-                if (pickedImage != null) {
-                  setState(() => _isProcessingImage = true);
-                  final compressedImage = await compressXFileToTargetSize(pickedImage, 5);
-                  setState(() => _isProcessingImage = false);
-                  if (compressedImage != null) {
-                    setState(() {
-                      _profileImage = compressedImage;
-                    });
+                if (_profileImage != null || _client.profileImageUrl != null || _initialProfileImageUrl != null) {
+                  setState(() {
+                    _profileImage = null;
+                    _initialProfileImageUrl = null;
+                  });
+                } else {
+                  final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
+                  if (pickedImage != null) {
+                    setState(() => _isProcessingImage = true);
+                    final compressedImage = await compressXFileToTargetSize(pickedImage, 5);
+                    setState(() => _isProcessingImage = false);
+                    if (compressedImage != null) {
+                      setState(() {
+                        _profileImage = compressedImage;
+                      });
+                    }
                   }
                 }
               },
             ),
           ),
         ),
-        if (_profileImage != null)
-          Positioned(
-            top: 8.0,
-            right: 8.0,
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  _profileImage = null;
-                });
-              },
-              child: CircleAvatar(
-                radius: 16,
-                backgroundColor: colorScheme.error,
-                child: Icon(Icons.close, color: colorScheme.onError, size: 16),
-              ),
-            ),
-          ),
       ],
     );
   }
