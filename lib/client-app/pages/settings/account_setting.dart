@@ -353,6 +353,54 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                       ),
                     ),
                   ),
+                            // Referral Code Card
+                            Container(
+                                margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                                padding: const EdgeInsets.all(16),
+                                decoration: BoxDecoration(
+                                  color: colorScheme.surfaceContainerLowest,
+                                  borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusLarge),
+                                ),
+                                child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(AppLocalizations.of(context)!.myDiscountCode,
+                                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              color: colorScheme.secondary
+                                          )
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                          AppLocalizations.of(context)!.inviteFriendDiscount,
+                                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colorScheme.secondary)
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: Container(
+                                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                              decoration: BoxDecoration(
+                                                border: Border.all(color: colorScheme.outline),
+                                                borderRadius: BorderRadius.circular(10),
+                                              ),
+                                              child: Text(_client.referralCode)
+                                            ),
+                                          ),
+                                          IconButton(
+                                            icon: const Icon(Icons.copy),
+                                            onPressed: () {
+                                              Clipboard.setData(ClipboardData(text: _client.referralCode));
+                                              showToast(context: context, message: AppLocalizations.of(context)!.copied);
+                                            },
+                                          )
+                                        ]
+                                      )
+                                    ]
+                                )
+                            ),
+                            const SizedBox(height: 16),
                   // Card 3: About Us/Dev
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
