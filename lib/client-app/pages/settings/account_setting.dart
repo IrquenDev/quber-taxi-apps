@@ -243,7 +243,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                             maxLength: 8,
                             readOnly: true,
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 24),
                           SizedBox(
                             width: double.infinity,
                             height: 48,
@@ -280,7 +280,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                   // Card 2: Passwords
                   Container(
                     key: _passwordKey,
-                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: colorScheme.surfaceContainerLowest,
@@ -303,7 +303,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                                 .breakOnFirstApply(true)
                                 .withDefault((_) => null),
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 24),
                           _buildPasswordField(
                             controller: _confirmPasswordController,
                             label: localization.confirmPasswordLabel,
@@ -319,7 +319,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                                 .breakOnFirstApply(true)
                                 .withDefault((_) => null),
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 24),
                           SizedBox(
                             width: double.infinity,
                             height: 48,
@@ -412,17 +412,15 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
                   children: [
-                    IconButton(
-                      icon: Icon(Icons.arrow_back),
-                      color: colorScheme.onPrimaryContainer,
-                      onPressed: () => context.pop(),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      localization.myAccount,
-                      style: textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: colorScheme.onPrimaryContainer,
+                    // Removed back button
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0, top: 8.0),
+                      child: Text(
+                        localization.myAccount,
+                        style: textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onPrimaryContainer,
+                        ),
                       ),
                     ),
                   ],
@@ -466,7 +464,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
             ),
           ),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 8),
         TextFormField(
           keyboardType: inputType ?? TextInputType.text,
           controller: controller,
@@ -528,13 +526,13 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
         RichText(
           text: TextSpan(
             text: label,
-            style: textTheme.bodyMedium?.copyWith(
+            style: textTheme.bodyLarge?.copyWith(
               fontWeight: FontWeight.bold,
               color: colorScheme.onSurface,
             ),
           ),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 8),
         TextFormField(
           controller: controller,
           obscureText: !visible,
