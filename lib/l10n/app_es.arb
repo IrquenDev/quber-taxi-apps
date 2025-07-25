@@ -16,12 +16,11 @@
   "settingsHome": "Ajustes",
 
   "map": "Mapa",
-  "quberPoints": "Puntos Quber",
 
    "mapBottomItem": "Mapa",
    "requestTaxiBottomItem": "Pedir Taxi",
    "settingsBottomItem": "Ajustes",
-   "quberPointsBottomItem": "Puntos Quber",
+   "quberPointsBottomItem": "P. Quber",
 
   "ubicationFailed": "Su ubicación actual está fuera de los límites de La Habana",
   "permissionsDenied": "Permiso de ubicación denegado",
@@ -181,6 +180,9 @@
     "identityConfirmedSuccessfully": "Hemos confirmado su identidad con éxito.",
     "verificationBenefits": "Este proceso nos ayuda a proteger su cuenta y a mantener nuestra comunidad segura para todos los usuarios.",
     "createAccountButton": "Crear Cuenta",
+
+     "titlePlaceholder": "Aquí debería aparecer un texto, pero parece que no se ha cargado.",
+     "descriptionPlaceholder": "Aquí debería aparecer una descripción, pero parece que no se ha cargado. Por favor, espere un momento. Si el problema persiste, cierre la aplicación y vuelva a abrirla.",
 
       "createAccountTitle": "Crear Cuenta",
       "nameLabel": "Nombre:",

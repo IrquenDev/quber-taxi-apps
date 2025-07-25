@@ -15,4 +15,6 @@ class CommonRoutes {
   static const String requestFaceId = '/face-id-request';
 
   static const String faceDetection = '/face-detection';
+
+  static const String announcement = '/announcement';
 }

@@ -182,12 +182,6 @@ abstract class AppLocalizations {
   /// **'Mapa'**
   String get map;
 
-  /// No description provided for @quberPoints.
-  ///
-  /// In es, this message translates to:
-  /// **'Puntos Quber'**
-  String get quberPoints;
-
   /// No description provided for @mapBottomItem.
   ///
   /// In es, this message translates to:
@@ -209,7 +203,7 @@ abstract class AppLocalizations {
   /// No description provided for @quberPointsBottomItem.
   ///
   /// In es, this message translates to:
-  /// **'Puntos Quber'**
+  /// **'P. Quber'**
   String get quberPointsBottomItem;
 
   /// No description provided for @ubicationFailed.
@@ -1033,6 +1027,18 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Crear Cuenta'**
   String get createAccountButton;
+
+  /// No description provided for @titlePlaceholder.
+  ///
+  /// In es, this message translates to:
+  /// **'Aquí debería aparecer un texto, pero parece que no se ha cargado.'**
+  String get titlePlaceholder;
+
+  /// No description provided for @descriptionPlaceholder.
+  ///
+  /// In es, this message translates to:
+  /// **'Aquí debería aparecer una descripción, pero parece que no se ha cargado. Por favor, espere un momento. Si el problema persiste, cierre la aplicación y vuelva a abrirla.'**
+  String get descriptionPlaceholder;
 
   /// No description provided for @createAccountTitle.
   ///
