@@ -797,6 +797,57 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get driverStateNotConfirmed => 'Not confirmed';
+
+  @override
+  String get driverStateCanPay => 'Can pay';
+
+  @override
+  String get driverStatePaymentRequired => 'Payment required';
+
+  @override
+  String get driverStateEnabled => 'Enabled';
+
+  @override
+  String get driverStateDisabled => 'Disabled';
+
+  @override
+  String get filterByName => 'Filter by name';
+
+  @override
+  String get filterByPhone => 'Filter by phone';
+
+  @override
+  String get filterByState => 'Filter by state';
+
+  @override
+  String get allStates => 'All states';
+
+  @override
+  String get drivers => 'Drivers';
+
+  @override
+  String get noDriversYet => 'No drivers yet';
+
+  @override
+  String get noDriversFound => 'No drivers found with the applied filters';
+
+  @override
+  String get confirmAccount => 'Confirm Account';
+
+  @override
+  String get confirmPayment => 'Confirm Payment';
+
+  @override
+  String get blockAccount => 'Block account';
+
+  @override
+  String get enableAccount => 'Enable account';
+
+  @override
+  String get errorTryLater => 'Something went wrong, please try again later';
+
+  @override
   String peopleCount(Object count) {
     return '$count people';
   }

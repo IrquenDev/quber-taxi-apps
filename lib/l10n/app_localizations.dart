@@ -182,12 +182,6 @@ abstract class AppLocalizations {
   /// **'Mapa'**
   String get map;
 
-  /// No description provided for @quberPoints.
-  ///
-  /// In es, this message translates to:
-  /// **'Puntos Quber'**
-  String get quberPoints;
-
   /// No description provided for @mapBottomItem.
   ///
   /// In es, this message translates to:
@@ -209,7 +203,7 @@ abstract class AppLocalizations {
   /// No description provided for @quberPointsBottomItem.
   ///
   /// In es, this message translates to:
-  /// **'Puntos Quber'**
+  /// **'P. Quber'**
   String get quberPointsBottomItem;
 
   /// No description provided for @ubicationFailed.
@@ -1561,6 +1555,108 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Precio máximo que puede costar: {price} CUP'**
   String priceMaximumCost(Object price);
+
+  /// No description provided for @driverStateNotConfirmed.
+  ///
+  /// In es, this message translates to:
+  /// **'No confirmado'**
+  String get driverStateNotConfirmed;
+
+  /// No description provided for @driverStateCanPay.
+  ///
+  /// In es, this message translates to:
+  /// **'Puede pagar'**
+  String get driverStateCanPay;
+
+  /// No description provided for @driverStatePaymentRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Pago requerido'**
+  String get driverStatePaymentRequired;
+
+  /// No description provided for @driverStateEnabled.
+  ///
+  /// In es, this message translates to:
+  /// **'Habilitado'**
+  String get driverStateEnabled;
+
+  /// No description provided for @driverStateDisabled.
+  ///
+  /// In es, this message translates to:
+  /// **'Deshabilitado'**
+  String get driverStateDisabled;
+
+  /// No description provided for @filterByName.
+  ///
+  /// In es, this message translates to:
+  /// **'Filtrar por nombre'**
+  String get filterByName;
+
+  /// No description provided for @filterByPhone.
+  ///
+  /// In es, this message translates to:
+  /// **'Filtrar por teléfono'**
+  String get filterByPhone;
+
+  /// No description provided for @filterByState.
+  ///
+  /// In es, this message translates to:
+  /// **'Filtrar por estado'**
+  String get filterByState;
+
+  /// No description provided for @allStates.
+  ///
+  /// In es, this message translates to:
+  /// **'Todos los estados'**
+  String get allStates;
+
+  /// No description provided for @drivers.
+  ///
+  /// In es, this message translates to:
+  /// **'Conductores'**
+  String get drivers;
+
+  /// No description provided for @noDriversYet.
+  ///
+  /// In es, this message translates to:
+  /// **'Aún no hay conductores'**
+  String get noDriversYet;
+
+  /// No description provided for @noDriversFound.
+  ///
+  /// In es, this message translates to:
+  /// **'No se encontraron conductores con los filtros aplicados'**
+  String get noDriversFound;
+
+  /// No description provided for @confirmAccount.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirmar Cuenta'**
+  String get confirmAccount;
+
+  /// No description provided for @confirmPayment.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirmar Pago'**
+  String get confirmPayment;
+
+  /// No description provided for @blockAccount.
+  ///
+  /// In es, this message translates to:
+  /// **'Bloquear cuenta'**
+  String get blockAccount;
+
+  /// No description provided for @enableAccount.
+  ///
+  /// In es, this message translates to:
+  /// **'Habilitar cuenta'**
+  String get enableAccount;
+
+  /// No description provided for @errorTryLater.
+  ///
+  /// In es, this message translates to:
+  /// **'Algo salió mal, por favor inténtelo más tarde'**
+  String get errorTryLater;
 
   /// No description provided for @peopleCount.
   ///
