@@ -247,6 +247,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                             hint: localization.nameAndLastName,
                             maxLength: 50,
                           ),
+                          const SizedBox(height: 12),
                           _buildTextField(
                             controller: _phoneTFController,
                             label: localization.phoneNumber,
@@ -315,6 +316,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                                 .breakOnFirstApply(true)
                                 .withDefault((_) => null),
                           ),
+                          const SizedBox(height: 12),
                           _buildPasswordField(
                             controller: _confirmPasswordController,
                             label: localization.confirmPasswordLabel,
@@ -330,6 +332,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                                 .breakOnFirstApply(true)
                                 .withDefault((_) => null),
                           ),
+                          const SizedBox(height: 12),
                           SizedBox(
                             width: double.infinity,
                             height: 48,
@@ -407,6 +410,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                       },
                     ),
                   ),
+                  const SizedBox(height: 80),
                 ],
               ),
             ),
