@@ -112,11 +112,10 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                           child: Text(
                             localizations.adminSettingsTitle,
                             style: theme.textTheme.titleLarge?.copyWith(
-                              color: theme.colorScheme.onPrimaryContainer,
                               fontWeight: FontWeight.bold,
                             )
-                          ),
-                        ),
+                          )
+                        )
                       )
                     )
                   )
