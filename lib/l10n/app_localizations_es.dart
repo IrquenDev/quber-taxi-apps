@@ -948,4 +948,8 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get verificationCodeExpired => 'Código de verificación expirado';
+
+  @override
+  String get tripRequestCancelled =>
+      'Se ha cancelado la solicitud de este viaje';
 }
