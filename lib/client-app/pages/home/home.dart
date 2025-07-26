@@ -29,6 +29,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
   int _currentIndex = 0;
   final _navKey = GlobalKey<CurvedNavigationBarState>();
   final _client = Client.fromJson(loggedInUser);
+  bool _showRequestSheet = false;
 
   // Announcement service
   final _announcementService = AppAnnouncementService();
@@ -96,7 +97,12 @@ class _ClientHomePageState extends State<ClientHomePage> {
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         extendBody: true,
-        body: _getCurrentScreen(),
+        body: Stack(
+          children: [
+            _getCurrentScreen(),
+            if (_showRequestSheet) _RequestTravelSheetWidget(),
+          ],
+        ),
         bottomNavigationBar: CurvedNavigationBar(
           key: _navKey,
           index: _currentIndex,
@@ -149,6 +155,8 @@ class _ClientHomePageState extends State<ClientHomePage> {
             if (index < 3) {
               setState(() {
                 _currentIndex = index;
+                // Show request sheet when taxi item is selected
+                _showRequestSheet = index == 1;
               });
             } 
             // Index 3 (QuberPoints) does nothing - completely static
@@ -194,7 +202,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
       case 0:
         return const MapView(usingExtendedScaffold: true);
       case 1:
-        return const RequestTravelSheet();
+        return const MapView(usingExtendedScaffold: true);
       case 2:
         return const ClientSettingsPage();
       // case 3:
@@ -202,5 +210,108 @@ class _ClientHomePageState extends State<ClientHomePage> {
       default:
         return const SizedBox.shrink();
     }
+  }
+}
+
+class _RequestTravelSheetWidget extends StatefulWidget {
+  @override
+  State<_RequestTravelSheetWidget> createState() => _RequestTravelSheetWidgetState();
+}
+
+class _RequestTravelSheetWidgetState extends State<_RequestTravelSheetWidget> with TickerProviderStateMixin {
+  double _sheetHeight = 0.0;
+  double _dragStartY = 0;
+  double _dragStartHeight = 0;
+  late AnimationController _animationController;
+  late Animation<double> _heightAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    );
+    _heightAnimation = Tween<double>(
+      begin: 0.0,
+      end: 0.9, // 90% final
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeOutCubic,
+    ));
+    
+    // Start animation
+    _animationController.forward();
+    
+    // Update height when the animation changes
+    _animationController.addListener(() {
+      setState(() {
+        _sheetHeight = _heightAnimation.value;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final sheetHeight = screenHeight * _sheetHeight;
+    
+    return Positioned(
+      left: 0,
+      right: 0,
+      bottom: 0,
+              child: Container(
+          height: sheetHeight,
+        child: GestureDetector(
+          onPanStart: (details) {
+            _dragStartY = details.globalPosition.dy;
+            _dragStartHeight = _sheetHeight;
+          },
+          onPanUpdate: (details) {
+            final deltaY = _dragStartY - details.globalPosition.dy;
+            final deltaHeight = deltaY / screenHeight;
+            final newHeight = (_dragStartHeight + deltaHeight).clamp(0.2, 0.9);
+            setState(() {
+              _sheetHeight = newHeight;
+            });
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).scaffoldBackgroundColor,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+              boxShadow: [BoxShadow(blurRadius: 8, color: Colors.black26)],
+            ),
+            child: Column(
+              children: [
+                // Handle bar
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12.0),
+                  child: Container(
+                    width: 40,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[400],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+                // Content
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: const RequestTravelSheet(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
