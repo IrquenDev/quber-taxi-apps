@@ -28,8 +28,10 @@ class _SearchOriginPageState extends State<SearchOriginPage> {
   final _mapboxService = MapboxService();
 
   List<MapboxPlace> _suggestions = [];
+  List<MapboxPlace> _popularPlaces = [];
   Timer? _debounce;
   bool isLoading = false;
+  bool isLoadingPopularPlaces = false;
 
   void _onTextChanged(String query) {
     if(query.isEmpty) return;
@@ -46,10 +48,35 @@ class _SearchOriginPageState extends State<SearchOriginPage> {
   void initState() {
     super.initState();
     _loadHavanaGeoJson();
+    _loadPopularPlaces();
   }
 
   Future<void> _loadHavanaGeoJson() async {
     _havanaPolygon = await loadGeoJsonPolygon("assets/geojson/polygon/CiudadDeLaHabana.geojson");
+  }
+
+  Future<void> _loadPopularPlaces() async {
+    if (kDebugMode) {
+      print('Starting to load popular places...');
+    }
+    
+    setState(() => isLoadingPopularPlaces = true);
+    
+    try {
+      
+      final places = await _mapboxService.fetchSuggestions('C');
+      
+      setState(() {
+        _popularPlaces = places.take(15).toList();
+        isLoadingPopularPlaces = false;
+      });
+      
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error loading popular places: $e');
+      }
+      setState(() => isLoadingPopularPlaces = false);
+    }
   }
 
   @override
@@ -71,6 +98,7 @@ class _SearchOriginPageState extends State<SearchOriginPage> {
               decoration: InputDecoration(
                 fillColor: Theme.of(context).colorScheme.surface,
                 hintText: AppLocalizations.of(context)!.writeUbication,
+                contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 12),
                   suffixIcon: _controller.text.isNotEmpty ?
                     IconButton(icon: const Icon(Icons.clear_outlined), onPressed: () {
                       _controller.clear();
@@ -81,57 +109,91 @@ class _SearchOriginPageState extends State<SearchOriginPage> {
         ),
         body: Column(
             children: [
-              ListTile(
-                  leading: Icon(Icons.map_outlined),
-                  title: Text(AppLocalizations.of(context)!.selectUbication),
-                  onTap: () async {
-                    final mapboxPlace = await context.push<MapboxPlace>(CommonRoutes.locationPicker);
-                    if(mapboxPlace != null) {
-                      if(!context.mounted) return;
-                      context.pop(mapboxPlace);
-                    }
-                  }
-              ),
-              ListTile(
-                  leading: Icon(Icons.location_on_outlined),
-                  title: Text(AppLocalizations.of(context)!.actualUbication),
-                  onTap: () async {
-                    await requestLocationPermission(
-                    context: context,
-                    onPermissionGranted: () async {
-                      setState(() => isLoading = true);
-                      final position = await g.Geolocator.getCurrentPosition();
-                      if (!kDebugMode) {
-                        // Check if inside of Havana
-                        final isInside = isPointInPolygon(position.longitude, position.latitude, _havanaPolygon);
-                        if(!context.mounted) return;
-                        if(!isInside) {
-                          showToast(
-                              context: context,
-                              message: AppLocalizations.of(context)!.ubicationFailed
-                          );
-                          setState(() => isLoading = false);
-                          return;
+              Card(
+                margin: EdgeInsets.zero,
+                child: Column(
+                  children: [
+                    Divider(height: 1),
+                    ListTile(
+                        leading: Icon(Icons.map_outlined),
+                        title: Text(AppLocalizations.of(context)!.selectUbication),
+                        onTap: () async {
+                          final mapboxPlace = await context.push<MapboxPlace>(CommonRoutes.locationPicker);
+                          if(mapboxPlace != null) {
+                            if(!context.mounted) return;
+                            context.pop(mapboxPlace);
+                          }
                         }
-                      }
-                      final mapboxPlace = await _mapboxService.getMapboxPlace(
-                          longitude: position.longitude, latitude: position.latitude
-                      );
-                      setState(() => isLoading = false);
-                      if(!context.mounted) return;
-                      context.pop(mapboxPlace);
-                    },
-                    onPermissionDenied: () => showToast(context: context, message: AppLocalizations.of(context)!.permissionsDenied),
-                    onPermissionDeniedForever: () =>
-                        showToast(context: context, message: AppLocalizations.of(context)!.permissionDeniedPermanently)
-                    );
-                  }),
-              if(_suggestions.isNotEmpty)
+                    ),
+                    Divider(height: 1),
+                    ListTile(
+                        leading: isLoading ? CircularProgressIndicator() : Icon(Icons.location_on_outlined),
+                        title: Text(AppLocalizations.of(context)!.actualUbication),
+                        onTap: () async {
+                          try {
+                            await requestLocationPermission(
+                            context: context,
+                            onPermissionGranted: () async {
+                              setState(() => isLoading = true);
+                              try {
+                                final position = await g.Geolocator.getCurrentPosition();
+                                if (!kDebugMode) {
+                                  // Check if inside of Havana
+                                  final isInside = isPointInPolygon(position.longitude, position.latitude, _havanaPolygon);
+                                  if(!context.mounted) return;
+                                  if(!isInside) {
+                                    showToast(
+                                        context: context,
+                                        message: AppLocalizations.of(context)!.ubicationFailed
+                                    );
+                                    setState(() => isLoading = false);
+                                    return;
+                                  }
+                                }
+                                final mapboxPlace = await _mapboxService.getMapboxPlace(
+                                    longitude: position.longitude, latitude: position.latitude
+                                );
+                                if(!context.mounted) return;
+                                setState(() => isLoading = false);
+                                context.pop(mapboxPlace);
+                              } catch (e) {
+                                if (kDebugMode) {
+                                  print('Error getting location: $e');
+                                }
+                                if(context.mounted) {
+                                  setState(() => isLoading = false);
+                                  showToast(
+                                    context: context,
+                                    message: AppLocalizations.of(context)!.locationError
+                                  );
+                                }
+                              }
+                            },
+                            onPermissionDenied: () {
+                              setState(() => isLoading = false);
+                              showToast(context: context, message: AppLocalizations.of(context)!.permissionsDenied);
+                            },
+                            onPermissionDeniedForever: () {
+                              setState(() => isLoading = false);
+                              showToast(context: context, message: AppLocalizations.of(context)!.permissionDeniedPermanently);
+                            }
+                            );
+                          } catch (e) {
+                            if (kDebugMode) {
+                              print('Error requesting permission: $e');
+                            }
+                            setState(() => isLoading = false);
+                          }
+                        }),
+                  ],
+                ),
+              ),
+              if(_suggestions.isNotEmpty || (_suggestions.isEmpty && _controller.text.isEmpty && _popularPlaces.isNotEmpty))
                 Expanded(
                     child: ListView.builder(
-                        itemCount: _suggestions.length,
+                        itemCount: _suggestions.isNotEmpty ? _suggestions.length : _popularPlaces.length,
                         itemBuilder: (context, index) {
-                          final mapboxPlace = _suggestions[index];
+                          final mapboxPlace = _suggestions.isNotEmpty ? _suggestions[index] : _popularPlaces[index];
                           return ListTile(
                             titleTextStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
                             title: Text(mapboxPlace.text),
@@ -144,8 +206,12 @@ class _SearchOriginPageState extends State<SearchOriginPage> {
               if(_suggestions.isEmpty && _controller.text.isNotEmpty)
                 Padding(padding: const EdgeInsets.all(20.0), child: Text(AppLocalizations.of(context)!.noResults),
                 ),
-              if(isLoading)
-                CircularProgressIndicator()
+              if(_suggestions.isEmpty && _controller.text.isEmpty && _popularPlaces.isEmpty && isLoadingPopularPlaces)
+                Expanded(
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
             ]
         )
       ),

@@ -25,6 +25,7 @@
   "ubicationFailed": "Su ubicación actual está fuera de los límites de La Habana",
   "permissionsDenied": "Permiso de ubicación denegado",
   "permissionDeniedPermanently": "Permiso de ubicación denegado permanentemente",
+  "locationError": "Error al obtener la ubicación",
 
   "writeUbication": "Escriba una ubicación...",
 

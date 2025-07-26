@@ -26,6 +26,7 @@
   "ubicationFailed": "Your current location is outside the limits of Havana",
   "permissionsDenied": "Location permission denied",
   "permissionDeniedPermanently": "Location permission permanently denied",
+  "locationError": "Error getting location",
 
   "writeUbication": "Enter a location...",
 

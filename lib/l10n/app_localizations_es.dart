@@ -74,6 +74,9 @@ class AppLocalizationsEs extends AppLocalizations {
       'Permiso de ubicación denegado permanentemente';
 
   @override
+  String get locationError => 'Error al obtener la ubicación';
+
+  @override
   String get writeUbication => 'Escriba una ubicación...';
 
   @override

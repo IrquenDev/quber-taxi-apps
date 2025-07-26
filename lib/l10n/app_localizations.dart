@@ -224,6 +224,12 @@ abstract class AppLocalizations {
   /// **'Permiso de ubicación denegado permanentemente'**
   String get permissionDeniedPermanently;
 
+  /// No description provided for @locationError.
+  ///
+  /// In es, this message translates to:
+  /// **'Error al obtener la ubicación'**
+  String get locationError;
+
   /// No description provided for @writeUbication.
   ///
   /// In es, this message translates to:
