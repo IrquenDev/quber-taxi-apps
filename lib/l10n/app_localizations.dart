@@ -230,6 +230,24 @@ abstract class AppLocalizations {
   /// **'Error al obtener la ubicación'**
   String get locationError;
 
+  /// No description provided for @destinationsLimitedToHavana.
+  ///
+  /// In es, this message translates to:
+  /// **'Los destinos están limitados a La Habana'**
+  String get destinationsLimitedToHavana;
+
+  /// No description provided for @selectLocation.
+  ///
+  /// In es, this message translates to:
+  /// **'Seleccionar ubicación'**
+  String get selectLocation;
+
+  /// No description provided for @tapMapToSelectLocation.
+  ///
+  /// In es, this message translates to:
+  /// **'Toque el mapa para seleccionar una ubicación'**
+  String get tapMapToSelectLocation;
+
   /// No description provided for @writeUbication.
   ///
   /// In es, this message translates to:

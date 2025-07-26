@@ -26,6 +26,9 @@
   "permissionsDenied": "Permiso de ubicación denegado",
   "permissionDeniedPermanently": "Permiso de ubicación denegado permanentemente",
   "locationError": "Error al obtener la ubicación",
+  "destinationsLimitedToHavana": "Los destinos están limitados a La Habana",
+  "selectLocation": "Seleccionar ubicación",
+  "tapMapToSelectLocation": "Toque el mapa para seleccionar una ubicación",
 
   "writeUbication": "Escriba una ubicación...",
 

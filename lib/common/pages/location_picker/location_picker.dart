@@ -5,6 +5,7 @@ import 'package:flutter_fusion/flutter_fusion.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:quber_taxi/common/services/mapbox_service.dart';
+import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/utils/map/geolocator.dart';
 import 'package:geolocator/geolocator.dart' as g;
@@ -51,7 +52,7 @@ class _LocationPickerState extends State<LocationPicker> {
     if (!kDebugMode) {
       final isInside = isPointInPolygon(lng, lat, _havanaPolygon);
       if(!isInside) {
-        showToast(context: context, message: "Los destinos están limitados a La Habana");
+        showToast(context: context, message: AppLocalizations.of(context)!.destinationsLimitedToHavana);
         return;
       }
     }
@@ -135,7 +136,14 @@ class _LocationPickerState extends State<LocationPicker> {
                 children: [
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: _isLocationSelected ? _selectLocation : null,
+                      onPressed: _isLocationSelected 
+                        ? _selectLocation 
+                        : () {
+                            showToast(
+                              context: context,
+                              message: AppLocalizations.of(context)!.tapMapToSelectLocation
+                            );
+                          },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: _isLocationSelected 
                           ? Theme.of(context).colorScheme.primary 
@@ -150,9 +158,9 @@ class _LocationPickerState extends State<LocationPicker> {
                         elevation: _isLocationSelected ? 2 : 0,
                       ),
                       child: Text(
-                        'Seleccionar ubicación',
+                        AppLocalizations.of(context)!.selectLocation,
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -176,7 +184,7 @@ class _LocationPickerState extends State<LocationPicker> {
                                 if(!isInside) {
                                   showToast(
                                       context: context,
-                                      message: "Su ubicacion actual esta fuera de los limites de La Habana"
+                                      message: AppLocalizations.of(context)!.ubicationFailed
                                   );
                                   return;
                                 }
@@ -186,9 +194,9 @@ class _LocationPickerState extends State<LocationPicker> {
                                   MapAnimationOptions(duration: 500)
                               );
                             },
-                            onPermissionDenied: () => showToast(context: context, message: "Permiso de ubicación denegado"),
+                            onPermissionDenied: () => showToast(context: context, message: AppLocalizations.of(context)!.permissionsDenied),
                             onPermissionDeniedForever: () =>
-                                showToast(context: context, message: "Permiso de ubicación denegado permanentemente")
+                                showToast(context: context, message: AppLocalizations.of(context)!.permissionDeniedPermanently)
                         );
                       },
                       child: Icon(
