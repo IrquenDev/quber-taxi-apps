@@ -74,6 +74,19 @@ class AppLocalizationsEn extends AppLocalizations {
       'Location permission permanently denied';
 
   @override
+  String get locationError => 'Error getting location';
+
+  @override
+  String get destinationsLimitedToHavana =>
+      'Destinations are limited to Havana';
+
+  @override
+  String get selectLocation => 'Select location';
+
+  @override
+  String get tapMapToSelectLocation => 'Tap the map to select a location';
+
+  @override
   String get writeUbication => 'Enter a location...';
 
   @override

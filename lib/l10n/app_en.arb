@@ -26,6 +26,10 @@
   "ubicationFailed": "Your current location is outside the limits of Havana",
   "permissionsDenied": "Location permission denied",
   "permissionDeniedPermanently": "Location permission permanently denied",
+  "locationError": "Error getting location",
+  "destinationsLimitedToHavana": "Destinations are limited to Havana",
+  "selectLocation": "Select location",
+  "tapMapToSelectLocation": "Tap the map to select a location",
 
   "writeUbication": "Enter a location...",
 
