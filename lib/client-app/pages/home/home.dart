@@ -254,7 +254,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
                 .map(
                   (favorite) => ListTile(
                     leading: Image.asset(
-                      'assets/markers/route/x60/destination.png',
+                      'assets/markers/route/x60/pin_fav.png',
                       width: 20,
                       height: 20,
                     ),
