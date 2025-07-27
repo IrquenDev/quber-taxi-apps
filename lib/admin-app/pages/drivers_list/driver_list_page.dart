@@ -80,6 +80,11 @@ class _DriversListPageState extends State<DriversListPage> {
     });
   }
 
+  bool get _hasActiveFilters => 
+    _nameFilterController.text.isNotEmpty ||
+    _phoneFilterController.text.isNotEmpty ||
+    _selectedStateFilter != null;
+
   @override
   void dispose() {
     _nameFilterController.dispose();
@@ -217,24 +222,33 @@ class _DriversListPageState extends State<DriversListPage> {
                         child: Image.network('${ApiConfig().baseUrl}/${driver.taxi.imageUrl}', fit: BoxFit.cover)
                     )
                 ),
-                Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    spacing: 8.0,
-                    children: [
-                      Text(driver.name, style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)),
-                      Row(
-                          spacing: 8.0,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.phone_outlined),
-                            Text(driver.phone)
-                          ]
-                      )
-                    ]
+                Expanded(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: 8.0,
+                      children: [
+                        Text(
+                          driver.name, 
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Row(
+                            spacing: 8.0,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.phone_outlined, size: 16),
+                              Expanded(
+                                child: Text(
+                                  driver.phone,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ]
+                        )
+                      ]
+                  ),
                 ),
-                Spacer(),
-                Icon(DriverAccountState.iconOf(driver.accountState)),
-                Spacer()
+                Icon(DriverAccountState.iconOf(driver.accountState), size: 20),
               ]
           ),
           Align(
@@ -407,22 +421,23 @@ class _DriversListPageState extends State<DriversListPage> {
           ),
         ),
         // Clear filters
-        GestureDetector(
-          onTap: _clearFilters,
-          child: Card(
-            color: colorScheme.surfaceContainerLowest,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(borderRadius),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Icon(
-                Icons.clear_outlined,
-                color: colorScheme.error,
+        if (_hasActiveFilters)
+          GestureDetector(
+            onTap: _clearFilters,
+            child: Card(
+              color: colorScheme.surfaceContainerLowest,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(borderRadius),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Icon(
+                  Icons.clear_outlined,
+                  color: colorScheme.error,
+                )
               )
             )
           )
-        )
       ]
     );
   }
