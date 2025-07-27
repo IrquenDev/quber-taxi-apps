@@ -1861,6 +1861,24 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Se ha cancelado la solicitud de este viaje'**
   String get tripRequestCancelled;
+
+  /// No description provided for @operationSuccessful.
+  ///
+  /// In es, this message translates to:
+  /// **'Operación realizada con éxito'**
+  String get operationSuccessful;
+
+  /// No description provided for @errorChangingConfiguration.
+  ///
+  /// In es, this message translates to:
+  /// **'Error. No se pudo cambiar la configuración'**
+  String get errorChangingConfiguration;
+
+  /// No description provided for @errorChangingPassword.
+  ///
+  /// In es, this message translates to:
+  /// **'Error. No se pudo cambiar la contraseña'**
+  String get errorChangingPassword;
 }
 
 class _AppLocalizationsDelegate

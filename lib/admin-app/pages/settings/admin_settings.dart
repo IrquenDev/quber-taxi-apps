@@ -181,7 +181,7 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                                                               errorMaxLines: 3,
                                                               fillColor: theme.colorScheme.surface,
                                                               border: OutlineInputBorder(
-                                                                borderRadius: BorderRadius.circular(dimensions.borderRadius * 0.5),
+                                                                borderRadius: BorderRadius.circular(dimensions.borderRadius),
                                                               ),
                                                               suffixText: '%',
                                                               suffixStyle: theme.textTheme.bodyMedium?.copyWith(
@@ -231,7 +231,7 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                                                                   errorMaxLines: 3,
                                                                   fillColor: theme.colorScheme.surface,
                                                                   border: OutlineInputBorder(
-                                                                    borderRadius: BorderRadius.circular(dimensions.borderRadius * 0.5),
+                                                                    borderRadius: BorderRadius.circular(dimensions.borderRadius),
                                                                   ),
                                                                   suffixText: 'CUP',
                                                                   suffixStyle: theme.textTheme.bodyMedium?.copyWith(
@@ -271,17 +271,15 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                                                           );
                                                           if(!context.mounted) return;
                                                           if(response.statusCode == 200) {
-                                                            showToast(context: context, message: "Hecho");
+                                                            showToast(context: context, message: localizations.operationSuccessful);
                                                           } else {
-                                                            showToast(context: context, message: "No se puedo cambiar la "
-                                                                "configuración");
+                                                            showToast(context: context, message: localizations.errorChangingConfiguration);
                                                           }
                                                         },
                                                         child: Text(
                                                             localizations.saveButtonPanel,
                                                             style: theme.textTheme.labelLarge?.copyWith(
                                                                 fontWeight: FontWeight.bold,
-                                                                fontSize: 16
                                                             )
                                                         )
                                                     )
@@ -432,17 +430,15 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                                                       );
                                                       if(!context.mounted) return;
                                                       if(response.statusCode == 200) {
-                                                        showToast(context: context, message: "Hecho");
+                                                        showToast(context: context, message: localizations.operationSuccessful);
                                                       } else {
-                                                        showToast(context: context, message: "No se puedo cambiar la "
-                                                            "contraseña");
+                                                        showToast(context: context, message: localizations.errorChangingPassword);
                                                       }
                                                     },
                                                     child: Text(
                                                         localizations.saveButtonPanel,
                                                         style: theme.textTheme.labelLarge?.copyWith(
                                                             fontWeight: FontWeight.bold,
-                                                            fontSize: 16
                                                         )
                                                     )
                                                 )
@@ -470,7 +466,6 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                                             style: theme.textTheme.titleMedium?.copyWith(
                                               fontWeight: FontWeight.bold,
                                               color: theme.colorScheme.onSurface,
-                                              fontSize: 18,
                                             ),
                                           ),
                                         ),

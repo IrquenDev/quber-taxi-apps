@@ -966,4 +966,14 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get tripRequestCancelled =>
       'Se ha cancelado la solicitud de este viaje';
+
+  @override
+  String get operationSuccessful => 'Operación realizada con éxito';
+
+  @override
+  String get errorChangingConfiguration =>
+      'Error. No se pudo cambiar la configuración';
+
+  @override
+  String get errorChangingPassword => 'Error. No se pudo cambiar la contraseña';
 }

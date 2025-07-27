@@ -958,4 +958,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get tripRequestCancelled =>
       'The request for this trip has been cancelled';
+
+  @override
+  String get operationSuccessful => 'Operation completed successfully';
+
+  @override
+  String get errorChangingConfiguration =>
+      'Error. Could not change the configuration';
+
+  @override
+  String get errorChangingPassword => 'Error. Could not change the password';
 }

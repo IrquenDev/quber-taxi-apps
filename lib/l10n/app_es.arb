@@ -335,6 +335,9 @@
       "verifyCodeError": "Error al verificar el código. Intente nuevamente.",
       "invalidVerificationCode": "Código de verificación inválido",
       "verificationCodeExpired": "Código de verificación expirado",
-      "tripRequestCancelled": "Se ha cancelado la solicitud de este viaje"
+      "tripRequestCancelled": "Se ha cancelado la solicitud de este viaje",
+      "operationSuccessful": "Operación realizada con éxito",
+      "errorChangingConfiguration": "Error. No se pudo cambiar la configuración",
+      "errorChangingPassword": "Error. No se pudo cambiar la contraseña"
 
 }

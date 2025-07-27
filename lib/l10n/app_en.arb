@@ -336,5 +336,8 @@
              "verifyCodeError": "Error verifying code. Please try again.",
              "invalidVerificationCode": "Invalid verification code",
              "verificationCodeExpired": "Verification code expired",
-             "tripRequestCancelled": "The request for this trip has been cancelled"
+             "tripRequestCancelled": "The request for this trip has been cancelled",
+            "operationSuccessful": "Operation completed successfully",
+            "errorChangingConfiguration": "Error. Could not change the configuration",
+            "errorChangingPassword": "Error. Could not change the password"
 }
