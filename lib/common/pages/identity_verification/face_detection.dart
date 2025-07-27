@@ -230,12 +230,13 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
         final faceCenterX = face.boundingBox.left + (face.boundingBox.width / 2);
         final faceCenterY = face.boundingBox.top + (face.boundingBox.height / 2);
         final imageCenterX = imageWidth / 2;
-        final imageCenterY = imageHeight / 2;
+        // Adjust center Y to be lower in the image (70% down instead of 50%)
+        final imageCenterY = imageHeight * 0.7;
         
-        // Calculate distance from face center to image center
+        // Calculate distance from face center to adjusted image center
         final distanceFromCenter = ((faceCenterX - imageCenterX).abs() / imageWidth) + 
                                   ((faceCenterY - imageCenterY).abs() / imageHeight);
-        final isFaceCentered = distanceFromCenter < 0.5; // Allow up to 50% deviation from center
+        final isFaceCentered = distanceFromCenter < 0.3; // Allow up to 30% deviation from adjusted center
         
         // Debug: positioning information
         if (kDebugMode && !isFaceCentered) {
@@ -502,6 +503,7 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
             child: Image.asset(
               'assets/images/image_scan.png',
               fit: BoxFit.contain,
+              width: MediaQuery.of(context).size.width
             ),
           ),
           if (status == FaceDetectorState.blinkDetected)

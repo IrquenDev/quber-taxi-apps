@@ -984,4 +984,8 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get errorChangingPassword => 'Error. No se pudo cambiar la contraseña';
+
+  @override
+  String get couldNotOpenPhoneDialer =>
+      'No se pudo abrir el marcador de teléfono';
 }
