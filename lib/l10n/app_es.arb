@@ -338,6 +338,7 @@
       "tripRequestCancelled": "Se ha cancelado la solicitud de este viaje",
       "operationSuccessful": "Operación realizada con éxito",
       "errorChangingConfiguration": "Error. No se pudo cambiar la configuración",
-      "errorChangingPassword": "Error. No se pudo cambiar la contraseña"
+      "errorChangingPassword": "Error. No se pudo cambiar la contraseña",
+      "couldNotOpenPhoneDialer": "No se pudo abrir el marcador de teléfono"
 
 }

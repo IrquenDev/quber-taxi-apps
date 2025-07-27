@@ -339,5 +339,6 @@
              "tripRequestCancelled": "The request for this trip has been cancelled",
             "operationSuccessful": "Operation completed successfully",
             "errorChangingConfiguration": "Error. Could not change the configuration",
-            "errorChangingPassword": "Error. Could not change the password"
+            "errorChangingPassword": "Error. Could not change the password",
+            "couldNotOpenPhoneDialer": "Could not open phone dialer"
 }

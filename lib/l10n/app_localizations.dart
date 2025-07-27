@@ -1879,6 +1879,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Error. No se pudo cambiar la contraseña'**
   String get errorChangingPassword;
+
+  /// No description provided for @couldNotOpenPhoneDialer.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo abrir el marcador de teléfono'**
+  String get couldNotOpenPhoneDialer;
 }
 
 class _AppLocalizationsDelegate
