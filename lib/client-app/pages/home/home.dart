@@ -112,6 +112,18 @@ class _ClientHomePageState extends State<ClientHomePage> {
           backgroundColor: Theme.of(context).colorScheme.surface.withOpacity(0.0),
           animationCurve: Curves.easeInOut,
           animationDuration: const Duration(milliseconds: 500),
+          letIndexChange: (index) {
+            // Allow selection for first 3 items (0, 1, 2), block index 3 (Quber Points)
+            if (index < 3) {
+              setState(() {
+                _currentIndex = index;
+                // Show request sheet when taxi item is selected
+                _showRequestSheet = index == 1;
+              });
+              return true; // Allow the change
+            }
+            return false; // Block the change for index 3
+          },
           items: [
             Transform.scale(
               scale: 1,
@@ -139,27 +151,19 @@ class _ClientHomePageState extends State<ClientHomePage> {
                     color: Theme.of(context).colorScheme.onPrimaryContainer,
                   ),
                 ),
-                    Text(
-                      localizations.quberPointsBottomItem,
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onPrimaryContainer,
-                      ),
-                    ),
-
+                Text(
+                  localizations.quberPointsBottomItem,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  ),
+                ),
               ],
             )
           ],
           onTap: (index) {
-            // Only navigate for the first 3 items (0, 1, 2)
-            if (index < 3) {
-              setState(() {
-                _currentIndex = index;
-                // Show request sheet when taxi item is selected
-                _showRequestSheet = index == 1;
-              });
-            } 
-            // Index 3 (QuberPoints) does nothing - completely static
+            // Navigation logic is now handled in letIndexChange
+            // This callback is kept for any additional functionality if needed
           },
         ),
       ),
@@ -168,6 +172,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
 
   Widget _buildNavItem(IconData icon, String text, int index) {
     final double iconSize = Theme.of(context).iconTheme.size ?? 32;
+    final bool isSelected = _currentIndex == index;
 
     return SizedBox(
       width: double.infinity,
@@ -181,6 +186,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
               size: iconSize,
               color: Theme.of(context).colorScheme.onPrimaryContainer,
             ),
+            if (!isSelected)
               Transform.translate(
                 offset: const Offset(0, 2.0),
                 child: Text(
