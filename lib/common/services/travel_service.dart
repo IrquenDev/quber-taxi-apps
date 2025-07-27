@@ -192,10 +192,10 @@ class TravelService {
     final url = Uri.parse("${_apiConfig.baseUrl}/$_endpoint/complete/$travelId");
     final headers = {'Content-Type': 'application/json'};
     return await http.post(url, headers: headers, body: jsonEncode({
-      "finalPrice": finalPrice,
+      "finalPrice": double.parse(finalPrice.toStringAsFixed(2)),
       "finalDistance": finalDistance,
       "finalDuration": finalDuration,
-      "credit": quberCredit
+      "credit": double.parse(quberCredit.toStringAsFixed(2))
     }));
   }
 }
