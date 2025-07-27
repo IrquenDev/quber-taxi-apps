@@ -255,8 +255,8 @@ class _ClientHomePageState extends State<ClientHomePage> {
                   (favorite) => ListTile(
                     leading: Image.asset(
                       'assets/markers/route/x60/pin_fav.png',
-                      width: 20,
-                      height: 20,
+                      width: 18,
+                      height: 18,
                     ),
                     title: Text(favorite['name']!),
                     trailing: IconButton(
