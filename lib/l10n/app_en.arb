@@ -36,7 +36,9 @@
   "selectUbication": "Select location from map",
   "actualUbication": "Use my current location",
   "outLimits": "Your current location is outside the limits of Havana",
-  "noResults": "No results found",
+  "noResultsTitle": "Oops!",
+  "noResultsMessage": "Our provider wasn't able to find similar results.",
+  "noResultsHint": "Try a more generic search, then refine it using the map.",
 
   "searchDrivers": "Searching for Drivers...",
 

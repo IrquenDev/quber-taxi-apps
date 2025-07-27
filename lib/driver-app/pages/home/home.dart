@@ -30,6 +30,7 @@ import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/storage/session_manger.dart';
 import 'package:quber_taxi/utils/map/geolocator.dart' as g_util;
 import 'package:quber_taxi/utils/map/mapbox.dart' as mb_util;
+import 'package:quber_taxi/utils/map/turf.dart';
 import 'package:quber_taxi/utils/runtime.dart';
 import 'package:quber_taxi/utils/websocket/core/websocket_service.dart';
 import 'package:quber_taxi/utils/websocket/impl/travel_request_handler.dart';
@@ -525,7 +526,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                 final fdaAllowed = definedAllowFDA == "TRUE";
                 if (fdaAllowed) {
                   for (int i = 1; i <= 5; i++) {
-                    final fakeRoute = await mb_util.loadGeoJsonFakeRoute("assets/geojson/line/fake_route_$i.geojson");
+                    final fakeRoute = await GeoUtils.loadGeoJsonFakeRoute("assets/geojson/line/fake_route_$i.geojson");
                     final origin = fakeRoute.coordinates.first;
 
                     final imageToUse = (i % 2 == 0) ? iconA : iconB;

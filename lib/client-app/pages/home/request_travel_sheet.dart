@@ -55,14 +55,12 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
       return;
     }
     // Load .geojson
-    final polygon = await loadGeoJsonPolygon(geoJsonPath);
+    final polygon = await GeoUtils.loadGeoJsonPolygon(geoJsonPath);
     // Calculate entrypoint
     final benchmark = turf.Position(_originCoords![0], _originCoords![1]);
-    final entryPoint =
-        findNearestPointInPolygon(benchmark: benchmark, polygon: polygon);
+    final entryPoint = GeoUtils.findNearestPointInPolygon(benchmark: benchmark, polygon: polygon);
     // Calculate farthest point from entrypoint
-    final farthestPoint = findFarthestPointInPolygon(
-        benchmark: entryPoint.point, polygon: polygon);
+    final farthestPoint = GeoUtils.findFarthestPointInPolygon(benchmark: entryPoint.point, polygon: polygon);
     // Handling results
     setState(() {
       _minDistance = entryPoint.distance;

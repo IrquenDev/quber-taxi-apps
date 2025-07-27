@@ -65,7 +65,7 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
 
   Future<void> _loadHavanaGeoJson() async {
     final munName= Municipalities.resolveGeoJsonRef(widget.travel.destinationName);
-    _municipalityPolygon = await loadGeoJsonPolygon(munName!);
+    _municipalityPolygon = await GeoUtils.loadGeoJsonPolygon(munName!);
   }
 
   void _startTrackingDistance() {
@@ -191,7 +191,7 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
       final lng = mapContext.point.coordinates.lng;
       final lat = mapContext.point.coordinates.lat;
       // Check if inside of Havana
-      final isInside = isPointInPolygon(lng, lat, _municipalityPolygon);
+      final isInside = GeoBoundaries.isPointInPolygon(lng, lat, _municipalityPolygon);
       if(!isInside) {
         showToast(context: context, message: "Los destinos están limitados a ${widget.travel.destinationName}");
         return;

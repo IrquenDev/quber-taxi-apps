@@ -101,7 +101,15 @@ class AppLocalizationsEs extends AppLocalizations {
       'Su ubicación actual está fuera de los límites de La Habana';
 
   @override
-  String get noResults => 'Sin resultados';
+  String get noResultsTitle => '¡Upps!';
+
+  @override
+  String get noResultsMessage =>
+      'Nuestro proveedor no fue capaz de encontrar resultados similares.';
+
+  @override
+  String get noResultsHint =>
+      'Intenta con una búsqueda más genérica y luego afínala desde el mapa.';
 
   @override
   String get searchDrivers => 'Buscando conductores...';

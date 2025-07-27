@@ -4,21 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:quber_taxi/common/models/mapbox_route.dart';
 
-/// Loads a [MapboxRoute] object from a local `.geojson` asset.
-///
-/// This is useful for testing or simulating routes without relying on
-/// online APIs. The `.geojson` file must be properly formatted and declared
-/// in the `pubspec.yaml` under `assets`.
-///
-/// Example:
-/// ```dart
-/// final route = await loadGeoJsonFakeRoute('assets/fake_route.geojson');
-/// ```
-Future<MapboxRoute> loadGeoJsonFakeRoute(String source) async {
-  final data = await rootBundle.loadString(source);
-  return MapboxRoute.fromJson(json.decode(data));
-}
-
 /// Calculates the compass bearing between two geographic coordinates (lat/lon).
 ///
 /// The result is the angle in degrees from the first point to the second,

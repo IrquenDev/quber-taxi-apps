@@ -6,7 +6,6 @@ import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/utils/map/geolocator.dart';
 import 'package:geolocator/geolocator.dart' as g;
 import 'package:quber_taxi/utils/map/turf.dart';
-import 'package:turf/turf.dart' as turf;
 
 class MapView extends StatefulWidget {
 
@@ -21,17 +20,6 @@ class MapView extends StatefulWidget {
 class _MapViewState extends State<MapView> {
 
   MapboxMap? _mapController;
-  late turf.Polygon _havanaPolygon;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadHavanaGeoJson();
-  }
-
-  Future<void> _loadHavanaGeoJson() async {
-    _havanaPolygon = await loadGeoJsonPolygon("assets/geojson/polygon/CiudadDeLaHabana.geojson");
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +55,7 @@ class _MapViewState extends State<MapView> {
                           final position = await g.Geolocator.getCurrentPosition();
                           // Check if inside of Havana
                           if (!kDebugMode) {
-                            final isInside = isPointInPolygon(position.longitude, position.latitude, _havanaPolygon);
+                            final isInside = GeoBoundaries.isPointInHavana(position.longitude, position.latitude);
                             if(!context.mounted) return;
                             if(!isInside) {
                               showToast(

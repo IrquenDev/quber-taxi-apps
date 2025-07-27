@@ -100,7 +100,15 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your current location is outside the limits of Havana';
 
   @override
-  String get noResults => 'No results found';
+  String get noResultsTitle => 'Oops!';
+
+  @override
+  String get noResultsMessage =>
+      'Our provider wasn\'t able to find similar results.';
+
+  @override
+  String get noResultsHint =>
+      'Try a more generic search, then refine it using the map.';
 
   @override
   String get searchDrivers => 'Searching for Drivers...';

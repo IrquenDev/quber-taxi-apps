@@ -126,7 +126,7 @@ class MapboxService {
   /// Returns a list of [MapboxPlace] suggestions.
   Future<List<MapboxPlace>> fetchSuggestions(String query) async {
     final encodedQuery = Uri.encodeComponent(query);
-    const bbox = '-82.586995,22.934228,-82.081898,23.26079';
+    const bbox = '-82.538978,22.932974,-82.074825,23.18125';
     const proximityLon = -82.3666;
     const proximityLat = 23.1136;
     final url = '$_geocodingApiBaseUrl/$encodedQuery.json'
