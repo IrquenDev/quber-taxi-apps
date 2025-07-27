@@ -10,8 +10,6 @@ import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/utils/map/geolocator.dart';
 import 'package:geolocator/geolocator.dart' as g;
 import 'package:quber_taxi/utils/map/turf.dart';
-import 'package:turf/turf.dart' as turf;
-import 'dart:typed_data';
 
 class LocationPicker extends StatefulWidget {
 
@@ -25,7 +23,6 @@ class _LocationPickerState extends State<LocationPicker> {
 
   MapboxMap? _mapController;
   final _mapboxService = MapboxService();
-  late turf.Polygon _havanaPolygon;
   
   // New state variables
   PointAnnotationManager? _pointAnnotationManager;
@@ -34,23 +31,13 @@ class _LocationPickerState extends State<LocationPicker> {
   double? _selectedLng;
   double? _selectedLat;
 
-  Future<void> _loadHavanaGeoJson() async {
-    _havanaPolygon = await loadGeoJsonPolygon("assets/geojson/polygon/CiudadDeLaHabana.geojson");
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _loadHavanaGeoJson();
-  }
-
   void _onMapTap(Point point) async {
     final lng = point.coordinates.lng.toDouble();
     final lat = point.coordinates.lat.toDouble();
     
     // Check if inside of Havana
     if (!kDebugMode) {
-      final isInside = isPointInPolygon(lng, lat, _havanaPolygon);
+      final isInside = GeoBoundaries.isPointInHavana(lng, lat);
       if(!isInside) {
         showToast(context: context, message: AppLocalizations.of(context)!.destinationsLimitedToHavana);
         return;
@@ -70,7 +57,7 @@ class _LocationPickerState extends State<LocationPicker> {
 
   Future<void> _addOrUpdateMarker(double lng, double lat) async {
     if (_pointAnnotationManager == null) return;
-    
+
     // Remove existing marker
     if (_selectedPointAnnotation != null) {
       await _pointAnnotationManager!.delete(_selectedPointAnnotation!);
@@ -93,7 +80,7 @@ class _LocationPickerState extends State<LocationPicker> {
     final mapboxPlace = await _mapboxService.getMapboxPlace(
         longitude: _selectedLng!, latitude: _selectedLat!
     );
-    if(!context.mounted) return;
+    if(!mounted) return;
     context.pop(mapboxPlace);
   }
 
@@ -150,7 +137,7 @@ class _LocationPickerState extends State<LocationPicker> {
                           : Theme.of(context).colorScheme.surface,
                         foregroundColor: _isLocationSelected 
                           ? Theme.of(context).colorScheme.onPrimary 
-                          : Theme.of(context).colorScheme.onSurface.withOpacity(0.38),
+                          : Theme.of(context).colorScheme.onSurface.withAlpha(100),
                         padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
@@ -179,7 +166,7 @@ class _LocationPickerState extends State<LocationPicker> {
                               final position = await g.Geolocator.getCurrentPosition();
                               // Check if inside of Havana
                               if (!kDebugMode) {
-                                final isInside = isPointInPolygon(position.longitude, position.latitude, _havanaPolygon);
+                                final isInside = GeoBoundaries.isPointInHavana(position.longitude, position.latitude);
                                 if(!context.mounted) return;
                                 if(!isInside) {
                                   showToast(

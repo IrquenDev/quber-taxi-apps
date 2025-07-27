@@ -272,11 +272,23 @@ abstract class AppLocalizations {
   /// **'Su ubicación actual está fuera de los límites de La Habana'**
   String get outLimits;
 
-  /// No description provided for @noResults.
+  /// No description provided for @noResultsTitle.
   ///
   /// In es, this message translates to:
-  /// **'Sin resultados'**
-  String get noResults;
+  /// **'¡Upps!'**
+  String get noResultsTitle;
+
+  /// No description provided for @noResultsMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Nuestro proveedor no fue capaz de encontrar resultados similares.'**
+  String get noResultsMessage;
+
+  /// No description provided for @noResultsHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Intenta con una búsqueda más genérica y luego afínala desde el mapa.'**
+  String get noResultsHint;
 
   /// No description provided for @searchDrivers.
   ///

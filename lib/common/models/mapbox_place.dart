@@ -2,8 +2,9 @@ import 'package:flutter/foundation.dart';
 
 @immutable
 class MapboxPlace {
-  final String text;
-  final String placeName;
+
+  final String text; // Ej. Habana del Este
+  final String placeName; // Ej. Habana del Este, provincia de La Habana, Cuba
   final List<num> coordinates;
 
   const MapboxPlace({

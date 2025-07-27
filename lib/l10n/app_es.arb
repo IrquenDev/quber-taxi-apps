@@ -35,7 +35,9 @@
   "selectUbication": "Seleccione ubicación desde el mapa",
   "actualUbication": "Usar mi ubicación actual",
   "outLimits": "Su ubicación actual está fuera de los límites de La Habana",
-  "noResults": "Sin resultados",
+  "noResultsTitle": "¡Upps!",
+  "noResultsMessage": "Nuestro proveedor no fue capaz de encontrar resultados similares.",
+  "noResultsHint": "Intenta con una búsqueda más genérica y luego afínala desde el mapa.",
 
   "searchDrivers": "Buscando conductores...",
 

@@ -127,6 +127,7 @@ flutter:
   assets:
     - assets/geojson/polygon/
     - assets/geojson/line/
+    - assets/geojson/suggestions.json
     - assets/icons/discounts/x24/
     - assets/icons/discounts/x48/
     - assets/icons/discounts/x72/

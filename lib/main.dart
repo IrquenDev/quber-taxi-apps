@@ -6,6 +6,7 @@ import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:quber_taxi/config/api_config.dart';
 import 'package:quber_taxi/config/build_config.dart';
 import 'package:quber_taxi/storage/prefs_manager.dart';
+import 'package:quber_taxi/utils/map/turf.dart';
 import 'package:quber_taxi/utils/websocket/core/websocket_service.dart';
 import 'app.dart';
 
@@ -17,6 +18,7 @@ Future<void> main() async {
   //Initialization Block
   BuildConfig.loadConfig();
   await SharedPrefsManager.init();
+  await GeoBoundaries.loadHavanaPolygon();
   MapboxOptions.setAccessToken(ApiConfig().mapboxAccessToken);
   WebSocketService.instance.connect(baseUrl: ApiConfig().baseUrl);
   await Geolocator.requestPermission();
