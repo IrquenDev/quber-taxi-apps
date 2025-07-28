@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:network_checker/network_checker.dart';
@@ -29,7 +30,26 @@ class _ClientHomePageState extends State<ClientHomePage> {
   int _currentIndex = 0;
   final _navKey = GlobalKey<CurvedNavigationBarState>();
   final _client = Client.fromJson(loggedInUser);
+  final List<Map<String, String>> _mockFavorites = [
+    {
+      'name': 'Mi oficina',
+    },
+    {
+      'name': 'Peluquería de María',
+    },
+    {
+      'name': 'Casa de mi abuela',
+    },
+    {
+      'name': 'Gym',
+    },
+    {
+      'name': 'Universidad de la habana',
+    },
+  ];
   bool _showRequestSheet = false;
+  bool _showfavoriteDialog = false;
+
 
   // Announcement service
   final _announcementService = AppAnnouncementService();
@@ -57,10 +77,10 @@ class _ClientHomePageState extends State<ClientHomePage> {
 
   Future<void> _checkAnnouncements() async {
     if (_didCheckAnnouncements) return;
-    
+
     try {
       final announcements = await _announcementService.getActiveAnnouncements();
-      
+
       if (announcements.isNotEmpty && mounted) {
         // Navigate to the first announcement, passing the announcement data
         context.push(CommonRoutes.announcement, extra: announcements.first);
@@ -114,12 +134,17 @@ class _ClientHomePageState extends State<ClientHomePage> {
           animationDuration: const Duration(milliseconds: 500),
           letIndexChange: (index) {
             // Allow selection for first 3 items (0, 1, 2), block index 3 (Quber Points)
-            if (index < 3) {
+            if (index < 4) {
               setState(() {
                 _currentIndex = index;
                 // Show request sheet when taxi item is selected
                 _showRequestSheet = index == 1;
+                _showfavoriteDialog = index == 3;
               });
+              
+              // Show favorites dialog if needed
+              if (_showfavoriteDialog) _showFavoritesDialog();
+              
               return true; // Allow the change
             }
             return false; // Block the change for index 3
@@ -139,6 +164,11 @@ class _ClientHomePageState extends State<ClientHomePage> {
               scale: 1,
               child: _buildNavItem(
                   Icons.settings_outlined, localizations.settingsBottomItem, 2),
+            ),
+            Transform.scale(
+              scale: 1,
+              child: _buildNavItem(Icons.favorite_border, localizations.favoritesBottomItem, 3,
+              ),
             ),
             Column(
               mainAxisSize: MainAxisSize.min,
@@ -171,7 +201,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
   }
 
   Widget _buildNavItem(IconData icon, String text, int index) {
-    final double iconSize = Theme.of(context).iconTheme.size ?? 32;
+    final double iconSize = 32;
     final bool isSelected = _currentIndex == index;
 
     return SizedBox(
@@ -203,6 +233,52 @@ class _ClientHomePageState extends State<ClientHomePage> {
     );
   }
 
+  void _showFavoritesDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(AppLocalizations.of(context)!.myMarkers,
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(fontWeight: FontWeight.bold)),
+              IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () => context.pop('map'),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: _mockFavorites
+                .map(
+                  (favorite) => ListTile(
+                    leading: Image.asset(
+                      'assets/markers/route/x60/pin_fav.png',
+                      width: 20,
+                      height: 20,
+                    ),
+                    title: Text(favorite['name']!),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete_outline_sharp),
+                      onPressed: () {},
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(
+                  Theme.of(context).cardTheme.elevation ?? 12.0)),
+        );
+      },
+    ).then((_) => setState(() => _currentIndex = 0));
+  }
+
   Widget _getCurrentScreen() {
     switch (_currentIndex) {
       case 0:
@@ -211,8 +287,8 @@ class _ClientHomePageState extends State<ClientHomePage> {
         return const MapView(usingExtendedScaffold: true);
       case 2:
         return const ClientSettingsPage();
-      // case 3:
-      //   return const SizedBox.shrink();
+      case 3:
+        return const MapView(usingExtendedScaffold: true);
       default:
         return const SizedBox.shrink();
     }
@@ -245,10 +321,10 @@ class _RequestTravelSheetWidgetState extends State<_RequestTravelSheetWidget> wi
       parent: _animationController,
       curve: Curves.easeOutCubic,
     ));
-    
+
     // Start animation
     _animationController.forward();
-    
+
     // Update height when the animation changes
     _animationController.addListener(() {
       setState(() {
@@ -267,7 +343,7 @@ class _RequestTravelSheetWidgetState extends State<_RequestTravelSheetWidget> wi
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final sheetHeight = screenHeight * _sheetHeight;
-    
+
     return Positioned(
       left: 0,
       right: 0,

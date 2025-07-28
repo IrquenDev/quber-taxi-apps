@@ -286,18 +286,18 @@
       "distanceMaximum": "Distancia Máxima: {distance}km",
       "priceMinimumCost": "Precio mínimo que puede costar: {price} CUP",
       "priceMaximumCost": "Precio máximo que puede costar: {price} CUP",
-      
+
       "driverStateNotConfirmed": "No confirmado",
       "driverStateCanPay": "Puede pagar",
       "driverStatePaymentRequired": "Pago requerido",
       "driverStateEnabled": "Habilitado",
       "driverStateDisabled": "Deshabilitado",
-      
+
       "filterByName": "Filtrar por nombre",
       "filterByPhone": "Filtrar por teléfono",
       "filterByState": "Filtrar por estado",
       "allStates": "Todos los estados",
-      
+
       "drivers": "Conductores",
       "noDriversYet": "Aún no hay conductores",
       "noDriversFound": "No se encontraron conductores con los filtros aplicados",
@@ -341,6 +341,10 @@
       "operationSuccessful": "Operación realizada con éxito",
       "errorChangingConfiguration": "Error. No se pudo cambiar la configuración",
       "errorChangingPassword": "Error. No se pudo cambiar la contraseña",
-      "couldNotOpenPhoneDialer": "No se pudo abrir el marcador de teléfono"
+      "couldNotOpenPhoneDialer": "No se pudo abrir el marcador de teléfono",
+                   "invalidVerificationCode": "Código de verificación inválido",
+             "verificationCodeExpired": "Código de verificación expirado",
+             "favoritesBottomItem": "Favoritos",
+             "myMarkers": "Mis marcadores"
 
 }

@@ -979,4 +979,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get couldNotOpenPhoneDialer => 'Could not open phone dialer';
+
+  @override
+  String get favoritesBottomItem => 'Favorites';
+
+  @override
+  String get myMarkers => 'My Markers';
 }

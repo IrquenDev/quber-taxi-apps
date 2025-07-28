@@ -988,4 +988,10 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get couldNotOpenPhoneDialer =>
       'No se pudo abrir el marcador de teléfono';
+
+  @override
+  String get favoritesBottomItem => 'Favoritos';
+
+  @override
+  String get myMarkers => 'Mis marcadores';
 }
