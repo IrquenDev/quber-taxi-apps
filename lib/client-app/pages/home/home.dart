@@ -170,25 +170,33 @@ class _ClientHomePageState extends State<ClientHomePage> {
               child: _buildNavItem(Icons.favorite_border, localizations.favoritesBottomItem, 3,
               ),
             ),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  _client.quberPoints.toInt().toString(),
-                  style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+            SizedBox(
+              width: double.infinity,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 16.0),
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        _client.quberPoints.toInt().toString(),
+                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        ),
+                      ),
+                      Text(
+                        localizations.quberPointsBottomItem,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                Text(
-                  localizations.quberPointsBottomItem,
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
-                  ),
-                ),
-              ],
+              ),
             )
           ],
           onTap: (index) {
@@ -201,33 +209,36 @@ class _ClientHomePageState extends State<ClientHomePage> {
   }
 
   Widget _buildNavItem(IconData icon, String text, int index) {
-    final double iconSize = 32;
+    final double iconSize = 28; // Reduced from 32 to 28
     final bool isSelected = _currentIndex == index;
 
     return SizedBox(
       width: double.infinity,
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              size: iconSize,
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
-            ),
-            if (!isSelected)
-              Transform.translate(
-                offset: const Offset(0, 2.0),
-                child: Text(
-                  text,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+      child: Padding(
+        padding: EdgeInsets.only(top: isSelected ? 0.0 : 16.0), // No padding when selected
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                size: iconSize,
+                color: Theme.of(context).colorScheme.onPrimaryContainer,
+              ),
+              if (!isSelected)
+                Transform.translate(
+                  offset: const Offset(0, 2.0),
+                  child: Text(
+                    text,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    ),
                   ),
-                ),
-              )
-          ],
+                )
+            ],
+          ),
         ),
       ),
     );
