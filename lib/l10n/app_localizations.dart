@@ -1868,18 +1868,6 @@ abstract class AppLocalizations {
   /// **'Código de verificación expirado'**
   String get verificationCodeExpired;
 
-  /// No description provided for @favoritesBottomItem.
-  ///
-  /// In es, this message translates to:
-  /// **'Favoritos'**
-  String get favoritesBottomItem;
-
-  /// No description provided for @myMarkers.
-  ///
-  /// In es, this message translates to:
-  /// **'Mis marcadores'**
-  String get myMarkers;
-
   /// No description provided for @tripRequestCancelled.
   ///
   /// In es, this message translates to:
@@ -1909,6 +1897,18 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'No se pudo abrir el marcador de teléfono'**
   String get couldNotOpenPhoneDialer;
+
+  /// No description provided for @favoritesBottomItem.
+  ///
+  /// In es, this message translates to:
+  /// **'Favoritos'**
+  String get favoritesBottomItem;
+
+  /// No description provided for @myMarkers.
+  ///
+  /// In es, this message translates to:
+  /// **'Mis marcadores'**
+  String get myMarkers;
 }
 
 class _AppLocalizationsDelegate

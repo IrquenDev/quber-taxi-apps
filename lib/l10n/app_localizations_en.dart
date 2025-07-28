@@ -964,12 +964,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get verificationCodeExpired => 'Verification code expired';
 
   @override
-  String get favoritesBottomItem => 'Favorites';
-
-  @override
-  String get myMarkers => 'My Markers';
-
-  @override
   String get tripRequestCancelled =>
       'The request for this trip has been cancelled';
 
@@ -985,4 +979,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get couldNotOpenPhoneDialer => 'Could not open phone dialer';
+
+  @override
+  String get favoritesBottomItem => 'Favorites';
+
+  @override
+  String get myMarkers => 'My Markers';
 }

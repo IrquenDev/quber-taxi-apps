@@ -972,12 +972,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get verificationCodeExpired => 'Código de verificación expirado';
 
   @override
-  String get favoritesBottomItem => 'Favoritos';
-
-  @override
-  String get myMarkers => 'Mis marcadores';
-
-  @override
   String get tripRequestCancelled =>
       'Se ha cancelado la solicitud de este viaje';
 
@@ -994,4 +988,10 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get couldNotOpenPhoneDialer =>
       'No se pudo abrir el marcador de teléfono';
+
+  @override
+  String get favoritesBottomItem => 'Favoritos';
+
+  @override
+  String get myMarkers => 'Mis marcadores';
 }
