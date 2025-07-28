@@ -9,7 +9,7 @@ publish_to: 'none'
 
 # App version: 1.1.0 is the semantic version, +1 is the build number.
 # Flutter uses this to set versionName and versionCode on Android, and version on iOS.
-version: 1.1.0+1
+version: 1.2.0
 
 # Defines the minimum Dart SDK version supported by this app.
 environment:
