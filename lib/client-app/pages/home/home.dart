@@ -141,6 +141,10 @@ class _ClientHomePageState extends State<ClientHomePage> {
                 _showRequestSheet = index == 1;
                 _showfavoriteDialog = index == 3;
               });
+              
+              // Show favorites dialog if needed
+              if (_showfavoriteDialog) _showFavoritesDialog();
+              
               return true; // Allow the change
             }
             return false; // Block the change for index 3
@@ -283,8 +287,8 @@ class _ClientHomePageState extends State<ClientHomePage> {
         return const MapView(usingExtendedScaffold: true);
       case 2:
         return const ClientSettingsPage();
-      // case 3:
-      //   return const SizedBox.shrink();
+      case 3:
+        return const MapView(usingExtendedScaffold: true);
       default:
         return const SizedBox.shrink();
     }
