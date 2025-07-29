@@ -298,6 +298,7 @@
             "filterByPhone": "Filter by phone",
             "filterByState": "Filter by state",
             "allStates": "All states",
+            "clearFilters": "Clear filters",
 
             "drivers": "Drivers",
             "noDriversYet": "No drivers yet",

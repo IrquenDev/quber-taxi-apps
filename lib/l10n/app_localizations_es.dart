@@ -846,6 +846,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get allStates => 'Todos los estados';
 
   @override
+  String get clearFilters => 'Limpiar filtros';
+
+  @override
   String get drivers => 'Conductores';
 
   @override

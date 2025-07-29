@@ -297,6 +297,7 @@
       "filterByPhone": "Filtrar por teléfono",
       "filterByState": "Filtrar por estado",
       "allStates": "Todos los estados",
+      "clearFilters": "Limpiar filtros",
 
       "drivers": "Conductores",
       "noDriversYet": "Aún no hay conductores",

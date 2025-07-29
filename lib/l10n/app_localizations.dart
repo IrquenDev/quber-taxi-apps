@@ -1646,6 +1646,12 @@ abstract class AppLocalizations {
   /// **'Todos los estados'**
   String get allStates;
 
+  /// No description provided for @clearFilters.
+  ///
+  /// In es, this message translates to:
+  /// **'Limpiar filtros'**
+  String get clearFilters;
+
   /// No description provided for @drivers.
   ///
   /// In es, this message translates to:
