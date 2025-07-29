@@ -22,6 +22,9 @@
 
   "map": "Map",
   "quberPoints": "Quber Points",
+  "accumulatedPoints": "Accumulated points",
+  "quberPointsEarned": "Quber Points Earned",
+  "inviteFriendsDescription": "Invite friends with your referral code to earn more points. Use them to buy discounts on your trips.",
 
   "ubicationFailed": "Your current location is outside the limits of Havana",
   "permissionsDenied": "Location permission denied",

@@ -63,6 +63,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get quberPointsBottomItem => 'Quber Points';
 
   @override
+  String get quberPoints => 'Quber Points';
+
+  @override
+  String get accumulatedPoints => 'Accumulated points';
+
+  @override
+  String get quberPointsEarned => 'Quber Points Earned';
+
+  @override
+  String get inviteFriendsDescription =>
+      'Invite friends with your referral code to earn more points. Use them to buy discounts on your trips.';
+
+  @override
   String get ubicationFailed =>
       'Your current location is outside the limits of Havana';
 

@@ -21,6 +21,10 @@
    "requestTaxiBottomItem": "Pedir Taxi",
    "settingsBottomItem": "Ajustes",
    "quberPointsBottomItem": "P. Quber",
+   "quberPoints": "Puntos Quber",
+   "accumulatedPoints": "Puntos acumulados",
+   "quberPointsEarned": "Puntos Quber Ganados",
+   "inviteFriendsDescription": "Invita amigos con tu código de referido para ganar más puntos. Úsalos para comprar descuentos en tus viajes.",
 
   "ubicationFailed": "Su ubicación actual está fuera de los límites de La Habana",
   "permissionsDenied": "Permiso de ubicación denegado",
