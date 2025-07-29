@@ -25,6 +25,8 @@
    "accumulatedPoints": "Puntos acumulados",
    "quberPointsEarned": "Puntos Quber Ganados",
    "inviteFriendsDescription": "Invita amigos con tu código de referido para ganar más puntos. Úsalos para comprar descuentos en tus viajes.",
+   "driverCredit": "Crédito del Conductor",
+   "driverCreditDescription": "Saldo disponible en tu cuenta. Este crédito se actualiza después de cada viaje completado.",
 
   "ubicationFailed": "Su ubicación actual está fuera de los límites de La Habana",
   "permissionsDenied": "Permiso de ubicación denegado",

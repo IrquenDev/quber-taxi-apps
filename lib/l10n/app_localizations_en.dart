@@ -76,6 +76,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Invite friends with your referral code to earn more points. Use them to buy discounts on your trips.';
 
   @override
+  String get driverCredit => 'Driver Credit';
+
+  @override
+  String get driverCreditDescription =>
+      'Available balance in your account. This credit is updated after each completed trip.';
+
+  @override
   String get ubicationFailed =>
       'Your current location is outside the limits of Havana';
 

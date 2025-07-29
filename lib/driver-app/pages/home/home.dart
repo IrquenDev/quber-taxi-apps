@@ -16,6 +16,7 @@ import 'package:quber_taxi/common/services/account_service.dart';
 import 'package:quber_taxi/common/services/app_announcement_service.dart';
 import 'package:quber_taxi/common/services/driver_service.dart';
 import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
+import 'package:quber_taxi/common/widgets/dialogs/circular_info_dialog.dart';
 import 'package:quber_taxi/common/widgets/dialogs/info_dialog.dart';
 import 'package:quber_taxi/driver-app/pages/home/available_travels_sheet.dart';
 import 'package:quber_taxi/driver-app/pages/home/info_travel_sheet.dart';
@@ -571,6 +572,21 @@ class _DriverHomePageState extends State<DriverHomePage> {
               child: Column(
                 spacing: 8.0,
                 children: [
+                  // Driver credit
+                  FloatingActionButton(
+                    heroTag: "driver-credit",
+                    backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                    onPressed: () {
+                      _showDriverCreditDialog();
+                    },
+                    child: Text(
+                      _driver.credit.toInt().toString(),
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                      ),
+                    ),
+                  ),
                   // Find my location
                   FloatingActionButton(
                     heroTag: "find-my-location",
@@ -709,6 +725,24 @@ class _DriverHomePageState extends State<DriverHomePage> {
           ]
         )
       )
+    );
+  }
+
+  void _showDriverCreditDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return CircularInfoDialog(
+          largeNumber: _driver.credit.toInt().toString(),
+          mediumText: AppLocalizations.of(context)!.driverCredit,
+          smallText: AppLocalizations.of(context)!.driverCreditDescription,
+          animateFrom: 0,
+          animateTo: _driver.credit.toInt(),
+          onTapToDismiss: () {
+            Navigator.of(context).pop();
+          },
+        );
+      },
     );
   }
 }

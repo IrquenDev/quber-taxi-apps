@@ -76,6 +76,13 @@ class AppLocalizationsEs extends AppLocalizations {
       'Invita amigos con tu código de referido para ganar más puntos. Úsalos para comprar descuentos en tus viajes.';
 
   @override
+  String get driverCredit => 'Crédito del Conductor';
+
+  @override
+  String get driverCreditDescription =>
+      'Saldo disponible en tu cuenta. Este crédito se actualiza después de cada viaje completado.';
+
+  @override
   String get ubicationFailed =>
       'Su ubicación actual está fuera de los límites de La Habana';
 
