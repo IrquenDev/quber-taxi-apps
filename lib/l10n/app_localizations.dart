@@ -230,6 +230,18 @@ abstract class AppLocalizations {
   /// **'Invita amigos con tu código de referido para ganar más puntos. Úsalos para comprar descuentos en tus viajes.'**
   String get inviteFriendsDescription;
 
+  /// No description provided for @driverCredit.
+  ///
+  /// In es, this message translates to:
+  /// **'Crédito del Conductor'**
+  String get driverCredit;
+
+  /// No description provided for @driverCreditDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Saldo disponible en tu cuenta. Este crédito se actualiza después de cada viaje completado.'**
+  String get driverCreditDescription;
+
   /// No description provided for @ubicationFailed.
   ///
   /// In es, this message translates to:

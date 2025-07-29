@@ -25,6 +25,8 @@
   "accumulatedPoints": "Accumulated points",
   "quberPointsEarned": "Quber Points Earned",
   "inviteFriendsDescription": "Invite friends with your referral code to earn more points. Use them to buy discounts on your trips.",
+  "driverCredit": "Driver Credit",
+  "driverCreditDescription": "Available balance in your account. This credit is updated after each completed trip.",
 
   "ubicationFailed": "Your current location is outside the limits of Havana",
   "permissionsDenied": "Location permission denied",
