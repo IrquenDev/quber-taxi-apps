@@ -842,6 +842,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get allStates => 'All states';
 
   @override
+  String get clearFilters => 'Clear filters';
+
+  @override
   String get drivers => 'Drivers';
 
   @override
