@@ -10,6 +10,7 @@ import 'package:quber_taxi/client-app/pages/navigation/quber_reviews.dart';
 import 'package:quber_taxi/client-app/pages/settings/account_setting.dart';
 import 'package:quber_taxi/common/services/app_announcement_service.dart';
 import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
+import 'package:quber_taxi/common/widgets/dialogs/circular_info_dialog.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/common_routes.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
@@ -29,6 +30,7 @@ class ClientHomePage extends StatefulWidget {
 class _ClientHomePageState extends State<ClientHomePage> {
   int _currentIndex = 0;
   final _navKey = GlobalKey<CurvedNavigationBarState>();
+  // BREAKPOINT: Verificar datos del cliente desde la BD
   final _client = Client.fromJson(loggedInUser);
   final List<Map<String, String>> _mockFavorites = [
     {
@@ -49,6 +51,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
   ];
   bool _showRequestSheet = false;
   bool _showfavoriteDialog = false;
+  bool _showQuberPointsDialog = false;
 
 
   // Announcement service
@@ -133,21 +136,25 @@ class _ClientHomePageState extends State<ClientHomePage> {
           animationCurve: Curves.easeInOut,
           animationDuration: const Duration(milliseconds: 500),
           letIndexChange: (index) {
-            // Allow selection for first 3 items (0, 1, 2), block index 3 (Quber Points)
-            if (index < 4) {
+            // Allow selection for first 4 items (0, 1, 2, 3), block index 4 (Quber Points)
+            if (index < 5) {
               setState(() {
                 _currentIndex = index;
                 // Show request sheet when taxi item is selected
                 _showRequestSheet = index == 1;
                 _showfavoriteDialog = index == 3;
+                _showQuberPointsDialog = index == 4;
               });
               
               // Show favorites dialog if needed
               if (_showfavoriteDialog) _showFavoritesDialog();
               
+              // Show Quber Points dialog if needed
+              if (_showQuberPointsDialog) _showQuberPointsCircularDialog();
+              
               return true; // Allow the change
             }
-            return false; // Block the change for index 3
+            return false; // Block the change for index 4
           },
           items: [
             Transform.scale(
@@ -290,6 +297,25 @@ class _ClientHomePageState extends State<ClientHomePage> {
     ).then((_) => setState(() => _currentIndex = 0));
   }
 
+  void _showQuberPointsCircularDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return CircularInfoDialog(
+          largeNumber: _client.quberPoints.toInt().toString(),
+          mediumText: AppLocalizations.of(context)!.quberPointsEarned,
+          smallText: AppLocalizations.of(context)!.inviteFriendsDescription,
+          animateFrom: 0,
+          animateTo: _client.quberPoints.toInt(),
+          onTapToDismiss: () {
+            Navigator.of(context).pop();
+            setState(() => _currentIndex = 0);
+          },
+        );
+      },
+    );
+  }
+
   Widget _getCurrentScreen() {
     switch (_currentIndex) {
       case 0:
@@ -299,6 +325,8 @@ class _ClientHomePageState extends State<ClientHomePage> {
       case 2:
         return const ClientSettingsPage();
       case 3:
+        return const MapView(usingExtendedScaffold: true);
+      case 4:
         return const MapView(usingExtendedScaffold: true);
       default:
         return const SizedBox.shrink();

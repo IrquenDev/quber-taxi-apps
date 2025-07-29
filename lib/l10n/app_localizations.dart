@@ -206,6 +206,30 @@ abstract class AppLocalizations {
   /// **'P. Quber'**
   String get quberPointsBottomItem;
 
+  /// No description provided for @quberPoints.
+  ///
+  /// In es, this message translates to:
+  /// **'Puntos Quber'**
+  String get quberPoints;
+
+  /// No description provided for @accumulatedPoints.
+  ///
+  /// In es, this message translates to:
+  /// **'Puntos acumulados'**
+  String get accumulatedPoints;
+
+  /// No description provided for @quberPointsEarned.
+  ///
+  /// In es, this message translates to:
+  /// **'Puntos Quber Ganados'**
+  String get quberPointsEarned;
+
+  /// No description provided for @inviteFriendsDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Invita amigos con tu código de referido para ganar más puntos. Úsalos para comprar descuentos en tus viajes.'**
+  String get inviteFriendsDescription;
+
   /// No description provided for @ubicationFailed.
   ///
   /// In es, this message translates to:
