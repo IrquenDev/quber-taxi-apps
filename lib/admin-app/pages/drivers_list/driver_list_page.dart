@@ -327,7 +327,7 @@ class _DriversListPageState extends State<DriversListPage> {
                       ]
                   ),
                 ),
-                Icon(DriverAccountState.iconOf(driver.accountState), size: 20),
+                Image.asset(DriverAccountState.imageOf(driver.accountState), width: 32, height: 32),
               ]
           ),
           Align(
