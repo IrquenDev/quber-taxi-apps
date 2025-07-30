@@ -1907,8 +1907,26 @@ abstract class AppLocalizations {
   /// No description provided for @myMarkers.
   ///
   /// In es, this message translates to:
-  /// **'Mis marcadores'**
+  /// **'Marcadores'**
   String get myMarkers;
+
+  /// No description provided for @select.
+  ///
+  /// In es, this message translates to:
+  /// **'Seleccionar'**
+  String get select;
+
+  /// No description provided for @origin.
+  ///
+  /// In es, this message translates to:
+  /// **'Origen'**
+  String get origin;
+
+  /// No description provided for @destination.
+  ///
+  /// In es, this message translates to:
+  /// **'Destino'**
+  String get destination;
 }
 
 class _AppLocalizationsDelegate

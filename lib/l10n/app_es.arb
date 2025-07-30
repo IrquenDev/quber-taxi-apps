@@ -316,11 +316,9 @@
       "accept": "Aceptar",
       "locationPermissionRequired": "Para comenzar a compartir su ubicación con el cliente se necesita su acceso explícito",
       "locationPermissionBlocked": "Permiso de ubicación bloqueado. Habilitar nuevamente en ajustes",
-      "creatingAccount": "Creando cuenta...",
       "invalidCreditPercentage": "El porcentaje debe estar entre 0 y 100",
       "invalidPrice": "El precio debe ser mayor a 0",
       "passwordMinLength": "La contraseña debe tener al menos 6 caracteres",
-      "passwordsDoNotMatch": "Las contraseñas no coinciden",
       "tripDescription": "Descripción del viaje",
       "myDiscountCode": "Mi código de descuento:",
       "inviteFriendDiscount": "Invita a un amigo a usar la app y pídele que ingrese tu código al registrarse o desde Ajustes. Así recibirá un 10% de descuento en su próximo viaje.",
@@ -342,9 +340,10 @@
       "errorChangingConfiguration": "Error. No se pudo cambiar la configuración",
       "errorChangingPassword": "Error. No se pudo cambiar la contraseña",
       "couldNotOpenPhoneDialer": "No se pudo abrir el marcador de teléfono",
-                   "invalidVerificationCode": "Código de verificación inválido",
-             "verificationCodeExpired": "Código de verificación expirado",
              "favoritesBottomItem": "Favoritos",
-             "myMarkers": "Mis marcadores"
+             "myMarkers": "Marcadores",
+             "select": "Seleccionar",
+            "origin": "Origen",
+            "destination": "Destino"
 
 }

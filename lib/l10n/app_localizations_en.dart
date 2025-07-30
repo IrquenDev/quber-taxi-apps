@@ -984,5 +984,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get favoritesBottomItem => 'Favorites';
 
   @override
-  String get myMarkers => 'My Markers';
+  String get myMarkers => 'Markers';
+
+  @override
+  String get select => 'Select';
+
+  @override
+  String get origin => 'From';
+
+  @override
+  String get destination => 'Destination';
 }

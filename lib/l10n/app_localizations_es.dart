@@ -993,5 +993,14 @@ class AppLocalizationsEs extends AppLocalizations {
   String get favoritesBottomItem => 'Favoritos';
 
   @override
-  String get myMarkers => 'Mis marcadores';
+  String get myMarkers => 'Marcadores';
+
+  @override
+  String get select => 'Seleccionar';
+
+  @override
+  String get origin => 'Origen';
+
+  @override
+  String get destination => 'Destino';
 }

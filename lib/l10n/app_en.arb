@@ -343,7 +343,9 @@
             "errorChangingConfiguration": "Error. Could not change the configuration",
             "errorChangingPassword": "Error. Could not change the password",
             "couldNotOpenPhoneDialer": "Could not open phone dialer",
-             "verificationCodeExpired": "Verification code expired",
              "favoritesBottomItem": "Favorites",
-             "myMarkers": "My Markers"
+             "myMarkers": "Markers",
+             "select": "Select",
+  "origin": "From",
+  "destination": "Destination"
 }
