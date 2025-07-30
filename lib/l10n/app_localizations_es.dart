@@ -15,7 +15,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get originName => 'Seleccione la ubicación de origen';
 
   @override
-  String get destinationName => 'Seleccione el municipio de destino';
+  String get destinationName => 'Seleccione la ubicación de destino';
 
   @override
   String get carPrefer => '¿Qué tipo de vehículo prefiere?';
@@ -27,22 +27,32 @@ class AppLocalizationsEs extends AppLocalizations {
   String get pets => '¿Lleva mascota?';
 
   @override
+  String get distance => 'Distancia:';
+
+  @override
   String get minDistance => 'Distancia mínima:';
 
   @override
   String get maxDistance => 'Distancia máxima:';
 
   @override
+  String get price => 'Precio:';
+
+  @override
   String get minPrice => 'Precio mínimo:';
 
   @override
-  String get maxPrice => 'Precio máximo que puede costar:';
+  String get maxPrice => 'Precio máximo:';
 
   @override
   String get askTaxi => 'Pedir taxi';
 
   @override
   String get vehicle => 'Vehículo';
+
+  @override
+  String get tooltipAboutEstimations =>
+      'Las estimaciones que se presentan a continuación, a pesar de ser muy prescisas, siguen siendo valores aproximados. Refiérase a ellas como una guía. La distancia y precio reales se calcularán durante la travesía.';
 
   @override
   String get settingsHome => 'Ajustes';
@@ -799,6 +809,11 @@ class AppLocalizationsEs extends AppLocalizations {
   String get thanksForAttention => 'Gracias por su atención.';
 
   @override
+  String distanceFixed(Object distance) {
+    return 'Distancia: ${distance}km';
+  }
+
+  @override
   String distanceMinimum(Object distance) {
     return 'Distancia Mínima: ${distance}km';
   }
@@ -806,6 +821,11 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String distanceMaximum(Object distance) {
     return 'Distancia Máxima: ${distance}km';
+  }
+
+  @override
+  String priceFixedCost(Object price) {
+    return 'Precio: $price CUP';
   }
 
   @override

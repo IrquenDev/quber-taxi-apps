@@ -60,36 +60,83 @@ class _TripCardState extends State<TripCard> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // Origin - Large icon
-                          _buildIconTextRow(context, 'assets/icons/radio_button_checked_line.svg', localizations.fromLocation(widget.travel.originName), iconSize: 40),
-                          
+                          _buildIconTextRow(
+                              context,
+                              'assets/icons/radio_button_checked_line.svg',
+                              localizations.fromLocation(widget.travel.originName),
+                              iconSize: 40
+                          ),
                           // Destination - Large icon  
-                          _buildIconTextRow(context, 'assets/icons/location_line.svg', localizations.toLocation(widget.travel.destinationName), iconSize: 40),
+                          _buildIconTextRow(
+                              context,
+                              'assets/icons/location_line.svg',
+                              localizations.toLocation(widget.travel.destinationName),
+                              iconSize: 40
+                          ),
                         ],
                       ),
                     ),
-                    
                     // Expandable content
                     if (_isExpanded) ...[
-                                          // Distance Min - Standard icon
-                    _buildIconTextRow(context, 'assets/icons/t_guiones.svg', localizations.distanceMinimum(widget.travel.minDistance.toString()), startPadding: 8),
-                    
-                    // Distance Max - Standard icon
-                    _buildIconTextRow(context, 'assets/icons/t_guiones.svg', localizations.distanceMaximum(widget.travel.maxDistance.toString()), startPadding: 8),
-                    
-                    // Price Min - Standard icon
-                    _buildIconTextRow(context, 'assets/icons/t_guiones.svg', localizations.priceMinimumCost(widget.travel.minPrice.toStringAsFixed(0)), startPadding: 8),
-                    
-                    // Price Max - Standard icon
-                    _buildIconTextRow(context, 'assets/icons/t_guiones.svg', localizations.priceMaximumCost(widget.travel.maxPrice.toStringAsFixed(0)), startPadding: 8),
-                    
-                    // People - Standard icon row
-                    _buildStandardIconRow(context, Icons.people, localizations.peopleCount(widget.travel.requiredSeats.toString())),
-                    
-                                        // Pets - Standard icon row
-                    _buildStandardIconRow(context, Icons.pets, widget.travel.hasPets ? localizations.withPet : localizations.withoutPet),
-                    
-                                          const SizedBox(height: 12.0),
-                      
+                      // Distance Fixed - Standard icon
+                      if(widget.travel.fixedDistance != null)
+                        _buildIconTextRow(
+                            context,
+                            'assets/icons/t_guiones.svg',
+                            localizations.distanceFixed(widget.travel.fixedDistance.toString()),
+                            startPadding: 8
+                        ),
+                      // Distance Min - Standard icon
+                      if(widget.travel.minDistance != null)
+                      _buildIconTextRow(
+                          context,
+                          'assets/icons/t_guiones.svg',
+                          localizations.distanceMinimum(widget.travel.minDistance.toString()),
+                          startPadding: 8
+                      ),
+                      // Distance Max - Standard icon
+                      if(widget.travel.maxDistance != null)
+                      _buildIconTextRow(
+                          context,
+                          'assets/icons/t_guiones.svg',
+                          localizations.distanceMaximum(widget.travel.maxDistance.toString()),
+                          startPadding: 8
+                      ),
+                      // Price Fixed - Standard icon
+                      if(widget.travel.fixedPrice != null)
+                        _buildIconTextRow(
+                            context,
+                            'assets/icons/t_guiones.svg',
+                            localizations.priceFixedCost(widget.travel.fixedPrice.toString()),
+                            startPadding: 8
+                        ),
+                      // Price Min - Standard icon
+                      if(widget.travel.minPrice != null)
+                      _buildIconTextRow(
+                          context,
+                          'assets/icons/t_guiones.svg',
+                          localizations.priceMinimumCost(widget.travel.minPrice!.toStringAsFixed(0)),
+                          startPadding: 8
+                      ),
+                      // Price Max - Standard icon
+                      if(widget.travel.maxPrice != null)
+                      _buildIconTextRow(
+                          context,
+                          'assets/icons/t_guiones.svg',
+                          localizations.priceMaximumCost(widget.travel.maxPrice!.toStringAsFixed(0)),
+                          startPadding: 8
+                      ),
+                      // People - Standard icon row
+                      _buildStandardIconRow(
+                          context, Icons.people,
+                          localizations.peopleCount(widget.travel.requiredSeats.toString())
+                      ),
+                      // Pets - Standard icon row
+                      _buildStandardIconRow(
+                          context, Icons.pets,
+                          widget.travel.hasPets ? localizations.withPet : localizations.withoutPet
+                      ),
+                      const SizedBox(height: 12.0),
                       // Accept button
                       Align(
                         alignment: Alignment.centerRight,
@@ -149,10 +196,8 @@ class _TripCardState extends State<TripCard> {
   }
 
   Widget _buildIconTextRow(BuildContext context, String svgAsset, String text, {double iconSize = 24, double startPadding = 0}) {
-    final dimensions = Theme.of(context).extension<DimensionExtension>()!;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -181,7 +226,6 @@ class _TripCardState extends State<TripCard> {
   }
 
   Widget _buildStandardIconRow(BuildContext context, IconData icon, String text) {
-    final dimensions = Theme.of(context).extension<DimensionExtension>()!;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     
