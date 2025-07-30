@@ -113,7 +113,7 @@ abstract class AppLocalizations {
   /// No description provided for @destinationName.
   ///
   /// In es, this message translates to:
-  /// **'Seleccione el municipio de destino'**
+  /// **'Seleccione la ubicación de destino'**
   String get destinationName;
 
   /// No description provided for @carPrefer.
@@ -134,6 +134,12 @@ abstract class AppLocalizations {
   /// **'¿Lleva mascota?'**
   String get pets;
 
+  /// No description provided for @distance.
+  ///
+  /// In es, this message translates to:
+  /// **'Distancia:'**
+  String get distance;
+
   /// No description provided for @minDistance.
   ///
   /// In es, this message translates to:
@@ -146,6 +152,12 @@ abstract class AppLocalizations {
   /// **'Distancia máxima:'**
   String get maxDistance;
 
+  /// No description provided for @price.
+  ///
+  /// In es, this message translates to:
+  /// **'Precio:'**
+  String get price;
+
   /// No description provided for @minPrice.
   ///
   /// In es, this message translates to:
@@ -155,7 +167,7 @@ abstract class AppLocalizations {
   /// No description provided for @maxPrice.
   ///
   /// In es, this message translates to:
-  /// **'Precio máximo que puede costar:'**
+  /// **'Precio máximo:'**
   String get maxPrice;
 
   /// No description provided for @askTaxi.
@@ -169,6 +181,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Vehículo'**
   String get vehicle;
+
+  /// No description provided for @tooltipAboutEstimations.
+  ///
+  /// In es, this message translates to:
+  /// **'Las estimaciones que se presentan a continuación, a pesar de ser muy prescisas, siguen siendo valores aproximados. Refiérase a ellas como una guía. La distancia y precio reales se calcularán durante la travesía.'**
+  String get tooltipAboutEstimations;
 
   /// No description provided for @settingsHome.
   ///
@@ -1604,6 +1622,12 @@ abstract class AppLocalizations {
   /// **'Gracias por su atención.'**
   String get thanksForAttention;
 
+  /// No description provided for @distanceFixed.
+  ///
+  /// In es, this message translates to:
+  /// **'Distancia: {distance}km'**
+  String distanceFixed(Object distance);
+
   /// No description provided for @distanceMinimum.
   ///
   /// In es, this message translates to:
@@ -1615,6 +1639,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Distancia Máxima: {distance}km'**
   String distanceMaximum(Object distance);
+
+  /// No description provided for @priceFixedCost.
+  ///
+  /// In es, this message translates to:
+  /// **'Precio: {price} CUP'**
+  String priceFixedCost(Object price);
 
   /// No description provided for @priceMinimumCost.
   ///

@@ -77,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
       }
       
       // Handle response
-      if(!context.mounted) return;
+      if(!mounted) return;
       
       switch (response.statusCode) {
         case 200: 

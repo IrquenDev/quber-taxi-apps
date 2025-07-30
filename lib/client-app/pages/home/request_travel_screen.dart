@@ -3,6 +3,7 @@ import 'package:quber_taxi/client-app/pages/home/request_travel_sheet.dart';
 import 'package:quber_taxi/client-app/pages/home/map.dart';
 
 class RequestTravelScreen extends StatelessWidget {
+
   final String? originName;
   final List<double>? originCoords;
   final String? destinationName;
@@ -49,11 +50,7 @@ class RequestTravelScreen extends StatelessWidget {
                           ),
                         ),
                       ),
-                      RequestTravelSheet(
-                        originName: originName,
-                        originCoords: originCoords,
-                        destinationName: destinationName,
-                      ),
+                      RequestTravelSheet(),
                     ],
                   ),
                 ),

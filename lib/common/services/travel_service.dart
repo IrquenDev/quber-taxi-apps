@@ -25,29 +25,33 @@ class TravelService {
   /// - [clientId]: ID of the client making the request
   /// - [originName] / [destinationName]: display names for the locations
   /// - [originCoords]: list `[longitude, latitude]` representing the origin
+  /// - [destinationCoords]: list `[longitude, latitude]` representing the destination
   /// - [requiredSeats]: number of seats needed
   /// - [hasPets]: whether the passenger has pets
   /// - [taxiType]: required taxi type
-  /// - [minDistance], [maxDistance]: distance filters in kilometers
-  /// - [minPrice], [maxPrice]: price range the client is willing to pay
+  /// - [fixedDistance], [fixedPrice]: Estimations when user has chosen an specific destination.
+  /// - [minDistance], [maxDistance]: Distance estimations when user has chosen a municipality as destination
+  /// - [minPrice], [maxPrice]: Price estimations when user has chosen a municipality as destination
   ///
   /// Returns a parsed [Travel] object from the response.
-  Future<Travel> requestNewTravel({
+  Future<http.Response> requestNewTravel({
     required int clientId,
     required String originName,
     required String destinationName,
     required List<num> originCoords,
+    List<num>? destinationCoords,
     required int requiredSeats,
     required bool hasPets,
     required TaxiType taxiType,
-    required num minDistance,
-    required num maxDistance,
-    required num minPrice,
-    required num maxPrice,
+    required double? fixedDistance,
+    required double? minDistance,
+    required double? maxDistance,
+    required double? fixedPrice,
+    required double? minPrice,
+    required double? maxPrice,
   }) async {
     final url = Uri.parse("${_apiConfig.baseUrl}/$_endpoint/$clientId");
     final headers = {'Content-Type': 'application/json'};
-
     final response = await http.post(
       url,
       headers: headers,
@@ -55,17 +59,19 @@ class TravelService {
         "originName": originName,
         "destinationName": destinationName,
         "originCoords": originCoords,
+        "destinationCoords": destinationCoords,
         "requiredSeats": requiredSeats,
         "hasPets": hasPets,
         "taxiType": taxiType.apiValue,
+        "fixedDistance": fixedDistance,
         "minDistance": minDistance,
         "maxDistance": maxDistance,
+        "fixedPrice": fixedPrice,
         "minPrice": minPrice,
         "maxPrice": maxPrice,
       }),
     );
-
-    return Travel.fromJson(jsonDecode(response.body));
+    return response;
   }
 
   /// Fetches all available travels that match the driver's capabilities.

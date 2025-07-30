@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -6,7 +7,6 @@ import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/client-app/pages/home/map.dart';
 import 'package:quber_taxi/client-app/pages/home/request_travel_sheet.dart';
-import 'package:quber_taxi/client-app/pages/navigation/quber_reviews.dart';
 import 'package:quber_taxi/client-app/pages/settings/account_setting.dart';
 import 'package:quber_taxi/common/services/app_announcement_service.dart';
 import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
@@ -91,7 +91,9 @@ class _ClientHomePageState extends State<ClientHomePage> {
       }
     } catch (e) {
       // Handle error silently - announcements are not critical for app functionality
-      print('Error checking announcements: $e');
+      if (kDebugMode) {
+        print('Error checking announcements: $e');
+      }
     }
   }
 
@@ -132,7 +134,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
           height: 70,
           color: Theme.of(context).colorScheme.primaryContainer,
           buttonBackgroundColor: Theme.of(context).colorScheme.primaryContainer,
-          backgroundColor: Theme.of(context).colorScheme.surface.withOpacity(0.0),
+          backgroundColor: Theme.of(context).colorScheme.surface,
           animationCurve: Curves.easeInOut,
           animationDuration: const Duration(milliseconds: 500),
           letIndexChange: (index) {
@@ -387,8 +389,8 @@ class _RequestTravelSheetWidgetState extends State<_RequestTravelSheetWidget> wi
       left: 0,
       right: 0,
       bottom: 0,
-              child: Container(
-          height: sheetHeight,
+      child: SizedBox(
+        height: sheetHeight,
         child: GestureDetector(
           onPanStart: (details) {
             _dragStartY = details.globalPosition.dy;
@@ -425,7 +427,10 @@ class _RequestTravelSheetWidgetState extends State<_RequestTravelSheetWidget> wi
                 // Content
                 Expanded(
                   child: SingleChildScrollView(
-                    child: const RequestTravelSheet(),
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 16.0, right: 16.0, bottom: 32.0),
+                      child: const RequestTravelSheet(),
+                    ),
                   ),
                 ),
               ],

@@ -15,7 +15,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get originName => 'Select the origin location';
 
   @override
-  String get destinationName => 'Select the destination municipality';
+  String get destinationName => 'Select the destination location';
 
   @override
   String get carPrefer => 'What type of vehicle do you prefer?';
@@ -27,10 +27,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pets => 'Are you bringing a pet?';
 
   @override
+  String get distance => 'Distance:';
+
+  @override
   String get minDistance => 'Minimum distance:';
 
   @override
   String get maxDistance => 'Maximum distance:';
+
+  @override
+  String get price => 'Price:';
 
   @override
   String get minPrice => 'Minimum price:';
@@ -43,6 +49,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get vehicle => 'vehicle';
+
+  @override
+  String get tooltipAboutEstimations =>
+      'The estimates below, while very precise, are still approximate. Please refer to them as a guide. Actual distance and price will be calculated during the voyage.';
 
   @override
   String get settingsHome => 'Settings';
@@ -815,6 +825,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get thanksForAttention => 'Thank you for your attention.';
 
   @override
+  String distanceFixed(Object distance) {
+    return 'Distance: ${distance}km';
+  }
+
+  @override
   String distanceMinimum(Object distance) {
     return 'Minimum Distance: ${distance}km';
   }
@@ -822,6 +837,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String distanceMaximum(Object distance) {
     return 'Maximum Distance: ${distance}km';
+  }
+
+  @override
+  String priceFixedCost(Object price) {
+    return 'Price: $price CUP';
   }
 
   @override

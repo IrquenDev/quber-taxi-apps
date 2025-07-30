@@ -10,18 +10,21 @@ class Travel implements Encodable{
   final String originName;
   final String destinationName;
   final List<num> originCoords;
+  final List<num>? destinationCoords;
   final int requiredSeats;
   final bool hasPets;
   final TaxiType taxiType;
-  final int minDistance;
-  final int maxDistance;
-  final double minPrice;
-  final double maxPrice;
+  final double? fixedDistance;
+  final double? minDistance;
+  final double? maxDistance;
+  final double? fixedPrice;
+  final double? minPrice;
+  final double? maxPrice;
   final TravelState state;
   final Client client;
   final Driver? driver;
-  final int? finalDistance;
-  final int? finalDuration;
+  final double? finalDistance;
+  final double? finalDuration;
   final double? finalPrice;
   final DateTime? endDate;
   final DateTime requestedDate;
@@ -31,13 +34,16 @@ class Travel implements Encodable{
     required this.originName,
     required this.destinationName,
     required this.originCoords,
+    this.destinationCoords,
     required this.requiredSeats,
     required this.hasPets,
     required this.taxiType,
-    required this.minDistance,
-    required this.maxDistance,
-    required this.minPrice,
-    required this.maxPrice,
+    this.fixedDistance,
+    this.minDistance,
+    this.maxDistance,
+    this.fixedPrice,
+    this.minPrice,
+    this.maxPrice,
     required this.state,
     required this.client,
     required this.requestedDate,
@@ -54,11 +60,16 @@ class Travel implements Encodable{
         originName: json["originName"],
         destinationName: json["destinationName"],
         originCoords: (json["originCoords"] as List).map((e) => e as num).toList(),
+        destinationCoords: json["destinationCoords"] != null
+            ? (json["destinationCoords"] as List).map((e) => e as num).toList()
+            : null,
         requiredSeats: json["requiredSeats"],
         hasPets: json["hasPets"],
         taxiType: TaxiType.resolve(json["taxiType"]),
+        fixedDistance: json["fixedDistance"],
         minDistance: json["minDistance"],
         maxDistance: json["maxDistance"],
+        fixedPrice: json["fixedPrice"],
         minPrice: json["minPrice"],
         maxPrice: json["maxPrice"],
         state: TravelState.resolve(json["state"]),
@@ -78,11 +89,14 @@ class Travel implements Encodable{
     "originName": originName,
     "destinationName": destinationName,
     "originCoords": originCoords,
+    "destinationCoords": destinationCoords,
     "requiredSeats": requiredSeats,
     "hasPets": hasPets,
     "taxiType": taxiType.apiValue,
     "minDistance": minDistance,
+    "fixedDistance": fixedDistance,
     "maxDistance": maxDistance,
+    "fixedPrice": fixedPrice,
     "minPrice": minPrice,
     "maxPrice": maxPrice,
     "state": state.apiValue,
