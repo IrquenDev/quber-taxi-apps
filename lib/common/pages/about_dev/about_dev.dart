@@ -1,36 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../../theme/dimensions.dart';
 
 class AboutDevPage extends StatelessWidget {
-  const AboutDevPage({Key? key}) : super(key: key);
+  const AboutDevPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    final screenWidth = MediaQuery.of(context).size.width;
+    final colorScheme = Theme
+        .of(context)
+        .colorScheme;
+    final textTheme = Theme
+        .of(context)
+        .textTheme;
+    final screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
     final cardWidth = screenWidth * 0.9;
+    final dimensions = Theme.of(context).extension<DimensionExtension>()!;
+    final localizations = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
+      backgroundColor: colorScheme.surface,
       body: SafeArea(
         child: Column(
           children: [
             // Header section
             Container(
-              height: MediaQuery.of(context).size.height * 0.39,
+              height: MediaQuery
+                  .of(context)
+                  .size
+                  .height * 0.39,
               width: double.infinity,
               decoration: BoxDecoration(
                 color: colorScheme.primaryContainer,
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(25),
-                  bottomRight: Radius.circular(25),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(dimensions.borderRadius),
+                  bottomRight: Radius.circular(dimensions.borderRadius),
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Theme.of(context).colorScheme.surfaceDim,
+                    color: colorScheme.surfaceDim,
                     spreadRadius: 2,
                     blurRadius: 5,
                     offset: const Offset(0, 3),
@@ -38,21 +53,22 @@ class AboutDevPage extends StatelessWidget {
                 ],
               ),
               child: Padding(
-                padding: const EdgeInsets.all(20.0),
+                padding: dimensions.contentPadding,
                 child: Column(
                   children: [
                     Row(
                       children: [
                         IconButton(
-                          icon: Icon(Icons.arrow_back, color: colorScheme.shadow),
+                          icon: Icon(Icons.arrow_back, color: colorScheme
+                              .onPrimary),
                           onPressed: () => context.pop(),
                         ),
                         const SizedBox(width: 15),
                         Text(
-                          AppLocalizations.of(context)!.aboutDeveloperTitle,
-                          style: textTheme.headlineSmall?.copyWith(
+                          localizations.aboutDeveloperTitle,
+                          style: textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: colorScheme.shadow,
+                            color: colorScheme.onPrimary,
                           ),
                         ),
                       ],
@@ -64,19 +80,17 @@ class AboutDevPage extends StatelessWidget {
                     ),
 
                     Text(
-                      'Irquen',
-                      style: textTheme.headlineSmall?.copyWith(
+                      localizations.appName,
+                      style: textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: colorScheme.shadow,
-                        fontSize: 34
+                        color: colorScheme.onPrimary,
                       ),
                     ),
                     Text(
                       AppLocalizations.of(context)!.softwareCompany,
-                      style: textTheme.bodyMedium?.copyWith(
-                        color: colorScheme.shadow,
+                      style: textTheme.titleMedium?.copyWith(
+                        color: colorScheme.onPrimary,
                         fontWeight: FontWeight.bold,
-                        fontSize: 18
                       ),
                     ),
                   ],
@@ -100,28 +114,29 @@ class AboutDevPage extends StatelessWidget {
                           width: cardWidth,
                           child: Card(
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: BorderRadius.circular(
+                                  dimensions.borderRadius),
                             ),
                             child: Padding(
-                              padding: const EdgeInsets.all(10),
+                              padding: dimensions.contentPadding,
                               child: Column(
                                 children: [
                                   _buildContactRow(
                                     context,
                                     imagePath: 'assets/icons/mail.svg',
-                                    text: 'qnecesitas.desarrollo@gmail.com',
+                                    text: localizations.email,
                                   ),
                                   const SizedBox(height: 6),
                                   _buildContactRow(
                                     context,
                                     imagePath: 'assets/icons/phone.svg',
-                                    text: '+5355759386',
+                                    text: localizations.phone,
                                   ),
                                   const SizedBox(height: 6),
                                   _buildContactRow(
                                     context,
                                     imagePath: 'assets/icons/web.svg',
-                                    text: 'https://qnecesitas.nat.cu',
+                                    text: localizations.website,
                                   ),
                                 ],
                               ),
@@ -134,10 +149,11 @@ class AboutDevPage extends StatelessWidget {
                           width: cardWidth,
                           child: Card(
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: BorderRadius.circular(
+                                  dimensions.borderRadius),
                             ),
                             child: Padding(
-                              padding: const EdgeInsets.all(16),
+                              padding: dimensions.contentPadding,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -145,8 +161,7 @@ class AboutDevPage extends StatelessWidget {
                                   Text(
                                     AppLocalizations.of(context)!.aboutText,
                                     style: textTheme.bodyMedium?.copyWith(
-                                      fontSize: 18,
-                                      color: colorScheme.secondary
+                                        color: colorScheme.onSurface
                                     ),
                                     textAlign: TextAlign.justify,
                                   ),
@@ -167,51 +182,91 @@ class AboutDevPage extends StatelessWidget {
     );
   }
 
-  Widget _buildContactRow(BuildContext context, {required String imagePath, required String text}) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
+  Widget _buildContactRow(BuildContext context, {
+    required String imagePath,
+    required String text,
+  }) {
+    final colorScheme = Theme
+        .of(context)
+        .colorScheme;
+    final textTheme = Theme
+        .of(context)
+        .textTheme;
+    final localizations = AppLocalizations.of(context)!;
 
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-
-          child: SvgPicture.asset(
-            imagePath,
-            width: 20,
-            height: 20,
-            fit: BoxFit.contain,
-          ),
-        ),
-        Expanded(
-          child: Text(
-            text,
-            style: textTheme.bodyMedium?.copyWith(
-              color: colorScheme.secondary,
-              fontSize: 18
+    return InkWell(
+      onTap: () => _handleTap(text),
+      onLongPress: () async {
+        await Clipboard.setData(ClipboardData(text: text));
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(localizations.copiedToClipboard)),
+          );
+        }
+      },
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            child: SvgPicture.asset(
+              imagePath,
+              width: 20,
+              height: 20,
+              fit: BoxFit.contain,
             ),
           ),
-        ),
-      ],
+          Expanded(
+            child: Text(
+              text,
+              style: textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurface
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
+
   Widget _buildCLogo(BuildContext context, {required String imagePath}) {
-
-    return Row(
-      children: [
-        Container(
-          margin: const EdgeInsets.only(left: 110),
-
-          child: Image.asset(
-            imagePath,
-            width: 100,
-            height: 100,
-            fit: BoxFit.contain,
-          ),
-        ),
-
-      ],
+    return Center(
+      child: Image.asset(
+        imagePath,
+        width: 100,
+        height: 100,
+        fit: BoxFit.contain,
+      ),
     );
+  }
+
+  void _handleTap(String text) async {
+    Uri? uri;
+
+    if (text.startsWith('http')) {
+      uri = Uri.parse(text);
+    } else if (text.contains('@')) {
+      uri = Uri(
+        scheme: 'mailto',
+        path: text,
+      );
+    } else if (text.startsWith('+') || RegExp(r'^\d+$').hasMatch(text)) {
+      uri = Uri(scheme: 'tel', path: text);
+    }
+
+    if (uri != null) {
+      final canLaunch = await canLaunchUrl(uri);
+      if (canLaunch) {
+        final launched = await launchUrl(
+          uri,
+          mode: LaunchMode.platformDefault,
+        );
+        if (!launched) {
+          debugPrint('No se pudo abrir $uri');
+        }
+      } else {
+        debugPrint('No se pudo lanzar la URL: $uri');
+      }
+    }
   }
 }
