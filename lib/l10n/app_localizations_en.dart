@@ -903,6 +903,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get actions => 'Actions';
 
   @override
+  String get recharge => 'Recharge';
+
+  @override
+  String get rechargeAmount => 'Amount to recharge';
+
+  @override
+  String get credit => 'Credit';
+
+  @override
+  String creditAmount(Object amount) {
+    return 'Credit: $amount CUP';
+  }
+
+  @override
   String get blockAccount => 'Block account';
 
   @override

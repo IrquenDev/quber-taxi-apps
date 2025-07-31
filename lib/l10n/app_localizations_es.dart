@@ -908,6 +908,20 @@ class AppLocalizationsEs extends AppLocalizations {
   String get actions => 'Acciones';
 
   @override
+  String get recharge => 'Recargar';
+
+  @override
+  String get rechargeAmount => 'Monto a recargar';
+
+  @override
+  String get credit => 'Crédito';
+
+  @override
+  String creditAmount(Object amount) {
+    return 'Crédito: $amount CUP';
+  }
+
+  @override
   String get blockAccount => 'Bloquear cuenta';
 
   @override

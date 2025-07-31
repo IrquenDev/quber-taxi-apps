@@ -1754,6 +1754,30 @@ abstract class AppLocalizations {
   /// **'Acciones'**
   String get actions;
 
+  /// No description provided for @recharge.
+  ///
+  /// In es, this message translates to:
+  /// **'Recargar'**
+  String get recharge;
+
+  /// No description provided for @rechargeAmount.
+  ///
+  /// In es, this message translates to:
+  /// **'Monto a recargar'**
+  String get rechargeAmount;
+
+  /// No description provided for @credit.
+  ///
+  /// In es, this message translates to:
+  /// **'Crédito'**
+  String get credit;
+
+  /// No description provided for @creditAmount.
+  ///
+  /// In es, this message translates to:
+  /// **'Crédito: {amount} CUP'**
+  String creditAmount(Object amount);
+
   /// No description provided for @blockAccount.
   ///
   /// In es, this message translates to:

@@ -323,6 +323,19 @@ class _DriversListPageState extends State<DriversListPage> {
                                 ),
                               ),
                             ]
+                        ),
+                        Row(
+                            spacing: 8.0,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.account_balance_wallet_outlined, size: 16),
+                              Text(
+                                localizations.creditAmount(driver.credit.toStringAsFixed(2)),
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ]
                         )
                       ]
                   ),
@@ -369,16 +382,29 @@ class _DriversListPageState extends State<DriversListPage> {
                             ),
                           ),
                         ),
+                        PopupMenuItem<String>(
+                          value: 'recharge',
+                          child: Text(
+                            localizations.recharge,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
                       ],
                       onSelected: (value) async {
-                        if(!hasConnection(context)) return;
-                        final response = await DriverService().changeState(driverId: driver.id);
-                        if(!mounted) return;
-                        if(response.statusCode == 200) {
-                          _refreshDrivers();
-                        }
-                        else {
-                          showToast(context: context, message: localizations.errorTryLater);
+                        if (value == 'recharge') {
+                          _showRechargeDialog(context, driver.id.toString());
+                        } else {
+                          if(!hasConnection(context)) return;
+                          final response = await DriverService().changeState(driverId: driver.id);
+                          if(!mounted) return;
+                          if(response.statusCode == 200) {
+                            _refreshDrivers();
+                          }
+                          else {
+                            showToast(context: context, message: localizations.errorTryLater);
+                          }
                         }
                       },
                   )
@@ -569,6 +595,44 @@ class _DriversListPageState extends State<DriversListPage> {
         ),
 
       ]
+    );
+  }
+
+  void _showRechargeDialog(BuildContext context, String driverId) {
+    final TextEditingController amountController = TextEditingController();
+    final localizations = AppLocalizations.of(context)!;
+    
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(localizations.rechargeAmount),
+          content: TextField(
+            controller: amountController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              hintText: '0.00',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(localizations.cancelButton),
+            ),
+            TextButton(
+              onPressed: () {
+                // TODO: Implement recharge functionality
+                Navigator.of(context).pop();
+                showToast(context: context, message: 'Recharge functionality to be implemented');
+              },
+              child: Text(localizations.accept),
+            ),
+          ],
+        );
+      },
     );
   }
 }
