@@ -131,26 +131,24 @@ class _MapViewState extends State<MapView> {
     return PopupMenuItem<String>(
       height: 26,
       value: value,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface,
-                  fontWeight: FontWeight.w400,
-                ),
-          ),
-          if (isSelected) ...[
-            const SizedBox(width: 30,),
-            SvgPicture.asset(
-              'assets/icons/yellow_check.svg',
-              width: 16,
-              height: 16,
+              child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              title,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onSurface,
+                fontWeight: FontWeight.w400,
+              ),
             ),
+            if (isSelected)
+              SvgPicture.asset(
+                'assets/icons/yellow_check.svg',
+                width: 16,
+                height: 16,
+              ),
           ],
-        ],
-      ),
+        ),
     );
   }
 
