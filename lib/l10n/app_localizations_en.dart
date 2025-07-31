@@ -900,6 +900,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirmPayment => 'Confirm Payment';
 
   @override
+  String get actions => 'Actions';
+
+  @override
   String get blockAccount => 'Block account';
 
   @override

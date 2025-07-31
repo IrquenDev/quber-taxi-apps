@@ -905,6 +905,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get confirmPayment => 'Confirmar Pago';
 
   @override
+  String get actions => 'Acciones';
+
+  @override
   String get blockAccount => 'Bloquear cuenta';
 
   @override

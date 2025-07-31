@@ -15,7 +15,7 @@ Future<void> main() async {
 
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-
+// This is the main entry point of the application.
   //Initialization Block
   BuildConfig.loadConfig();
   await SharedPrefsManager.init();

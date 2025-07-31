@@ -334,8 +334,43 @@ class _DriversListPageState extends State<DriversListPage> {
               alignment: Alignment.bottomRight,
               child: Padding(
                   padding: const EdgeInsets.only(right: 8.0),
-                  child: GestureDetector(
-                      onTap: () async {
+                  child: PopupMenuButton<String>(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            localizations.actions,
+                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.primaryContainer
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Icon(
+                            Icons.keyboard_arrow_down,
+                            color: Theme.of(context).colorScheme.primaryContainer,
+                            size: 20,
+                          ),
+                        ],
+                      ),
+                      itemBuilder: (context) => [
+                        PopupMenuItem<String>(
+                          value: 'action',
+                          child: Text(
+                            switch (driver.accountState) {
+                              DriverAccountState.notConfirmed => localizations.confirmAccount,
+                              DriverAccountState.canPay => localizations.confirmPayment,
+                              DriverAccountState.paymentRequired => localizations.confirmPayment,
+                              DriverAccountState.enabled => localizations.blockAccount,
+                              DriverAccountState.disabled => localizations.enableAccount
+                            },
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                      onSelected: (value) async {
                         if(!hasConnection(context)) return;
                         final response = await DriverService().changeState(driverId: driver.id);
                         if(!mounted) return;
@@ -346,19 +381,6 @@ class _DriversListPageState extends State<DriversListPage> {
                           showToast(context: context, message: localizations.errorTryLater);
                         }
                       },
-                      child: Text(
-                          switch (driver.accountState) {
-                            DriverAccountState.notConfirmed => localizations.confirmAccount,
-                            DriverAccountState.canPay => localizations.confirmPayment,
-                            DriverAccountState.paymentRequired => localizations.confirmPayment,
-                            DriverAccountState.enabled => localizations.blockAccount,
-                            DriverAccountState.disabled => localizations.enableAccount
-                          },
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.primaryContainer
-                          )
-                      )
                   )
               )
           )

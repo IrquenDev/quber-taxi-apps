@@ -315,6 +315,7 @@
       "noDriversFound": "No se encontraron conductores con los filtros aplicados",
       "confirmAccount": "Confirmar Cuenta",
       "confirmPayment": "Confirmar Pago",
+      "actions": "Acciones",
       "blockAccount": "Bloquear cuenta",
       "enableAccount": "Habilitar cuenta",
       "errorTryLater": "Algo salió mal, por favor inténtelo más tarde",

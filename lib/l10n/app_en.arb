@@ -315,6 +315,7 @@
             "noDriversFound": "No drivers found with the applied filters",
             "confirmAccount": "Confirm Account",
             "confirmPayment": "Confirm Payment",
+            "actions": "Actions",
             "blockAccount": "Block account",
             "enableAccount": "Enable account",
             "errorTryLater": "Something went wrong, please try again later",

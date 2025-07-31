@@ -1748,6 +1748,12 @@ abstract class AppLocalizations {
   /// **'Confirmar Pago'**
   String get confirmPayment;
 
+  /// No description provided for @actions.
+  ///
+  /// In es, this message translates to:
+  /// **'Acciones'**
+  String get actions;
+
   /// No description provided for @blockAccount.
   ///
   /// In es, this message translates to:
