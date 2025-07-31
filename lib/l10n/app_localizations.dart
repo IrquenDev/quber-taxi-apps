@@ -2029,6 +2029,30 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Mis marcadores'**
   String get myMarkers;
+
+  /// No description provided for @notAvailable.
+  ///
+  /// In es, this message translates to:
+  /// **'N/A'**
+  String get notAvailable;
+
+  /// No description provided for @currency.
+  ///
+  /// In es, this message translates to:
+  /// **'CUP'**
+  String get currency;
+
+  /// No description provided for @kilometers.
+  ///
+  /// In es, this message translates to:
+  /// **'km'**
+  String get kilometers;
+
+  /// No description provided for @minutes.
+  ///
+  /// In es, this message translates to:
+  /// **'min'**
+  String get minutes;
 }
 
 class _AppLocalizationsDelegate

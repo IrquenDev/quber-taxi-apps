@@ -364,5 +364,9 @@
             "couldNotOpenPhoneDialer": "Could not open phone dialer",
              "verificationCodeExpired": "Verification code expired",
              "favoritesBottomItem": "Favorites",
-             "myMarkers": "My Markers"
+             "myMarkers": "My Markers",
+             "notAvailable": "N/A",
+             "currency": "CUP",
+             "kilometers": "km",
+             "minutes": "min"
 }
