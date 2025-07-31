@@ -164,10 +164,6 @@ class _CompletedTripsPageState extends State<CompletedTripsPage> {
   }
 
   Widget _buildTravelsList() {
-    final mockedTravels = List.generate(8, (_) => _allTravels.isNotEmpty ? _allTravels[0] : null)
-        .where((t) => t != null)
-        .cast<Travel>()
-        .toList();
     return RefreshIndicator(
       onRefresh: _refreshTravels,
       child: NotificationListener<ScrollNotification>(
@@ -180,15 +176,15 @@ class _CompletedTripsPageState extends State<CompletedTripsPage> {
         child: ListView.builder(
           padding: EdgeInsets.zero,
           physics: const AlwaysScrollableScrollPhysics(),
-          itemCount: mockedTravels.length + (_isLoadingMore ? 1 : 0),
+          itemCount: _allTravels.length + (_isLoadingMore ? 1 : 0),
           itemBuilder: (context, index) {
-            if (index >= mockedTravels.length) {
+            if (index >= _allTravels.length) {
               return const Padding(
                 padding: EdgeInsets.all(16.0),
                 child: Center(child: CircularProgressIndicator()),
               );
             }
-            final travel = mockedTravels[index];
+            final travel = _allTravels[index];
             return _buildTripCard(index, travel);
           },
         ),
@@ -202,7 +198,7 @@ class _CompletedTripsPageState extends State<CompletedTripsPage> {
     final textTheme = Theme.of(context).textTheme;
     final localizations = AppLocalizations.of(context)!;
     final client = travel.client;
-    final driver = travel.driver!;
+    final driver = travel.driver;
     final isExpanded = _expandedTileIndex == index;
 
     // Item Container
@@ -243,13 +239,17 @@ class _CompletedTripsPageState extends State<CompletedTripsPage> {
                             Icon(Icons.calendar_month_outlined, size: 20, color: colorScheme.outline),
                             const SizedBox(width: 4),
                             Text(
-                                DateFormat("yyyy-MM-dd hh:mm").format(travel.endDate!),
+                                travel.endDate != null 
+                                  ? DateFormat("yyyy-MM-dd hh:mm").format(travel.endDate!)
+                                  : 'N/A',
                                 style: textTheme.bodyLarge?.copyWith(color: colorScheme.outline, fontWeight: FontWeight.bold)
                             ),
                             const Spacer(),
                             Icon(Icons.route_sharp, size: 20, color: colorScheme.outline),
                             Text(
-                              '${travel.finalDistance!} km',
+                              travel.finalDistance != null 
+                                ? '${travel.finalDistance} km'
+                                : 'N/A',
                               style: textTheme.bodyLarge?.copyWith(color: colorScheme.outline),
                             )
                           ]
@@ -262,7 +262,12 @@ class _CompletedTripsPageState extends State<CompletedTripsPage> {
                               localizations.tripPrice,
                               style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
                             ),
-                            Text('${travel.finalPrice} CUP', style: textTheme.bodyLarge)
+                            Text(
+                              travel.finalPrice != null 
+                                ? '${travel.finalPrice} CUP'
+                                : 'N/A',
+                              style: textTheme.bodyLarge
+                            )
                           ]
                       ),
                       Row(
@@ -273,7 +278,12 @@ class _CompletedTripsPageState extends State<CompletedTripsPage> {
                               localizations.tripDuration, style: textTheme.bodyLarge?.copyWith(
                               fontWeight: FontWeight.bold)
                           ),
-                          Text('${travel.finalDuration} min', style: textTheme.bodyLarge)
+                          Text(
+                            travel.finalDuration != null 
+                              ? '${travel.finalDuration} min'
+                              : 'N/A',
+                            style: textTheme.bodyLarge
+                          )
                         ]
                       )
                     ]
@@ -302,20 +312,37 @@ class _CompletedTripsPageState extends State<CompletedTripsPage> {
                       // Dashed Divider
                       DashedLine(height: 1, color: colorScheme.surfaceDim),
                       // Driver Info
-                      Column(
-                        spacing: 0.0,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                              localizations.driverSectionTitle,
-                              style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)
-                          ),
-                          _infoRow(localizations.driverName, driver.name),
-                          _infoRow(localizations.driverPhone, driver.phone),
-                          _infoRow(localizations.driverPlate, driver.taxi.plate),
-                        ],
-                      )
+                      if (driver != null) ...[
+                        Column(
+                          spacing: 0.0,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                                localizations.driverSectionTitle,
+                                style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)
+                            ),
+                            _infoRow(localizations.driverName, driver.name),
+                            _infoRow(localizations.driverPhone, driver.phone),
+                            _infoRow(localizations.driverPlate, driver.taxi.plate),
+                          ],
+                        )
+                      ] else ...[
+                        Column(
+                          spacing: 0.0,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                                localizations.driverSectionTitle,
+                                style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)
+                            ),
+                            _infoRow(localizations.driverName, 'N/A'),
+                            _infoRow(localizations.driverPhone, 'N/A'),
+                            _infoRow(localizations.driverPlate, 'N/A'),
+                          ],
+                        )
+                      ]
                     ]
                   )
                 ]
