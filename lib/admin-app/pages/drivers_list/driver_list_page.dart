@@ -601,6 +601,7 @@ class _DriversListPageState extends State<DriversListPage> {
   void _showRechargeDialog(BuildContext context, String driverId) {
     final TextEditingController amountController = TextEditingController();
     final localizations = AppLocalizations.of(context)!;
+    bool isLoading = false;
     
     showDialog(
       context: context,
@@ -619,16 +620,71 @@ class _DriversListPageState extends State<DriversListPage> {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => context.pop(),
               child: Text(localizations.cancelButton),
             ),
-            TextButton(
-              onPressed: () {
-                // TODO: Implement recharge functionality
-                Navigator.of(context).pop();
-                showToast(context: context, message: 'Recharge functionality to be implemented');
+            StatefulBuilder(
+              builder: (context, setState) {
+                return TextButton(
+                  onPressed: isLoading ? null : () async {
+                    final amountText = amountController.text.trim();
+                    if (amountText.isEmpty) {
+                      showToast(context: context, message: localizations.invalidAmount);
+                      return;
+                    }
+                    
+                    final amount = double.tryParse(amountText);
+                    if (amount == null || amount <= 0) {
+                      showToast(context: context, message: localizations.invalidAmount);
+                      return;
+                    }
+                    
+                    setState(() {
+                      isLoading = true;
+                    });
+                    
+                    if (!hasConnection(context)) {
+                      setState(() {
+                        isLoading = false;
+                      });
+                      return;
+                    }
+                    
+                    try {
+                      final response = await DriverService().rechargeCredit(
+                        driverId: int.parse(driverId),
+                        amount: amount,
+                      );
+                      
+                      if (!mounted) return;
+                      
+                      if (response.statusCode == 200) {
+                        showToast(context: context, message: localizations.rechargeSuccess);
+                        await _refreshDrivers(); // Refresh the list to show updated credit
+                      } else {
+                        showToast(context: context, message: localizations.rechargeError);
+                      }
+                    } catch (e) {
+                      if (!mounted) return;
+                      showToast(context: context, message: localizations.rechargeError);
+                    } finally {
+                      if (mounted) {
+                        setState(() {
+                          isLoading = false;
+                        });
+                        context.pop();
+                      }
+                    }
+                  },
+                  child: isLoading 
+                    ? SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Text(localizations.accept),
+                );
               },
-              child: Text(localizations.accept),
             ),
           ],
         );

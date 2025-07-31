@@ -922,6 +922,15 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get rechargeSuccess => 'Crédito recargado exitosamente';
+
+  @override
+  String get rechargeError => 'Error al recargar el crédito';
+
+  @override
+  String get invalidAmount => 'Monto inválido';
+
+  @override
   String get blockAccount => 'Bloquear cuenta';
 
   @override

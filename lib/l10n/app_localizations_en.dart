@@ -917,6 +917,15 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get rechargeSuccess => 'Credit recharged successfully';
+
+  @override
+  String get rechargeError => 'Error recharging credit';
+
+  @override
+  String get invalidAmount => 'Invalid amount';
+
+  @override
   String get blockAccount => 'Block account';
 
   @override

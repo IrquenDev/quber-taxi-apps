@@ -1778,6 +1778,24 @@ abstract class AppLocalizations {
   /// **'Crédito: {amount} CUP'**
   String creditAmount(Object amount);
 
+  /// No description provided for @rechargeSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Crédito recargado exitosamente'**
+  String get rechargeSuccess;
+
+  /// No description provided for @rechargeError.
+  ///
+  /// In es, this message translates to:
+  /// **'Error al recargar el crédito'**
+  String get rechargeError;
+
+  /// No description provided for @invalidAmount.
+  ///
+  /// In es, this message translates to:
+  /// **'Monto inválido'**
+  String get invalidAmount;
+
   /// No description provided for @blockAccount.
   ///
   /// In es, this message translates to:
