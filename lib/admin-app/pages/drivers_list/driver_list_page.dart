@@ -323,6 +323,19 @@ class _DriversListPageState extends State<DriversListPage> {
                                 ),
                               ),
                             ]
+                        ),
+                        Row(
+                            spacing: 8.0,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.account_balance_wallet_outlined, size: 16),
+                              Text(
+                                localizations.creditAmount(driver.credit.toStringAsFixed(2)),
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ]
                         )
                       ]
                   ),
@@ -334,31 +347,66 @@ class _DriversListPageState extends State<DriversListPage> {
               alignment: Alignment.bottomRight,
               child: Padding(
                   padding: const EdgeInsets.only(right: 8.0),
-                  child: GestureDetector(
-                      onTap: () async {
-                        if(!hasConnection(context)) return;
-                        final response = await DriverService().changeState(driverId: driver.id);
-                        if(!mounted) return;
-                        if(response.statusCode == 200) {
-                          _refreshDrivers();
-                        }
-                        else {
-                          showToast(context: context, message: localizations.errorTryLater);
+                  child: PopupMenuButton<String>(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            localizations.actions,
+                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.primaryContainer
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Icon(
+                            Icons.keyboard_arrow_down,
+                            color: Theme.of(context).colorScheme.primaryContainer,
+                            size: 20,
+                          ),
+                        ],
+                      ),
+                      itemBuilder: (context) => [
+                        PopupMenuItem<String>(
+                          value: 'action',
+                          child: Text(
+                            switch (driver.accountState) {
+                              DriverAccountState.notConfirmed => localizations.confirmAccount,
+                              DriverAccountState.canPay => localizations.confirmPayment,
+                              DriverAccountState.paymentRequired => localizations.confirmPayment,
+                              DriverAccountState.enabled => localizations.blockAccount,
+                              DriverAccountState.disabled => localizations.enableAccount
+                            },
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        PopupMenuItem<String>(
+                          value: 'recharge',
+                          child: Text(
+                            localizations.recharge,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                      onSelected: (value) async {
+                        if (value == 'recharge') {
+                          _showRechargeDialog(context, driver.id.toString());
+                        } else {
+                          if(!hasConnection(context)) return;
+                          final response = await DriverService().changeState(driverId: driver.id);
+                          if(!mounted) return;
+                          if(response.statusCode == 200) {
+                            _refreshDrivers();
+                          }
+                          else {
+                            showToast(context: context, message: localizations.errorTryLater);
+                          }
                         }
                       },
-                      child: Text(
-                          switch (driver.accountState) {
-                            DriverAccountState.notConfirmed => localizations.confirmAccount,
-                            DriverAccountState.canPay => localizations.confirmPayment,
-                            DriverAccountState.paymentRequired => localizations.confirmPayment,
-                            DriverAccountState.enabled => localizations.blockAccount,
-                            DriverAccountState.disabled => localizations.enableAccount
-                          },
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.primaryContainer
-                          )
-                      )
                   )
               )
           )
@@ -547,6 +595,101 @@ class _DriversListPageState extends State<DriversListPage> {
         ),
 
       ]
+    );
+  }
+
+  void _showRechargeDialog(BuildContext context, String driverId) {
+    final TextEditingController amountController = TextEditingController();
+    final localizations = AppLocalizations.of(context)!;
+    final borderRadius = Theme.of(context).extension<DimensionExtension>()?.borderRadius ?? 20.0;
+    bool isLoading = false;
+    
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(localizations.rechargeAmount),
+          content: TextField(
+            controller: amountController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              hintText: '0.00',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(borderRadius),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => context.pop(),
+              child: Text(localizations.cancelButton),
+            ),
+            StatefulBuilder(
+              builder: (context, setState) {
+                return TextButton(
+                  onPressed: isLoading ? null : () async {
+                    final amountText = amountController.text.trim();
+                    if (amountText.isEmpty) {
+                      showToast(context: context, message: localizations.invalidAmount);
+                      return;
+                    }
+                    
+                    final amount = double.tryParse(amountText);
+                    if (amount == null || amount <= 0) {
+                      showToast(context: context, message: localizations.invalidAmount);
+                      return;
+                    }
+                    
+                    setState(() {
+                      isLoading = true;
+                    });
+                    
+                    if (!hasConnection(context)) {
+                      setState(() {
+                        isLoading = false;
+                      });
+                      return;
+                    }
+                    
+                    try {
+                      final response = await DriverService().rechargeCredit(
+                        driverId: int.parse(driverId),
+                        amount: amount,
+                      );
+                      
+                      if (!mounted) return;
+                      
+                      if (response.statusCode == 200) {
+                        showToast(context: context, message: localizations.rechargeSuccess);
+                        await _refreshDrivers(); // Refresh the list to show updated credit
+                      } else {
+                        showToast(context: context, message: localizations.rechargeError);
+                      }
+                    } catch (e) {
+                      if (!mounted) return;
+                      showToast(context: context, message: localizations.rechargeError);
+                    } finally {
+                      if (mounted) {
+                        setState(() {
+                          isLoading = false;
+                        });
+                        context.pop();
+                      }
+                    }
+                  },
+                  child: isLoading 
+                    ? SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Text(localizations.accept),
+                );
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

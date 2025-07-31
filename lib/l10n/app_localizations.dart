@@ -1748,6 +1748,54 @@ abstract class AppLocalizations {
   /// **'Confirmar Pago'**
   String get confirmPayment;
 
+  /// No description provided for @actions.
+  ///
+  /// In es, this message translates to:
+  /// **'Acciones'**
+  String get actions;
+
+  /// No description provided for @recharge.
+  ///
+  /// In es, this message translates to:
+  /// **'Recargar'**
+  String get recharge;
+
+  /// No description provided for @rechargeAmount.
+  ///
+  /// In es, this message translates to:
+  /// **'Monto a recargar'**
+  String get rechargeAmount;
+
+  /// No description provided for @credit.
+  ///
+  /// In es, this message translates to:
+  /// **'Crédito'**
+  String get credit;
+
+  /// No description provided for @creditAmount.
+  ///
+  /// In es, this message translates to:
+  /// **'Crédito: {amount} CUP'**
+  String creditAmount(Object amount);
+
+  /// No description provided for @rechargeSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Crédito recargado exitosamente'**
+  String get rechargeSuccess;
+
+  /// No description provided for @rechargeError.
+  ///
+  /// In es, this message translates to:
+  /// **'Error al recargar el crédito'**
+  String get rechargeError;
+
+  /// No description provided for @invalidAmount.
+  ///
+  /// In es, this message translates to:
+  /// **'Monto inválido'**
+  String get invalidAmount;
+
   /// No description provided for @blockAccount.
   ///
   /// In es, this message translates to:
