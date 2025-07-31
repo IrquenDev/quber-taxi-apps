@@ -121,8 +121,7 @@ class _CompletedTripsPageState extends State<CompletedTripsPage> {
                                         .shadow),
                                     Text(
                                         AppLocalizations.of(context)!.tripsPageTitle,
-                                        style: TextStyle(
-                                            fontSize: 24,
+                                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                             fontWeight: FontWeight.bold,
                                             color: Theme
                                                 .of(context)
@@ -241,15 +240,15 @@ class _CompletedTripsPageState extends State<CompletedTripsPage> {
                             Text(
                                 travel.endDate != null 
                                   ? DateFormat("yyyy-MM-dd hh:mm").format(travel.endDate!)
-                                  : 'N/A',
+                                  : localizations.notAvailable,
                                 style: textTheme.bodyLarge?.copyWith(color: colorScheme.outline, fontWeight: FontWeight.bold)
                             ),
                             const Spacer(),
                             Icon(Icons.route_sharp, size: 20, color: colorScheme.outline),
                             Text(
                               travel.finalDistance != null 
-                                ? '${travel.finalDistance} km'
-                                : 'N/A',
+                                ? '${travel.finalDistance} ${localizations.kilometers}'
+                                : localizations.notAvailable,
                               style: textTheme.bodyLarge?.copyWith(color: colorScheme.outline),
                             )
                           ]
@@ -264,8 +263,8 @@ class _CompletedTripsPageState extends State<CompletedTripsPage> {
                             ),
                             Text(
                               travel.finalPrice != null 
-                                ? '${travel.finalPrice} CUP'
-                                : 'N/A',
+                                ? '${travel.finalPrice} ${localizations.currency}'
+                                : localizations.notAvailable,
                               style: textTheme.bodyLarge
                             )
                           ]
@@ -280,8 +279,8 @@ class _CompletedTripsPageState extends State<CompletedTripsPage> {
                           ),
                           Text(
                             travel.finalDuration != null 
-                              ? '${travel.finalDuration} min'
-                              : 'N/A',
+                              ? '${travel.finalDuration} ${localizations.minutes}'
+                              : localizations.notAvailable,
                             style: textTheme.bodyLarge
                           )
                         ]
@@ -337,9 +336,9 @@ class _CompletedTripsPageState extends State<CompletedTripsPage> {
                                 localizations.driverSectionTitle,
                                 style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)
                             ),
-                            _infoRow(localizations.driverName, 'N/A'),
-                            _infoRow(localizations.driverPhone, 'N/A'),
-                            _infoRow(localizations.driverPlate, 'N/A'),
+                            _infoRow(localizations.driverName, localizations.notAvailable),
+                            _infoRow(localizations.driverPhone, localizations.notAvailable),
+                            _infoRow(localizations.driverPlate, localizations.notAvailable),
                           ],
                         )
                       ]
