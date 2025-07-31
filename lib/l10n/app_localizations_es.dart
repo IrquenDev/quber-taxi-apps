@@ -905,6 +905,32 @@ class AppLocalizationsEs extends AppLocalizations {
   String get confirmPayment => 'Confirmar Pago';
 
   @override
+  String get actions => 'Acciones';
+
+  @override
+  String get recharge => 'Recargar';
+
+  @override
+  String get rechargeAmount => 'Monto a recargar';
+
+  @override
+  String get credit => 'Crédito';
+
+  @override
+  String creditAmount(Object amount) {
+    return 'Crédito: $amount CUP';
+  }
+
+  @override
+  String get rechargeSuccess => 'Crédito recargado exitosamente';
+
+  @override
+  String get rechargeError => 'Error al recargar el crédito';
+
+  @override
+  String get invalidAmount => 'Monto inválido';
+
+  @override
   String get blockAccount => 'Bloquear cuenta';
 
   @override
