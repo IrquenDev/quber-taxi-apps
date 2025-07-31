@@ -601,6 +601,7 @@ class _DriversListPageState extends State<DriversListPage> {
   void _showRechargeDialog(BuildContext context, String driverId) {
     final TextEditingController amountController = TextEditingController();
     final localizations = AppLocalizations.of(context)!;
+    final borderRadius = Theme.of(context).extension<DimensionExtension>()?.borderRadius ?? 20.0;
     bool isLoading = false;
     
     showDialog(
@@ -614,7 +615,7 @@ class _DriversListPageState extends State<DriversListPage> {
             decoration: InputDecoration(
               hintText: '0.00',
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(borderRadius),
               ),
             ),
           ),
