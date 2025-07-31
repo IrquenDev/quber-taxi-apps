@@ -365,6 +365,9 @@
                    "invalidVerificationCode": "Código de verificación inválido",
              "verificationCodeExpired": "Código de verificación expirado",
              "favoritesBottomItem": "Favoritos",
-             "myMarkers": "Mis marcadores"
-
+             "myMarkers": "Mis marcadores",
+             "notAvailable": "N/A",
+             "currency": "CUP",
+             "kilometers": "km",
+             "minutes": "min"
 }

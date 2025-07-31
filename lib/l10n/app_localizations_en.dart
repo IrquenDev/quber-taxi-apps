@@ -1054,4 +1054,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get myMarkers => 'My Markers';
+
+  @override
+  String get notAvailable => 'N/A';
+
+  @override
+  String get currency => 'CUP';
+
+  @override
+  String get kilometers => 'km';
+
+  @override
+  String get minutes => 'min';
 }
