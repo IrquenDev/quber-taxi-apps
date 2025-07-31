@@ -9,6 +9,7 @@ import 'package:quber_taxi/enums/driver_account_state.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/utils/runtime.dart';
+import 'dart:async';
 
 enum FilterType { name, phone, state }
 
@@ -31,6 +32,12 @@ class _DriversListPageState extends State<DriversListPage> {
   List<Driver> _allDrivers = [];
   List<Driver> _filteredDrivers = [];
   FilterType? _expandedFilter;
+  
+  // Animation variables
+  Timer? _animationTimer;
+  int _currentFilterIndex = 0;
+  bool _userInteracted = false;
+  final List<FilterType> _filterOrder = [FilterType.name, FilterType.phone, FilterType.state];
 
   void _loadDrivers() => _futureDrivers = _accountService.findAllDrivers();
 
@@ -65,6 +72,7 @@ class _DriversListPageState extends State<DriversListPage> {
   }
 
   void _clearFilters() {
+    _onUserInteraction();
     setState(() {
       _nameFilterController.clear();
       _phoneFilterController.clear();
@@ -75,9 +83,49 @@ class _DriversListPageState extends State<DriversListPage> {
   }
 
   void _toggleFilter(FilterType? filterType) {
+    // Stop animation on any filter interaction
+    _onUserInteraction();
+    
     setState(() {
       _expandedFilter = _expandedFilter == filterType ? null : filterType;
     });
+  }
+
+  void _startAnimation() {
+    if (_userInteracted) return; // Don't start if user has interacted
+    
+    _animationTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      if (!mounted || _userInteracted) {
+        timer.cancel();
+        return;
+      }
+      
+      setState(() {
+        _expandedFilter = _filterOrder[_currentFilterIndex];
+        _currentFilterIndex = (_currentFilterIndex + 1) % _filterOrder.length;
+      });
+    });
+  }
+
+  void _stopAnimation() {
+    _animationTimer?.cancel();
+    _animationTimer = null;
+  }
+
+  void _onTextChanged() {
+    // Stop animation when user starts typing
+    if (!_userInteracted) {
+      _stopAnimation();
+      _userInteracted = true;
+    }
+  }
+
+  void _onUserInteraction() {
+    // Stop animation on any user interaction with filters
+    if (!_userInteracted) {
+      _stopAnimation();
+      _userInteracted = true;
+    }
   }
 
   bool get _hasActiveFilters => 
@@ -87,6 +135,9 @@ class _DriversListPageState extends State<DriversListPage> {
 
   @override
   void dispose() {
+    _stopAnimation();
+    _nameFilterController.removeListener(_onTextChanged);
+    _phoneFilterController.removeListener(_onTextChanged);
     _nameFilterController.dispose();
     _phoneFilterController.dispose();
     super.dispose();
@@ -96,6 +147,17 @@ class _DriversListPageState extends State<DriversListPage> {
   void initState() {
     super.initState();
     _loadDrivers();
+    
+    // Add listeners to text controllers to detect user interaction
+    _nameFilterController.addListener(_onTextChanged);
+    _phoneFilterController.addListener(_onTextChanged);
+    
+    // Start animation after a short delay
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (mounted && !_userInteracted) {
+        _startAnimation();
+      }
+    });
   }
 
   @override
@@ -139,7 +201,7 @@ class _DriversListPageState extends State<DriversListPage> {
                 )
               ),
               Positioned(
-                  top: 140.0, bottom: 20.0, right: 20.0, left: 20.0,
+                  top: 130.0, bottom: 20.0, right: 20.0, left: 20.0,
                   child: FutureBuilder(
                       future: _futureDrivers,
                       builder: (context, snapshot) {
@@ -160,10 +222,27 @@ class _DriversListPageState extends State<DriversListPage> {
                           return RefreshIndicator(
                             onRefresh: _refreshDrivers,
                             child: Column(
-                              spacing: 12.0,
+                              spacing: 8.0,
                               children: [
                                 // Filters always visible
                                 _buildFiltersRow(localizations, colorScheme, borderRadius),
+                                // Clear filters text
+                                if (_hasActiveFilters)
+                                  GestureDetector(
+                                    onTap: _clearFilters,
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                      child: Text(
+                                        localizations.clearFilters,
+                                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                          color: colorScheme.error,
+                                          fontWeight: FontWeight.bold,
+                                          decoration: TextDecoration.underline,
+                                          decorationColor: colorScheme.error,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 // Content area
                                 Expanded(
                                   child: ClipRRect(
@@ -244,42 +323,90 @@ class _DriversListPageState extends State<DriversListPage> {
                                 ),
                               ),
                             ]
+                        ),
+                        Row(
+                            spacing: 8.0,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.account_balance_wallet_outlined, size: 16),
+                              Text(
+                                localizations.creditAmount(driver.credit.toStringAsFixed(2)),
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ]
                         )
                       ]
                   ),
                 ),
-                Icon(DriverAccountState.iconOf(driver.accountState), size: 20),
+                Image.asset(DriverAccountState.imageOf(driver.accountState), width: 32, height: 32),
               ]
           ),
           Align(
               alignment: Alignment.bottomRight,
               child: Padding(
                   padding: const EdgeInsets.only(right: 8.0),
-                  child: GestureDetector(
-                      onTap: () async {
-                        if(!hasConnection(context)) return;
-                        final response = await DriverService().changeState(driverId: driver.id);
-                        if(!mounted) return;
-                        if(response.statusCode == 200) {
-                          _refreshDrivers();
-                        }
-                        else {
-                          showToast(context: context, message: localizations.errorTryLater);
+                  child: PopupMenuButton<String>(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            localizations.actions,
+                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.primaryContainer
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Icon(
+                            Icons.keyboard_arrow_down,
+                            color: Theme.of(context).colorScheme.primaryContainer,
+                            size: 20,
+                          ),
+                        ],
+                      ),
+                      itemBuilder: (context) => [
+                        PopupMenuItem<String>(
+                          value: 'action',
+                          child: Text(
+                            switch (driver.accountState) {
+                              DriverAccountState.notConfirmed => localizations.confirmAccount,
+                              DriverAccountState.canPay => localizations.confirmPayment,
+                              DriverAccountState.paymentRequired => localizations.confirmPayment,
+                              DriverAccountState.enabled => localizations.blockAccount,
+                              DriverAccountState.disabled => localizations.enableAccount
+                            },
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        PopupMenuItem<String>(
+                          value: 'recharge',
+                          child: Text(
+                            localizations.recharge,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                      onSelected: (value) async {
+                        if (value == 'recharge') {
+                          _showRechargeDialog(context, driver.id.toString());
+                        } else {
+                          if(!hasConnection(context)) return;
+                          final response = await DriverService().changeState(driverId: driver.id);
+                          if(!mounted) return;
+                          if(response.statusCode == 200) {
+                            _refreshDrivers();
+                          }
+                          else {
+                            showToast(context: context, message: localizations.errorTryLater);
+                          }
                         }
                       },
-                      child: Text(
-                          switch (driver.accountState) {
-                            DriverAccountState.notConfirmed => localizations.confirmAccount,
-                            DriverAccountState.canPay => localizations.confirmPayment,
-                            DriverAccountState.paymentRequired => localizations.confirmPayment,
-                            DriverAccountState.enabled => localizations.blockAccount,
-                            DriverAccountState.disabled => localizations.enableAccount
-                          },
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.primaryContainer
-                          )
-                      )
                   )
               )
           )
@@ -292,8 +419,10 @@ class _DriversListPageState extends State<DriversListPage> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         // Name filter
-        Expanded(
-          flex: _expandedFilter == FilterType.name ? 3 : 1,
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 1500),
+          curve: Curves.easeInOut,
+          width: _expandedFilter == FilterType.name ? 200 : 60,
           child: GestureDetector(
             onTap: () => _toggleFilter(FilterType.name),
             child: Card(
@@ -301,36 +430,46 @@ class _DriversListPageState extends State<DriversListPage> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(borderRadius),
               ),
-              child: Padding(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 1500),
+                curve: Curves.easeInOut,
                 padding: _expandedFilter == FilterType.name
-                  ? EdgeInsets.zero
+                  ? const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0)
                   : const EdgeInsets.all(12.0),
                 child: _expandedFilter == FilterType.name
-                  ? TextFormField(
-                      controller: _nameFilterController,
-                      decoration: InputDecoration(
-                        hintText: localizations.filterByName,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(borderRadius),
-                          borderSide: BorderSide.none,
+                  ? SizedBox(
+                      height: 36,
+                      child: TextFormField(
+                        controller: _nameFilterController,
+                        style: Theme.of(context).textTheme.bodySmall,
+                        decoration: InputDecoration(
+                          hintText: localizations.filterByName,
+                          hintStyle: Theme.of(context).textTheme.bodySmall,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(borderRadius),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+                          filled: true,
+                          fillColor: colorScheme.surfaceContainerLowest,
                         ),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                        filled: true,
-                        fillColor: colorScheme.surfaceContainerLowest,
+                        onChanged: (_) => _applyFilters(),
                       ),
-                      onChanged: (_) => _applyFilters(),
                     )
                   : Icon(
                       Icons.person_search_outlined,
                       color: colorScheme.primary,
+                      size: 24,
                     ),
               ),
             ),
           ),
         ),
         // Phone filter
-        Expanded(
-          flex: _expandedFilter == FilterType.phone ? 3 : 1,
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 1500),
+          curve: Curves.easeInOut,
+          width: _expandedFilter == FilterType.phone ? 200 : 60,
           child: GestureDetector(
             onTap: () => _toggleFilter(FilterType.phone),
             child: Card(
@@ -338,37 +477,47 @@ class _DriversListPageState extends State<DriversListPage> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(borderRadius),
               ),
-              child: Padding(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 1500),
+                curve: Curves.easeInOut,
                 padding: _expandedFilter == FilterType.phone
-                  ? EdgeInsets.zero
+                  ? const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0)
                   : const EdgeInsets.all(12.0),
                 child: _expandedFilter == FilterType.phone
-                  ? TextFormField(
-                      controller: _phoneFilterController,
-                      decoration: InputDecoration(
-                        hintText: localizations.filterByPhone,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(borderRadius),
-                          borderSide: BorderSide.none,
+                  ? SizedBox(
+                      height: 36,
+                      child: TextFormField(
+                        controller: _phoneFilterController,
+                        style: Theme.of(context).textTheme.bodySmall,
+                        decoration: InputDecoration(
+                          hintText: localizations.filterByPhone,
+                          hintStyle: Theme.of(context).textTheme.bodySmall,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(borderRadius),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+                          filled: true,
+                          fillColor: colorScheme.surfaceContainerLowest,
                         ),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                        filled: true,
-                        fillColor: colorScheme.surfaceContainerLowest,
+                        keyboardType: TextInputType.phone,
+                        onChanged: (_) => _applyFilters(),
                       ),
-                      keyboardType: TextInputType.phone,
-                      onChanged: (_) => _applyFilters(),
                     )
                   : Icon(
                       Icons.phone_outlined,
                       color: colorScheme.primary,
+                      size: 24,
                     ),
               ),
             ),
           ),
         ),
         // State filter
-        Expanded(
-          flex: _expandedFilter == FilterType.state ? 3 : 1,
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 1500),
+          curve: Curves.easeInOut,
+          width: _expandedFilter == FilterType.state ? 200 : 60,
           child: GestureDetector(
             onTap: () => _toggleFilter(FilterType.state),
             child: Card(
@@ -376,69 +525,171 @@ class _DriversListPageState extends State<DriversListPage> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(borderRadius),
               ),
-              child: Padding(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 1500),
+                curve: Curves.easeInOut,
                 padding: _expandedFilter == FilterType.state
-                  ? EdgeInsets.zero
+                  ? const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0)
                   : const EdgeInsets.all(12.0),
                 child: _expandedFilter == FilterType.state
-                  ? DropdownButtonFormField<DriverAccountState?>(
-                      value: _selectedStateFilter,
-                      decoration: InputDecoration(
-                        hintText: localizations.filterByState,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(borderRadius),
-                          borderSide: BorderSide.none,
-                        ),
-                        contentPadding: EdgeInsets.only(left: 4.0),
-                        filled: true,
-                        fillColor: colorScheme.surfaceContainerLowest,
-                      ),
-                      items: [
-                        DropdownMenuItem<DriverAccountState?>(
-                          value: null,
-                          child: Text(localizations.allStates),
-                        ),
-                        ...DriverAccountState.values.map((state) =>
-                          DropdownMenuItem<DriverAccountState?>(
-                            value: state,
-                            child: Text(DriverAccountState.nameOf(state, localizations)),
+                  ? ClipRect(
+                      child: SizedBox(
+                        height: 36,
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButtonFormField<DriverAccountState?>(
+                            value: _selectedStateFilter,
+                            isExpanded: true,
+                            isDense: true,
+                            menuMaxHeight: 200,
+                            decoration: InputDecoration(
+                              hintText: localizations.filterByState,
+                              hintStyle: Theme.of(context).textTheme.bodySmall,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(borderRadius),
+                                borderSide: BorderSide.none,
+                              ),
+                              contentPadding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+                              filled: true,
+                              fillColor: colorScheme.surfaceContainerLowest,
+                            ),
+                            style: Theme.of(context).textTheme.bodySmall,
+                            items: [
+                              DropdownMenuItem<DriverAccountState?>(
+                                value: null,
+                                child: Text(
+                                  localizations.allStates,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                              ),
+                              ...DriverAccountState.values.map((state) =>
+                                DropdownMenuItem<DriverAccountState?>(
+                                  value: state,
+                                  child: Text(
+                                    DriverAccountState.nameOf(state, localizations),
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(context).textTheme.bodySmall,
+                                  ),
+                                ),
+                              ),
+                            ],
+                                                    onChanged: (value) {
+                          _onUserInteraction();
+                          setState(() {
+                            _selectedStateFilter = value;
+                          });
+                          _applyFilters();
+                        },
                           ),
                         ),
-                      ],
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedStateFilter = value;
-                        });
-                        _applyFilters();
-                      },
+                      ),
                     )
                   : Icon(
                       Icons.filter_list_outlined,
                       color: colorScheme.primary,
+                      size: 24,
                     ),
               ),
             ),
           ),
         ),
-        // Clear filters
-        if (_hasActiveFilters)
-          GestureDetector(
-            onTap: _clearFilters,
-            child: Card(
-              color: colorScheme.surfaceContainerLowest,
-              shape: RoundedRectangleBorder(
+
+      ]
+    );
+  }
+
+  void _showRechargeDialog(BuildContext context, String driverId) {
+    final TextEditingController amountController = TextEditingController();
+    final localizations = AppLocalizations.of(context)!;
+    final borderRadius = Theme.of(context).extension<DimensionExtension>()?.borderRadius ?? 20.0;
+    bool isLoading = false;
+    
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(localizations.rechargeAmount),
+          content: TextField(
+            controller: amountController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              hintText: '0.00',
+              border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(borderRadius),
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Icon(
-                  Icons.clear_outlined,
-                  color: colorScheme.error,
-                )
-              )
-            )
-          )
-      ]
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => context.pop(),
+              child: Text(localizations.cancelButton),
+            ),
+            StatefulBuilder(
+              builder: (context, setState) {
+                return TextButton(
+                  onPressed: isLoading ? null : () async {
+                    final amountText = amountController.text.trim();
+                    if (amountText.isEmpty) {
+                      showToast(context: context, message: localizations.invalidAmount);
+                      return;
+                    }
+                    
+                    final amount = double.tryParse(amountText);
+                    if (amount == null || amount <= 0) {
+                      showToast(context: context, message: localizations.invalidAmount);
+                      return;
+                    }
+                    
+                    setState(() {
+                      isLoading = true;
+                    });
+                    
+                    if (!hasConnection(context)) {
+                      setState(() {
+                        isLoading = false;
+                      });
+                      return;
+                    }
+                    
+                    try {
+                      final response = await DriverService().rechargeCredit(
+                        driverId: int.parse(driverId),
+                        amount: amount,
+                      );
+                      
+                      if (!mounted) return;
+                      
+                      if (response.statusCode == 200) {
+                        showToast(context: context, message: localizations.rechargeSuccess);
+                        await _refreshDrivers(); // Refresh the list to show updated credit
+                      } else {
+                        showToast(context: context, message: localizations.rechargeError);
+                      }
+                    } catch (e) {
+                      if (!mounted) return;
+                      showToast(context: context, message: localizations.rechargeError);
+                    } finally {
+                      if (mounted) {
+                        setState(() {
+                          isLoading = false;
+                        });
+                        context.pop();
+                      }
+                    }
+                  },
+                  child: isLoading 
+                    ? SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Text(localizations.accept),
+                );
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

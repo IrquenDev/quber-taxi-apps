@@ -113,7 +113,7 @@ abstract class AppLocalizations {
   /// No description provided for @destinationName.
   ///
   /// In es, this message translates to:
-  /// **'Seleccione el municipio de destino'**
+  /// **'Seleccione la ubicación de destino'**
   String get destinationName;
 
   /// No description provided for @carPrefer.
@@ -134,6 +134,12 @@ abstract class AppLocalizations {
   /// **'¿Lleva mascota?'**
   String get pets;
 
+  /// No description provided for @distance.
+  ///
+  /// In es, this message translates to:
+  /// **'Distancia:'**
+  String get distance;
+
   /// No description provided for @minDistance.
   ///
   /// In es, this message translates to:
@@ -146,6 +152,12 @@ abstract class AppLocalizations {
   /// **'Distancia máxima:'**
   String get maxDistance;
 
+  /// No description provided for @price.
+  ///
+  /// In es, this message translates to:
+  /// **'Precio:'**
+  String get price;
+
   /// No description provided for @minPrice.
   ///
   /// In es, this message translates to:
@@ -155,7 +167,7 @@ abstract class AppLocalizations {
   /// No description provided for @maxPrice.
   ///
   /// In es, this message translates to:
-  /// **'Precio máximo que puede costar:'**
+  /// **'Precio máximo:'**
   String get maxPrice;
 
   /// No description provided for @askTaxi.
@@ -169,6 +181,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Vehículo'**
   String get vehicle;
+
+  /// No description provided for @tooltipAboutEstimations.
+  ///
+  /// In es, this message translates to:
+  /// **'Las estimaciones que se presentan a continuación, a pesar de ser muy prescisas, siguen siendo valores aproximados. Refiérase a ellas como una guía. La distancia y precio reales se calcularán durante la travesía.'**
+  String get tooltipAboutEstimations;
 
   /// No description provided for @settingsHome.
   ///
@@ -205,6 +223,42 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'P. Quber'**
   String get quberPointsBottomItem;
+
+  /// No description provided for @quberPoints.
+  ///
+  /// In es, this message translates to:
+  /// **'Puntos Quber'**
+  String get quberPoints;
+
+  /// No description provided for @accumulatedPoints.
+  ///
+  /// In es, this message translates to:
+  /// **'Puntos acumulados'**
+  String get accumulatedPoints;
+
+  /// No description provided for @quberPointsEarned.
+  ///
+  /// In es, this message translates to:
+  /// **'Puntos Quber Ganados'**
+  String get quberPointsEarned;
+
+  /// No description provided for @inviteFriendsDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Invita amigos con tu código de referido para ganar más puntos. Úsalos para comprar descuentos en tus viajes.'**
+  String get inviteFriendsDescription;
+
+  /// No description provided for @driverCredit.
+  ///
+  /// In es, this message translates to:
+  /// **'Crédito del Conductor'**
+  String get driverCredit;
+
+  /// No description provided for @driverCreditDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Saldo disponible en tu cuenta. Este crédito se actualiza después de cada viaje completado.'**
+  String get driverCreditDescription;
 
   /// No description provided for @ubicationFailed.
   ///
@@ -1568,6 +1622,12 @@ abstract class AppLocalizations {
   /// **'Gracias por su atención.'**
   String get thanksForAttention;
 
+  /// No description provided for @distanceFixed.
+  ///
+  /// In es, this message translates to:
+  /// **'Distancia: {distance}km'**
+  String distanceFixed(Object distance);
+
   /// No description provided for @distanceMinimum.
   ///
   /// In es, this message translates to:
@@ -1579,6 +1639,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Distancia Máxima: {distance}km'**
   String distanceMaximum(Object distance);
+
+  /// No description provided for @priceFixedCost.
+  ///
+  /// In es, this message translates to:
+  /// **'Precio: {price} CUP'**
+  String priceFixedCost(Object price);
 
   /// No description provided for @priceMinimumCost.
   ///
@@ -1646,6 +1712,12 @@ abstract class AppLocalizations {
   /// **'Todos los estados'**
   String get allStates;
 
+  /// No description provided for @clearFilters.
+  ///
+  /// In es, this message translates to:
+  /// **'Limpiar filtros'**
+  String get clearFilters;
+
   /// No description provided for @drivers.
   ///
   /// In es, this message translates to:
@@ -1675,6 +1747,54 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Confirmar Pago'**
   String get confirmPayment;
+
+  /// No description provided for @actions.
+  ///
+  /// In es, this message translates to:
+  /// **'Acciones'**
+  String get actions;
+
+  /// No description provided for @recharge.
+  ///
+  /// In es, this message translates to:
+  /// **'Recargar'**
+  String get recharge;
+
+  /// No description provided for @rechargeAmount.
+  ///
+  /// In es, this message translates to:
+  /// **'Monto a recargar'**
+  String get rechargeAmount;
+
+  /// No description provided for @credit.
+  ///
+  /// In es, this message translates to:
+  /// **'Crédito'**
+  String get credit;
+
+  /// No description provided for @creditAmount.
+  ///
+  /// In es, this message translates to:
+  /// **'Crédito: {amount} CUP'**
+  String creditAmount(Object amount);
+
+  /// No description provided for @rechargeSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Crédito recargado exitosamente'**
+  String get rechargeSuccess;
+
+  /// No description provided for @rechargeError.
+  ///
+  /// In es, this message translates to:
+  /// **'Error al recargar el crédito'**
+  String get rechargeError;
+
+  /// No description provided for @invalidAmount.
+  ///
+  /// In es, this message translates to:
+  /// **'Monto inválido'**
+  String get invalidAmount;
 
   /// No description provided for @blockAccount.
   ///
@@ -1910,6 +2030,7 @@ abstract class AppLocalizations {
   /// **'Marcadores'**
   String get myMarkers;
 
+
   /// No description provided for @select.
   ///
   /// In es, this message translates to:
@@ -1927,6 +2048,7 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Destino'**
   String get destination;
+
 }
 
 class _AppLocalizationsDelegate

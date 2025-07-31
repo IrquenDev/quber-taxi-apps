@@ -12,13 +12,13 @@ enum DriverAccountState {
 
   final String apiValue;
 
-  static IconData iconOf(DriverAccountState state) {
+  static String imageOf(DriverAccountState state) {
     return switch (state) {
-      DriverAccountState.notConfirmed => Icons.watch_later_outlined,
-      DriverAccountState.canPay => Icons.payment_outlined,
-      DriverAccountState.paymentRequired => Icons.payment_outlined,
-      DriverAccountState.enabled => Icons.done_outline,
-      DriverAccountState.disabled => Icons.lock_outline
+      DriverAccountState.notConfirmed => "assets/icons/timer.png",
+      DriverAccountState.canPay => "assets/icons/ready.png",
+      DriverAccountState.paymentRequired => "assets/icons/locked.png",
+      DriverAccountState.enabled =>  "assets/icons/ready.png",
+      DriverAccountState.disabled => "assets/icons/locked.png"
     };
   }
 

@@ -15,7 +15,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get originName => 'Seleccione la ubicación de origen';
 
   @override
-  String get destinationName => 'Seleccione el municipio de destino';
+  String get destinationName => 'Seleccione la ubicación de destino';
 
   @override
   String get carPrefer => '¿Qué tipo de vehículo prefiere?';
@@ -27,22 +27,32 @@ class AppLocalizationsEs extends AppLocalizations {
   String get pets => '¿Lleva mascota?';
 
   @override
+  String get distance => 'Distancia:';
+
+  @override
   String get minDistance => 'Distancia mínima:';
 
   @override
   String get maxDistance => 'Distancia máxima:';
 
   @override
+  String get price => 'Precio:';
+
+  @override
   String get minPrice => 'Precio mínimo:';
 
   @override
-  String get maxPrice => 'Precio máximo que puede costar:';
+  String get maxPrice => 'Precio máximo:';
 
   @override
   String get askTaxi => 'Pedir taxi';
 
   @override
   String get vehicle => 'Vehículo';
+
+  @override
+  String get tooltipAboutEstimations =>
+      'Las estimaciones que se presentan a continuación, a pesar de ser muy prescisas, siguen siendo valores aproximados. Refiérase a ellas como una guía. La distancia y precio reales se calcularán durante la travesía.';
 
   @override
   String get settingsHome => 'Ajustes';
@@ -61,6 +71,26 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get quberPointsBottomItem => 'P. Quber';
+
+  @override
+  String get quberPoints => 'Puntos Quber';
+
+  @override
+  String get accumulatedPoints => 'Puntos acumulados';
+
+  @override
+  String get quberPointsEarned => 'Puntos Quber Ganados';
+
+  @override
+  String get inviteFriendsDescription =>
+      'Invita amigos con tu código de referido para ganar más puntos. Úsalos para comprar descuentos en tus viajes.';
+
+  @override
+  String get driverCredit => 'Crédito del Conductor';
+
+  @override
+  String get driverCreditDescription =>
+      'Saldo disponible en tu cuenta. Este crédito se actualiza después de cada viaje completado.';
 
   @override
   String get ubicationFailed =>
@@ -799,6 +829,11 @@ class AppLocalizationsEs extends AppLocalizations {
   String get thanksForAttention => 'Gracias por su atención.';
 
   @override
+  String distanceFixed(Object distance) {
+    return 'Distancia: ${distance}km';
+  }
+
+  @override
   String distanceMinimum(Object distance) {
     return 'Distancia Mínima: ${distance}km';
   }
@@ -806,6 +841,11 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String distanceMaximum(Object distance) {
     return 'Distancia Máxima: ${distance}km';
+  }
+
+  @override
+  String priceFixedCost(Object price) {
+    return 'Precio: $price CUP';
   }
 
   @override
@@ -846,6 +886,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get allStates => 'Todos los estados';
 
   @override
+  String get clearFilters => 'Limpiar filtros';
+
+  @override
   String get drivers => 'Conductores';
 
   @override
@@ -860,6 +903,32 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get confirmPayment => 'Confirmar Pago';
+
+  @override
+  String get actions => 'Acciones';
+
+  @override
+  String get recharge => 'Recargar';
+
+  @override
+  String get rechargeAmount => 'Monto a recargar';
+
+  @override
+  String get credit => 'Crédito';
+
+  @override
+  String creditAmount(Object amount) {
+    return 'Crédito: $amount CUP';
+  }
+
+  @override
+  String get rechargeSuccess => 'Crédito recargado exitosamente';
+
+  @override
+  String get rechargeError => 'Error al recargar el crédito';
+
+  @override
+  String get invalidAmount => 'Monto inválido';
 
   @override
   String get blockAccount => 'Bloquear cuenta';
@@ -993,6 +1062,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get favoritesBottomItem => 'Favoritos';
 
   @override
+
   String get myMarkers => 'Marcadores';
 
   @override
@@ -1003,4 +1073,5 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get destination => 'Destino';
+
 }

@@ -77,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
       }
       
       // Handle response
-      if(!context.mounted) return;
+      if(!mounted) return;
       
       switch (response.statusCode) {
         case 200: 
@@ -109,7 +109,7 @@ class _LoginPageState extends State<LoginPage> {
     showToast(
       context: context,
       message: message,
-      duration: const Duration(seconds: 4),
+      durationInSeconds: 4
     );
   }
 
@@ -310,7 +310,7 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
   String _normalizePhoneNumber(String phone) {
     // Remove all spaces and trim
     String cleanPhone = phone.trim().replaceAll(' ', '');
-    
+
     // Remove + if present
     if (cleanPhone.startsWith('+')) {
       cleanPhone = cleanPhone.substring(1);
@@ -346,7 +346,7 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
       showToast(
         context: context,
         message: localization.codeSendErrorMessage,
-        duration: const Duration(seconds: 3),
+        durationInSeconds: 3,
       );
     }
   }
@@ -447,6 +447,7 @@ class PasswordResetStepDialog extends StatefulWidget {
 }
 
 class _PasswordResetStepDialogState extends State<PasswordResetStepDialog> {
+
   final _codeController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmController = TextEditingController();
@@ -482,19 +483,19 @@ class _PasswordResetStepDialogState extends State<PasswordResetStepDialog> {
       showToast(
         context: context,
         message: localization.resetSuccessMessage,
-        duration: const Duration(seconds: 3),
+        durationInSeconds: 3
       );
     } else if (response.statusCode == 400) {
       showToast(
         context: context,
         message: localization.invalidCodeMessage,
-        duration: const Duration(seconds: 3),
+        durationInSeconds: 3
       );
     } else {
       showToast(
         context: context,
         message: localization.unexpectedErrorMessage,
-        duration: const Duration(seconds: 3),
+        durationInSeconds: 3
       );
     }
   }

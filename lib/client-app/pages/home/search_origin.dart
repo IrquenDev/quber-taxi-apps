@@ -139,111 +139,157 @@ class _SearchOriginPageState extends State<SearchOriginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final localizations = AppLocalizations.of(context)!;
     return NetworkAlertTemplate(
-      alertBuilder: (_, status) => CustomNetworkAlert(status: status),
-      child: Scaffold(
-        // AppNar (includes TextField for searches)
-        appBar: AppBar(
-          title: TextField(
-            controller: _controller,
-            onChanged: hasConnection(context) ? _onTextChanged : null,
-            decoration: InputDecoration(
-              fillColor: Theme.of(context).colorScheme.surface,
-              hintText: AppLocalizations.of(context)!.writeUbication,
-              contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-              suffixIcon: _controller.text.isNotEmpty ? IconButton(
-                  icon: const Icon(Icons.clear_outlined),
-                  onPressed: () {
-                    _controller.clear();
-                    setState(() => _places = []);
-                  }
-              ) : null,
-            )
-          )
-        ),
-        body: Column(
-          children: [
-            // Other Options For Choosing Location
-            Card(
-              margin: EdgeInsets.zero,
-              child: Column(
-                children: [
-                  Divider(height: 1),
-                  // Select location from map
-                  ListTile(
-                    leading: Icon(Icons.map_outlined),
-                    title: Text(AppLocalizations.of(context)!.selectUbication),
-                    onTap: () async {
-                      final mapboxPlace = await context.push<MapboxPlace>(CommonRoutes.locationPicker);
-                      if (mapboxPlace != null && context.mounted) {
-                        context.pop(mapboxPlace);
-                      }
-                    },
-                  ),
-                  Divider(height: 1),
-                  // Use Current Location
-                  ListTile(
-                    leading: _isLoadingCurrentLocation ? CircularProgressIndicator() : Icon(Icons.location_on_outlined),
-                    title: Text(AppLocalizations.of(context)!.actualUbication),
-                    onTap: _isLoadingCurrentLocation ? null : _handleCurrentLocationTap,
+        alertBuilder: (_, status) => CustomNetworkAlert(status: status),
+        child: Scaffold(
+            resizeToAvoidBottomInset: false,
+            appBar: AppBar(
+              forceMaterialTransparency: true,
+              backgroundColor: colorScheme.surface,
+              title: TextField(
+                  controller: _controller,
+                  onChanged: hasConnection(context) ? _onTextChanged : null,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    fillColor: colorScheme.surface,
+                    hintText: AppLocalizations.of(context)!.writeUbication,
+                    suffixIcon: _controller.text.isNotEmpty ? IconButton(
+                        icon: const Icon(Icons.clear_outlined),
+                        onPressed: () {
+                          _controller.clear();
+                          setState(() => _places = []);
+                        }
+                    ) : null,
                   )
-                ]
-              )
+              ),
+              titleSpacing: 0.0,
             ),
-            if (_isLoading)
-              const Expanded(child: Center(child: CircularProgressIndicator()))
-            // Show Suggestions
-            else if (_places.isNotEmpty)
-              Expanded(
-                child: ListView.builder(
-                  itemCount: _places.length,
-                  itemBuilder: (context, index) {
-                    final place = _places[index];
-                    return ListTile(
-                      titleTextStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-                      title: Text(place.text),
-                      subtitle: Text(place.placeName),
-                      onTap: () {
-                        context.pop(place);
-                      },
-                    );
-                  }
-                )
-              )
-            // No Results
-            else if (_controller.text.isNotEmpty)
-              Expanded(
-                  child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                        child: Column(
+            body: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 2.0,
+                children: [
+                  // Other Options
+                  Card(
+                      margin: EdgeInsets.zero,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                      color: colorScheme.surface,
+                      child: Column(
                           mainAxisSize: MainAxisSize.min,
-                          spacing: 8.0,
+                          spacing: 0.0,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              localizations.noResultsTitle,
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.bodyLarge
+                            // Divider
+                            Divider(height: 1),
+                            // Select location from map
+                            ListTile(
+                                minTileHeight: 48.0,
+                                onTap: () async {
+                                  final mapboxPlace = await context.push<MapboxPlace>(CommonRoutes.locationPicker);
+                                  if (mapboxPlace != null && context.mounted) {
+                                    context.pop(mapboxPlace);
+                                  }
+                                },
+                                contentPadding: EdgeInsets.only(left: 12.0),
+                                minVerticalPadding: 0.0,
+                                leading: Icon(Icons.map_outlined),
+                                title: Text(
+                                    AppLocalizations.of(context)!.selectUbication,
+                                    style: textTheme.bodyLarge
+                                )
                             ),
-                            Text(
-                                localizations.noResultsMessage,
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.bodyLarge
-                            ),
-                            Text(
-                                localizations.noResultsHint,
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.bodyLarge
+                            // Use Current Location
+                            ListTile(
+                                minTileHeight: 48.0,
+                                onTap: _isLoadingCurrentLocation ? null : _handleCurrentLocationTap,
+                                contentPadding: EdgeInsets.only(left: 12.0),
+                                minVerticalPadding: 0.0,
+                                leading: _isLoadingCurrentLocation
+                                    ? CircularProgressIndicator()
+                                    : Icon(Icons.location_on_outlined),
+                                title: Text(
+                                    AppLocalizations.of(context)!.actualUbication,
+                                    style: textTheme.bodyLarge
+                                )
                             )
                           ]
-                        ),
+                      )
+                  ),
+                  // Suggestions Section
+                  Expanded(
+                      child: Stack(
+                          children: [
+                            // Background Image
+                            Positioned.fill(child: Image.asset("assets/images/background_map.jpg", fit: BoxFit.fill)),
+                            // Opacity Shader
+                            Positioned.fill(child: ColoredBox(color: Colors.white.withAlpha(200))),
+                            // Dynamic Context
+                            if (_isLoading)
+                              Positioned.fill(child: Center(child: CircularProgressIndicator()))
+                            // Show Suggestions
+                            else if (_places.isNotEmpty)
+                              Positioned.fill(
+                                child: Padding(
+                                  padding: EdgeInsets.only(top: 4.0),
+                                  child: ListView.builder(
+                                      padding: EdgeInsets.zero,
+                                      itemCount: _places.length,
+                                      itemBuilder: (context, index) {
+                                        final place = _places[index];
+                                        return ListTile(
+                                          titleTextStyle: Theme
+                                              .of(context)
+                                              .textTheme
+                                              .bodyLarge
+                                              ?.copyWith(fontWeight: FontWeight.bold),
+                                          title: Text(place.text),
+                                          subtitle: Text(place.placeName),
+                                          onTap: () {
+                                            context.pop(place);
+                                          },
+                                        );
+                                      }
+                                  ),
+                                ),
+                              )
+                            // No Results
+                            else if (_controller.text.isNotEmpty)
+                                Positioned.fill(
+                                  child: Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                                        child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            spacing: 8.0,
+                                            children: [
+                                              Text(
+                                                  localizations.noResultsTitle,
+                                                  textAlign: TextAlign.center,
+                                                  style: textTheme.bodyLarge
+                                              ),
+                                              Text(
+                                                  localizations.noResultsMessage,
+                                                  textAlign: TextAlign.center,
+                                                  style: textTheme.bodyLarge
+                                              ),
+                                              Text(
+                                                  localizations.noResultsHint,
+                                                  textAlign: TextAlign.center,
+                                                  style: textTheme.bodyLarge
+                                              )
+                                            ]
+                                        ),
+                                      )
+                                  ),
+                                )
+                          ]
                       )
                   )
-              )
-          ]
+                ]
+            )
         )
-      )
     );
   }
 }

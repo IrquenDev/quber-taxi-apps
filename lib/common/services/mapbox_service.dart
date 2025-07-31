@@ -14,6 +14,7 @@ import 'package:quber_taxi/enums/mapbox_place_type.dart';
 /// All responses are parsed into strongly typed models: [MapboxRoute] and [MapboxPlace].
 @immutable
 class MapboxService {
+
   /// API config to access the Mapbox access token and base URL.
   final _apiConfig = ApiConfig();
 
@@ -76,30 +77,6 @@ class MapboxService {
     final features = data['features'] as List<dynamic>;
     if (features.isEmpty) return null;
     return MapboxPlace.fromJson(features.first);
-  }
-
-  /// Gets the municipality name (as a [MapboxPlace]) for the given coordinates.
-  ///
-  /// Performs reverse geocoding and filters for features of type "locality".
-  ///
-  /// Returns `null` if no locality-level result is found.
-  Future<MapboxPlace?> getMunicipalityName({
-    required num longitude,
-    required num latitude,
-  }) async {
-    final url = '$_geocodingApiBaseUrl/$longitude,$latitude.json'
-        '?access_token=${_apiConfig.mapboxAccessToken}'
-        '&language=es';
-    final response = await http.get(Uri.parse(url));
-    final data = jsonDecode(response.body);
-    final features = data['features'] as List<dynamic>;
-    final localityFeature = features.firstWhere(
-          (f) => f['place_type'] != null &&
-          List.from(f['place_type']).contains('locality'),
-      orElse: () => null,
-    );
-    if (localityFeature == null) return null;
-    return MapboxPlace.fromJson(localityFeature);
   }
 
   /// Performs a basic reverse geocoding query for a [MapboxPlace]

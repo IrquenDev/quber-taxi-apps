@@ -3,16 +3,19 @@
 
   "unknown": "Unrecognized municipality:",
   "originName": "Select the origin location",
-  "destinationName": "Select the destination municipality",
+  "destinationName": "Select the destination location",
   "carPrefer": "What type of vehicle do you prefer?",
   "howTravels": "How many people are traveling?",
   "pets": "Are you bringing a pet?",
+  "distance": "Distance:",
   "minDistance": "Minimum distance:",
   "maxDistance": "Maximum distance:",
+  "price": "Price:",
   "minPrice": "Minimum price:",
   "maxPrice": "Maximum price you can pay:",
   "askTaxi": "Request a taxi",
   "vehicle": "vehicle",
+  "tooltipAboutEstimations" : "The estimates below, while very precise, are still approximate. Please refer to them as a guide. Actual distance and price will be calculated during the voyage.",
   "settingsHome": "Settings",
 
   "mapBottomItem": "Map",
@@ -22,6 +25,11 @@
 
   "map": "Map",
   "quberPoints": "Quber Points",
+  "accumulatedPoints": "Accumulated points",
+  "quberPointsEarned": "Quber Points Earned",
+  "inviteFriendsDescription": "Invite friends with your referral code to earn more points. Use them to buy discounts on your trips.",
+  "driverCredit": "Driver Credit",
+  "driverCreditDescription": "Available balance in your account. This credit is updated after each completed trip.",
 
   "ubicationFailed": "Your current location is outside the limits of Havana",
   "permissionsDenied": "Location permission denied",
@@ -283,8 +291,10 @@
             "days": "days",
             "paymentOfficeInfo": " Please go to our office at 4th Street / Central and Market, Martín Pérez neighborhood, San Miguel del Padrón to make it. You can check the amount by accessing your profile in the app.",
             "thanksForAttention": "Thank you for your attention.",
+            "distanceFixed": "Distance: {distance}km",
             "distanceMinimum": "Minimum Distance: {distance}km",
             "distanceMaximum": "Maximum Distance: {distance}km",
+            "priceFixedCost": "Price: {price} CUP",
             "priceMinimumCost": "Minimum price: {price} CUP",
             "priceMaximumCost": "Maximum price: {price} CUP",
 
@@ -298,12 +308,21 @@
             "filterByPhone": "Filter by phone",
             "filterByState": "Filter by state",
             "allStates": "All states",
+            "clearFilters": "Clear filters",
 
             "drivers": "Drivers",
             "noDriversYet": "No drivers yet",
             "noDriversFound": "No drivers found with the applied filters",
             "confirmAccount": "Confirm Account",
             "confirmPayment": "Confirm Payment",
+            "actions": "Actions",
+            "recharge": "Recharge",
+            "rechargeAmount": "Amount to recharge",
+            "credit": "Credit",
+            "creditAmount": "Credit: {amount} CUP",
+            "rechargeSuccess": "Credit recharged successfully",
+            "rechargeError": "Error recharging credit",
+            "invalidAmount": "Invalid amount",
             "blockAccount": "Block account",
             "enableAccount": "Enable account",
             "errorTryLater": "Something went wrong, please try again later",
@@ -344,8 +363,10 @@
             "errorChangingPassword": "Error. Could not change the password",
             "couldNotOpenPhoneDialer": "Could not open phone dialer",
              "favoritesBottomItem": "Favorites",
+
              "myMarkers": "Markers",
              "select": "Select",
   "origin": "From",
   "destination": "Destination"
+
 }

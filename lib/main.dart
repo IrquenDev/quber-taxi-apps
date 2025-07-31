@@ -15,7 +15,7 @@ Future<void> main() async {
 
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-
+// This is the main entry point of the application.
   //Initialization Block
   BuildConfig.loadConfig();
   await SharedPrefsManager.init();
@@ -26,9 +26,11 @@ Future<void> main() async {
   FlutterNativeSplash.remove();
 
 
+  //The project id for the dns is 12236, but as you can see I removed the number 6 so we can have it deactivated.
+  //The problem here is that the free plan allows only 1000 errors capture, and we are over 200 without client usage, just in develop
   SentryFlutter.init(
           (options) => options
-        ..dsn='https://5fc6d3f519f940929ab3d6b863651d30@app.glitchtip.com/12236'
+        ..dsn='https://5fc6d3f519f940929ab3d6b863651d30@app.glitchtip.com/1223'
         ..tracesSampleRate=0.00 // Performance trace 1% of events
         ..enableAutoSessionTracking=false,
       appRunner: () => runApp(App())

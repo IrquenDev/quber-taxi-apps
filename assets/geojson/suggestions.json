@@ -1,157 +1,152 @@
 [
   {
-    "text": "Habana Vieja",
-    "place_name": "Habana Vieja, La Habana, Cuba",
-    "center": [-82.358333, 23.135944]
+    "text": "Plaza de la Catedral",
+    "place_name": "Habana Vieja",
+    "center": [-82.3500, 23.1410]
   },
   {
-    "text": "Centro Habana",
-    "place_name": "Centro Habana, La Habana, Cuba",
-    "center": [-82.364170, 23.138330]
+    "text": "Parque Fe del Valle",
+    "place_name": "Centro Habana",
+    "center": [-82.3625, 23.1355]
   },
   {
     "text": "Vedado",
-    "place_name": "Vedado, La Habana, Cuba",
+    "place_name": "Plaza de la Revolución",
     "center": [-82.393889, 23.131111]
   },
   {
     "text": "Terminal de Ómnibus Nacionales",
-    "place_name": "Terminal de Ómnibus Nacionales, La Habana, Cuba",
+    "place_name": "Plaza de la Revolución",
     "center": [-82.3792, 23.1208]
   },
   {
     "text": "Hospital Calixto García",
-    "place_name": "Hospital Universitario General Calixto García, La Habana, Cuba",
+    "place_name": "Plaza de la Revolución",
     "center": [-82.3823, 23.1307]
   },
   {
     "text": "Hospital Hermanos Ameijeiras",
-    "place_name": "Hospital Hermanos Ameijeiras, La Habana, Cuba",
+    "place_name": "Habana Vieja",
     "center": [-82.3464, 23.1402]
   },
   {
     "text": "Tienda Carlos III",
-    "place_name": "Centro Comercial Carlos III, La Habana, Cuba",
+    "place_name": "Centro Habana",
     "center": [-82.3690, 23.1320]
   },
   {
     "text": "El Malecón",
-    "place_name": "Malecón de La Habana, Cuba",
+    "place_name": "Centro Habana",
     "center": [-82.3567, 23.1447]
   },
   {
     "text": "Plaza de Cuatro Caminos",
-    "place_name": "Cuatro Caminos, La Habana, Cuba",
+    "place_name": "Centro Habana",
     "center": [-82.3582, 23.1260]
   },
   {
     "text": "Plaza Roja de La Víbora",
-    "place_name": "Plaza Roja, La Habana, Cuba",
+    "place_name": "Diez de Octubre",
     "center": [-82.3775, 23.1019]
   },
   {
     "text": "Calzada de Luyanó",
-    "place_name": "Calzada de Luyanó, La Habana, Cuba",
+    "place_name": "Diez de Octubre",
     "center": [-82.3304, 23.0975]
   },
   {
     "text": "Paradero de Playa",
-    "place_name": "Paradero de Playa, La Habana, Cuba",
+    "place_name": "Playa",
     "center": [-82.4643, 23.1139]
   },
   {
     "text": "Fontanar",
-    "place_name": "Fontanar, Boyeros, La Habana, Cuba",
+    "place_name": "Boyeros",
     "center": [-82.4080, 22.9986]
   },
   {
     "text": "El Palenque",
-    "place_name": "Palacio de las Convenciones - El Palenque, La Habana, Cuba",
+    "place_name": "Playa",
     "center": [-82.4663, 23.0806]
   },
   {
     "text": "Coppelia",
-    "place_name": "Coppelia, La Habana, Cuba",
+    "place_name": "Plaza de la Revolución",
     "center": [-82.3846, 23.1364]
   },
   {
     "text": "Mercado de Marianao",
-    "place_name": "Mercado de Marianao, La Habana, Cuba",
+    "place_name": "Marianao",
     "center": [-82.4480, 23.1048]
   },
   {
     "text": "El Curita",
-    "place_name": "Parque El Curita, La Habana, Cuba",
+    "place_name": "Centro Habana",
     "center": [-82.3649, 23.1327]
   },
   {
     "text": "Parque de la Fraternidad",
-    "place_name": "Parque de la Fraternidad, La Habana, Cuba",
+    "place_name": "Centro Habana",
     "center": [-82.3588, 23.1343]
   },
   {
     "text": "Parque Lenin",
-    "place_name": "Parque Lenin, La Habana, Cuba",
+    "place_name": "Arroyo Naranjo",
     "center": [-82.3975, 23.0283]
   },
   {
     "text": "Zoológico Nacional",
-    "place_name": "Zoológico Nacional de Cuba, La Habana, Cuba",
+    "place_name": "Boyeros",
     "center": [-82.3989, 23.0208]
   },
   {
     "text": "Estadio Latinoamericano",
-    "place_name": "Estadio Latinoamericano, La Habana, Cuba",
+    "place_name": "Cerro",
     "center": [-82.3711, 23.1285]
   },
   {
-    "text": "Santa María del Rosario",
-    "place_name": "Santa María del Rosario, La Habana, Cuba",
+    "text": "Iglesia de Santa María del Rosario",
+    "place_name": "Cotorro",
     "center": [-82.3260, 23.0120]
   },
   {
-    "text": "La Víbora",
-    "place_name": "La Víbora, La Habana, Cuba",
-    "center": [-82.3840, 23.1060]
-  },
-  {
-    "text": "Guanabacoa",
-    "place_name": "Guanabacoa, La Habana, Cuba",
+    "text": "Rotonda de Guanabacoa",
+    "place_name": "Guanabacoa",
     "center": [-82.3150, 23.0650]
   },
   {
     "text": "Playa de Guanabo",
-    "place_name": "Playa de Guanabo, La Habana, Cuba",
+    "place_name": "Habana del Este",
     "center": [-82.1290, 23.1060]
   },
   {
-    "text": "La Lisa",
-    "place_name": "La Lisa, La Habana, Cuba",
+    "text": "Policlínico Cristóbal Labra",
+    "place_name": "La Lisa",
     "center": [-82.4920, 23.0830]
   },
   {
-    "text": "Paseo de 10 de Octubre",
-    "place_name": "Paseo de 10 de Octubre, La Habana, Cuba",
+    "text": "Parque Manila",
+    "place_name": "Diez de Octubre",
     "center": [-82.4130, 23.0990]
   },
   {
-    "text": "Miramar",
-    "place_name": "Miramar, La Habana, Cuba",
+    "text": "5ta Avenida, Miramar",
+    "place_name": "Playa",
     "center": [-82.4090, 23.1190]
   },
   {
     "text": "Plaza de la Revolución",
-    "place_name": "Plaza de la Revolución, La Habana, Cuba",
+    "place_name": "Plaza de la Revolución",
     "center": [-82.3890, 23.1370]
   },
   {
-    "text": "Regla",
-    "place_name": "Regla, La Habana, Cuba",
+    "text": "Santuario de Nuestra Señora de Regla",
+    "place_name": "Regla",
     "center": [-82.2550, 23.0150]
   },
   {
-    "text": "San Miguel del Padrón",
-    "place_name": "San Miguel del Padrón, La Habana, Cuba",
+    "text": "El Tangana de San Miguel del Padrón",
+    "place_name": "San Miguel del Padrón",
     "center": [-82.3300, 23.0400]
   }
 ]

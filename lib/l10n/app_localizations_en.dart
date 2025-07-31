@@ -15,7 +15,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get originName => 'Select the origin location';
 
   @override
-  String get destinationName => 'Select the destination municipality';
+  String get destinationName => 'Select the destination location';
 
   @override
   String get carPrefer => 'What type of vehicle do you prefer?';
@@ -27,10 +27,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pets => 'Are you bringing a pet?';
 
   @override
+  String get distance => 'Distance:';
+
+  @override
   String get minDistance => 'Minimum distance:';
 
   @override
   String get maxDistance => 'Maximum distance:';
+
+  @override
+  String get price => 'Price:';
 
   @override
   String get minPrice => 'Minimum price:';
@@ -43,6 +49,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get vehicle => 'vehicle';
+
+  @override
+  String get tooltipAboutEstimations =>
+      'The estimates below, while very precise, are still approximate. Please refer to them as a guide. Actual distance and price will be calculated during the voyage.';
 
   @override
   String get settingsHome => 'Settings';
@@ -61,6 +71,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get quberPointsBottomItem => 'Quber Points';
+
+  @override
+  String get quberPoints => 'Quber Points';
+
+  @override
+  String get accumulatedPoints => 'Accumulated points';
+
+  @override
+  String get quberPointsEarned => 'Quber Points Earned';
+
+  @override
+  String get inviteFriendsDescription =>
+      'Invite friends with your referral code to earn more points. Use them to buy discounts on your trips.';
+
+  @override
+  String get driverCredit => 'Driver Credit';
+
+  @override
+  String get driverCreditDescription =>
+      'Available balance in your account. This credit is updated after each completed trip.';
 
   @override
   String get ubicationFailed =>
@@ -795,6 +825,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get thanksForAttention => 'Thank you for your attention.';
 
   @override
+  String distanceFixed(Object distance) {
+    return 'Distance: ${distance}km';
+  }
+
+  @override
   String distanceMinimum(Object distance) {
     return 'Minimum Distance: ${distance}km';
   }
@@ -802,6 +837,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String distanceMaximum(Object distance) {
     return 'Maximum Distance: ${distance}km';
+  }
+
+  @override
+  String priceFixedCost(Object price) {
+    return 'Price: $price CUP';
   }
 
   @override
@@ -842,6 +882,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get allStates => 'All states';
 
   @override
+  String get clearFilters => 'Clear filters';
+
+  @override
   String get drivers => 'Drivers';
 
   @override
@@ -855,6 +898,32 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get confirmPayment => 'Confirm Payment';
+
+  @override
+  String get actions => 'Actions';
+
+  @override
+  String get recharge => 'Recharge';
+
+  @override
+  String get rechargeAmount => 'Amount to recharge';
+
+  @override
+  String get credit => 'Credit';
+
+  @override
+  String creditAmount(Object amount) {
+    return 'Credit: $amount CUP';
+  }
+
+  @override
+  String get rechargeSuccess => 'Credit recharged successfully';
+
+  @override
+  String get rechargeError => 'Error recharging credit';
+
+  @override
+  String get invalidAmount => 'Invalid amount';
 
   @override
   String get blockAccount => 'Block account';
@@ -984,6 +1053,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get favoritesBottomItem => 'Favorites';
 
   @override
+
   String get myMarkers => 'Markers';
 
   @override
@@ -994,4 +1064,5 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get destination => 'Destination';
+
 }
