@@ -314,8 +314,13 @@ class _DriverHomePageState extends State<DriverHomePage> {
   void _onTravelSelected(Travel travel) async {
     final response = await _driverService.acceptTravel(driverId: _driver.id, travelId: travel.id);
     if(response.statusCode == 200) {
-      final assetBytes = await rootBundle.load('assets/markers/route/x120/origin.png');
-      final originMarkerImage = assetBytes.buffer.asUint8List();
+      // Load marker images
+      final originAssetBytes = await rootBundle.load('assets/markers/route/x120/origin.png');
+      final destinationAssetBytes = await rootBundle.load('assets/markers/route/x120/destination.png');
+      final originMarkerImage = originAssetBytes.buffer.asUint8List();
+      final destinationMarkerImage = destinationAssetBytes.buffer.asUint8List();
+      
+      // Create origin marker
       final originCoords = Position(travel.originCoords[0], travel.originCoords[1]);
       await _pointAnnotationManager?.create(
         PointAnnotationOptions(
@@ -324,6 +329,19 @@ class _DriverHomePageState extends State<DriverHomePage> {
           iconAnchor: IconAnchor.BOTTOM,
         ),
       );
+      
+      // Create destination marker
+      if (travel.destinationCoords != null) {
+        final destinationCoords = Position(travel.destinationCoords![0], travel.destinationCoords![1]);
+        await _pointAnnotationManager?.create(
+          PointAnnotationOptions(
+            geometry: Point(coordinates: destinationCoords),
+            image: destinationMarkerImage,
+            iconAnchor: IconAnchor.BOTTOM,
+          ),
+        );
+      }
+      
       _mapController.easeTo(
           CameraOptions(center: Point(coordinates: originCoords)),
           MapAnimationOptions(duration: 500)
