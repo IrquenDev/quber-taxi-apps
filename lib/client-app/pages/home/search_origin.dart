@@ -187,7 +187,7 @@ class _SearchOriginPageState extends State<SearchOriginPage> {
                             ListTile(
                                 minTileHeight: 48.0,
                                 onTap: () async {
-                                  final mapboxPlace = await context.push<MapboxPlace>(CommonRoutes.locationPicker);
+                                  final mapboxPlace = await context.push<MapboxPlace>(CommonRoutes.locationPicker, extra: true);
                                   if (mapboxPlace != null && context.mounted) {
                                     context.pop(mapboxPlace);
                                   }

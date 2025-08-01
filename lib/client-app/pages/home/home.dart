@@ -134,7 +134,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
           height: 70,
           color: Theme.of(context).colorScheme.primaryContainer,
           buttonBackgroundColor: Theme.of(context).colorScheme.primaryContainer,
-          backgroundColor: Theme.of(context).colorScheme.surface,
+          backgroundColor: Colors.transparent,
           animationCurve: Curves.easeInOut,
           animationDuration: const Duration(milliseconds: 500),
           letIndexChange: (index) {
