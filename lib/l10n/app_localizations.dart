@@ -857,7 +857,7 @@ abstract class AppLocalizations {
   /// No description provided for @email.
   ///
   /// In es, this message translates to:
-  /// **'qnecesitas.desarrollo@gmail.com'**
+  /// **'Correo electrónico:'**
   String get email;
 
   /// No description provided for @numberOfSeats.
@@ -2030,35 +2030,41 @@ abstract class AppLocalizations {
   /// **'Mis marcadores'**
   String get myMarkers;
 
-  /// No description provided for @appName.
+  /// No description provided for @nameAboutDev.
   ///
   /// In es, this message translates to:
   /// **'Irquen'**
-  String get appName;
+  String get nameAboutDev;
 
-  /// No description provided for @phone.
+  /// No description provided for @emailAboutDev.
+  ///
+  /// In es, this message translates to:
+  /// **'qnecesitas.desarrollo@gmail.com'**
+  String get emailAboutDev;
+
+  /// No description provided for @phoneAboutDev.
   ///
   /// In es, this message translates to:
   /// **'+5355759386'**
-  String get phone;
+  String get phoneAboutDev;
 
-  /// No description provided for @website.
+  /// No description provided for @websiteAboutDev.
   ///
   /// In es, this message translates to:
   /// **'https://qnecesitas.nat.cu'**
-  String get website;
+  String get websiteAboutDev;
 
-  /// No description provided for @nameCompany.
+  /// No description provided for @nameAboutUs.
   ///
   /// In es, this message translates to:
   /// **'Quber'**
-  String get nameCompany;
+  String get nameAboutUs;
 
-  /// No description provided for @phoneCompany.
+  /// No description provided for @phoneAboutUs.
   ///
   /// In es, this message translates to:
   /// **'+53 52417814'**
-  String get phoneCompany;
+  String get phoneAboutUs;
 
   /// No description provided for @copiedToClipboard.
   ///

@@ -404,7 +404,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get phoneNumberDriver => 'Phone Number:';
 
   @override
-  String get email => 'qnecesitas.desarrollo@gmail.com';
+  String get email => 'Email:';
 
   @override
   String get numberOfSeats => 'Number of Seats:';
@@ -1056,19 +1056,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myMarkers => 'My Markers';
 
   @override
-  String get appName => 'Irquen';
+  String get nameAboutDev => 'Irquen';
 
   @override
-  String get phone => '+5355759386';
+  String get emailAboutDev => 'qnecesitas.desarrollo@gmail.com';
 
   @override
-  String get website => 'https://qnecesitas.nat.cu';
+  String get phoneAboutDev => '+5355759386';
 
   @override
-  String get nameCompany => 'Quber';
+  String get websiteAboutDev => 'https://qnecesitas.nat.cu';
 
   @override
-  String get phoneCompany => '+53 52417814';
+  String get nameAboutUs => 'Quber';
+
+  @override
+  String get phoneAboutUs => '+53 52417814';
 
   @override
   String get copiedToClipboard => 'Copied to clipboard';

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_fusion/flutter_fusion.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
@@ -33,10 +34,7 @@ class AboutUsPage extends StatelessWidget {
           children: [
             // Header section
             Container(
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .height * 0.39,
+              height: 340,
               width: double.infinity,
               decoration: BoxDecoration(
                   color: colorScheme.primaryContainer,
@@ -81,7 +79,7 @@ class AboutUsPage extends StatelessWidget {
                     ),
 
                     Text(
-                      localizations.nameCompany,
+                      localizations.nameAboutUs,
                       style: textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: colorScheme.onPrimary,
@@ -132,7 +130,7 @@ class AboutUsPage extends StatelessWidget {
                                   _buildContactRow(
                                     context,
                                     imagePath: 'assets/icons/phone.svg',
-                                    text: localizations.phoneCompany,
+                                    text: localizations.phoneAboutUs,
                                   ),
                                   const SizedBox(height: 6),
 
@@ -198,9 +196,7 @@ class AboutUsPage extends StatelessWidget {
       onLongPress: () async {
         await Clipboard.setData(ClipboardData(text: text));
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(localizations.copiedToClipboard)),
-          );
+          showToast(context: context, message: localizations.copiedToClipboard);
         }
       },
       child: Row(
