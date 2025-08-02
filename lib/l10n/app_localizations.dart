@@ -857,7 +857,7 @@ abstract class AppLocalizations {
   /// No description provided for @email.
   ///
   /// In es, this message translates to:
-  /// **'qnecesitas.desarrollo@gmail.com'**
+  /// **'Correo electrónico:'**
   String get email;
 
   /// No description provided for @numberOfSeats.

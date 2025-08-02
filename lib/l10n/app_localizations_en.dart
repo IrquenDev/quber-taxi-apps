@@ -404,7 +404,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get phoneNumberDriver => 'Phone Number:';
 
   @override
-  String get email => 'qnecesitas.desarrollo@gmail.com';
+  String get email => 'Email:';
 
   @override
   String get numberOfSeats => 'Number of Seats:';
