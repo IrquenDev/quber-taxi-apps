@@ -1065,6 +1065,27 @@ class AppLocalizationsEs extends AppLocalizations {
   String get myMarkers => 'Mis marcadores';
 
   @override
+  String get nameAboutDev => 'Irquen';
+
+  @override
+  String get emailAboutDev => 'qnecesitas.desarrollo@gmail.com';
+
+  @override
+  String get phoneAboutDev => '+5355759386';
+
+  @override
+  String get websiteAboutDev => 'https://qnecesitas.nat.cu';
+
+  @override
+  String get nameAboutUs => 'Quber';
+
+  @override
+  String get phoneAboutUs => '+53 52417814';
+
+  @override
+  String get copiedToClipboard => 'Copiado al portapapeles';
+
+  @override
   String get notAvailable => 'N/A';
 
   @override

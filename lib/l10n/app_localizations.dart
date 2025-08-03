@@ -2030,6 +2030,48 @@ abstract class AppLocalizations {
   /// **'Mis marcadores'**
   String get myMarkers;
 
+  /// No description provided for @nameAboutDev.
+  ///
+  /// In es, this message translates to:
+  /// **'Irquen'**
+  String get nameAboutDev;
+
+  /// No description provided for @emailAboutDev.
+  ///
+  /// In es, this message translates to:
+  /// **'qnecesitas.desarrollo@gmail.com'**
+  String get emailAboutDev;
+
+  /// No description provided for @phoneAboutDev.
+  ///
+  /// In es, this message translates to:
+  /// **'+5355759386'**
+  String get phoneAboutDev;
+
+  /// No description provided for @websiteAboutDev.
+  ///
+  /// In es, this message translates to:
+  /// **'https://qnecesitas.nat.cu'**
+  String get websiteAboutDev;
+
+  /// No description provided for @nameAboutUs.
+  ///
+  /// In es, this message translates to:
+  /// **'Quber'**
+  String get nameAboutUs;
+
+  /// No description provided for @phoneAboutUs.
+  ///
+  /// In es, this message translates to:
+  /// **'+53 52417814'**
+  String get phoneAboutUs;
+
+  /// No description provided for @copiedToClipboard.
+  ///
+  /// In es, this message translates to:
+  /// **'Copiado al portapapeles'**
+  String get copiedToClipboard;
+
   /// No description provided for @notAvailable.
   ///
   /// In es, this message translates to:
