@@ -109,6 +109,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
   // Network Checker
   late void Function() _listener;
   late final NetworkScope _scope;
+  
+  // Travel info sheet controller
+  final DraggableScrollableController _travelInfoSheetController = DraggableScrollableController();
 
   bool get _shouldShowAvailableTravels => _isAccountEnabled && _selectedTravel == null;
 
@@ -584,104 +587,120 @@ class _DriverHomePageState extends State<DriverHomePage> {
                 _pointAnnotationManager?.update(_driverAnnotation!);
               }
             ),
-            // FAB group (my location + travel info)
-            Positioned(
-              right: 20.0, bottom: _shouldShowAvailableTravels ? 150.0 : 20.0,
-              child: Column(
-                spacing: 8.0,
-                children: [
-                  // Driver credit
-                  FloatingActionButton(
-                    heroTag: "driver-credit",
-                    backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                    onPressed: () {
-                      _showDriverCreditDialog();
-                    },
-                    child: Text(
-                      _driver.credit.toInt().toString(),
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+            // FAB group - different behavior based on travel selection
+            if(_selectedTravel == null) ...[
+              // Show all buttons when no travel is selected
+              Positioned(
+                right: 20.0, bottom: _shouldShowAvailableTravels ? 150.0 : 20.0,
+                child: Column(
+                  spacing: 8.0,
+                  children: [
+                    // Driver credit
+                    FloatingActionButton(
+                      heroTag: "driver-credit",
+                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                      onPressed: () {
+                        _showDriverCreditDialog();
+                      },
+                      child: Text(
+                        _driver.credit.toInt().toString(),
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        ),
                       ),
                     ),
-                  ),
-                  // Find my location
-                  FloatingActionButton(
-                    heroTag: "find-my-location",
-                    backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                    onPressed: () async {
-                      // Ask for location permission
-                      await g_util.requestLocationPermission(
-                          context: context,
-                          onPermissionGranted: () async {
-                            // Start streaming location
-                            if(!_isLocationStreaming) _startStreamingLocation();
-                            // Ease to current position (Whether the location is being streaming)
-                            _mapController.easeTo(
-                                CameraOptions(center: Point(coordinates: _coords)),
-                                MapAnimationOptions(duration: 500)
-                            );
-                          },
-                          onPermissionDenied: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                               SnackBar(content: Text(AppLocalizations.of(context)!.permissionsDenied)),
-                            );
-                          },
-                          onPermissionDeniedForever: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(AppLocalizations.of(context)!.permissionDeniedPermanently)),
-                            );
-                          }
-                      );
-                    },
-                    child: Icon(
-                        Icons.my_location_outlined,
-                        color: Theme.of(context).iconTheme.color,
-                        size: Theme.of(context).iconTheme.size
-                    ),
-                  ),
-                  // Find my location
-                  FloatingActionButton(
-                    heroTag: "go-settings",
-                    backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                    onPressed: () async {
-                      context.push(DriverRoutes.settings);
-                    },
-                    child: Icon(
-                        Icons.settings_outlined,
-                        color: Theme.of(context).iconTheme.color,
-                        size: Theme.of(context).iconTheme.size
-                    ),
-                  ),
-                  // Show travel info bottom sheet
-                  if(_selectedTravel != null)
+                    // Find my location
                     FloatingActionButton(
-                        heroTag: "show-travel-info",
-                        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                        onPressed: () => showModalBottomSheet(
+                      heroTag: "find-my-location",
+                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                      onPressed: () async {
+                        // Ask for location permission
+                        await g_util.requestLocationPermission(
                             context: context,
-                            showDragHandle: true,
-                            builder: (sheetContext) => TravelInfoSheet(
-                              travel: _selectedTravel!,
-                              onPickUpConfirmationRequest: () {
-                                  _travelStateHandler = TravelStateHandler(
-                                      state: TravelState.inProgress,
-                                      travelId: _selectedTravel!.id,
-                                      onMessage: (travel) => sheetContext.go(DriverRoutes.navigation, extra:
-                                      travel)
-                                  )..activate();
-                              }
-                            )
-                        ),
-                        child: Icon(
-                            Icons.info_outline,
-                            color: Theme.of(context).iconTheme.color,
-                            size: Theme.of(context).iconTheme.size
-                        )
-                    )
-                ]
+                            onPermissionGranted: () async {
+                              // Start streaming location
+                              if(!_isLocationStreaming) _startStreamingLocation();
+                              // Ease to current position (Whether the location is being streaming)
+                              _mapController.easeTo(
+                                  CameraOptions(center: Point(coordinates: _coords)),
+                                  MapAnimationOptions(duration: 500)
+                              );
+                            },
+                            onPermissionDenied: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                 SnackBar(content: Text(AppLocalizations.of(context)!.permissionsDenied)),
+                              );
+                            },
+                            onPermissionDeniedForever: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(AppLocalizations.of(context)!.permissionDeniedPermanently)),
+                              );
+                            }
+                        );
+                      },
+                      child: Icon(
+                          Icons.my_location_outlined,
+                          color: Theme.of(context).iconTheme.color,
+                          size: Theme.of(context).iconTheme.size
+                      ),
+                    ),
+                    // Settings button
+                    FloatingActionButton(
+                      heroTag: "go-settings",
+                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                      onPressed: () async {
+                        context.push(DriverRoutes.settings);
+                      },
+                      child: Icon(
+                          Icons.settings_outlined,
+                          color: Theme.of(context).iconTheme.color,
+                          size: Theme.of(context).iconTheme.size
+                      ),
+                    ),
+                  ]
+                )
               )
-            ),
+            ] else ...[
+              // Show only location button when travel is selected
+              Positioned(
+                right: 20.0, bottom: 150.0,
+                child: FloatingActionButton(
+                  heroTag: "find-my-location-selected",
+                  backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                  onPressed: () async {
+                    // Ask for location permission
+                    await g_util.requestLocationPermission(
+                        context: context,
+                        onPermissionGranted: () async {
+                          // Start streaming location
+                          if(!_isLocationStreaming) _startStreamingLocation();
+                          // Ease to current position (Whether the location is being streaming)
+                          _mapController.easeTo(
+                              CameraOptions(center: Point(coordinates: _coords)),
+                              MapAnimationOptions(duration: 500)
+                          );
+                        },
+                        onPermissionDenied: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                             SnackBar(content: Text(AppLocalizations.of(context)!.permissionsDenied)),
+                          );
+                        },
+                        onPermissionDeniedForever: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(AppLocalizations.of(context)!.permissionDeniedPermanently)),
+                          );
+                        }
+                    );
+                  },
+                  child: Icon(
+                      Icons.my_location_outlined,
+                      color: Theme.of(context).iconTheme.color,
+                      size: Theme.of(context).iconTheme.size
+                  ),
+                )
+              )
+            ],
             // Notification area
             Positioned(
                 top: 32,
@@ -739,10 +758,124 @@ class _DriverHomePageState extends State<DriverHomePage> {
               Align(
                   alignment: Alignment.bottomCenter,
                   child: AvailableTravelsSheet(onTravelSelected: _onTravelSelected)
+              ),
+            // Travel info sheet when travel is selected
+            if(_selectedTravel != null)
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: _buildTravelInfoSheet()
               )
           ]
         )
       )
+    );
+  }
+
+  Widget _buildTravelInfoSheet() {
+    final dimensions = Theme.of(context).extension<DimensionExtension>()!;
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final localizations = AppLocalizations.of(context)!;
+
+    return DraggableScrollableSheet(
+      controller: _travelInfoSheetController,
+      initialChildSize: 0.4,
+      minChildSize: 0.15,
+      maxChildSize: 0.9,
+      expand: false,
+      shouldCloseOnMinExtent: false,
+      builder: (context, scrollController) {
+        return Stack(
+          children: [
+            // Background Container With Header
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(dimensions.cardBorderRadiusMedium))
+                ),
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          if (!_travelInfoSheetController.isAttached) return;
+                          _travelInfoSheetController.jumpTo(0.9);
+                        },
+                        icon: Icon(Icons.keyboard_double_arrow_up)
+                      ),
+                      const SizedBox(width: 8.0),
+                      Text(localizations.tripDescription, style: textTheme.titleMedium)
+                    ]
+                  )
+                )
+              )
+            ),
+            // Main Container with Content
+            Positioned.fill(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 56.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: colorScheme.surfaceContainer,
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(dimensions.cardBorderRadiusLarge)),
+                  ),
+                  child: Column(
+                    children: [
+                      // Drag Handler
+                      GestureDetector(
+                        behavior: HitTestBehavior.translucent,
+                        onVerticalDragUpdate: (details) {
+                          if (!_travelInfoSheetController.isAttached) return;
+                          final screenHeight = MediaQuery.of(context).size.height;
+                          final dragAmount = -details.primaryDelta! / screenHeight;
+                          final currentSize = _travelInfoSheetController.size;
+                          final newSize = (currentSize + dragAmount).clamp(0.15, 0.9);
+                          _travelInfoSheetController.jumpTo(newSize);
+                        },
+                        child: SizedBox(
+                          height: 48.0,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 24.0,
+                                height: 8.0,
+                                decoration: BoxDecoration(
+                                  color: colorScheme.onSurfaceVariant.withOpacity(0.4),
+                                  borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusSmall)
+                                )
+                              ),
+                            ]
+                          ),
+                        )
+                      ),
+                      // Travel Info Sheet Content
+                      Expanded(
+                        child: SingleChildScrollView(
+                          controller: scrollController,
+                          child: TravelInfoSheet(
+                            travel: _selectedTravel!,
+                            onPickUpConfirmationRequest: () {
+                              _travelStateHandler = TravelStateHandler(
+                                state: TravelState.inProgress,
+                                travelId: _selectedTravel!.id,
+                                onMessage: (travel) => context.go(DriverRoutes.navigation, extra: travel)
+                              )..activate();
+                            }
+                          ),
+                        ),
+                      ),
+                    ]
+                  )
+                )
+              )
+            )
+          ]
+        );
+      }
     );
   }
 
