@@ -395,7 +395,7 @@ abstract class AppLocalizations {
   /// No description provided for @startTrip.
   ///
   /// In es, this message translates to:
-  /// **'Iniciar viaje'**
+  /// **'Iniciar Viaje (Cliente Recogido)'**
   String get startTrip;
 
   /// No description provided for @people.

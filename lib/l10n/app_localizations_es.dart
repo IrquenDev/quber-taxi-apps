@@ -166,7 +166,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get typeVehicle => 'Tipo de vehículo:';
 
   @override
-  String get startTrip => 'Iniciar viaje';
+  String get startTrip => 'Iniciar Viaje (Cliente Recogido)';
 
   @override
   String get people => 'Personas';

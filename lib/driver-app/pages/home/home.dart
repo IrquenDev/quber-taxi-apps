@@ -31,6 +31,7 @@ import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/storage/session_manger.dart';
 import 'package:quber_taxi/utils/map/geolocator.dart' as g_util;
 import 'package:quber_taxi/utils/map/mapbox.dart' as mb_util;
+import 'package:quber_taxi/utils/map/turf.dart' as turf_util;
 import 'package:quber_taxi/utils/map/turf.dart';
 import 'package:quber_taxi/utils/runtime.dart';
 import 'package:quber_taxi/utils/websocket/core/websocket_service.dart';
@@ -314,6 +315,29 @@ class _DriverHomePageState extends State<DriverHomePage> {
     });
   }
 
+  /// Maps municipality names to their corresponding GeoJSON file paths
+  String? _getMunicipalityGeoJsonPath(String municipalityName) {
+    final Map<String, String> municipalityMap = {
+      'Centro Habana': 'assets/geojson/polygon/CentroHabana.geojson',
+      'La Habana Vieja': 'assets/geojson/polygon/LaHabanaVieja.geojson',
+      'La Lisa': 'assets/geojson/polygon/LaLisa.geojson',
+      'Marianao': 'assets/geojson/polygon/Marianao.geojson',
+      'Playa': 'assets/geojson/polygon/Playa.geojson',
+      'Plaza': 'assets/geojson/polygon/Plaza.geojson',
+      'Regla': 'assets/geojson/polygon/Regla.geojson',
+      'San Miguel del Padrón': 'assets/geojson/polygon/SanMiguel.geojson',
+      'Cotorro': 'assets/geojson/polygon/Cotorro.geojson',
+      'Diez de Octubre': 'assets/geojson/polygon/DiezDeOctubre.geojson',
+      'El Cerro': 'assets/geojson/polygon/ElCerro.geojson',
+      'Guanabacoa': 'assets/geojson/polygon/Guanabacoa.geojson',
+      'Habana del Este': 'assets/geojson/polygon/HabanaDelEste.geojson',
+      'Arroyo Naranjo': 'assets/geojson/polygon/ArroyoNaranjo.geojson',
+      'Boyeros': 'assets/geojson/polygon/Boyeros.geojson',
+    };
+    
+    return municipalityMap[municipalityName];
+  }
+
   void _onTravelSelected(Travel travel) async {
     final response = await _driverService.acceptTravel(driverId: _driver.id, travelId: travel.id);
     if(response.statusCode == 200) {
@@ -333,8 +357,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
         ),
       );
       
-      // Create destination marker
+      // Handle destination based on whether it's a point or municipality
       if (travel.destinationCoords != null) {
+        // Destination is a specific point - add marker
         final destinationCoords = Position(travel.destinationCoords![0], travel.destinationCoords![1]);
         await _pointAnnotationManager?.create(
           PointAnnotationOptions(
@@ -344,7 +369,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
           ),
         );
         
-        // Calculate bounds to include both origin and destination
+        // Calculate bounds to include both origin and destination points
         final bounds = mb_util.calculateBounds([originCoords, destinationCoords]);
         
         // Calculate camera options for the bounds
@@ -360,11 +385,70 @@ class _DriverHomePageState extends State<DriverHomePage> {
           MapAnimationOptions(duration: 1000)
         );
       } else {
-        // If no destination, just center on origin
-        _mapController.easeTo(
-          CameraOptions(center: Point(coordinates: originCoords)),
-          MapAnimationOptions(duration: 500)
-        );
+        // Destination is a municipality - add polygon
+        final municipalityPath = _getMunicipalityGeoJsonPath(travel.destinationName);
+        if (municipalityPath != null) {
+          try {
+            // Load and add municipality polygon
+            final municipalityGeoJson = await turf_util.GeoUtils.loadGeoJsonPolygon(municipalityPath);
+            
+            // Convert polygon to GeoJSON string
+            final geoJsonString = jsonEncode(municipalityGeoJson.toJson());
+            
+            // Add polygon to map
+            await _mapController.style.addSource(GeoJsonSource(
+              id: "municipality-polygon",
+              data: geoJsonString
+            ));
+            
+            await _mapController.style.addLayer(FillLayer(
+              id: "municipality-fill",
+              sourceId: "municipality-polygon",
+              fillColor: Theme.of(context).colorScheme.onTertiaryContainer.withValues(alpha: 0.5).toARGB32(),
+              fillOutlineColor: Theme.of(context).colorScheme.tertiary.value,
+            ));
+            
+            // Calculate bounds to include origin and municipality
+            // Get the polygon coordinates to calculate proper bounds
+            final polygonCoords = municipalityGeoJson.coordinates[0]; // First ring of the polygon
+            final List<Position> allCoords = [originCoords];
+            
+            // Add all polygon coordinates to the bounds calculation
+            for (final coord in polygonCoords) {
+              if(coord[0] != null && coord[1] != null) {
+                allCoords.add(Position(coord[0]!, coord[1]!));
+              }
+            }
+            
+            final bounds = mb_util.calculateBounds(allCoords);
+            
+            // Calculate camera options for the bounds
+            final cameraOptions = await _mapController.cameraForCoordinateBounds(
+              bounds,
+              MbxEdgeInsets(top: 50, bottom: 50, left: 50, right: 50),
+              0, 0, null, null,
+            );
+            
+            // Animate camera to show origin and municipality
+            _mapController.easeTo(
+              cameraOptions,
+              MapAnimationOptions(duration: 1000)
+            );
+          } catch (e) {
+            print('Error loading municipality polygon: $e');
+            // Fallback to just centering on origin
+            _mapController.easeTo(
+              CameraOptions(center: Point(coordinates: originCoords)),
+              MapAnimationOptions(duration: 500)
+            );
+          }
+        } else {
+          // Municipality not found, just center on origin
+          _mapController.easeTo(
+            CameraOptions(center: Point(coordinates: originCoords)),
+            MapAnimationOptions(duration: 500)
+          );
+        }
       }
       
       _startSharingLocation();
@@ -484,6 +568,17 @@ class _DriverHomePageState extends State<DriverHomePage> {
     });
   }
 
+  /// Clears the municipality polygon from the map
+  Future<void> _clearMunicipalityPolygon() async {
+    try {
+      await _mapController.style.removeStyleLayer("municipality-fill");
+      await _mapController.style.removeStyleSource("municipality-polygon");
+    } catch (e) {
+      // Layer or source might not exist, ignore error
+      print('Error clearing municipality polygon: $e');
+    }
+  }
+
   @override
   void dispose() {
     _scope.removeListener(_listener);
@@ -493,6 +588,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
     _locationShareSubscription?.cancel();
     _locationStreamSubscription?.cancel();
     _pointAnnotationManager?.deleteAll();
+    _clearMunicipalityPolygon();
     
     // Cancel all notification timers
     for (final timer in _notificationTimers.values) {
@@ -876,7 +972,10 @@ class _DriverHomePageState extends State<DriverHomePage> {
                           controller: scrollController,
                           child: TravelInfoSheet(
                             travel: _selectedTravel!,
-                            onPickUpConfirmationRequest: () {
+                            onPickUpConfirmationRequest: () async {
+                              // Clear municipality polygon when starting the trip
+                              await _clearMunicipalityPolygon();
+                              
                               _travelStateHandler = TravelStateHandler(
                                 state: TravelState.inProgress,
                                 travelId: _selectedTravel!.id,
