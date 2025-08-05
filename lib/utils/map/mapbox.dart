@@ -26,6 +26,37 @@ double calculateBearing(num lat1, num lon1, num lat2, num lon2) {
   return (theta * 180 / pi + 360) % 360;
 }
 
+/// Calculates the coordinate bounds from a list of Position coordinates.
+///
+/// Returns a CoordinateBounds object that encompasses all the provided coordinates.
+///
+/// Example:
+/// ```dart
+/// final bounds = calculateBounds([originCoords, destinationCoords]);
+/// ```
+CoordinateBounds calculateBounds(List<Position> positions) {
+  if (positions.isEmpty) {
+    throw ArgumentError('Positions list cannot be empty');
+  }
+  
+  // Extract longitude and latitude lists separately
+  final lngs = positions.map((pos) => pos.lng);
+  final lats = positions.map((pos) => pos.lat);
+  
+  // Determine the coordinate bounds
+  final minLat = lats.reduce((a, b) => a < b ? a : b);
+  final maxLat = lats.reduce((a, b) => a > b ? a : b);
+  final minLng = lngs.reduce((a, b) => a < b ? a : b);
+  final maxLng = lngs.reduce((a, b) => a > b ? a : b);
+  
+  // Create and return the bounding box
+  return CoordinateBounds(
+    southwest: Point(coordinates: Position(minLng, minLat)),
+    northeast: Point(coordinates: Position(maxLng, maxLat)),
+    infiniteBounds: true,
+  );
+}
+
 /// Zooms the Mapbox map to fit a set of coordinates with padding.
 ///
 /// Calculates the southwest and northeast bounds from the list of

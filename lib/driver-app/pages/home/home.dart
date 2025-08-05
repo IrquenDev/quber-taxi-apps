@@ -343,12 +343,30 @@ class _DriverHomePageState extends State<DriverHomePage> {
             iconAnchor: IconAnchor.BOTTOM,
           ),
         );
-      }
-      
-      _mapController.easeTo(
+        
+        // Calculate bounds to include both origin and destination
+        final bounds = mb_util.calculateBounds([originCoords, destinationCoords]);
+        
+        // Calculate camera options for the bounds
+        final cameraOptions = await _mapController.cameraForCoordinateBounds(
+          bounds,
+          MbxEdgeInsets(top: 50, bottom: 50, left: 50, right: 50),
+          0, 0, null, null,
+        );
+        
+        // Animate camera to show both points
+        _mapController.easeTo(
+          cameraOptions,
+          MapAnimationOptions(duration: 1000)
+        );
+      } else {
+        // If no destination, just center on origin
+        _mapController.easeTo(
           CameraOptions(center: Point(coordinates: originCoords)),
           MapAnimationOptions(duration: 500)
-      );
+        );
+      }
+      
       _startSharingLocation();
       setState(() => _selectedTravel = travel);
     } else {
@@ -777,11 +795,11 @@ class _DriverHomePageState extends State<DriverHomePage> {
     final textTheme = Theme.of(context).textTheme;
     final localizations = AppLocalizations.of(context)!;
 
-    return DraggableScrollableSheet(
-      controller: _travelInfoSheetController,
-      initialChildSize: 0.4,
-      minChildSize: 0.15,
-      maxChildSize: 0.9,
+                  return DraggableScrollableSheet(
+                controller: _travelInfoSheetController,
+                initialChildSize: 0.15,
+                minChildSize: 0.15,
+                maxChildSize: 0.7,
       expand: false,
       shouldCloseOnMinExtent: false,
       builder: (context, scrollController) {
