@@ -344,7 +344,7 @@
             "errorChangingPassword": "Error. Could not change the password",
             "couldNotOpenPhoneDialer": "Could not open phone dialer",
              "favoritesBottomItem": "Favorites",
-             "myMarkers": "Markers",
+             "myMarkers": "Marker",
              "select": "Select",
   "origin": "From",
   "destination": "Destination"
