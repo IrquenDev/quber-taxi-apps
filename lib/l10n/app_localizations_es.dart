@@ -1065,7 +1065,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get myMarkers => 'Marcador';
 
   @override
+
   String get select => 'Seleccionar';
+
 
   @override
   String get origin => 'Origen';

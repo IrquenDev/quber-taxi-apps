@@ -360,10 +360,12 @@
       "errorChangingConfiguration": "Error. No se pudo cambiar la configuración",
       "errorChangingPassword": "Error. No se pudo cambiar la contraseña",
       "couldNotOpenPhoneDialer": "No se pudo abrir el marcador de teléfono",
+
              "favoritesBottomItem": "Favoritos",
              "myMarkers": "Marcador",
              "select": "Seleccionar",
             "origin": "Origen",
             "destination": "Destino"
+
 
 }

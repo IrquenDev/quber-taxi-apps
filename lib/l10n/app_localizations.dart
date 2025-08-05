@@ -2029,8 +2029,6 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Marcador'**
   String get myMarkers;
-
-  /// No description provided for @select.
   ///
   /// In es, this message translates to:
   /// **'Seleccionar'**

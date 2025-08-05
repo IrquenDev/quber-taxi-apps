@@ -1056,7 +1056,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myMarkers => 'Marker';
 
   @override
+
   String get select => 'Select';
+
 
   @override
   String get origin => 'From';
