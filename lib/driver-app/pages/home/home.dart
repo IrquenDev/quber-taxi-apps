@@ -31,6 +31,7 @@ import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/storage/session_manger.dart';
 import 'package:quber_taxi/utils/map/geolocator.dart' as g_util;
 import 'package:quber_taxi/utils/map/mapbox.dart' as mb_util;
+import 'package:quber_taxi/utils/map/turf.dart' as turf_util;
 import 'package:quber_taxi/utils/map/turf.dart';
 import 'package:quber_taxi/utils/runtime.dart';
 import 'package:quber_taxi/utils/websocket/core/websocket_service.dart';
@@ -109,8 +110,30 @@ class _DriverHomePageState extends State<DriverHomePage> {
   // Network Checker
   late void Function() _listener;
   late final NetworkScope _scope;
+  
+  // Travel info sheet controller
+  final DraggableScrollableController _travelInfoSheetController = DraggableScrollableController();
 
   bool get _shouldShowAvailableTravels => _isAccountEnabled && _selectedTravel == null;
+
+  /// Automatically requests location permission and starts streaming on app startup
+  Future<void> _autoRequestLocation() async {
+    await g_util.requestLocationPermission(
+      context: context,
+      onPermissionGranted: () async {
+        // Start streaming location automatically
+        if (!_isLocationStreaming) _startStreamingLocation();
+      },
+      onPermissionDenied: () {
+        // Permission denied, but don't show error - user can still use the button
+        print('Location permission denied on startup');
+      },
+      onPermissionDeniedForever: () {
+        // Permission denied permanently, but don't show error - user can still use the button
+        print('Location permission denied permanently on startup');
+      }
+    );
+  }
 
   void _handleNetworkScopeAndListener() {
     _scope = NetworkScope.of(context); // save the scope (depends on context) to safely access on dispose.
@@ -255,12 +278,21 @@ class _DriverHomePageState extends State<DriverHomePage> {
     // If already streaming, don't create duplicate markers
     if (_isLocationStreaming) return;
     
+    // Clear any existing driver markers to prevent duplicates
+    if (_driverAnnotation != null) {
+      await _pointAnnotationManager?.delete(_driverAnnotation!);
+      _driverAnnotation = null;
+    }
+    
     // Get current position
     final position = await g.Geolocator.getCurrentPosition();
     final coords = Position(position.longitude, position.latitude);
     // Update class's field coord references
     _coords = coords;
     _lastKnownCoords = coords;
+    
+    // Cancel existing subscription to avoid duplicates
+    _locationStreamSubscription?.cancel();
     
     // Only create marker if we don't have one yet
     if (_driverAnnotation == null) {
@@ -277,9 +309,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
       _driverAnnotation!.geometry = Point(coordinates: coords);
       _pointAnnotationManager?.update(_driverAnnotation!);
     }
-    
-    // Cancel existing subscription to avoid duplicates
-    _locationStreamSubscription?.cancel();
     
     // Listen for real location updates
     _locationStreamSubscription = _locationBroadcast.listen((position) async {
@@ -311,11 +340,85 @@ class _DriverHomePageState extends State<DriverHomePage> {
     });
   }
 
+  /// Maps municipality names to their corresponding GeoJSON file paths
+  String? _getMunicipalityGeoJsonPath(String municipalityName) {
+    final Map<String, String> municipalityMap = {
+      'Centro Habana': 'assets/geojson/polygon/CentroHabana.geojson',
+      'La Habana Vieja': 'assets/geojson/polygon/LaHabanaVieja.geojson',
+      'La Lisa': 'assets/geojson/polygon/LaLisa.geojson',
+      'Marianao': 'assets/geojson/polygon/Marianao.geojson',
+      'Playa': 'assets/geojson/polygon/Playa.geojson',
+      'Plaza': 'assets/geojson/polygon/Plaza.geojson',
+      'Regla': 'assets/geojson/polygon/Regla.geojson',
+      'San Miguel del Padrón': 'assets/geojson/polygon/SanMiguel.geojson',
+      'Cotorro': 'assets/geojson/polygon/Cotorro.geojson',
+      'Diez de Octubre': 'assets/geojson/polygon/DiezDeOctubre.geojson',
+      'El Cerro': 'assets/geojson/polygon/ElCerro.geojson',
+      'Guanabacoa': 'assets/geojson/polygon/Guanabacoa.geojson',
+      'Habana del Este': 'assets/geojson/polygon/HabanaDelEste.geojson',
+      'Arroyo Naranjo': 'assets/geojson/polygon/ArroyoNaranjo.geojson',
+      'Boyeros': 'assets/geojson/polygon/Boyeros.geojson',
+    };
+    
+    return municipalityMap[municipalityName];
+  }
+
   void _onTravelSelected(Travel travel) async {
+    final localizations = AppLocalizations.of(context)!;
+    // Check if driver has location before accepting travel
+    if (!_isLocationStreaming) {
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(localizations.locationNotFoundTitle),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(localizations.locationNotFoundMessage),
+                const SizedBox(height: 16.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12.0),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      child: Icon(
+                        Icons.my_location_outlined,
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        size: 24.0,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8.0),
+                Text(localizations.locationNotFoundHint),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text(localizations.locationNotFoundButton),
+              ),
+            ],
+          ),
+        );
+      }
+      return;
+    }
+    
     final response = await _driverService.acceptTravel(driverId: _driver.id, travelId: travel.id);
     if(response.statusCode == 200) {
-      final assetBytes = await rootBundle.load('assets/markers/route/x120/origin.png');
-      final originMarkerImage = assetBytes.buffer.asUint8List();
+      // Load marker images
+      final originAssetBytes = await rootBundle.load('assets/markers/route/x120/origin.png');
+      final destinationAssetBytes = await rootBundle.load('assets/markers/route/x120/destination.png');
+      final originMarkerImage = originAssetBytes.buffer.asUint8List();
+      final destinationMarkerImage = destinationAssetBytes.buffer.asUint8List();
+      
+      // Create origin marker
       final originCoords = Position(travel.originCoords[0], travel.originCoords[1]);
       await _pointAnnotationManager?.create(
         PointAnnotationOptions(
@@ -324,10 +427,101 @@ class _DriverHomePageState extends State<DriverHomePage> {
           iconAnchor: IconAnchor.BOTTOM,
         ),
       );
-      _mapController.easeTo(
-          CameraOptions(center: Point(coordinates: originCoords)),
-          MapAnimationOptions(duration: 500)
-      );
+      
+      // Handle destination based on whether it's a point or municipality
+      if (travel.destinationCoords != null) {
+        // Destination is a specific point - add marker
+        final destinationCoords = Position(travel.destinationCoords![0], travel.destinationCoords![1]);
+        await _pointAnnotationManager?.create(
+          PointAnnotationOptions(
+            geometry: Point(coordinates: destinationCoords),
+            image: destinationMarkerImage,
+            iconAnchor: IconAnchor.BOTTOM,
+          ),
+        );
+        
+        // Calculate bounds to include both origin and destination points
+        final bounds = mb_util.calculateBounds([originCoords, destinationCoords]);
+        
+        // Calculate camera options for the bounds
+        final cameraOptions = await _mapController.cameraForCoordinateBounds(
+          bounds,
+          MbxEdgeInsets(top: 50, bottom: 50, left: 50, right: 50),
+          0, 0, null, null,
+        );
+        
+        // Animate camera to show both points
+        _mapController.easeTo(
+          cameraOptions,
+          MapAnimationOptions(duration: 1000)
+        );
+      } else {
+        // Destination is a municipality - add polygon
+        final municipalityPath = _getMunicipalityGeoJsonPath(travel.destinationName);
+        if (municipalityPath != null) {
+          try {
+            // Load and add municipality polygon
+            final municipalityGeoJson = await turf_util.GeoUtils.loadGeoJsonPolygon(municipalityPath);
+            
+            // Convert polygon to GeoJSON string
+            final geoJsonString = jsonEncode(municipalityGeoJson.toJson());
+            
+            // Add polygon to map
+            await _mapController.style.addSource(GeoJsonSource(
+              id: "municipality-polygon",
+              data: geoJsonString
+            ));
+            
+            await _mapController.style.addLayer(FillLayer(
+              id: "municipality-fill",
+              sourceId: "municipality-polygon",
+              fillColor: Theme.of(context).colorScheme.onTertiaryContainer.withValues(alpha: 0.5).value,
+              fillOutlineColor: Theme.of(context).colorScheme.tertiary.value,
+            ));
+            
+            // Calculate bounds to include origin and municipality
+            // Get the polygon coordinates to calculate proper bounds
+            final polygonCoords = municipalityGeoJson.coordinates[0]; // First ring of the polygon
+            final List<Position> allCoords = [originCoords];
+            
+            // Add all polygon coordinates to the bounds calculation
+            for (final coord in polygonCoords) {
+              if(coord[0] != null && coord[1] != null) {
+                allCoords.add(Position(coord[0]!, coord[1]!));
+              }
+            }
+            
+            final bounds = mb_util.calculateBounds(allCoords);
+            
+            // Calculate camera options for the bounds
+            final cameraOptions = await _mapController.cameraForCoordinateBounds(
+              bounds,
+              MbxEdgeInsets(top: 50, bottom: 50, left: 50, right: 50),
+              0, 0, null, null,
+            );
+            
+            // Animate camera to show origin and municipality
+            _mapController.easeTo(
+              cameraOptions,
+              MapAnimationOptions(duration: 1000)
+            );
+          } catch (e) {
+            print('Error loading municipality polygon: $e');
+            // Fallback to just centering on origin
+            _mapController.easeTo(
+              CameraOptions(center: Point(coordinates: originCoords)),
+              MapAnimationOptions(duration: 500)
+            );
+          }
+        } else {
+          // Municipality not found, just center on origin
+          _mapController.easeTo(
+            CameraOptions(center: Point(coordinates: originCoords)),
+            MapAnimationOptions(duration: 500)
+          );
+        }
+      }
+      
       _startSharingLocation();
       setState(() => _selectedTravel = travel);
     } else {
@@ -442,7 +636,20 @@ class _DriverHomePageState extends State<DriverHomePage> {
     _ticker = Ticker(_onTick);
     SchedulerBinding.instance.addPostFrameCallback((_) {
       _handleNetworkScopeAndListener();
+      // Automatically try to get driver location on startup
+      _autoRequestLocation();
     });
+  }
+
+  /// Clears the municipality polygon from the map
+  Future<void> _clearMunicipalityPolygon() async {
+    try {
+      await _mapController.style.removeStyleLayer("municipality-fill");
+      await _mapController.style.removeStyleSource("municipality-polygon");
+    } catch (e) {
+      // Layer or source might not exist, ignore error
+      print('Error clearing municipality polygon: $e');
+    }
   }
 
   @override
@@ -454,6 +661,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
     _locationShareSubscription?.cancel();
     _locationStreamSubscription?.cancel();
     _pointAnnotationManager?.deleteAll();
+    _clearMunicipalityPolygon();
     
     // Cancel all notification timers
     for (final timer in _notificationTimers.values) {
@@ -566,104 +774,120 @@ class _DriverHomePageState extends State<DriverHomePage> {
                 _pointAnnotationManager?.update(_driverAnnotation!);
               }
             ),
-            // FAB group (my location + travel info)
-            Positioned(
-              right: 20.0, bottom: _shouldShowAvailableTravels ? 150.0 : 20.0,
-              child: Column(
-                spacing: 8.0,
-                children: [
-                  // Driver credit
-                  FloatingActionButton(
-                    heroTag: "driver-credit",
-                    backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                    onPressed: () {
-                      _showDriverCreditDialog();
-                    },
-                    child: Text(
-                      _driver.credit.toInt().toString(),
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+            // FAB group - different behavior based on travel selection
+            if(_selectedTravel == null) ...[
+              // Show all buttons when no travel is selected
+              Positioned(
+                right: 20.0, bottom: _shouldShowAvailableTravels ? 150.0 : 20.0,
+                child: Column(
+                  spacing: 8.0,
+                  children: [
+                    // Driver credit
+                    FloatingActionButton(
+                      heroTag: "driver-credit",
+                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                      onPressed: () {
+                        _showDriverCreditDialog();
+                      },
+                      child: Text(
+                        _driver.credit.toInt().toString(),
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        ),
                       ),
                     ),
-                  ),
-                  // Find my location
-                  FloatingActionButton(
-                    heroTag: "find-my-location",
-                    backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                    onPressed: () async {
-                      // Ask for location permission
-                      await g_util.requestLocationPermission(
-                          context: context,
-                          onPermissionGranted: () async {
-                            // Start streaming location
-                            if(!_isLocationStreaming) _startStreamingLocation();
-                            // Ease to current position (Whether the location is being streaming)
-                            _mapController.easeTo(
-                                CameraOptions(center: Point(coordinates: _coords)),
-                                MapAnimationOptions(duration: 500)
-                            );
-                          },
-                          onPermissionDenied: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                               SnackBar(content: Text(AppLocalizations.of(context)!.permissionsDenied)),
-                            );
-                          },
-                          onPermissionDeniedForever: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(AppLocalizations.of(context)!.permissionDeniedPermanently)),
-                            );
-                          }
-                      );
-                    },
-                    child: Icon(
-                        Icons.my_location_outlined,
-                        color: Theme.of(context).iconTheme.color,
-                        size: Theme.of(context).iconTheme.size
-                    ),
-                  ),
-                  // Find my location
-                  FloatingActionButton(
-                    heroTag: "go-settings",
-                    backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                    onPressed: () async {
-                      context.push(DriverRoutes.settings);
-                    },
-                    child: Icon(
-                        Icons.settings_outlined,
-                        color: Theme.of(context).iconTheme.color,
-                        size: Theme.of(context).iconTheme.size
-                    ),
-                  ),
-                  // Show travel info bottom sheet
-                  if(_selectedTravel != null)
+                    // Find my location
                     FloatingActionButton(
-                        heroTag: "show-travel-info",
-                        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                        onPressed: () => showModalBottomSheet(
+                      heroTag: "find-my-location",
+                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                      onPressed: () async {
+                        // Ask for location permission
+                        await g_util.requestLocationPermission(
                             context: context,
-                            showDragHandle: true,
-                            builder: (sheetContext) => TravelInfoSheet(
-                              travel: _selectedTravel!,
-                              onPickUpConfirmationRequest: () {
-                                  _travelStateHandler = TravelStateHandler(
-                                      state: TravelState.inProgress,
-                                      travelId: _selectedTravel!.id,
-                                      onMessage: (travel) => sheetContext.go(DriverRoutes.navigation, extra:
-                                      travel)
-                                  )..activate();
-                              }
-                            )
-                        ),
-                        child: Icon(
-                            Icons.info_outline,
-                            color: Theme.of(context).iconTheme.color,
-                            size: Theme.of(context).iconTheme.size
-                        )
-                    )
-                ]
+                            onPermissionGranted: () async {
+                              // Start streaming location
+                              if(!_isLocationStreaming) _startStreamingLocation();
+                              // Ease to current position (Whether the location is being streaming)
+                              _mapController.easeTo(
+                                  CameraOptions(center: Point(coordinates: _coords)),
+                                  MapAnimationOptions(duration: 500)
+                              );
+                            },
+                            onPermissionDenied: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                 SnackBar(content: Text(AppLocalizations.of(context)!.permissionsDenied)),
+                              );
+                            },
+                            onPermissionDeniedForever: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(AppLocalizations.of(context)!.permissionDeniedPermanently)),
+                              );
+                            }
+                        );
+                      },
+                      child: Icon(
+                          Icons.my_location_outlined,
+                          color: Theme.of(context).iconTheme.color,
+                          size: Theme.of(context).iconTheme.size
+                      ),
+                    ),
+                    // Settings button
+                    FloatingActionButton(
+                      heroTag: "go-settings",
+                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                      onPressed: () async {
+                        context.push(DriverRoutes.settings);
+                      },
+                      child: Icon(
+                          Icons.settings_outlined,
+                          color: Theme.of(context).iconTheme.color,
+                          size: Theme.of(context).iconTheme.size
+                      ),
+                    ),
+                  ]
+                )
               )
-            ),
+            ] else ...[
+              // Show only location button when travel is selected
+              Positioned(
+                right: 20.0, bottom: 150.0,
+                child: FloatingActionButton(
+                  heroTag: "find-my-location-selected",
+                  backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                  onPressed: () async {
+                    // Ask for location permission
+                    await g_util.requestLocationPermission(
+                        context: context,
+                        onPermissionGranted: () async {
+                          // Start streaming location
+                          if(!_isLocationStreaming) _startStreamingLocation();
+                          // Ease to current position (Whether the location is being streaming)
+                          _mapController.easeTo(
+                              CameraOptions(center: Point(coordinates: _coords)),
+                              MapAnimationOptions(duration: 500)
+                          );
+                        },
+                        onPermissionDenied: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                             SnackBar(content: Text(AppLocalizations.of(context)!.permissionsDenied)),
+                          );
+                        },
+                        onPermissionDeniedForever: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(AppLocalizations.of(context)!.permissionDeniedPermanently)),
+                          );
+                        }
+                    );
+                  },
+                  child: Icon(
+                      Icons.my_location_outlined,
+                      color: Theme.of(context).iconTheme.color,
+                      size: Theme.of(context).iconTheme.size
+                  ),
+                )
+              )
+            ],
             // Notification area
             Positioned(
                 top: 32,
@@ -721,10 +945,127 @@ class _DriverHomePageState extends State<DriverHomePage> {
               Align(
                   alignment: Alignment.bottomCenter,
                   child: AvailableTravelsSheet(onTravelSelected: _onTravelSelected)
+              ),
+            // Travel info sheet when travel is selected
+            if(_selectedTravel != null)
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: _buildTravelInfoSheet()
               )
           ]
         )
       )
+    );
+  }
+
+  Widget _buildTravelInfoSheet() {
+    final dimensions = Theme.of(context).extension<DimensionExtension>()!;
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final localizations = AppLocalizations.of(context)!;
+
+                  return DraggableScrollableSheet(
+                controller: _travelInfoSheetController,
+                initialChildSize: 0.15,
+                minChildSize: 0.15,
+                maxChildSize: 0.7,
+      expand: false,
+      shouldCloseOnMinExtent: false,
+      builder: (context, scrollController) {
+        return Stack(
+          children: [
+            // Background Container With Header
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(dimensions.cardBorderRadiusMedium))
+                ),
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          if (!_travelInfoSheetController.isAttached) return;
+                          _travelInfoSheetController.jumpTo(0.9);
+                        },
+                        icon: Icon(Icons.keyboard_double_arrow_up)
+                      ),
+                      const SizedBox(width: 8.0),
+                      Text(localizations.tripDescription, style: textTheme.titleMedium)
+                    ]
+                  )
+                )
+              )
+            ),
+            // Main Container with Content
+            Positioned.fill(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 56.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: colorScheme.surfaceContainer,
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(dimensions.cardBorderRadiusLarge)),
+                  ),
+                  child: Column(
+                    children: [
+                      // Drag Handler
+                      GestureDetector(
+                        behavior: HitTestBehavior.translucent,
+                        onVerticalDragUpdate: (details) {
+                          if (!_travelInfoSheetController.isAttached) return;
+                          final screenHeight = MediaQuery.of(context).size.height;
+                          final dragAmount = -details.primaryDelta! / screenHeight;
+                          final currentSize = _travelInfoSheetController.size;
+                          final newSize = (currentSize + dragAmount).clamp(0.15, 0.9);
+                          _travelInfoSheetController.jumpTo(newSize);
+                        },
+                        child: SizedBox(
+                          height: 48.0,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 24.0,
+                                height: 8.0,
+                                decoration: BoxDecoration(
+                                  color: colorScheme.onSurfaceVariant.withOpacity(0.4),
+                                  borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusSmall)
+                                )
+                              ),
+                            ]
+                          ),
+                        )
+                      ),
+                      // Travel Info Sheet Content
+                      Expanded(
+                        child: SingleChildScrollView(
+                          controller: scrollController,
+                          child: TravelInfoSheet(
+                            travel: _selectedTravel!,
+                            onPickUpConfirmationRequest: () async {
+                              // Clear municipality polygon when starting the trip
+                              await _clearMunicipalityPolygon();
+                              
+                              _travelStateHandler = TravelStateHandler(
+                                state: TravelState.inProgress,
+                                travelId: _selectedTravel!.id,
+                                onMessage: (travel) => context.go(DriverRoutes.navigation, extra: travel)
+                              )..activate();
+                            }
+                          ),
+                        ),
+                      ),
+                    ]
+                  )
+                )
+              )
+            )
+          ]
+        );
+      }
     );
   }
 

@@ -189,7 +189,7 @@ class _SearchDestinationPageState extends State<SearchDestinationPage> {
                             ListTile(
                                 minTileHeight: 48.0,
                                 onTap: () async {
-                                  final place = await context.push<MapboxPlace>(CommonRoutes.locationPicker);
+                                  final place = await context.push<MapboxPlace>(CommonRoutes.locationPicker, extra: false);
                                   if (place != null && context.mounted) {
                                     context.pop({"usingFixedDestination": true, "destination": place});
                                   }
