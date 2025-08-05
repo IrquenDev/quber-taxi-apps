@@ -1062,8 +1062,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get favoritesBottomItem => 'Favoritos';
 
   @override
-
-  String get myMarkers => 'Marcadores';
+  String get myMarkers => 'Marcador';
 
   @override
   String get select => 'Seleccionar';
@@ -1073,5 +1072,4 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get destination => 'Destino';
-
 }

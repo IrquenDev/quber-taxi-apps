@@ -15,7 +15,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get originName => 'Select the origin location';
 
   @override
-  String get destinationName => 'Select the destination location';
+  String get destinationName => 'Select the destination municipality';
 
   @override
   String get carPrefer => 'What type of vehicle do you prefer?';
@@ -27,7 +27,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pets => 'Are you bringing a pet?';
 
   @override
-  String get distance => 'Distance:';
+  String get distance => 'Distancia:';
 
   @override
   String get minDistance => 'Minimum distance:';
@@ -36,7 +36,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get maxDistance => 'Maximum distance:';
 
   @override
-  String get price => 'Price:';
+  String get price => 'Precio:';
 
   @override
   String get minPrice => 'Minimum price:';
@@ -52,7 +52,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tooltipAboutEstimations =>
-      'The estimates below, while very precise, are still approximate. Please refer to them as a guide. Actual distance and price will be calculated during the voyage.';
+      'Las estimaciones que se presentan a continuación, a pesar de ser muy prescisas, siguen siendo valores aproximados. Refiérase a ellas como una guía. La distancia y precio reales se calcularán durante la travesía.';
 
   @override
   String get settingsHome => 'Settings';
@@ -76,21 +76,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get quberPoints => 'Quber Points';
 
   @override
-  String get accumulatedPoints => 'Accumulated points';
+  String get accumulatedPoints => 'Puntos acumulados';
 
   @override
-  String get quberPointsEarned => 'Quber Points Earned';
+  String get quberPointsEarned => 'Puntos Quber Ganados';
 
   @override
   String get inviteFriendsDescription =>
-      'Invite friends with your referral code to earn more points. Use them to buy discounts on your trips.';
+      'Invita amigos con tu código de referido para ganar más puntos. Úsalos para comprar descuentos en tus viajes.';
 
   @override
-  String get driverCredit => 'Driver Credit';
+  String get driverCredit => 'Crédito del Conductor';
 
   @override
   String get driverCreditDescription =>
-      'Available balance in your account. This credit is updated after each completed trip.';
+      'Saldo disponible en tu cuenta. Este crédito se actualiza después de cada viaje completado.';
 
   @override
   String get ubicationFailed =>
@@ -826,7 +826,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String distanceFixed(Object distance) {
-    return 'Distance: ${distance}km';
+    return 'Distancia: ${distance}km';
   }
 
   @override
@@ -841,7 +841,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String priceFixedCost(Object price) {
-    return 'Price: $price CUP';
+    return 'Precio: $price CUP';
   }
 
   @override
@@ -882,7 +882,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get allStates => 'All states';
 
   @override
-  String get clearFilters => 'Clear filters';
+  String get clearFilters => 'Limpiar filtros';
 
   @override
   String get drivers => 'Drivers';
@@ -900,30 +900,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirmPayment => 'Confirm Payment';
 
   @override
-  String get actions => 'Actions';
+  String get actions => 'Acciones';
 
   @override
-  String get recharge => 'Recharge';
+  String get recharge => 'Recargar';
 
   @override
-  String get rechargeAmount => 'Amount to recharge';
+  String get rechargeAmount => 'Monto a recargar';
 
   @override
-  String get credit => 'Credit';
+  String get credit => 'Crédito';
 
   @override
   String creditAmount(Object amount) {
-    return 'Credit: $amount CUP';
+    return 'Crédito: $amount CUP';
   }
 
   @override
-  String get rechargeSuccess => 'Credit recharged successfully';
+  String get rechargeSuccess => 'Crédito recargado exitosamente';
 
   @override
-  String get rechargeError => 'Error recharging credit';
+  String get rechargeError => 'Error al recargar el crédito';
 
   @override
-  String get invalidAmount => 'Invalid amount';
+  String get invalidAmount => 'Monto inválido';
 
   @override
   String get blockAccount => 'Block account';
@@ -1053,8 +1053,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get favoritesBottomItem => 'Favorites';
 
   @override
-
-  String get myMarkers => 'Markers';
+  String get myMarkers => 'Marker';
 
   @override
   String get select => 'Select';
@@ -1064,5 +1063,4 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get destination => 'Destination';
-
 }
