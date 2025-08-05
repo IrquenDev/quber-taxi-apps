@@ -2018,6 +2018,72 @@ abstract class AppLocalizations {
   /// **'No se pudo abrir el marcador de teléfono'**
   String get couldNotOpenPhoneDialer;
 
+  /// No description provided for @notAvailable.
+  ///
+  /// In es, this message translates to:
+  /// **'N/A'**
+  String get notAvailable;
+
+  /// No description provided for @currency.
+  ///
+  /// In es, this message translates to:
+  /// **'CUP'**
+  String get currency;
+
+  /// No description provided for @kilometers.
+  ///
+  /// In es, this message translates to:
+  /// **'km'**
+  String get kilometers;
+
+  /// No description provided for @minutes.
+  ///
+  /// In es, this message translates to:
+  /// **'min'**
+  String get minutes;
+
+  /// No description provided for @nameAboutDev.
+  ///
+  /// In es, this message translates to:
+  /// **'Irquen'**
+  String get nameAboutDev;
+
+  /// No description provided for @emailAboutDev.
+  ///
+  /// In es, this message translates to:
+  /// **'qnecesitas.desarrollo@gmail.com'**
+  String get emailAboutDev;
+
+  /// No description provided for @phoneAboutDev.
+  ///
+  /// In es, this message translates to:
+  /// **'+5355759386'**
+  String get phoneAboutDev;
+
+  /// No description provided for @websiteAboutDev.
+  ///
+  /// In es, this message translates to:
+  /// **'https://qnecesitas.nat.cu'**
+  String get websiteAboutDev;
+
+  /// No description provided for @nameAboutUs.
+  ///
+  /// In es, this message translates to:
+  /// **'Quber'**
+  String get nameAboutUs;
+
+  /// No description provided for @phoneAboutUs.
+  ///
+  /// In es, this message translates to:
+  /// **'+53 52417814'**
+  String get phoneAboutUs;
+
+  /// No description provided for @copiedToClipboard.
+  ///
+  /// In es, this message translates to:
+  /// **'Copiado al portapapeles'**
+  String get copiedToClipboard;
+
   /// No description provided for @favoritesBottomItem.
   ///
   /// In es, this message translates to:
@@ -2029,6 +2095,8 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Marcador'**
   String get myMarkers;
+
+  /// No description provided for @select.
   ///
   /// In es, this message translates to:
   /// **'Seleccionar'**

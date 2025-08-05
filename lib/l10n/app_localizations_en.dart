@@ -1050,15 +1050,46 @@ class AppLocalizationsEn extends AppLocalizations {
   String get couldNotOpenPhoneDialer => 'Could not open phone dialer';
 
   @override
+  String get notAvailable => 'N/A';
+
+  @override
+  String get currency => 'CUP';
+
+  @override
+  String get kilometers => 'km';
+
+  @override
+  String get minutes => 'min';
+
+  @override
+  String get nameAboutDev => 'Irquen';
+
+  @override
+  String get emailAboutDev => 'qnecesitas.desarrollo@gmail.com';
+
+  @override
+  String get phoneAboutDev => '+5355759386';
+
+  @override
+  String get websiteAboutDev => 'https://qnecesitas.nat.cu';
+
+  @override
+  String get nameAboutUs => 'Quber';
+
+  @override
+  String get phoneAboutUs => '+53 52417814';
+
+  @override
+  String get copiedToClipboard => 'Copied to clipboard';
+
+  @override
   String get favoritesBottomItem => 'Favorites';
 
   @override
   String get myMarkers => 'Marker';
 
   @override
-
   String get select => 'Select';
-
 
   @override
   String get origin => 'From';
