@@ -116,6 +116,25 @@ class _DriverHomePageState extends State<DriverHomePage> {
 
   bool get _shouldShowAvailableTravels => _isAccountEnabled && _selectedTravel == null;
 
+  /// Automatically requests location permission and starts streaming on app startup
+  Future<void> _autoRequestLocation() async {
+    await g_util.requestLocationPermission(
+      context: context,
+      onPermissionGranted: () async {
+        // Start streaming location automatically
+        if (!_isLocationStreaming) _startStreamingLocation();
+      },
+      onPermissionDenied: () {
+        // Permission denied, but don't show error - user can still use the button
+        print('Location permission denied on startup');
+      },
+      onPermissionDeniedForever: () {
+        // Permission denied permanently, but don't show error - user can still use the button
+        print('Location permission denied permanently on startup');
+      }
+    );
+  }
+
   void _handleNetworkScopeAndListener() {
     _scope = NetworkScope.of(context); // save the scope (depends on context) to safely access on dispose.
     _listener = _scope.registerListener(_checkDriverAccountStateListener);
@@ -339,6 +358,52 @@ class _DriverHomePageState extends State<DriverHomePage> {
   }
 
   void _onTravelSelected(Travel travel) async {
+    final localizations = AppLocalizations.of(context)!;
+    // Check if driver has location before accepting travel
+    if (!_isLocationStreaming) {
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(localizations.locationNotFoundTitle),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(localizations.locationNotFoundMessage),
+                const SizedBox(height: 16.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12.0),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      child: Icon(
+                        Icons.my_location_outlined,
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        size: 24.0,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8.0),
+                Text(localizations.locationNotFoundHint),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text(localizations.locationNotFoundButton),
+              ),
+            ],
+          ),
+        );
+      }
+      return;
+    }
+    
     final response = await _driverService.acceptTravel(driverId: _driver.id, travelId: travel.id);
     if(response.statusCode == 200) {
       // Load marker images
@@ -404,8 +469,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
             await _mapController.style.addLayer(FillLayer(
               id: "municipality-fill",
               sourceId: "municipality-polygon",
-              fillColor: Theme.of(context).colorScheme.onTertiaryContainer.withValues(alpha: 0.5).toARGB32(),
-              fillOutlineColor: Theme.of(context).colorScheme.tertiary.value,
+              fillColor: Theme.of(context).colorScheme.onTertiaryContainer.withOpacity(0.1).value,
+              fillOutlineColor: Theme.of(context).colorScheme.onTertiaryContainer.value,
             ));
             
             // Calculate bounds to include origin and municipality
@@ -565,6 +630,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
     _ticker = Ticker(_onTick);
     SchedulerBinding.instance.addPostFrameCallback((_) {
       _handleNetworkScopeAndListener();
+      // Automatically try to get driver location on startup
+      _autoRequestLocation();
     });
   }
 

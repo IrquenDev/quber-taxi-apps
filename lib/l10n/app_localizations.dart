@@ -608,6 +608,30 @@ abstract class AppLocalizations {
   /// **'Ocurrió algo mal, por favor inténtelo más tarde'**
   String get unexpectedErrorLoginMessage;
 
+  /// No description provided for @locationNotFoundTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Ubicación no encontrada'**
+  String get locationNotFoundTitle;
+
+  /// No description provided for @locationNotFoundMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Aún no hemos encontrado su ubicación.'**
+  String get locationNotFoundMessage;
+
+  /// No description provided for @locationNotFoundHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Seleccione este botón para intentar de nuevo.'**
+  String get locationNotFoundHint;
+
+  /// No description provided for @locationNotFoundButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Entendido'**
+  String get locationNotFoundButton;
+
   /// No description provided for @identityVerify.
   ///
   /// In es, this message translates to:

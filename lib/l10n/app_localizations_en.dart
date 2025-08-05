@@ -276,6 +276,18 @@ class AppLocalizationsEn extends AppLocalizations {
       'Something went wrong, please try again later';
 
   @override
+  String get locationNotFoundTitle => 'Location not found';
+
+  @override
+  String get locationNotFoundMessage => 'We haven\'t found your location yet.';
+
+  @override
+  String get locationNotFoundHint => 'Select this button to try again.';
+
+  @override
+  String get locationNotFoundButton => 'Got it';
+
+  @override
   String get identityVerify => 'Identity Verification';
 
   @override
