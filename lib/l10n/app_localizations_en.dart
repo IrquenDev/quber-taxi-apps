@@ -165,7 +165,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get typeVehicle => 'Type of vehicle:';
 
   @override
-  String get startTrip => 'Start Trip';
+  String get startTrip => 'Start Trip (Client Picked Up)';
 
   @override
   String get people => 'people';
@@ -274,6 +274,18 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get unexpectedErrorLoginMessage =>
       'Something went wrong, please try again later';
+
+  @override
+  String get locationNotFoundTitle => 'Location not found';
+
+  @override
+  String get locationNotFoundMessage => 'We haven\'t found your location yet.';
+
+  @override
+  String get locationNotFoundHint => 'Select this button to try again.';
+
+  @override
+  String get locationNotFoundButton => 'Got it';
 
   @override
   String get identityVerify => 'Identity Verification';
