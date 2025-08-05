@@ -278,12 +278,21 @@ class _DriverHomePageState extends State<DriverHomePage> {
     // If already streaming, don't create duplicate markers
     if (_isLocationStreaming) return;
     
+    // Clear any existing driver markers to prevent duplicates
+    if (_driverAnnotation != null) {
+      await _pointAnnotationManager?.delete(_driverAnnotation!);
+      _driverAnnotation = null;
+    }
+    
     // Get current position
     final position = await g.Geolocator.getCurrentPosition();
     final coords = Position(position.longitude, position.latitude);
     // Update class's field coord references
     _coords = coords;
     _lastKnownCoords = coords;
+    
+    // Cancel existing subscription to avoid duplicates
+    _locationStreamSubscription?.cancel();
     
     // Only create marker if we don't have one yet
     if (_driverAnnotation == null) {
@@ -300,9 +309,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
       _driverAnnotation!.geometry = Point(coordinates: coords);
       _pointAnnotationManager?.update(_driverAnnotation!);
     }
-    
-    // Cancel existing subscription to avoid duplicates
-    _locationStreamSubscription?.cancel();
     
     // Listen for real location updates
     _locationStreamSubscription = _locationBroadcast.listen((position) async {
@@ -469,8 +475,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
             await _mapController.style.addLayer(FillLayer(
               id: "municipality-fill",
               sourceId: "municipality-polygon",
-              fillColor: Theme.of(context).colorScheme.onTertiaryContainer.withOpacity(0.1).value,
-              fillOutlineColor: Theme.of(context).colorScheme.onTertiaryContainer.value,
+              fillColor: Theme.of(context).colorScheme.onTertiaryContainer.withValues(alpha: 0.5).value,
+              fillOutlineColor: Theme.of(context).colorScheme.tertiary.value,
             ));
             
             // Calculate bounds to include origin and municipality
