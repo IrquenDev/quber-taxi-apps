@@ -1080,27 +1080,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myMarkers => 'My Markers';
 
   @override
-  String get nameAboutDev => 'Irquen';
-
-  @override
-  String get emailAboutDev => 'qnecesitas.desarrollo@gmail.com';
-
-  @override
-  String get phoneAboutDev => '+5355759386';
-
-  @override
-  String get websiteAboutDev => 'https://qnecesitas.nat.cu';
-
-  @override
-  String get nameAboutUs => 'Quber';
-
-  @override
-  String get phoneAboutUs => '+53 52417814';
-
-  @override
-  String get copiedToClipboard => 'Copied to clipboard';
-
-  @override
   String get notAvailable => 'N/A';
 
   @override
@@ -1170,4 +1149,25 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get onboardingPage5Description =>
       'Every time you take a trip or someone enters your referral code, you accumulate Quber Points. These points allow you to get discounts on future trips. Travel more and save more!';
+
+  @override
+  String get nameAboutDev => 'Irquen';
+
+  @override
+  String get emailAboutDev => 'qnecesitas.desarrollo@gmail.com';
+
+  @override
+  String get phoneAboutDev => '+5355759386';
+
+  @override
+  String get websiteAboutDev => 'https://qnecesitas.nat.cu';
+
+  @override
+  String get nameAboutUs => 'Quber';
+
+  @override
+  String get phoneAboutUs => '+53 52417814';
+
+  @override
+  String get copiedToClipboard => 'Copied to clipboard';
 }
