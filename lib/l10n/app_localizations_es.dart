@@ -61,6 +61,18 @@ class AppLocalizationsEs extends AppLocalizations {
   String get map => 'Mapa';
 
   @override
+  String get select => 'Seleccionar';
+
+  @override
+  String get origin => 'Origen';
+
+  @override
+  String get destination => 'Destino';
+
+  @override
+  String get marker => 'Marcador';
+
+  @override
   String get mapBottomItem => 'Mapa';
 
   @override

@@ -200,6 +200,30 @@ abstract class AppLocalizations {
   /// **'Mapa'**
   String get map;
 
+  /// No description provided for @select.
+  ///
+  /// In es, this message translates to:
+  /// **'Seleccionar'**
+  String get select;
+
+  /// No description provided for @origin.
+  ///
+  /// In es, this message translates to:
+  /// **'Origen'**
+  String get origin;
+
+  /// No description provided for @destination.
+  ///
+  /// In es, this message translates to:
+  /// **'Destino'**
+  String get destination;
+
+  /// No description provided for @marker.
+  ///
+  /// In es, this message translates to:
+  /// **'Marcador'**
+  String get marker;
+
   /// No description provided for @mapBottomItem.
   ///
   /// In es, this message translates to:

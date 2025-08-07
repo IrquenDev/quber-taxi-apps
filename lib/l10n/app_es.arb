@@ -19,6 +19,10 @@
   "settingsHome": "Ajustes",
 
   "map": "Mapa",
+  "select": "Seleccionar",
+  "origin": "Origen",
+  "destination": "Destino",
+  "marker": "Marcador",
 
    "mapBottomItem": "Mapa",
    "requestTaxiBottomItem": "Pedir Taxi",

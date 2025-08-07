@@ -38,7 +38,7 @@ Future<void> main() async {
   //The problem here is that the free plan allows only 1000 errors capture, and we are over 200 without client usage, just in develop
   SentryFlutter.init(
           (options) => options
-        ..dsn='https://5fc6d3f519f940929ab3d6b863651d30@app.glitchtip.com/1223'
+        ..dsn='https://5fc6d3f519f940929ab3d6b863651d30@app.glitchtip.com/12236'
         ..tracesSampleRate=0.00 // Performance trace 1% of events
         ..enableAutoSessionTracking=false,
       appRunner: () => runApp(App())

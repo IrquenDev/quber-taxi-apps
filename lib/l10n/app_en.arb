@@ -24,6 +24,10 @@
   "quberPointsBottomItem": "Quber Points",
 
   "map": "Map",
+  "select": "Select",
+  "origin": "Origin",
+  "destination": "Destination",
+  "marker": "Marker",
   "quberPoints": "Quber Points",
   "accumulatedPoints": "Accumulated points",
   "quberPointsEarned": "Quber Points Earned",
