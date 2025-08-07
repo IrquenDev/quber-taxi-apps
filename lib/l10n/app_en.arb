@@ -383,5 +383,28 @@
              "notAvailable": "N/A",
              "currency": "CUP",
              "kilometers": "km",
-             "minutes": "min"
+             "minutes": "min",
+
+             "onboardingPage1Title": "Ready to Travel?",
+             "onboardingPage1Subtitle": "Just by selecting the destination municipality",
+             "onboardingPage1Description": "you will be able to travel quickly and safely",
+
+             "onboardingPage2Title": "But first",
+             "onboardingPage2Subtitle": "How did you hear about us?",
+             "referralSourceFriend": "From a friend",
+             "referralSourcePoster": "From a poster",
+             "referralSourcePlayStore": "From PlayStore",
+
+             "onboardingPage3Title": "Do you have a referral code?",
+             "onboardingPage3Subtitle": "Help your friend and earn benefits",
+             "onboardingPage3Description": "Enter a referral code so your friend gets a discount on their next trip. If you don't have one, you can continue.",
+             "onboardingPage3InputHint": "Enter your referral code",
+
+             "onboardingPage4Title": "How is the trip price calculated?",
+             "onboardingPage4Subtitle": "Based on distance and destination",
+             "onboardingPage4Description": "The app will calculate and show the price in real time according to the distance traveled. So depending on the municipality you're going to, you'll be shown an estimated price range at the beginning. This allows you to make stops and visit multiple destinations with greater freedom.",
+
+             "onboardingPage5Title": "Quber Points",
+             "onboardingPage5Subtitle": "Travel and earn discounts",
+             "onboardingPage5Description": "Every time you take a trip or someone enters your referral code, you accumulate Quber Points. These points allow you to get discounts on future trips. Travel more and save more!"
 }

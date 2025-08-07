@@ -1111,4 +1111,63 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get minutes => 'min';
+
+  @override
+  String get onboardingPage1Title => 'Ready to Travel?';
+
+  @override
+  String get onboardingPage1Subtitle =>
+      'Just by selecting the destination municipality';
+
+  @override
+  String get onboardingPage1Description =>
+      'you will be able to travel quickly and safely';
+
+  @override
+  String get onboardingPage2Title => 'But first';
+
+  @override
+  String get onboardingPage2Subtitle => 'How did you hear about us?';
+
+  @override
+  String get referralSourceFriend => 'From a friend';
+
+  @override
+  String get referralSourcePoster => 'From a poster';
+
+  @override
+  String get referralSourcePlayStore => 'From PlayStore';
+
+  @override
+  String get onboardingPage3Title => 'Do you have a referral code?';
+
+  @override
+  String get onboardingPage3Subtitle => 'Help your friend and earn benefits';
+
+  @override
+  String get onboardingPage3Description =>
+      'Enter a referral code so your friend gets a discount on their next trip. If you don\'t have one, you can continue.';
+
+  @override
+  String get onboardingPage3InputHint => 'Enter your referral code';
+
+  @override
+  String get onboardingPage4Title => 'How is the trip price calculated?';
+
+  @override
+  String get onboardingPage4Subtitle => 'Based on distance and destination';
+
+  @override
+  String get onboardingPage4Description =>
+      'The app will calculate and show the price in real time according to the distance traveled. So depending on the municipality you\'re going to, you\'ll be shown an estimated price range at the beginning. This allows you to make stops and visit multiple destinations with greater freedom.';
+
+  @override
+  String get onboardingPage5Title => 'Quber Points';
+
+  @override
+  String get onboardingPage5Subtitle => 'Travel and earn discounts';
+
+  @override
+  String get onboardingPage5Description =>
+      'Every time you take a trip or someone enters your referral code, you accumulate Quber Points. These points allow you to get discounts on future trips. Travel more and save more!';
 }

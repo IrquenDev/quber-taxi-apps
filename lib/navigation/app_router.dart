@@ -40,16 +40,16 @@ import 'routes/common_routes.dart';
 final GoRouter appRouter = GoRouter(
   
   // App start up route. You can change it for developing or testing, just remember to take it back in place.
-  initialLocation: runtime.isSessionOk
-      ? _resolveInitialLocation(BuildConfig.appProfile)
-      : CommonRoutes.login,
+  initialLocation: !runtime.isOnboardingDone
+      ? CommonRoutes.onboarding
+      : runtime.isSessionOk ? _resolveInitialLocation(BuildConfig.appProfile) : CommonRoutes.login,
   
   routes: [
 
     // COMMONS
 
     GoRoute(path: CommonRoutes.onboarding,
-        builder: (context, state) => const OnboardingScreen()
+        builder: (context, state) => const OnboardingPage()
     ),
 
     GoRoute(

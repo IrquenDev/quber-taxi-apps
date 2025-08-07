@@ -3,13 +3,13 @@ import 'package:quber_taxi/common/models/encodable.dart';
 import 'package:quber_taxi/storage/prefs_manager.dart';
 
 /// A singleton class that manages the user's login session using [SharedPrefsManager].
-class SessionManager {
+class SessionPrefsManager {
 
   // Private constructor for singleton pattern.
-  SessionManager._internal();
+  SessionPrefsManager._internal();
 
-  /// Singleton instance of [SessionManager].
-  static final SessionManager instance = SessionManager._internal();
+  /// Singleton instance of [SessionPrefsManager].
+  static final SessionPrefsManager instance = SessionPrefsManager._internal();
 
   /// Key used to store the session state (true if user is logged in).
   static const _isSessionOk = "isSessionOk";
@@ -61,7 +61,9 @@ class SessionManager {
       final flagSaved = await _prefsManager.setBool(_isSessionOk, true);
       return flagSaved ? true : false;
     }
-    return false;
+    else {
+      return false;
+    }
   }
 
   /// Clears all session-related keys from shared preferences.

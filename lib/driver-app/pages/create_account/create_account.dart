@@ -15,7 +15,7 @@ import 'package:quber_taxi/enums/taxi_type.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/driver_routes.dart';
 import 'package:quber_taxi/navigation/routes/common_routes.dart';
-import 'package:quber_taxi/storage/session_manger.dart';
+import 'package:quber_taxi/storage/session_prefs_manger.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/utils/image/image_utils.dart';
 import 'package:quber_taxi/utils/runtime.dart';
@@ -530,7 +530,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
         final json = jsonDecode(response.body);
         final driver = Driver.fromJson(json);
         // Save the user's session
-        final success = await SessionManager.instance.save(driver);
+        final success = await SessionPrefsManager.instance.save(driver);
         if(success) {
           // Avoid context's gaps
           if(!context.mounted) return;

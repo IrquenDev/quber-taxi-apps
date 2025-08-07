@@ -1121,4 +1121,63 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get minutes => 'min';
+
+  @override
+  String get onboardingPage1Title => '¿Listo para Viajar?';
+
+  @override
+  String get onboardingPage1Subtitle =>
+      'Con solo seleccionar el municipio de destino';
+
+  @override
+  String get onboardingPage1Description =>
+      'podrá viajar de forma rápida y segura';
+
+  @override
+  String get onboardingPage2Title => 'Pero primero';
+
+  @override
+  String get onboardingPage2Subtitle => '¿Cómo supo de nosotros?';
+
+  @override
+  String get referralSourceFriend => 'Por un amigo';
+
+  @override
+  String get referralSourcePoster => 'Por un cartel';
+
+  @override
+  String get referralSourcePlayStore => 'Por PlayStore';
+
+  @override
+  String get onboardingPage3Title => '¿Tienes un código de referido?';
+
+  @override
+  String get onboardingPage3Subtitle => 'Ayuda a tu amigo y gana beneficios';
+
+  @override
+  String get onboardingPage3Description =>
+      'Introduce un código de referido para que tu amigo obtenga un descuento en su próximo viaje. Si no dispones de uno, puedes continuar.';
+
+  @override
+  String get onboardingPage3InputHint => 'Introduzca su Código de referido';
+
+  @override
+  String get onboardingPage4Title => '¿Cómo se calcula el precio del viaje?';
+
+  @override
+  String get onboardingPage4Subtitle => 'Basado en la distancia y el destino';
+
+  @override
+  String get onboardingPage4Description =>
+      'La aplicación irá calculando y mostrando el precio en tiempo real según la distancia que se va recorriendo. Así dependiendo del municipio al que te dirijas, se te mostrará al inicio un rango estimado de precio. Esto te permite hacer paradas y visitar múltiples destinos con mayor libertad.';
+
+  @override
+  String get onboardingPage5Title => 'Puntos Quber';
+
+  @override
+  String get onboardingPage5Subtitle => 'Viaja y gana descuentos';
+
+  @override
+  String get onboardingPage5Description =>
+      'Cada vez que realizas un viaje o alguien introduce tu código de referido, acumulas Puntos Quber. Estos puntos te permiten obtener descuentos en futuros viajes. ¡Viaja más y ahorra más!';
 }

@@ -10,7 +10,7 @@ import 'package:quber_taxi/common/services/account_service.dart';
 import 'package:quber_taxi/config/api_config.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/common_routes.dart';
-import 'package:quber_taxi/storage/session_manger.dart';
+import 'package:quber_taxi/storage/session_prefs_manger.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/utils/image/image_utils.dart';
 import 'package:quber_taxi/utils/runtime.dart';
@@ -101,7 +101,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
       if (!context.mounted) return;
       if (response.statusCode == 200) {
         final client = Client.fromJson(jsonDecode(response.body));
-        await SessionManager.instance.save(client);
+        await SessionPrefsManager.instance.save(client);
         setState(() {
           _profileImage = null;
           _initialProfileImageUrl = client.profileImageUrl;
@@ -439,7 +439,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                       textColor: colorScheme.error,
                       iconColor: colorScheme.error,
                       onTap: () async {
-                        await SessionManager.instance.clear();
+                        await SessionPrefsManager.instance.clear();
                         if (!context.mounted) return;
                         context.go(CommonRoutes.login);
                       },
