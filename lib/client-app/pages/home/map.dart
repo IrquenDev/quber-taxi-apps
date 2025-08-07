@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/utils/map/geolocator.dart';
@@ -23,8 +24,11 @@ class MapView extends StatefulWidget {
 }
 
 class _MapViewState extends State<MapView> {
-
   MapboxMap? _mapController;
+
+  PointAnnotationManager? _pointAnnotationManager;
+  PointAnnotation? _currentMarker;
+  String _selectedOption = ''; // No default selection
   
   // Global map bearing. Initialized onMapCreated and updated onCameraChangeListener. Needed for calculate bearing
   // and updates driver (real or fakes) annotation markers.
@@ -35,9 +39,6 @@ class _MapViewState extends State<MapView> {
   late Ticker _ticker;
   Duration _lastUpdate = Duration.zero;
   late final List<AnimatedFakeDriver> _taxis = [];
-
-  // Point annotation (markers) control
-  PointAnnotationManager? _pointAnnotationManager;
 
   @override
   void initState() {
@@ -61,8 +62,196 @@ class _MapViewState extends State<MapView> {
     }
   }
 
+  void _onMapCreated(MapboxMap controller) async {
+    debugPrint('Map created, initializing...');
+    // Init class's field references
+    _mapController = controller;
+    _mapBearing = await controller.getCameraState().then((c) => c.bearing);
+    // Update some mapbox component
+    await controller.location.updateSettings(LocationComponentSettings(enabled: true));
+    await controller.scaleBar.updateSettings(ScaleBarSettings(enabled: false));
+    // Disable pitch/tilt gestures to keep map flat
+    await controller.gestures.updateSettings(GesturesSettings(
+      pitchEnabled: false,
+    ));
+    // Create PAM
+    _pointAnnotationManager = await controller.annotations.createPointAnnotationManager();
+    debugPrint('PointAnnotationManager created: ${_pointAnnotationManager != null}');
+    
+    // Load Taxi Marker
+    final assetBytesA = await rootBundle.load('assets/markers/taxi/taxi_pin_x172.png');
+    final assetBytesB = await rootBundle.load('assets/markers/taxi/pin_mototaxix172.png');
+    final iconA = assetBytesA.buffer.asUint8List();
+    final iconB = assetBytesB.buffer.asUint8List();
+    
+    // Add Fake Drivers Animation
+    String definedAllowFDA = const String.fromEnvironment("ALLOW_FDA", defaultValue: "TRUE");
+    final fdaAllowed = definedAllowFDA == "TRUE";
+    if (fdaAllowed) {
+      for (int i = 1; i <= 5; i++) {
+        final fakeRoute = await GeoUtils.loadGeoJsonFakeRoute("assets/geojson/line/fake_route_$i.geojson");
+        final origin = fakeRoute.coordinates.first;
+
+        final imageToUse = (i % 2 == 0) ? iconA : iconB;
+
+        final annotation = await _pointAnnotationManager?.create(
+          PointAnnotationOptions(
+            geometry: Point(coordinates: Position(origin[0], origin[1])),
+            image: imageToUse,
+            iconAnchor: IconAnchor.CENTER,
+          ),
+        );
+
+        _taxis.add(AnimatedFakeDriver(
+            routeCoords: fakeRoute.coordinates,
+            annotation: annotation!,
+            routeDuration: Duration(milliseconds: (fakeRoute.duration * 1000).round())
+        ));
+      }
+      _ticker.start();
+    }
+  }
+
+  void _onTapListener(MapContentGestureContext mapContext) async {
+    debugPrint('=== TAP LISTENER CALLED ===');
+    debugPrint('Tap detected at: ${mapContext.point.coordinates.lng}, ${mapContext.point.coordinates.lat}');
+  }
+
+  void _onLongTapListener(MapContentGestureContext mapContext) async {
+    debugPrint('=== LONG TAP LISTENER CALLED ===');
+    debugPrint('Long tap detected at: ${mapContext.point.coordinates.lng}, ${mapContext.point.coordinates.lat}');
+    debugPrint('Touch position: ${mapContext.touchPosition}');
+    
+    try {
+      // Check if point annotation manager is available
+      if (_pointAnnotationManager == null) {
+        debugPrint('PointAnnotationManager is null, creating it...');
+        _pointAnnotationManager = await _mapController?.annotations.createPointAnnotationManager();
+        if (_pointAnnotationManager == null) {
+          debugPrint('Failed to create PointAnnotationManager');
+          return;
+        }
+      }
+
+      // Remove previous marker if exists
+      if (_currentMarker != null) {
+        await _pointAnnotationManager?.delete(_currentMarker!);
+        _currentMarker = null;
+      }
+
+      // Load marker image
+      final bytes = await rootBundle.load('assets/markers/route/x60/origin.png');
+      final imageData = bytes.buffer.asUint8List();
+
+      // Create marker options
+      final options = PointAnnotationOptions(
+          geometry: mapContext.point,
+          image: imageData,
+          iconAnchor: IconAnchor.BOTTOM);
+
+      // Add new marker
+      _currentMarker = await _pointAnnotationManager?.create(options);
+      debugPrint('Marker created successfully');
+
+      // Show selection menu as popup
+      if (mounted) {
+        final RenderBox overlay =
+            Overlay.of(context).context.findRenderObject() as RenderBox;
+
+        final result = await showMenu<String>(
+          context: context,
+          position: RelativeRect.fromRect(
+            Rect.fromPoints(
+              Offset(mapContext.touchPosition.x, mapContext.touchPosition.y),
+              Offset(mapContext.touchPosition.x, mapContext.touchPosition.y),
+            ),
+            Offset.zero & overlay.size,
+          ),
+          elevation: 6,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          items: [
+            PopupMenuItem<String>(
+              enabled: false,
+              height: 6,
+              child: Text(
+                AppLocalizations.of(context)!.select,
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+              ),
+            ),
+            const PopupMenuDivider(
+              indent: 5,
+              endIndent: 5,
+            ),
+            _buildMenuItem(
+              title: AppLocalizations.of(context)!.origin,
+              value: 'origin',
+            ),
+            const PopupMenuDivider(
+              indent: 5,
+              endIndent: 5,
+            ),
+            _buildMenuItem(
+              title: AppLocalizations.of(context)!.destination,
+              value: 'destination',
+            ),
+            const PopupMenuDivider(
+              indent: 5,
+              endIndent: 5,
+            ),
+            _buildMenuItem(
+              title: AppLocalizations.of(context)!.marker,
+              value: 'markers',
+            ),
+          ],
+        );
+
+        if (result != null) {
+          setState(() {
+            _selectedOption = result;
+          });
+          debugPrint('Selected option: $result');
+        }
+      }
+    } catch (e) {
+      debugPrint('Error handling map long tap: $e');
+    }
+  }
+
+  PopupMenuEntry<String> _buildMenuItem({
+    required String title,
+    required String value,
+  }) {
+    final isSelected = _selectedOption == value;
+    return PopupMenuItem<String>(
+      height: 26,
+      value: value,
+              child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              title,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onSurface,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            if (isSelected)
+              SvgPicture.asset(
+                'assets/icons/yellow_check.svg',
+                width: 16,
+                height: 16,
+              ),
+          ],
+        ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    debugPrint('Building MapView widget...');
 
     final cameraOptions = CameraOptions(
       center: Point(coordinates: Position(-82.3598, 23.1380)),
@@ -75,51 +264,9 @@ class _MapViewState extends State<MapView> {
           MapWidget(
             styleUri: MapboxStyles.STANDARD,
             cameraOptions: cameraOptions,
-            onMapCreated: (controller) async {
-              // Init class's field references
-              _mapController = controller;
-              _mapBearing = await controller.getCameraState().then((c) => c.bearing);
-              // Update some mapbox component
-              await controller.location.updateSettings(LocationComponentSettings(enabled: true));
-              await controller.scaleBar.updateSettings(ScaleBarSettings(enabled: false));
-              // Disable pitch/tilt gestures to keep map flat
-              await controller.gestures.updateSettings(GesturesSettings(pitchEnabled: false));
-              // Create PAM
-              _pointAnnotationManager = await controller.annotations.createPointAnnotationManager();
-              
-              // Load Taxi Marker
-              final assetBytesA = await rootBundle.load('assets/markers/taxi/taxi_pin_x172.png');
-              final assetBytesB = await rootBundle.load('assets/markers/taxi/pin_mototaxix172.png');
-              final iconA = assetBytesA.buffer.asUint8List();
-              final iconB = assetBytesB.buffer.asUint8List();
-              
-              // Add Fake Drivers Animation
-              String definedAllowFDA = const String.fromEnvironment("ALLOW_FDA", defaultValue: "TRUE");
-              final fdaAllowed = definedAllowFDA == "TRUE";
-              if (fdaAllowed) {
-                for (int i = 1; i <= 5; i++) {
-                  final fakeRoute = await GeoUtils.loadGeoJsonFakeRoute("assets/geojson/line/fake_route_$i.geojson");
-                  final origin = fakeRoute.coordinates.first;
-
-                  final imageToUse = (i % 2 == 0) ? iconA : iconB;
-
-                  final annotation = await _pointAnnotationManager?.create(
-                    PointAnnotationOptions(
-                      geometry: Point(coordinates: Position(origin[0], origin[1])),
-                      image: imageToUse,
-                      iconAnchor: IconAnchor.CENTER,
-                    ),
-                  );
-
-                  _taxis.add(AnimatedFakeDriver(
-                      routeCoords: fakeRoute.coordinates,
-                      annotation: annotation!,
-                      routeDuration: Duration(milliseconds: (fakeRoute.duration * 1000).round())
-                  ));
-                }
-                _ticker.start();
-              }
-            },
+            onMapCreated: _onMapCreated,
+            onTapListener: _onTapListener,
+            onLongTapListener: _onLongTapListener,
             onCameraChangeListener: (cameraData) {
               // Always update bearing 'cause fake drivers animation depends on it
               _mapBearing = cameraData.cameraState.bearing;
