@@ -13,7 +13,9 @@ import 'package:quber_taxi/utils/map/turf.dart';
 
 class LocationPicker extends StatefulWidget {
 
-  const LocationPicker({super.key});
+  final bool isOrigin; // true for origin (A), false for destination (B)
+
+  const LocationPicker({super.key, this.isOrigin = true});
 
   @override
   State<LocationPicker> createState() => _LocationPickerState();
@@ -202,8 +204,11 @@ class _LocationPickerState extends State<LocationPicker> {
   }
 
   Future<Uint8List> _loadMarkerImage() async {
-    // Load the origin marker image
-    final byteData = await rootBundle.load('assets/markers/route/x120/origin.png');
+    // Load the appropriate marker image based on whether it's origin or destination
+    final markerPath = widget.isOrigin 
+        ? 'assets/markers/route/x120/origin.png'
+        : 'assets/markers/route/x120/destination.png';
+    final byteData = await rootBundle.load(markerPath);
     return byteData.buffer.asUint8List();
   }
 }

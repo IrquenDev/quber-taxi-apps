@@ -83,7 +83,7 @@ class _TripCardState extends State<TripCard> {
                         _buildIconTextRow(
                             context,
                             'assets/icons/t_guiones.svg',
-                            localizations.distanceFixed(widget.travel.fixedDistance.toString()),
+                            localizations.distanceFixed(widget.travel.fixedDistance!.toStringAsFixed(1)),
                             startPadding: 8
                         ),
                       // Distance Min - Standard icon
@@ -91,7 +91,7 @@ class _TripCardState extends State<TripCard> {
                       _buildIconTextRow(
                           context,
                           'assets/icons/t_guiones.svg',
-                          localizations.distanceMinimum(widget.travel.minDistance.toString()),
+                          localizations.distanceMinimum(widget.travel.minDistance!.toStringAsFixed(1)),
                           startPadding: 8
                       ),
                       // Distance Max - Standard icon
@@ -99,7 +99,7 @@ class _TripCardState extends State<TripCard> {
                       _buildIconTextRow(
                           context,
                           'assets/icons/t_guiones.svg',
-                          localizations.distanceMaximum(widget.travel.maxDistance.toString()),
+                          localizations.distanceMaximum(widget.travel.maxDistance!.toStringAsFixed(1)),
                           startPadding: 8
                       ),
                       // Price Fixed - Standard icon
@@ -107,7 +107,7 @@ class _TripCardState extends State<TripCard> {
                         _buildIconTextRow(
                             context,
                             'assets/icons/t_guiones.svg',
-                            localizations.priceFixedCost(widget.travel.fixedPrice.toString()),
+                            localizations.priceFixedCost(widget.travel.fixedPrice!.toStringAsFixed(0)),
                             startPadding: 8
                         ),
                       // Price Min - Standard icon

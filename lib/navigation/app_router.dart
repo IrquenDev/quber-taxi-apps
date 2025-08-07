@@ -69,7 +69,10 @@ final GoRouter appRouter = GoRouter(
 
     GoRoute(
         path: CommonRoutes.locationPicker,
-        builder: (context, state) => const LocationPicker()
+        builder: (context, state) {
+          final isOrigin = state.extra as bool? ?? true;
+          return LocationPicker(isOrigin: isOrigin);
+        }
     ),
 
     GoRoute(path: CommonRoutes.requestFaceId,

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
@@ -15,6 +16,13 @@ Future<void> main() async {
 
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  
+  // Lock screen orientation to portrait mode
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+  
 // This is the main entry point of the application.
   //Initialization Block
   BuildConfig.loadConfig();
@@ -30,7 +38,7 @@ Future<void> main() async {
   //The problem here is that the free plan allows only 1000 errors capture, and we are over 200 without client usage, just in develop
   SentryFlutter.init(
           (options) => options
-        ..dsn='https://5fc6d3f519f940929ab3d6b863651d30@app.glitchtip.com/1223'
+        ..dsn='https://5fc6d3f519f940929ab3d6b863651d30@app.glitchtip.com/12236'
         ..tracesSampleRate=0.00 // Performance trace 1% of events
         ..enableAutoSessionTracking=false,
       appRunner: () => runApp(App())

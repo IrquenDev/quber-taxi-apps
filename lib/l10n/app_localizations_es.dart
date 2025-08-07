@@ -61,6 +61,18 @@ class AppLocalizationsEs extends AppLocalizations {
   String get map => 'Mapa';
 
   @override
+  String get select => 'Seleccionar';
+
+  @override
+  String get origin => 'Origen';
+
+  @override
+  String get destination => 'Destino';
+
+  @override
+  String get marker => 'Marcador';
+
+  @override
   String get mapBottomItem => 'Mapa';
 
   @override
@@ -166,7 +178,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get typeVehicle => 'Tipo de vehículo:';
 
   @override
-  String get startTrip => 'Iniciar viaje';
+  String get startTrip => 'Iniciar Viaje (Cliente Recogido)';
 
   @override
   String get people => 'Personas';
@@ -276,6 +288,19 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get unexpectedErrorLoginMessage =>
       'Ocurrió algo mal, por favor inténtelo más tarde';
+
+  @override
+  String get locationNotFoundTitle => 'Ubicación no encontrada';
+
+  @override
+  String get locationNotFoundMessage => 'Aún no hemos encontrado su ubicación.';
+
+  @override
+  String get locationNotFoundHint =>
+      'Seleccione este botón para intentar de nuevo.';
+
+  @override
+  String get locationNotFoundButton => 'Entendido';
 
   @override
   String get identityVerify => 'Verificación de identidad';
@@ -1063,6 +1088,27 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get myMarkers => 'Mis marcadores';
+
+  @override
+  String get nameAboutDev => 'Irquen';
+
+  @override
+  String get emailAboutDev => 'qnecesitas.desarrollo@gmail.com';
+
+  @override
+  String get phoneAboutDev => '+5355759386';
+
+  @override
+  String get websiteAboutDev => 'https://qnecesitas.nat.cu';
+
+  @override
+  String get nameAboutUs => 'Quber';
+
+  @override
+  String get phoneAboutUs => '+53 52417814';
+
+  @override
+  String get copiedToClipboard => 'Copiado al portapapeles';
 
   @override
   String get notAvailable => 'N/A';

@@ -19,6 +19,10 @@
   "settingsHome": "Ajustes",
 
   "map": "Mapa",
+  "select": "Seleccionar",
+  "origin": "Origen",
+  "destination": "Destino",
+  "marker": "Marcador",
 
    "mapBottomItem": "Mapa",
    "requestTaxiBottomItem": "Pedir Taxi",
@@ -59,7 +63,7 @@
   "countPeople": "Cantidad de personas que viajan:",
   "pet": "Mascota:",
   "typeVehicle": "Tipo de vehículo:",
-  "startTrip": "Iniciar viaje",
+  "startTrip": "Iniciar Viaje (Cliente Recogido)",
 
   "people": "Personas",
   
@@ -98,6 +102,10 @@
   "incorrectPasswordMessage": "La contraseña es incorrecta",
   "phoneNotRegisteredMessage": "El número de teléfono no se encuentra registrado",
   "unexpectedErrorLoginMessage": "Ocurrió algo mal, por favor inténtelo más tarde",
+  "locationNotFoundTitle": "Ubicación no encontrada",
+  "locationNotFoundMessage": "Aún no hemos encontrado su ubicación.",
+  "locationNotFoundHint": "Seleccione este botón para intentar de nuevo.",
+  "locationNotFoundButton": "Entendido",
 
   "identityVerify": "Verificación de identidad",
   "confirmIdentity": "Necesitamos confirmar su identidad.",
@@ -362,8 +370,8 @@
       "errorChangingConfiguration": "Error. No se pudo cambiar la configuración",
       "errorChangingPassword": "Error. No se pudo cambiar la contraseña",
       "couldNotOpenPhoneDialer": "No se pudo abrir el marcador de teléfono",
-                   "invalidVerificationCode": "Código de verificación inválido",
-             "verificationCodeExpired": "Código de verificación expirado",
+      "invalidVerificationCode": "Código de verificación inválido",
+      "verificationCodeExpired": "Código de verificación expirado",
              "favoritesBottomItem": "Favoritos",
              "myMarkers": "Mis marcadores",
              "notAvailable": "N/A",
@@ -392,5 +400,12 @@
 
              "onboardingPage5Title": "Puntos Quber",
              "onboardingPage5Subtitle": "Viaja y gana descuentos",
-             "onboardingPage5Description": "Cada vez que realizas un viaje o alguien introduce tu código de referido, acumulas Puntos Quber. Estos puntos te permiten obtener descuentos en futuros viajes. ¡Viaja más y ahorra más!"
+             "onboardingPage5Description": "Cada vez que realizas un viaje o alguien introduce tu código de referido, acumulas Puntos Quber. Estos puntos te permiten obtener descuentos en futuros viajes. ¡Viaja más y ahorra más!",
+      "nameAboutDev": "Irquen",
+      "emailAboutDev": "qnecesitas.desarrollo@gmail.com",
+      "phoneAboutDev": "+5355759386",
+      "websiteAboutDev": "https://qnecesitas.nat.cu",
+      "nameAboutUs": "Quber",
+      "phoneAboutUs": "+53 52417814",
+      "copiedToClipboard": "Copiado al portapapeles",
 }

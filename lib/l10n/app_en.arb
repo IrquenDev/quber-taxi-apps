@@ -24,6 +24,10 @@
   "quberPointsBottomItem": "Quber Points",
 
   "map": "Map",
+  "select": "Select",
+  "origin": "Origin",
+  "destination": "Destination",
+  "marker": "Marker",
   "quberPoints": "Quber Points",
   "accumulatedPoints": "Accumulated points",
   "quberPointsEarned": "Quber Points Earned",
@@ -59,7 +63,7 @@
   "countPeople": "Number of people traveling:",
   "pet": "Pet:",
   "typeVehicle": "Type of vehicle:",
-  "startTrip": "Start Trip",
+  "startTrip": "Start Trip (Client Picked Up)",
 
   "people": "people",
   
@@ -98,7 +102,10 @@
   "incorrectPasswordMessage": "The password is incorrect",
   "phoneNotRegisteredMessage": "The phone number is not registered",
   "unexpectedErrorLoginMessage": "Something went wrong, please try again later",
-
+  "locationNotFoundTitle": "Location not found",
+  "locationNotFoundMessage": "We haven't found your location yet.",
+  "locationNotFoundHint": "Select this button to try again.",
+  "locationNotFoundButton": "Got it",
 
    "identityVerify": "Identity Verification",
     "confirmIdentity": "We need to confirm your identity.",
@@ -364,6 +371,14 @@
             "couldNotOpenPhoneDialer": "Could not open phone dialer",
              "verificationCodeExpired": "Verification code expired",
              "favoritesBottomItem": "Favorites",
+             "myMarkers": "My Markers",
+             "nameAboutDev": "Irquen",
+             "emailAboutDev": "qnecesitas.desarrollo@gmail.com",
+             "phoneAboutDev": "+5355759386",
+             "websiteAboutDev": "https://qnecesitas.nat.cu",
+             "nameAboutUs": "Quber",
+             "phoneAboutUs": "+53 52417814",
+             "copiedToClipboard": "Copied to clipboard",
              "myMarkers": "My Markers",
              "notAvailable": "N/A",
              "currency": "CUP",
