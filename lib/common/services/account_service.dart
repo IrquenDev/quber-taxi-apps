@@ -7,6 +7,7 @@ import 'package:mime/mime.dart';
 import 'package:quber_taxi/common/models/driver.dart';
 import 'package:quber_taxi/config/api_config.dart';
 import 'package:quber_taxi/enums/taxi_type.dart';
+import 'package:quber_taxi/storage/onboarding_prefs_manager.dart';
 import 'package:quber_taxi/utils/image/image_utils.dart';
 
 /// A service class that manages account-related operations such as
@@ -42,6 +43,18 @@ class AccountService {
     );
     if (profileImage != null) {
       request.files.add(await _getMultipartFileFromXFile(profileImage, "profileImage"));
+    }
+    // Check if any information was saved during onboarding.
+    final onboardingData = OnboardingPrefsManager.instance.getOnboardingData();
+    if(onboardingData != null) {
+      final referralCode = onboardingData["referralCode"];
+      if(referralCode != null && referralCode.isNotEmpty) {
+        request.fields['referralCode'] = referralCode;
+      }
+      final referralSource = onboardingData["referralSource"];
+      if(referralSource != null) {
+        request.fields['referralSource'] = referralSource;
+      }
     }
     final streamedResponse = await request.send();
     return await http.Response.fromStream(streamedResponse);
@@ -107,7 +120,6 @@ class AccountService {
       XFile? profileImage,
       bool shouldUpdateImage
   ) async {
-    print(shouldUpdateImage);
     final url = Uri.parse("$_endpoint/update/client/$clientId");
     final request = http.MultipartRequest("POST", url);
     request.fields['name'] = name;

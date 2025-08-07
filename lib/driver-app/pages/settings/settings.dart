@@ -9,7 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/common_routes.dart';
-import 'package:quber_taxi/storage/session_manger.dart';
+import 'package:quber_taxi/storage/session_prefs_manger.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 
 import '../../../common/models/driver.dart';
@@ -156,7 +156,7 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
 
       if (response.statusCode == 200) {
         final driver = Driver.fromJson(jsonDecode(response.body));
-        await SessionManager.instance.save(driver);
+        await SessionPrefsManager.instance.save(driver);
 
         // Clear old image from cache if a new image was uploaded
         if (_shouldUpdateImage && _taxi.imageUrl != null) {
@@ -548,7 +548,7 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
                       textColor: colorScheme.error,
                       iconColor: colorScheme.error,
                       onTap: () async {
-                        await SessionManager.instance.clear();
+                        await SessionPrefsManager.instance.clear();
                         if (!context.mounted) return;
                         context.go(CommonRoutes.login);
                       },

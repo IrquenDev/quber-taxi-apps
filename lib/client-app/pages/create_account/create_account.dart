@@ -12,7 +12,7 @@ import 'package:quber_taxi/common/services/account_service.dart';
 import 'package:quber_taxi/common/services/auth_service.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/client_routes.dart';
-import 'package:quber_taxi/storage/session_manger.dart';
+import 'package:quber_taxi/storage/session_prefs_manger.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/utils/image/image_utils.dart';
 import 'package:quber_taxi/utils/runtime.dart';
@@ -173,35 +173,22 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
 
       try {
         final response = await _authService.verifyPhoneNumber(_phoneController.text, code);
-        
-        if (!mounted) return;
-        
-        setDialogState(() {
-          isVerifying = false;
-          if (response.statusCode == 200) {
-            // Success - proceed with registration
-            resendTimer?.cancel();
-            resendTimer = null;
-            Navigator.of(context).pop();
-            // Wait a bit to ensure dialog is fully closed before submitting
-            Future.delayed(const Duration(milliseconds: 100), () {
-              if (mounted) {
-                _submitForm();
-              }
-            });
-          } else if (response.statusCode == 400) {
-            final responseBody = response.body;
-            if (responseBody.contains("Invalid verification code")) {
-              errorMessage = localizations.invalidVerificationCode;
-            } else if (responseBody.contains("Verification code expired")) {
-              errorMessage = localizations.verificationCodeExpired;
-            } else {
-              errorMessage = localizations.invalidVerificationCode;
-            }
+        if(response.statusCode == 200) {
+          // Success - proceed with registration
+          resendTimer?.cancel();
+          await _submitForm(); // already handles navigation
+        } else if (response.statusCode == 400) {
+          final responseBody = response.body;
+          if (responseBody.contains("Invalid verification code")) {
+            errorMessage = localizations.invalidVerificationCode;
+          } else if (responseBody.contains("Verification code expired")) {
+            errorMessage = localizations.verificationCodeExpired;
           } else {
-            errorMessage = localizations.verifyCodeError;
+            errorMessage = localizations.invalidVerificationCode;
           }
-        });
+        } else {
+          errorMessage = localizations.verifyCodeError;
+        }
       } catch (e) {
         if (mounted) {
           setDialogState(() {
@@ -437,7 +424,7 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
         final json = jsonDecode(response.body);
         final client = Client.fromJson(json);
         // Save the user's session
-        final success = await SessionManager.instance.save(client);
+        final success = await SessionPrefsManager.instance.save(client);
         if(success) {
           // Avoid context's gaps
           if(!mounted) return;

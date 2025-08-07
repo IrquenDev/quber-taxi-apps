@@ -369,5 +369,28 @@
              "notAvailable": "N/A",
              "currency": "CUP",
              "kilometers": "km",
-             "minutes": "min"
+             "minutes": "min",
+
+             "onboardingPage1Title": "¿Listo para Viajar?",
+             "onboardingPage1Subtitle": "Con solo seleccionar el municipio de destino",
+             "onboardingPage1Description": "podrá viajar de forma rápida y segura",
+
+             "onboardingPage2Title": "Pero primero",
+             "onboardingPage2Subtitle": "¿Cómo supo de nosotros?",
+             "referralSourceFriend": "Por un amigo",
+             "referralSourcePoster": "Por un cartel",
+             "referralSourcePlayStore": "Por PlayStore",
+
+             "onboardingPage3Title": "¿Tienes un código de referido?",
+             "onboardingPage3Subtitle": "Ayuda a tu amigo y gana beneficios",
+             "onboardingPage3Description": "Introduce un código de referido para que tu amigo obtenga un descuento en su próximo viaje. Si no dispones de uno, puedes continuar.",
+             "onboardingPage3InputHint": "Introduzca su Código de referido",
+
+             "onboardingPage4Title": "¿Cómo se calcula el precio del viaje?",
+             "onboardingPage4Subtitle": "Basado en la distancia y el destino",
+             "onboardingPage4Description": "La aplicación irá calculando y mostrando el precio en tiempo real según la distancia que se va recorriendo. Así dependiendo del municipio al que te dirijas, se te mostrará al inicio un rango estimado de precio. Esto te permite hacer paradas y visitar múltiples destinos con mayor libertad.",
+
+             "onboardingPage5Title": "Puntos Quber",
+             "onboardingPage5Subtitle": "Viaja y gana descuentos",
+             "onboardingPage5Description": "Cada vez que realizas un viaje o alguien introduce tu código de referido, acumulas Puntos Quber. Estos puntos te permiten obtener descuentos en futuros viajes. ¡Viaja más y ahorra más!"
 }

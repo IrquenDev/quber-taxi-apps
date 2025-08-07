@@ -2053,6 +2053,114 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'min'**
   String get minutes;
+
+  /// No description provided for @onboardingPage1Title.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Listo para Viajar?'**
+  String get onboardingPage1Title;
+
+  /// No description provided for @onboardingPage1Subtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Con solo seleccionar el municipio de destino'**
+  String get onboardingPage1Subtitle;
+
+  /// No description provided for @onboardingPage1Description.
+  ///
+  /// In es, this message translates to:
+  /// **'podrá viajar de forma rápida y segura'**
+  String get onboardingPage1Description;
+
+  /// No description provided for @onboardingPage2Title.
+  ///
+  /// In es, this message translates to:
+  /// **'Pero primero'**
+  String get onboardingPage2Title;
+
+  /// No description provided for @onboardingPage2Subtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Cómo supo de nosotros?'**
+  String get onboardingPage2Subtitle;
+
+  /// No description provided for @referralSourceFriend.
+  ///
+  /// In es, this message translates to:
+  /// **'Por un amigo'**
+  String get referralSourceFriend;
+
+  /// No description provided for @referralSourcePoster.
+  ///
+  /// In es, this message translates to:
+  /// **'Por un cartel'**
+  String get referralSourcePoster;
+
+  /// No description provided for @referralSourcePlayStore.
+  ///
+  /// In es, this message translates to:
+  /// **'Por PlayStore'**
+  String get referralSourcePlayStore;
+
+  /// No description provided for @onboardingPage3Title.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Tienes un código de referido?'**
+  String get onboardingPage3Title;
+
+  /// No description provided for @onboardingPage3Subtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Ayuda a tu amigo y gana beneficios'**
+  String get onboardingPage3Subtitle;
+
+  /// No description provided for @onboardingPage3Description.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduce un código de referido para que tu amigo obtenga un descuento en su próximo viaje. Si no dispones de uno, puedes continuar.'**
+  String get onboardingPage3Description;
+
+  /// No description provided for @onboardingPage3InputHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduzca su Código de referido'**
+  String get onboardingPage3InputHint;
+
+  /// No description provided for @onboardingPage4Title.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Cómo se calcula el precio del viaje?'**
+  String get onboardingPage4Title;
+
+  /// No description provided for @onboardingPage4Subtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Basado en la distancia y el destino'**
+  String get onboardingPage4Subtitle;
+
+  /// No description provided for @onboardingPage4Description.
+  ///
+  /// In es, this message translates to:
+  /// **'La aplicación irá calculando y mostrando el precio en tiempo real según la distancia que se va recorriendo. Así dependiendo del municipio al que te dirijas, se te mostrará al inicio un rango estimado de precio. Esto te permite hacer paradas y visitar múltiples destinos con mayor libertad.'**
+  String get onboardingPage4Description;
+
+  /// No description provided for @onboardingPage5Title.
+  ///
+  /// In es, this message translates to:
+  /// **'Puntos Quber'**
+  String get onboardingPage5Title;
+
+  /// No description provided for @onboardingPage5Subtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Viaja y gana descuentos'**
+  String get onboardingPage5Subtitle;
+
+  /// No description provided for @onboardingPage5Description.
+  ///
+  /// In es, this message translates to:
+  /// **'Cada vez que realizas un viaje o alguien introduce tu código de referido, acumulas Puntos Quber. Estos puntos te permiten obtener descuentos en futuros viajes. ¡Viaja más y ahorra más!'**
+  String get onboardingPage5Description;
 }
 
 class _AppLocalizationsDelegate

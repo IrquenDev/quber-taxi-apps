@@ -28,7 +28,7 @@ import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/common_routes.dart';
 import 'package:quber_taxi/navigation/routes/driver_routes.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
-import 'package:quber_taxi/storage/session_manger.dart';
+import 'package:quber_taxi/storage/session_prefs_manger.dart';
 import 'package:quber_taxi/utils/map/geolocator.dart' as g_util;
 import 'package:quber_taxi/utils/map/mapbox.dart' as mb_util;
 import 'package:quber_taxi/utils/map/turf.dart';
@@ -145,7 +145,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
     if (response.statusCode == 200) {
       _driver = Driver.fromJson(jsonDecode(response.body));
       // Always update session
-      await SessionManager.instance.save(_driver);
+      await SessionPrefsManager.instance.save(_driver);
       // Show payment reminder (if applies)
       if(_driver.credit > 0.0 && _driver.paymentDate != null) {
       await _showPaymentReminder();
