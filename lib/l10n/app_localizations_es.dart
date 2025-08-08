@@ -1161,6 +1161,13 @@ class AppLocalizationsEs extends AppLocalizations {
       'Cada vez que realizas un viaje o alguien introduce tu código de referido, acumulas Puntos Quber. Estos puntos te permiten obtener descuentos en futuros viajes. ¡Viaja más y ahorra más!';
 
   @override
+  String get tripAccepted => 'Viaje Aceptado';
+
+  @override
+  String get tripAcceptedDescription =>
+      'Un conductor ha aceptado su solicitud. Ahora está en espera de su llegada. Podrá ver su ubicación en tiempo real en el mapa. Le pediremos confirmación cuando esté listo para recogerle.';
+
+  @override
   String get nameAboutDev => 'Irquen';
 
   @override

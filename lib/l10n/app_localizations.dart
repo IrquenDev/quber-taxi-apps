@@ -2210,6 +2210,18 @@ abstract class AppLocalizations {
   /// **'Cada vez que realizas un viaje o alguien introduce tu código de referido, acumulas Puntos Quber. Estos puntos te permiten obtener descuentos en futuros viajes. ¡Viaja más y ahorra más!'**
   String get onboardingPage5Description;
 
+  /// No description provided for @tripAccepted.
+  ///
+  /// In es, this message translates to:
+  /// **'Viaje Aceptado'**
+  String get tripAccepted;
+
+  /// No description provided for @tripAcceptedDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Un conductor ha aceptado su solicitud. Ahora está en espera de su llegada. Podrá ver su ubicación en tiempo real en el mapa. Le pediremos confirmación cuando esté listo para recogerle.'**
+  String get tripAcceptedDescription;
+
   /// No description provided for @nameAboutDev.
   ///
   /// In es, this message translates to:
