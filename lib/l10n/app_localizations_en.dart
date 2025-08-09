@@ -1158,6 +1158,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'A driver has accepted your request. You are now waiting for their arrival. You will be able to see their location in real time on the map. We will ask for your confirmation when they are ready to pick you up.';
 
   @override
+  String get seeDriverLocation => 'See driver\'s location';
+
+  @override
+  String get noDriverLocation => 'Driver location not available yet';
+
+  @override
   String get nameAboutDev => 'Irquen';
 
   @override

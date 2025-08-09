@@ -409,5 +409,7 @@
              "onboardingPage5Description": "Every time you take a trip or someone enters your referral code, you accumulate Quber Points. These points allow you to get discounts on future trips. Travel more and save more!",
              
              "tripAccepted": "Trip Accepted",
-             "tripAcceptedDescription": "A driver has accepted your request. You are now waiting for their arrival. You will be able to see their location in real time on the map. We will ask for your confirmation when they are ready to pick you up."
+             "tripAcceptedDescription": "A driver has accepted your request. You are now waiting for their arrival. You will be able to see their location in real time on the map. We will ask for your confirmation when they are ready to pick you up.",
+             "seeDriverLocation": "See driver's location",
+             "noDriverLocation": "Driver location not available yet"
 }

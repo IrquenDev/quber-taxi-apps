@@ -2222,6 +2222,18 @@ abstract class AppLocalizations {
   /// **'Un conductor ha aceptado su solicitud. Ahora está en espera de su llegada. Podrá ver su ubicación en tiempo real en el mapa. Le pediremos confirmación cuando esté listo para recogerle.'**
   String get tripAcceptedDescription;
 
+  /// No description provided for @seeDriverLocation.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver ubicación del conductor'**
+  String get seeDriverLocation;
+
+  /// No description provided for @noDriverLocation.
+  ///
+  /// In es, this message translates to:
+  /// **'Aún no hay ubicación del conductor'**
+  String get noDriverLocation;
+
   /// No description provided for @nameAboutDev.
   ///
   /// In es, this message translates to:

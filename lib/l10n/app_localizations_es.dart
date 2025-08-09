@@ -1168,6 +1168,12 @@ class AppLocalizationsEs extends AppLocalizations {
       'Un conductor ha aceptado su solicitud. Ahora está en espera de su llegada. Podrá ver su ubicación en tiempo real en el mapa. Le pediremos confirmación cuando esté listo para recogerle.';
 
   @override
+  String get seeDriverLocation => 'Ver ubicación del conductor';
+
+  @override
+  String get noDriverLocation => 'Aún no hay ubicación del conductor';
+
+  @override
   String get nameAboutDev => 'Irquen';
 
   @override

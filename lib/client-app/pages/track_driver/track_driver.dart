@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_fusion/flutter_fusion.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:network_checker/network_checker.dart';
@@ -29,6 +30,7 @@ class _TrackDriverPageState extends State<TrackDriverPage> {
   // Map
   late final MapboxMap _mapController;
   late double _mapBearing;
+  bool _mapReady = false;
   // Markers
   PointAnnotationManager? _pointAnnotationManager;
   PointAnnotation? _driverAnnotation;
@@ -43,7 +45,7 @@ class _TrackDriverPageState extends State<TrackDriverPage> {
   final DraggableScrollableController _draggableController = DraggableScrollableController();
 
   Future<void> _loadDriverMarkerImage() async {
-    final assetBytes = await rootBundle.load('assets/markers/taxi/taxi_pin_x172.png');
+    final assetBytes = await rootBundle.load('assets/markers/taxi/taxi_hdpi.png');
     _driverMarkerImage = assetBytes.buffer.asUint8List();
     print('TrackDriverPage: Driver marker image loaded, size: ${_driverMarkerImage.length} bytes');
   }
@@ -91,6 +93,7 @@ class _TrackDriverPageState extends State<TrackDriverPage> {
     // Init class's field references
     _mapController = controller;
     _mapBearing = await _mapController.getCameraState().then((c) => c.bearing);
+    _mapReady = true;
     // Update some mapbox component
     await controller.location.updateSettings(LocationComponentSettings(enabled: false));
     await controller.scaleBar.updateSettings(ScaleBarSettings(enabled: false));
@@ -192,7 +195,7 @@ class _TrackDriverPageState extends State<TrackDriverPage> {
           controller: _draggableController,
           initialChildSize: 0.25,
           minChildSize: 0.15,
-          maxChildSize: 0.4,
+          maxChildSize: 0.3,
           expand: false,
           shouldCloseOnMinExtent: false,
           builder: (context, scrollController) {
@@ -243,6 +246,24 @@ class _TrackDriverPageState extends State<TrackDriverPage> {
                               Text(
                                 localizations.tripAcceptedDescription,
                                 style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                              const SizedBox(height: 16),
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: FilledButton.icon(
+                                  onPressed: () {
+                                    if (!_mapReady || _driverAnnotation == null) {
+                                      showToast(context: context, message: AppLocalizations.of(context)!.noDriverLocation);
+                                      return;
+                                    }
+                                    _mapController.easeTo(
+                                      CameraOptions(center: _driverAnnotation!.geometry),
+                                      MapAnimationOptions(duration: 700),
+                                    );
+                                  },
+                                  icon: const Icon(Icons.local_taxi_outlined),
+                                  label: Text(AppLocalizations.of(context)!.seeDriverLocation),
+                                ),
                               ),
                             ],
                           ),
