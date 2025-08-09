@@ -1161,6 +1161,33 @@ class AppLocalizationsEs extends AppLocalizations {
       'Cada vez que realizas un viaje o alguien introduce tu código de referido, acumulas Puntos Quber. Estos puntos te permiten obtener descuentos en futuros viajes. ¡Viaja más y ahorra más!';
 
   @override
+  String get tripAccepted => 'Viaje Aceptado';
+
+  @override
+  String get tripAcceptedDescription =>
+      'Un conductor ha aceptado su solicitud. Ahora está en espera de su llegada. Podrá ver su ubicación en tiempo real en el mapa. Le pediremos confirmación cuando esté listo para recogerle.';
+
+  @override
+  String get seeDriverLocation => 'Ver ubicación del conductor';
+
+  @override
+  String get noDriverLocation => 'Aún no hay ubicación del conductor';
+
+  @override
+  String get pickupConfirmationInfo =>
+      'Hemos enviado una notificación al cliente. Una vez la acepte, comenzará el viaje.';
+
+  @override
+  String get pickupConfirmationTitle => 'Confirmación de recogida';
+
+  @override
+  String get pickupConfirmationMessage =>
+      'El conductor ha indicado que su recogida se ha realizado. Confirme únicamente si ya se encuentra con el conductor; una vez confirmada, dará inicio el viaje.';
+
+  @override
+  String get pickupConfirmationSentTitle => 'Confirmación enviada';
+
+  @override
   String get nameAboutDev => 'Irquen';
 
   @override

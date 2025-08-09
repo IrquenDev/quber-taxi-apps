@@ -1151,6 +1151,33 @@ class AppLocalizationsEn extends AppLocalizations {
       'Every time you take a trip or someone enters your referral code, you accumulate Quber Points. These points allow you to get discounts on future trips. Travel more and save more!';
 
   @override
+  String get tripAccepted => 'Trip Accepted';
+
+  @override
+  String get tripAcceptedDescription =>
+      'A driver has accepted your request. You are now waiting for their arrival. You will be able to see their location in real time on the map. We will ask for your confirmation when they are ready to pick you up.';
+
+  @override
+  String get seeDriverLocation => 'See driver\'s location';
+
+  @override
+  String get noDriverLocation => 'Driver location not available yet';
+
+  @override
+  String get pickupConfirmationInfo =>
+      'We have sent a notification to the client. Once they accept, the trip will begin.';
+
+  @override
+  String get pickupConfirmationTitle => 'Pickup confirmation';
+
+  @override
+  String get pickupConfirmationMessage =>
+      'The driver has indicated that your pickup has been completed. Please confirm only if you are already with the driver; once confirmed, the trip will begin.';
+
+  @override
+  String get pickupConfirmationSentTitle => 'Confirmation sent';
+
+  @override
   String get nameAboutDev => 'Irquen';
 
   @override
