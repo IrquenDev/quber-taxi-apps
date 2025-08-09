@@ -32,84 +32,63 @@ class _LoginPageState extends State<LoginPage> {
   String _normalizePhoneNumber(String phone) {
     // Remove all spaces and trim
     String cleanPhone = phone.trim().replaceAll(' ', '');
-    
     // Remove + if present
     if (cleanPhone.startsWith('+')) {
       cleanPhone = cleanPhone.substring(1);
     }
-    
     // Remove country code (53) if present
     if (cleanPhone.startsWith('53') && cleanPhone.length > 8) {
       cleanPhone = cleanPhone.substring(2);
     }
-    
     return cleanPhone;
   }
 
   Future<void> _handleLogin() async {
     FocusScope.of(context).unfocus();
-    
     // Validate form
     if (!_formKey.currentState!.validate()) return;
-    
     setState(() => _isLoading = true);
-    
-    try {
-      // Get form data
-      final phone = _normalizePhoneNumber(_phoneTFController.text);
-      final password = _passwordTFController.text;
-      final localization = AppLocalizations.of(context)!;
-      
-      // Init variables
-      http.Response? response;
-      String route;
-      
-      // Depending on appProfile, decide who we need to authenticate and set the next route
-      if(runtime.isClientMode) {
-        response = await _authService.loginClient(phone, password);
-        route = ClientRoutes.home;
-      } else if(runtime.isDriverMode) {
-        response = await _authService.loginDriver(phone, password);
-        route = DriverRoutes.home;
-      } else {
-        response = await _authService.loginAdmin(phone, password);
-        route = AdminRoutes.settings;
-      }
-      
-      // Handle response
-      if(!mounted) return;
-      
-      switch (response.statusCode) {
-        case 200: 
-          context.go(route);
-          break;
-        case 401: 
-          _showErrorToast(localization.incorrectPasswordMessage);
-          break;
-        case 404: 
-          _showErrorToast(localization.phoneNotRegisteredMessage);
-          break;
-        default: 
-          _showErrorToast(localization.unexpectedErrorLoginMessage);
-          break;
-      }
-    } catch (e) {
-      if(context.mounted) {
-        final localization = AppLocalizations.of(context)!;
+    // Get form data
+    final phone = _normalizePhoneNumber(_phoneTFController.text);
+    final password = _passwordTFController.text;
+    final localization = AppLocalizations.of(context)!;
+    // Init variables
+    http.Response? response;
+    String route;
+    // Depending on appProfile, decide who we need to authenticate and set the next route
+    if(runtime.isClientMode) {
+      response = await _authService.loginClient(phone, password);
+      route = ClientRoutes.home;
+    } else if(runtime.isDriverMode) {
+      response = await _authService.loginDriver(phone, password);
+      route = DriverRoutes.home;
+    } else {
+      response = await _authService.loginAdmin(phone, password);
+      route = AdminRoutes.settings;
+    }
+    // Handle response
+    if(!mounted) return;
+    switch (response.statusCode) {
+      case 200:
+        context.go(route);
+        break;
+      case 401:
+        _showErrorToast(localization.incorrectPasswordMessage);
+        break;
+      case 404:
+        _showErrorToast(localization.phoneNotRegisteredMessage);
+        break;
+      default:
         _showErrorToast(localization.unexpectedErrorLoginMessage);
-      }
-    } finally {
-      if(mounted) {
-        setState(() => _isLoading = false);
-      }
+        break;
     }
   }
   
   void _showErrorToast(String message) {
     showToast(
-      context: context,
-      message: message,
-      durationInSeconds: 4
+        context: context,
+        message: message,
+        durationInSeconds: 4
     );
   }
 
