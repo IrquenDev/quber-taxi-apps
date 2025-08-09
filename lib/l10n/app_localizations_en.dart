@@ -1164,6 +1164,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noDriverLocation => 'Driver location not available yet';
 
   @override
+  String get pickupConfirmationInfo =>
+      'We have sent a notification to the client. Once they accept, the trip will begin.';
+
+  @override
+  String get pickupConfirmationTitle => 'Pickup confirmation';
+
+  @override
+  String get pickupConfirmationMessage =>
+      'The driver has indicated that your pickup has been completed. Please confirm only if you are already with the driver; once confirmed, the trip will begin.';
+
+  @override
+  String get pickupConfirmationSentTitle => 'Confirmation sent';
+
+  @override
   String get nameAboutDev => 'Irquen';
 
   @override

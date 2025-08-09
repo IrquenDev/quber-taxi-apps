@@ -1060,7 +1060,19 @@ class _DriverHomePageState extends State<DriverHomePage> {
                             onPickUpConfirmationRequest: () async {
                               // Clear municipality polygon when starting the trip
                               await _clearMunicipalityPolygon();
-                              
+
+                              // Notify driver about pickup confirmation flow
+                              if (mounted) {
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (_) => InfoDialog(
+                                    title: AppLocalizations.of(context)!.pickupConfirmationSentTitle,
+                                    bodyMessage: AppLocalizations.of(context)!.pickupConfirmationInfo,
+                                  ),
+                                );
+                              }
+
                               _travelStateHandler = TravelStateHandler(
                                 state: TravelState.inProgress,
                                 travelId: _selectedTravel!.id,

@@ -411,5 +411,9 @@
              "tripAccepted": "Trip Accepted",
              "tripAcceptedDescription": "A driver has accepted your request. You are now waiting for their arrival. You will be able to see their location in real time on the map. We will ask for your confirmation when they are ready to pick you up.",
              "seeDriverLocation": "See driver's location",
-             "noDriverLocation": "Driver location not available yet"
+  "noDriverLocation": "Driver location not available yet",
+  "pickupConfirmationInfo": "We have sent a notification to the client. Once they accept, the trip will begin.",
+  "pickupConfirmationTitle": "Pickup confirmation",
+  "pickupConfirmationMessage": "The driver has indicated that your pickup has been completed. Please confirm only if you are already with the driver; once confirmed, the trip will begin.",
+  "pickupConfirmationSentTitle": "Confirmation sent"
 }

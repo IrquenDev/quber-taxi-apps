@@ -142,9 +142,9 @@ class _TrackDriverPageState extends State<TrackDriverPage> {
               context: context,
               barrierDismissible: false,
               builder: (context) =>
-              const ConfirmDialog(
-                title: 'Confirmación de recogida',
-                message: "El conductor ha notificado que está listo para recogerle. Acepte solo cuando usted lo esté"
+              ConfirmDialog(
+                title: AppLocalizations.of(context)!.pickupConfirmationTitle,
+                message: AppLocalizations.of(context)!.pickupConfirmationMessage,
               )
           );
           // Handle result

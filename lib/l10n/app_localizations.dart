@@ -2234,6 +2234,30 @@ abstract class AppLocalizations {
   /// **'Aún no hay ubicación del conductor'**
   String get noDriverLocation;
 
+  /// No description provided for @pickupConfirmationInfo.
+  ///
+  /// In es, this message translates to:
+  /// **'Hemos enviado una notificación al cliente. Una vez la acepte, comenzará el viaje.'**
+  String get pickupConfirmationInfo;
+
+  /// No description provided for @pickupConfirmationTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirmación de recogida'**
+  String get pickupConfirmationTitle;
+
+  /// No description provided for @pickupConfirmationMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'El conductor ha indicado que su recogida se ha realizado. Confirme únicamente si ya se encuentra con el conductor; una vez confirmada, dará inicio el viaje.'**
+  String get pickupConfirmationMessage;
+
+  /// No description provided for @pickupConfirmationSentTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirmación enviada'**
+  String get pickupConfirmationSentTitle;
+
   /// No description provided for @nameAboutDev.
   ///
   /// In es, this message translates to:
