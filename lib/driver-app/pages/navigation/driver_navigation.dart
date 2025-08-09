@@ -63,6 +63,10 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
   // trigger it be himself).
   late final TravelStateHandler _travelStateHandler;
 
+  // TODO("yapmDev": @Error)
+  // - This fails because destinationName is not a municipality when user choose a specific place.
+  // - Use only when travel destination is unfixed.
+  // - "Guided Route" in fixed destination will use directly de MapboxRoute line.
   Future<void> _loadHavanaGeoJson() async {
     final munName= Municipalities.resolveGeoJsonRef(widget.travel.destinationName);
     _municipalityPolygon = await GeoUtils.loadGeoJsonPolygon(munName!);
@@ -311,6 +315,7 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
+            print("attemp to send notification");
             WebSocketService.instance.send(
                 "/app/travels/${widget.travel.id}/finish-confirmation", null // no body needed
             );

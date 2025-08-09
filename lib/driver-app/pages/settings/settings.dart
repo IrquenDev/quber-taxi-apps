@@ -6,7 +6,6 @@ import 'package:flutter_fusion/flutter_fusion.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/common_routes.dart';
 import 'package:quber_taxi/storage/session_prefs_manger.dart';
@@ -869,17 +868,17 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
         _buildBalanceRow(AppLocalizations.of(context)!.quberCredits,
             "${_driver.credit} CUP", null),
         const SizedBox(height: 8),
-        const Divider(
-          color: Colors.grey,
-          thickness: 0.5,
-        ),
-        _buildBalanceRow(
-            AppLocalizations.of(context)!.nextPay,
-            _driver.paymentDate != null
-                ? DateFormat('dd/MM/yyyy').format(_driver.paymentDate!)
-                : '-',
-            null),
-        const SizedBox(height: 12),
+        // const Divider(
+        //   color: Colors.grey,
+        //   thickness: 0.5,
+        // ),
+        // _buildBalanceRow(
+        //     AppLocalizations.of(context)!.nextPay,
+        //     _driver.paymentDate != null
+        //         ? DateFormat('dd/MM/yyyy').format(_driver.paymentDate!)
+        //         : '-',
+        //     null),
+        // const SizedBox(height: 12),
         const Divider(
           color: Colors.grey,
           thickness: 0.5,

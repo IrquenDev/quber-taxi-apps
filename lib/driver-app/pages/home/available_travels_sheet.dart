@@ -209,7 +209,7 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
               // Main Container with Content
               Positioned.fill(
                   child: Padding(
-                                                padding: const EdgeInsets.only(top: 56.0),
+                      padding: const EdgeInsets.only(top: 56.0),
                       child: Container(
                           decoration: BoxDecoration(
                             color: colorScheme.surfaceContainer,
@@ -251,7 +251,7 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
                                       ),
                                     )
                                 ),
-                                                                // Scrollable Mocked List
+                                // Scrollable Mocked List
                                 Expanded(
                                   child: !_initialLoadComplete 
                                     ? FutureBuilder(

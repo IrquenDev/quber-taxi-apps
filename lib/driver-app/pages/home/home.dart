@@ -1,13 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
 import 'package:geolocator/geolocator.dart' as g;
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/models/driver.dart';
@@ -171,9 +169,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
       // Always update session
       await SessionPrefsManager.instance.save(_driver);
       // Show payment reminder (if applies)
-      if(_driver.credit > 0.0 && _driver.paymentDate != null) {
-      await _showPaymentReminder();
-      }
+      // if(_driver.credit > 0.0 && _driver.paymentDate != null) {
+      //   await _showPaymentReminder();
+      // }
       switch (_driver.accountState) {
         case DriverAccountState.notConfirmed: await _showNeedsConfirmationDialog();
         case DriverAccountState.canPay: setState(() => _isAccountEnabled = true);
@@ -210,70 +208,70 @@ class _DriverHomePageState extends State<DriverHomePage> {
     );
   }
 
-  Future<void> _showPaymentReminder() async {
-    final localizations = AppLocalizations.of(context)!;
-    final now = DateTime.now();
-    final paymentDate = _driver.paymentDate!;
-    final today = DateTime(now.year, now.month, now.day);
-    final paymentDay = DateTime(paymentDate.year, paymentDate.month, paymentDate.day);
-    final difference = paymentDay.difference(today).inDays;
-    final formattedPaymentDate = DateFormat("dd-MM-yyyy").format(paymentDate);
-    final bool isPaymentSoon = difference > 0 && difference <= 3;
-    final isSameDay = paymentDate.year == now.year && paymentDate.month == now.month && paymentDate.day == now.day;
-
-    String title;
-    String dynamicMessage;
-
-    // ---- Payment Soon ----
-    if (isPaymentSoon) {
-      String remainingTimeText;
-      if (difference == 3) {
-        remainingTimeText = localizations.inThreeDays;
-      } else if (difference == 2) {
-        remainingTimeText = localizations.dayAfterTomorrow;
-      }
-      else {
-        remainingTimeText = localizations.tomorrow;
-      }
-      title = localizations.paymentSoon;
-      dynamicMessage = localizations.paymentReminderSoon(remainingTimeText);
-
-      // ---- Same Day ----
-    } else if (isSameDay) {
-      title = localizations.paymentPending;
-      dynamicMessage = localizations.paymentReminderToday;
-
-      // ---- The Payment Date Has Already Passed ----
-    } else if (!today.isBefore(paymentDay)) {
-      final daysSince = today.difference(paymentDay).inDays;
-      // Before four days
-      if (daysSince < 3) {
-        int daysLeft = 3 - daysSince;
-        String daysText = daysLeft == 1 ? localizations.day : localizations.days;
-        dynamicMessage = localizations.paymentOverdue(formattedPaymentDate, daysLeft.toString(), daysText);
-        // Last Day
-      } else if(daysSince == 3) {
-        dynamicMessage = localizations.paymentLastDay(formattedPaymentDate);
-      }
-      // Deadline Expired
-      else {
-        dynamicMessage = localizations.paymentExpired(formattedPaymentDate);
-      }
-      title = localizations.paymentPending;
-
-      // ---- No Condition Applies, We Don't Show Anything ----
-    } else {return;}
-
-    await showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => InfoDialog(
-        title: title,
-        bodyMessage: "$dynamicMessage${localizations.paymentOfficeInfo}",
-        footerMessage: localizations.thanksForAttention,
-      ),
-    );
-  }
+  // Future<void> _showPaymentReminder() async {
+  //   final localizations = AppLocalizations.of(context)!;
+  //   final now = DateTime.now();
+  //   final paymentDate = _driver.paymentDate!;
+  //   final today = DateTime(now.year, now.month, now.day);
+  //   final paymentDay = DateTime(paymentDate.year, paymentDate.month, paymentDate.day);
+  //   final difference = paymentDay.difference(today).inDays;
+  //   final formattedPaymentDate = DateFormat("dd-MM-yyyy").format(paymentDate);
+  //   final bool isPaymentSoon = difference > 0 && difference <= 3;
+  //   final isSameDay = paymentDate.year == now.year && paymentDate.month == now.month && paymentDate.day == now.day;
+  //
+  //   String title;
+  //   String dynamicMessage;
+  //
+  //   // ---- Payment Soon ----
+  //   if (isPaymentSoon) {
+  //     String remainingTimeText;
+  //     if (difference == 3) {
+  //       remainingTimeText = localizations.inThreeDays;
+  //     } else if (difference == 2) {
+  //       remainingTimeText = localizations.dayAfterTomorrow;
+  //     }
+  //     else {
+  //       remainingTimeText = localizations.tomorrow;
+  //     }
+  //     title = localizations.paymentSoon;
+  //     dynamicMessage = localizations.paymentReminderSoon(remainingTimeText);
+  //
+  //     // ---- Same Day ----
+  //   } else if (isSameDay) {
+  //     title = localizations.paymentPending;
+  //     dynamicMessage = localizations.paymentReminderToday;
+  //
+  //     // ---- The Payment Date Has Already Passed ----
+  //   } else if (!today.isBefore(paymentDay)) {
+  //     final daysSince = today.difference(paymentDay).inDays;
+  //     // Before four days
+  //     if (daysSince < 3) {
+  //       int daysLeft = 3 - daysSince;
+  //       String daysText = daysLeft == 1 ? localizations.day : localizations.days;
+  //       dynamicMessage = localizations.paymentOverdue(formattedPaymentDate, daysLeft.toString(), daysText);
+  //       // Last Day
+  //     } else if(daysSince == 3) {
+  //       dynamicMessage = localizations.paymentLastDay(formattedPaymentDate);
+  //     }
+  //     // Deadline Expired
+  //     else {
+  //       dynamicMessage = localizations.paymentExpired(formattedPaymentDate);
+  //     }
+  //     title = localizations.paymentPending;
+  //
+  //     // ---- No Condition Applies, We Don't Show Anything ----
+  //   } else {return;}
+  //
+  //   await showDialog(
+  //     context: context,
+  //     barrierDismissible: false,
+  //     builder: (_) => InfoDialog(
+  //       title: title,
+  //       bodyMessage: "$dynamicMessage${localizations.paymentOfficeInfo}",
+  //       footerMessage: localizations.thanksForAttention,
+  //     ),
+  //   );
+  // }
 
   Future<void> _startStreamingLocation() async {
     // Prevent concurrent starts that can create duplicate markers
@@ -415,8 +413,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
       }
       return;
     }
-    
     final response = await _driverService.acceptTravel(driverId: _driver.id, travelId: travel.id);
+    if(!mounted) return;
     if(response.statusCode == 200) {
       // Load marker images
       final originAssetBytes = await rootBundle.load('assets/markers/route/x120/origin.png');
@@ -530,10 +528,16 @@ class _DriverHomePageState extends State<DriverHomePage> {
       
       _startSharingLocation();
       setState(() => _selectedTravel = travel);
-    } else {
-      if(mounted) {
-        showToast(context: context, message: AppLocalizations.of(context)!.noAssignedTrip);
-      }
+    }
+    else if(response.statusCode == 403) {
+      showToast(context: context, message: "Permiso denegado");
+    }
+
+    else if(response.statusCode == 409) {
+      showToast(context: context, message: "Crédito Insuficiente");
+    }
+    else {
+      showToast(context: context, message: AppLocalizations.of(context)!.noAssignedTrip);
     }
   }
 
