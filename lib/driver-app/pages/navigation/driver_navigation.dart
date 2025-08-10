@@ -198,6 +198,61 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
     // Load destination marker image
     final destinationMarkerBytes = await rootBundle.load('assets/markers/route/x120/destination.png');
     _destinationMakerImage = destinationMarkerBytes.buffer.asUint8List();
+
+    // Render destination initially (marker or municipality polygon) and fit camera
+    try {
+      if (widget.travel.destinationCoords != null) {
+        // Exact destination point
+        final dest = Position(widget.travel.destinationCoords![0], widget.travel.destinationCoords![1]);
+        await _pointAnnotationManager!.create(PointAnnotationOptions(
+          geometry: Point(coordinates: dest),
+          image: _destinationMakerImage,
+          iconAnchor: IconAnchor.BOTTOM,
+        )).then((value) => _destinationMarker = value);
+
+        final bounds = mb_util.calculateBounds([position, dest]);
+        final cameraOptions = await _mapController.cameraForCoordinateBounds(
+          bounds,
+          MbxEdgeInsets(top: 50, bottom: 50, left: 50, right: 50),
+          0, 0, null, null,
+        );
+        _mapController.easeTo(cameraOptions, MapAnimationOptions(duration: 1000));
+      } else {
+        // Municipality polygon
+        final path = Municipalities.resolveGeoJsonRef(widget.travel.destinationName);
+        if (path != null) {
+          final municipality = await GeoUtils.loadGeoJsonPolygon(path);
+          final geoJsonString = jsonEncode(municipality.toJson());
+          await _mapController.style.addSource(GeoJsonSource(
+            id: 'destination-municipality-polygon',
+            data: geoJsonString,
+          ));
+          await _mapController.style.addLayer(FillLayer(
+            id: 'destination-municipality-fill',
+            sourceId: 'destination-municipality-polygon',
+            fillColor: Theme.of(context).colorScheme.onTertiaryContainer.withValues(alpha: 0.5).value,
+            fillOutlineColor: Theme.of(context).colorScheme.tertiary.value,
+          ));
+
+          final polygonCoords = municipality.coordinates[0];
+          final List<Position> allCoords = [position];
+          for (final coord in polygonCoords) {
+            if (coord[0] != null && coord[1] != null) {
+              allCoords.add(Position(coord[0]!, coord[1]!));
+            }
+          }
+          final bounds = mb_util.calculateBounds(allCoords);
+          final cameraOptions = await _mapController.cameraForCoordinateBounds(
+            bounds,
+            MbxEdgeInsets(top: 50, bottom: 50, left: 50, right: 50),
+            0, 0, null, null,
+          );
+          _mapController.easeTo(cameraOptions, MapAnimationOptions(duration: 1000));
+        }
+      }
+    } catch (_) {
+      // silently ignore
+    }
   }
 
   void _onLongTapListener(MapContentGestureContext mapContext) async {
