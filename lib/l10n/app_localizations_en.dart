@@ -1211,30 +1211,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pickupConfirmationSentTitle => 'Confirmation sent';
 
   @override
-  String get finalizarViaje => 'Finish Trip';
+  String get nameAboutDev => 'Irquen';
 
   @override
-  String get verMiUbicacion => 'See My Location';
+  String get emailAboutDev => 'qnecesitas.desarrollo@gmail.com';
 
   @override
-  String get confirmacionFinalizacion => 'Finish Confirmation';
+  String get phoneAboutDev => '+5355759386';
 
   @override
-  String get confirmacionFinalizacionMensaje =>
-      'The driver will be notified immediately that you want to end the trip. Please accept only if this is correct.';
+  String get websiteAboutDev => 'https://qnecesitas.nat.cu';
 
   @override
-  String destinationsLimited(Object destinationName) {
-    return 'Destinations are limited to $destinationName';
-  }
+  String get nameAboutUs => 'Quber';
 
   @override
-  String get placeNotFound => 'Place not found';
+  String get phoneAboutUs => '+53 52417814';
 
   @override
-  String get showMyLocation => 'Show My Location';
-
-  @override
+  String get copiedToClipboard => 'Copied to clipboard';
   String get finishTrip => 'Finish Trip';
 
   @override

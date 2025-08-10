@@ -19,7 +19,6 @@ import 'package:quber_taxi/enums/municipalities.dart';
 import 'package:quber_taxi/utils/map/turf.dart' as turf_util;
 import 'package:turf/distance.dart' as td;
 import 'package:turf/turf.dart' as turf;
-import 'package:quber_taxi/l10n/app_localizations.dart';
 
 class ClientNavigation extends StatefulWidget {
   final Travel travel;
@@ -78,7 +77,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
       final point = Point(coordinates: Position(newPosition.longitude, newPosition.latitude));
       if (_taxiMarker == null) {
         // Display marker
-        final taxiMarkerBytes = await rootBundle.load('assets/markers/taxi/taxi_hdpi.png');
+        final taxiMarkerBytes = await rootBundle.load('assets/markers/taxi/taxi_pin_x172.png');
         await _pointAnnotationManager!.create(PointAnnotationOptions(
             geometry: point,
             image: taxiMarkerBytes.buffer.asUint8List(),
@@ -215,19 +214,20 @@ class _ClientNavigationState extends State<ClientNavigation> {
       _travelPriceByTaxiType = quberConfig!.travelPrice[widget.travel.taxiType]!;
       _creditForQuber = quberConfig.quberCredit;
     });
-    final l10n = AppLocalizations.of(context)!;
     _confirmationHandler = FinishConfirmationHandler(
         travelId: widget.travel.id,
         onConfirmationRequested: () async {
+          // ConfirmDialog
           final result = await showDialog<bool>(
               context: context,
               barrierDismissible: false,
               builder: (context) =>
-              ConfirmDialog(
-                  title: l10n.confirmacionLlegadaDestino,
-                  message: l10n.confirmacionLlegadaDestinoMensaje
+              const ConfirmDialog(
+                  title: 'Confirmación de finalización',
+                  message: "El conductor ha notificado que se ha llegado al destino. Acepte solo si esto es correcto"
               )
           );
+          // Handle result
           if(result == true) {
             _markTravelAsCompleted();
           }
@@ -246,7 +246,6 @@ class _ClientNavigationState extends State<ClientNavigation> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     // Init camera options
     final cameraOptions = CameraOptions(
       center: Point(coordinates: Position(widget.travel.originCoords[0], widget.travel.originCoords[1])),
@@ -302,19 +301,21 @@ class _ClientNavigationState extends State<ClientNavigation> {
                           );
                         },
                         icon: Icon(Icons.my_location, color: Theme.of(context).colorScheme.primary),
-                        tooltip: l10n.verMiUbicacion,
+                        tooltip: 'Ver mi ubicación',
                       ),
                     ),
                     SizedBox(width: 12),
                     if(!_isTravelCompleted)
                     ElevatedButton.icon(
                       onPressed: hasConnection(context) ? () async {
+                        // Confirmation dialog
                         final result = await showDialog<bool>(
                             context: context,
                             barrierDismissible: false,
-                            builder: (context) => ConfirmDialog(
-                                title: l10n.confirmacionFinalizacion,
-                                message: l10n.confirmacionFinalizacionMensaje
+                            builder: (context) => const ConfirmDialog(
+                                title: 'Confirmación de finalización',
+                                message: "Se le notificará inmediatamente al conductor que desea terminar el viaje. Acepte solo "
+                                    "si esto es correcto."
                             )
                         );
                         if(result == true) {
@@ -323,7 +324,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
                       } : null,
                       icon: Icon(Icons.done_outline, color: Colors.white),
                       label: Text(
-                        l10n.finalizarViaje,
+                        'Finalizar viaje',
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,

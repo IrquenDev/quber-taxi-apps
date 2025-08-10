@@ -24,7 +24,6 @@ import 'package:quber_taxi/utils/websocket/core/websocket_service.dart';
 import 'package:quber_taxi/utils/websocket/impl/travel_state_handler.dart';
 import 'package:turf/distance.dart' as td;
 import 'package:turf/turf.dart' as turf;
-import 'package:quber_taxi/l10n/app_localizations.dart';
 
 class DriverNavigationPage extends StatefulWidget {
 
@@ -75,9 +74,6 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
   double? _travelPriceByTaxiType;
   double get _finalPrice => _distanceInKm * (_travelPriceByTaxiType ?? 0);
 
-  // Getter for localizations
-  AppLocalizations get l10n => AppLocalizations.of(context)!;
-
   // TODO("yapmDev": @Error)
   // - This fails because destinationName is not a municipality when user choose a specific place.
   // - Use only when travel destination is unfixed.
@@ -112,7 +108,7 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
       final point = Point(coordinates: Position(newPosition.longitude, newPosition.latitude));
       if(_taxiMarker == null) {
         // Display marker
-        final taxiMarkerBytes = await rootBundle.load('assets/markers/taxi/taxi_hdpi.png');
+        final taxiMarkerBytes = await rootBundle.load('assets/markers/taxi/taxi_pin_x172.png');
         await _pointAnnotationManager!.create(PointAnnotationOptions(
             geometry: point,
             image: taxiMarkerBytes.buffer.asUint8List(),
@@ -267,7 +263,7 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
       // Check if inside of Havana
       final isInside = GeoBoundaries.isPointInPolygon(lng, lat, _municipalityPolygon);
       if(!isInside) {
-        showToast(context: context, message: l10n.destinationsLimitedToHavana);
+        showToast(context: context, message: "Los destinos están limitados a ${widget.travel.destinationName}");
         return;
       } else {
         await _getAndDrownRoute(widget.travel.originCoords[0], widget.travel.originCoords[1], lng, lat);
@@ -302,7 +298,7 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
     if(!mounted) return false;
     // Depending on what was typed, result could be null
     if(destination == null) {
-      showToast(context: context, message: l10n.noResultsMessage);
+      showToast(context: context, message: "No se encontró dicho lugar");
       return false;
     }
     // Some places matches ...
@@ -360,7 +356,6 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     // Init camera options
     final position = Position(widget.travel.originCoords[0], widget.travel.originCoords[1]);
     final cameraOptions = CameraOptions(
@@ -414,7 +409,7 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
                           );
                         },
                         icon: Icon(Icons.my_location, color: Theme.of(context).colorScheme.primary),
-                        tooltip: l10n.verMiUbicacion,
+                        tooltip: 'Ver mi ubicación',
                       ),
                     ),
                     SizedBox(width: 12),
@@ -428,7 +423,7 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
                       },
                       icon: Icon(Icons.done_outline, color: Colors.white),
                       label: Text(
-                        l10n.finalizarViaje,
+                        'Finalizar viaje',
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,
@@ -458,9 +453,9 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
           finalPrice: _finalPrice,
           travelPriceByTaxiType: _travelPriceByTaxiType,
         ) : DriverTripInfo(
-          distance: _distanceInKm,
           originName: widget.travel.originName,
           destinationName: widget.travel.destinationName,
+          distance: _distanceInKm,
           taxiType: widget.travel.taxiType,
           finalPrice: _finalPrice,
           travelPriceByTaxiType: _travelPriceByTaxiType,

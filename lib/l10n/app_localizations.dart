@@ -2303,7 +2303,7 @@ abstract class AppLocalizations {
   /// No description provided for @pickupConfirmationInfo.
   ///
   /// In es, this message translates to:
-  /// **'Hemos enviado una notificación al cliente. Una vez que acepte, el viaje comenzará.'**
+  /// **'Hemos enviado una notificación al cliente. Una vez la acepte, comenzará el viaje.'**
   String get pickupConfirmationInfo;
 
   /// No description provided for @pickupConfirmationTitle.
@@ -2315,7 +2315,7 @@ abstract class AppLocalizations {
   /// No description provided for @pickupConfirmationMessage.
   ///
   /// In es, this message translates to:
-  /// **'El conductor ha indicado que su recogida ha sido completada. Por favor confirme solo si ya está con el conductor; una vez confirmado, el viaje comenzará.'**
+  /// **'El conductor ha indicado que su recogida se ha realizado. Confirme únicamente si ya se encuentra con el conductor; una vez confirmada, dará inicio el viaje.'**
   String get pickupConfirmationMessage;
 
   /// No description provided for @pickupConfirmationSentTitle.
@@ -2324,51 +2324,47 @@ abstract class AppLocalizations {
   /// **'Confirmación enviada'**
   String get pickupConfirmationSentTitle;
 
-  /// No description provided for @finalizarViaje.
+  /// No description provided for @nameAboutDev.
   ///
   /// In es, this message translates to:
-  /// **'Finalizar viaje'**
-  String get finalizarViaje;
+  /// **'Irquen'**
+  String get nameAboutDev;
 
-  /// No description provided for @verMiUbicacion.
+  /// No description provided for @emailAboutDev.
   ///
   /// In es, this message translates to:
-  /// **'Ver mi ubicación'**
-  String get verMiUbicacion;
+  /// **'qnecesitas.desarrollo@gmail.com'**
+  String get emailAboutDev;
 
-  /// No description provided for @confirmacionFinalizacion.
+  /// No description provided for @phoneAboutDev.
   ///
   /// In es, this message translates to:
-  /// **'Confirmación de finalización'**
-  String get confirmacionFinalizacion;
+  /// **'+5355759386'**
+  String get phoneAboutDev;
 
-  /// No description provided for @confirmacionFinalizacionMensaje.
+  /// No description provided for @websiteAboutDev.
   ///
   /// In es, this message translates to:
-  /// **'Se le notificará inmediatamente al conductor que desea terminar el viaje. Acepte solo si esto es correcto.'**
-  String get confirmacionFinalizacionMensaje;
+  /// **'https://qnecesitas.nat.cu'**
+  String get websiteAboutDev;
 
-  /// No description provided for @destinationsLimited.
+  /// No description provided for @nameAboutUs.
   ///
   /// In es, this message translates to:
-  /// **'Los destinos están limitados a {destinationName}'**
-  String destinationsLimited(Object destinationName);
+  /// **'Quber'**
+  String get nameAboutUs;
 
-  /// No description provided for @placeNotFound.
+  /// No description provided for @phoneAboutUs.
   ///
   /// In es, this message translates to:
-  /// **'Lugar no encontrado'**
-  String get placeNotFound;
+  /// **'+53 52417814'**
+  String get phoneAboutUs;
 
-  /// No description provided for @showMyLocation.
+  /// No description provided for @copiedToClipboard.
   ///
   /// In es, this message translates to:
-  /// **'Ver mi ubicación'**
-  String get showMyLocation;
-
-  /// No description provided for @finishTrip.
-  ///
-  /// In es, this message translates to:
+  /// **'Copiado al portapapeles'**
+  String get copiedToClipboard;
   /// **'Copiado al portapapeles'**
   String get copiedToClipboard;
 

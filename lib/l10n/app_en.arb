@@ -444,5 +444,6 @@
   "finishTrip": "Finish Trip",
 
   "confirmacionLlegadaDestino": "Destination Arrival Confirmation",
-  "confirmacionLlegadaDestinoMensaje": "The driver has notified that the destination has been reached. Please accept only if this is correct."
+  "confirmacionLlegadaDestinoMensaje": "The driver has notified that the destination has been reached. Please accept only if this is correct.",
+  "pickupConfirmationSentTitle": "Confirmation sent"
 }

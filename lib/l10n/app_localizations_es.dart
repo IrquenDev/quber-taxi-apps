@@ -1208,43 +1208,38 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get pickupConfirmationInfo =>
-      'Hemos enviado una notificación al cliente. Una vez que acepte, el viaje comenzará.';
+      'Hemos enviado una notificación al cliente. Una vez la acepte, comenzará el viaje.';
 
   @override
   String get pickupConfirmationTitle => 'Confirmación de recogida';
 
   @override
   String get pickupConfirmationMessage =>
-      'El conductor ha indicado que su recogida ha sido completada. Por favor confirme solo si ya está con el conductor; una vez confirmado, el viaje comenzará.';
+      'El conductor ha indicado que su recogida se ha realizado. Confirme únicamente si ya se encuentra con el conductor; una vez confirmada, dará inicio el viaje.';
 
   @override
   String get pickupConfirmationSentTitle => 'Confirmación enviada';
 
   @override
-  String get finalizarViaje => 'Finalizar viaje';
+  String get nameAboutDev => 'Irquen';
 
   @override
-  String get verMiUbicacion => 'Ver mi ubicación';
+  String get emailAboutDev => 'qnecesitas.desarrollo@gmail.com';
 
   @override
-  String get confirmacionFinalizacion => 'Confirmación de finalización';
+  String get phoneAboutDev => '+5355759386';
 
   @override
-  String get confirmacionFinalizacionMensaje =>
-      'Se le notificará inmediatamente al conductor que desea terminar el viaje. Acepte solo si esto es correcto.';
+  String get websiteAboutDev => 'https://qnecesitas.nat.cu';
 
   @override
-  String destinationsLimited(Object destinationName) {
-    return 'Los destinos están limitados a $destinationName';
-  }
+  String get nameAboutUs => 'Quber';
 
   @override
-  String get placeNotFound => 'Lugar no encontrado';
+  String get phoneAboutUs => '+53 52417814';
 
   @override
-  String get showMyLocation => 'Ver mi ubicación';
-
-  @override
+  String get copiedToClipboard => 'Copiado al portapapeles';
   String get finishTrip => 'Finalizar viaje';
 
   @override
