@@ -24,7 +24,7 @@ import 'package:quber_taxi/utils/websocket/core/websocket_service.dart';
 import 'package:quber_taxi/utils/websocket/impl/travel_state_handler.dart';
 import 'package:turf/distance.dart' as td;
 import 'package:turf/turf.dart' as turf;
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:quber_taxi/l10n/app_localizations.dart';
 
 class DriverNavigationPage extends StatefulWidget {
 
@@ -75,6 +75,9 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
   double? _travelPriceByTaxiType;
   double get _finalPrice => _distanceInKm * (_travelPriceByTaxiType ?? 0);
 
+  // Getter for localizations
+  AppLocalizations get l10n => AppLocalizations.of(context)!;
+
   // TODO("yapmDev": @Error)
   // - This fails because destinationName is not a municipality when user choose a specific place.
   // - Use only when travel destination is unfixed.
@@ -109,7 +112,7 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
       final point = Point(coordinates: Position(newPosition.longitude, newPosition.latitude));
       if(_taxiMarker == null) {
         // Display marker
-        final taxiMarkerBytes = await rootBundle.load('assets/markers/taxi/taxi_pin_x172.png');
+        final taxiMarkerBytes = await rootBundle.load('assets/markers/taxi/taxi_hdpi.png');
         await _pointAnnotationManager!.create(PointAnnotationOptions(
             geometry: point,
             image: taxiMarkerBytes.buffer.asUint8List(),
@@ -456,7 +459,6 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
           travelPriceByTaxiType: _travelPriceByTaxiType,
         ) : DriverTripInfo(
           distance: _distanceInKm,
-          travelPriceByTaxiType: widget.travel.taxiType,
           originName: widget.travel.originName,
           destinationName: widget.travel.destinationName,
           taxiType: widget.travel.taxiType,

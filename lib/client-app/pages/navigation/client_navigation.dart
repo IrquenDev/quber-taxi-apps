@@ -19,6 +19,7 @@ import 'package:quber_taxi/enums/municipalities.dart';
 import 'package:quber_taxi/utils/map/turf.dart' as turf_util;
 import 'package:turf/distance.dart' as td;
 import 'package:turf/turf.dart' as turf;
+import 'package:quber_taxi/l10n/app_localizations.dart';
 
 class ClientNavigation extends StatefulWidget {
   final Travel travel;
@@ -77,11 +78,12 @@ class _ClientNavigationState extends State<ClientNavigation> {
       final point = Point(coordinates: Position(newPosition.longitude, newPosition.latitude));
       if (_taxiMarker == null) {
         // Display marker
-        final taxiMarkerBytes = await rootBundle.load('assets/markers/taxi/taxi_pin_x172.png');
-        await _pointAnnotationManager!
-            .create(PointAnnotationOptions(
-                geometry: point, image: taxiMarkerBytes.buffer.asUint8List(), iconAnchor: IconAnchor.BOTTOM))
-            .then((value) => _taxiMarker = value);
+        final taxiMarkerBytes = await rootBundle.load('assets/markers/taxi/taxi_hdpi.png');
+        await _pointAnnotationManager!.create(PointAnnotationOptions(
+            geometry: point,
+            image: taxiMarkerBytes.buffer.asUint8List(),
+            iconAnchor: IconAnchor.BOTTOM
+        )).then((value) => _taxiMarker = value);
       } else {
         // Update geometry point
         _taxiMarker!.geometry = point;
