@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quber_taxi/enums/referral_source.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
@@ -57,6 +58,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   ];
 
   void _prevPage() {
+    FocusScope.of(context).unfocus();
     if (_currentPage > 0) {
       _pageController.previousPage(
           duration: _animationDuration, curve: _animationCurve);
@@ -64,6 +66,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   }
 
   void _nextPage(int length) async {
+    FocusScope.of(context).unfocus();
     if (_currentPage < length - 1) {
       _pageController.nextPage(duration: _animationDuration, curve: _animationCurve);
     } else {
