@@ -430,5 +430,19 @@
   "reviewSaveError": "Could not save your review",
   "reviewThankYou": "Thank you for your time",
   "reviewsLoadError": "Could not load reviews",
-  "dateFormat": "d 'of' MMMM 'of' y"
+  "dateFormat": "d 'of' MMMM 'of' y",
+  "pickupConfirmationSentTitle": "Confirmation sent",
+
+  "finalizarViaje": "Finish Trip",
+  "verMiUbicacion": "See My Location",
+  "confirmacionFinalizacion": "Finish Confirmation",
+  "confirmacionFinalizacionMensaje": "The driver will be notified immediately that you want to end the trip. Please accept only if this is correct.",
+
+  "destinationsLimited": "Destinations are limited to {destinationName}",
+  "placeNotFound": "Place not found",
+  "showMyLocation": "Show My Location",
+  "finishTrip": "Finish Trip",
+
+  "confirmacionLlegadaDestino": "Destination Arrival Confirmation",
+  "confirmacionLlegadaDestinoMensaje": "The driver has notified that the destination has been reached. Please accept only if this is correct."
 }

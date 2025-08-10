@@ -416,9 +416,9 @@
              "tripAcceptedDescription": "Un conductor ha aceptado su solicitud. Ahora está en espera de su llegada. Podrá ver su ubicación en tiempo real en el mapa. Le pediremos confirmación cuando esté listo para recogerle.",
   "seeDriverLocation": "Ver ubicación del conductor",
   "noDriverLocation": "Aún no hay ubicación del conductor",
-  "pickupConfirmationInfo": "Hemos enviado una notificación al cliente. Una vez la acepte, comenzará el viaje.",
+  "pickupConfirmationInfo": "Hemos enviado una notificación al cliente. Una vez que acepte, el viaje comenzará.",
   "pickupConfirmationTitle": "Confirmación de recogida",
-  "pickupConfirmationMessage": "El conductor ha indicado que su recogida se ha realizado. Confirme únicamente si ya se encuentra con el conductor; una vez confirmada, dará inicio el viaje.",
+  "pickupConfirmationMessage": "El conductor ha indicado que su recogida ha sido completada. Por favor confirme solo si ya está con el conductor; una vez confirmado, el viaje comenzará.",
   "pickupConfirmationSentTitle": "Confirmación enviada",
       "nameAboutDev": "Irquen",
       "emailAboutDev": "qnecesitas.desarrollo@gmail.com",
@@ -430,5 +430,18 @@
       "reviewSaveError": "No se pudo guardar tu valoración",
       "reviewThankYou": "Gracias por tu tiempo",
       "reviewsLoadError": "No se pudieron cargar las reseñas",
-      "dateFormat": "d 'de' MMMM 'de' y"
+      "dateFormat": "d 'de' MMMM 'de' y",
+
+  "finalizarViaje": "Finalizar viaje",
+  "verMiUbicacion": "Ver mi ubicación",
+  "confirmacionFinalizacion": "Confirmación de finalización",
+  "confirmacionFinalizacionMensaje": "Se le notificará inmediatamente al conductor que desea terminar el viaje. Acepte solo si esto es correcto.",
+
+  "destinationsLimited": "Los destinos están limitados a {destinationName}",
+  "placeNotFound": "Lugar no encontrado",
+  "showMyLocation": "Ver mi ubicación",
+  "finishTrip": "Finalizar viaje",
+
+  "confirmacionLlegadaDestino": "Confirmación de llegada al destino",
+  "confirmacionLlegadaDestinoMensaje": "El conductor ha notificado que se ha llegado al destino. Acepte solo si esto es correcto"
 }

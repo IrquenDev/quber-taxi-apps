@@ -1208,37 +1208,51 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get pickupConfirmationInfo =>
-      'Hemos enviado una notificación al cliente. Una vez la acepte, comenzará el viaje.';
+      'Hemos enviado una notificación al cliente. Una vez que acepte, el viaje comenzará.';
 
   @override
   String get pickupConfirmationTitle => 'Confirmación de recogida';
 
   @override
   String get pickupConfirmationMessage =>
-      'El conductor ha indicado que su recogida se ha realizado. Confirme únicamente si ya se encuentra con el conductor; una vez confirmada, dará inicio el viaje.';
+      'El conductor ha indicado que su recogida ha sido completada. Por favor confirme solo si ya está con el conductor; una vez confirmado, el viaje comenzará.';
 
   @override
   String get pickupConfirmationSentTitle => 'Confirmación enviada';
 
   @override
-  String get nameAboutDev => 'Irquen';
+  String get finalizarViaje => 'Finalizar viaje';
 
   @override
-  String get emailAboutDev => 'qnecesitas.desarrollo@gmail.com';
+  String get verMiUbicacion => 'Ver mi ubicación';
 
   @override
-  String get phoneAboutDev => '+5355759386';
+  String get confirmacionFinalizacion => 'Confirmación de finalización';
 
   @override
-  String get websiteAboutDev => 'https://qnecesitas.nat.cu';
+  String get confirmacionFinalizacionMensaje =>
+      'Se le notificará inmediatamente al conductor que desea terminar el viaje. Acepte solo si esto es correcto.';
 
   @override
-  String get nameAboutUs => 'Quber';
+  String destinationsLimited(Object destinationName) {
+    return 'Los destinos están limitados a $destinationName';
+  }
 
   @override
-  String get phoneAboutUs => '+53 52417814';
+  String get placeNotFound => 'Lugar no encontrado';
 
   @override
+  String get showMyLocation => 'Ver mi ubicación';
+
+  @override
+  String get finishTrip => 'Finalizar viaje';
+
+  @override
+  String get confirmacionLlegadaDestino => 'Confirmación de llegada al destino';
+
+  @override
+  String get confirmacionLlegadaDestinoMensaje =>
+      'El conductor ha notificado que se ha llegado al destino. Acepte solo si esto es correcto';
   String get copiedToClipboard => 'Copiado al portapapeles';
 
   @override

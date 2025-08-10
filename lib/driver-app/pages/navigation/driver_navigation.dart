@@ -24,6 +24,7 @@ import 'package:quber_taxi/utils/websocket/core/websocket_service.dart';
 import 'package:quber_taxi/utils/websocket/impl/travel_state_handler.dart';
 import 'package:turf/distance.dart' as td;
 import 'package:turf/turf.dart' as turf;
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DriverNavigationPage extends StatefulWidget {
 
@@ -69,7 +70,7 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
   late final TravelStateHandler _travelStateHandler;
   bool _isTravelCompleted = false;
   Driver _driver = Driver.fromJson(loggedInUser);
-  
+
   // Price calculation
   double? _travelPriceByTaxiType;
   double get _finalPrice => _distanceInKm * (_travelPriceByTaxiType ?? 0);
@@ -263,7 +264,7 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
       // Check if inside of Havana
       final isInside = GeoBoundaries.isPointInPolygon(lng, lat, _municipalityPolygon);
       if(!isInside) {
-        showToast(context: context, message: "Los destinos están limitados a ${widget.travel.destinationName}");
+        showToast(context: context, message: l10n.destinationsLimitedToHavana);
         return;
       } else {
         await _getAndDrownRoute(widget.travel.originCoords[0], widget.travel.originCoords[1], lng, lat);
@@ -298,7 +299,7 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
     if(!mounted) return false;
     // Depending on what was typed, result could be null
     if(destination == null) {
-      showToast(context: context, message: "No se encontró dicho lugar");
+      showToast(context: context, message: l10n.noResultsMessage);
       return false;
     }
     // Some places matches ...
@@ -356,6 +357,7 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     // Init camera options
     final position = Position(widget.travel.originCoords[0], widget.travel.originCoords[1]);
     final cameraOptions = CameraOptions(
@@ -366,23 +368,85 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
     );
     return Scaffold(
         resizeToAvoidBottomInset: true,
-        body: MapWidget(
-          styleUri: MapboxStyles.STANDARD,
-          cameraOptions: cameraOptions,
-          onMapCreated: _onMapCreated,
-          onLongTapListener: _onLongTapListener,
-          onCameraChangeListener: _onCameraChangeListener
+        body: Stack(
+          children: [
+            MapWidget(
+              styleUri: MapboxStyles.STANDARD,
+              cameraOptions: cameraOptions,
+              onMapCreated: _onMapCreated,
+              onLongTapListener: _onLongTapListener,
+              onCameraChangeListener: _onCameraChangeListener
+            ),
+            Positioned(
+              top: MediaQuery.of(context).padding.top + 16,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 4,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: IconButton(
+                        onPressed: () async {
+                          final position = await g.Geolocator.getCurrentPosition();
+                          _mapController.easeTo(
+                            CameraOptions(
+                              center: Point(
+                                coordinates: Position(position.longitude, position.latitude),
+                              ),
+                              zoom: 17,
+                            ),
+                            MapAnimationOptions(duration: 1000),
+                          );
+                        },
+                        icon: Icon(Icons.my_location, color: Theme.of(context).colorScheme.primary),
+                        tooltip: l10n.verMiUbicacion,
+                      ),
+                    ),
+                    SizedBox(width: 12),
+                    if(!_isTravelCompleted)
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        print("attemp to send notification");
+                        WebSocketService.instance.send(
+                            "/app/travels/${widget.travel.id}/finish-confirmation", null
+                        );
+                      },
+                      icon: Icon(Icons.done_outline, color: Colors.white),
+                      label: Text(
+                        l10n.finalizarViaje,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        foregroundColor: Colors.white,
+                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        elevation: 4,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
-        floatingActionButton: !_isTravelCompleted ? FloatingActionButton(
-          onPressed: () {
-            WebSocketService.instance.send(
-                "/app/travels/${widget.travel.id}/finish-confirmation", null // no body needed
-            );
-            showToast(context: context, message: "Se le notificará al cliente que se ha alcanzado el destino del "
-                "viaje.");
-          },
-          child: Icon(Icons.done_outline),
-        ) : null,
         bottomSheet: _isTravelCompleted ? DriverTripCompleted(
           travel: widget.travel,
           driver: _driver,
@@ -391,9 +455,10 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
           finalPrice: _finalPrice,
           travelPriceByTaxiType: _travelPriceByTaxiType,
         ) : DriverTripInfo(
+          distance: _distanceInKm,
+          travelPriceByTaxiType: widget.travel.taxiType,
           originName: widget.travel.originName,
           destinationName: widget.travel.destinationName,
-          distance: _distanceInKm,
           taxiType: widget.travel.taxiType,
           finalPrice: _finalPrice,
           travelPriceByTaxiType: _travelPriceByTaxiType,

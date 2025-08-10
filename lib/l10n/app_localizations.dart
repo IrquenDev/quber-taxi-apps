@@ -2303,7 +2303,7 @@ abstract class AppLocalizations {
   /// No description provided for @pickupConfirmationInfo.
   ///
   /// In es, this message translates to:
-  /// **'Hemos enviado una notificación al cliente. Una vez la acepte, comenzará el viaje.'**
+  /// **'Hemos enviado una notificación al cliente. Una vez que acepte, el viaje comenzará.'**
   String get pickupConfirmationInfo;
 
   /// No description provided for @pickupConfirmationTitle.
@@ -2315,7 +2315,7 @@ abstract class AppLocalizations {
   /// No description provided for @pickupConfirmationMessage.
   ///
   /// In es, this message translates to:
-  /// **'El conductor ha indicado que su recogida se ha realizado. Confirme únicamente si ya se encuentra con el conductor; una vez confirmada, dará inicio el viaje.'**
+  /// **'El conductor ha indicado que su recogida ha sido completada. Por favor confirme solo si ya está con el conductor; una vez confirmado, el viaje comenzará.'**
   String get pickupConfirmationMessage;
 
   /// No description provided for @pickupConfirmationSentTitle.
@@ -2324,43 +2324,49 @@ abstract class AppLocalizations {
   /// **'Confirmación enviada'**
   String get pickupConfirmationSentTitle;
 
-  /// No description provided for @nameAboutDev.
+  /// No description provided for @finalizarViaje.
   ///
   /// In es, this message translates to:
-  /// **'Irquen'**
-  String get nameAboutDev;
+  /// **'Finalizar viaje'**
+  String get finalizarViaje;
 
-  /// No description provided for @emailAboutDev.
+  /// No description provided for @verMiUbicacion.
   ///
   /// In es, this message translates to:
-  /// **'qnecesitas.desarrollo@gmail.com'**
-  String get emailAboutDev;
+  /// **'Ver mi ubicación'**
+  String get verMiUbicacion;
 
-  /// No description provided for @phoneAboutDev.
+  /// No description provided for @confirmacionFinalizacion.
   ///
   /// In es, this message translates to:
-  /// **'+5355759386'**
-  String get phoneAboutDev;
+  /// **'Confirmación de finalización'**
+  String get confirmacionFinalizacion;
 
-  /// No description provided for @websiteAboutDev.
+  /// No description provided for @confirmacionFinalizacionMensaje.
   ///
   /// In es, this message translates to:
-  /// **'https://qnecesitas.nat.cu'**
-  String get websiteAboutDev;
+  /// **'Se le notificará inmediatamente al conductor que desea terminar el viaje. Acepte solo si esto es correcto.'**
+  String get confirmacionFinalizacionMensaje;
 
-  /// No description provided for @nameAboutUs.
+  /// No description provided for @destinationsLimited.
   ///
   /// In es, this message translates to:
-  /// **'Quber'**
-  String get nameAboutUs;
+  /// **'Los destinos están limitados a {destinationName}'**
+  String destinationsLimited(Object destinationName);
 
-  /// No description provided for @phoneAboutUs.
+  /// No description provided for @placeNotFound.
   ///
   /// In es, this message translates to:
-  /// **'+53 52417814'**
-  String get phoneAboutUs;
+  /// **'Lugar no encontrado'**
+  String get placeNotFound;
 
-  /// No description provided for @copiedToClipboard.
+  /// No description provided for @showMyLocation.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver mi ubicación'**
+  String get showMyLocation;
+
+  /// No description provided for @finishTrip.
   ///
   /// In es, this message translates to:
   /// **'Copiado al portapapeles'**
@@ -2389,6 +2395,21 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'d \'de\' MMMM \'de\' y'**
   String get dateFormat;
+
+  /// **'Finalizar viaje'**
+  String get finishTrip;
+
+  /// No description provided for @confirmacionLlegadaDestino.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirmación de llegada al destino'**
+  String get confirmacionLlegadaDestino;
+
+  /// No description provided for @confirmacionLlegadaDestinoMensaje.
+  ///
+  /// In es, this message translates to:
+  /// **'El conductor ha notificado que se ha llegado al destino. Acepte solo si esto es correcto'**
+  String get confirmacionLlegadaDestinoMensaje;
 }
 
 class _AppLocalizationsDelegate
