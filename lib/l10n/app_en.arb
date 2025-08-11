@@ -185,6 +185,17 @@
     "driverName": "Name: ",
     "driverPhone": "Phone: ",
     "driverPlate": "License plate:",
+    "tripPriceLabel": "Trip Price",
+    "tripDurationLabel": "Time Elapsed",
+    "tripDistanceLabel": "Distance Traveled",
+    "originLabel": "Origin",
+    "destinationLabel": "Destination",
+    "dateLabel": "Date",
+    "quberCreditLabel": "Credit for Quber",
+    "commentsLabel": "comments",
+    "minutesLabel": "minutes",
+    "kilometersLabel": "km",
+    "currencyLabel": "CUP",
 
     "aboutDeveloperTitle": "About Developer",
     "softwareCompany": "Software company",
@@ -415,5 +426,9 @@
   "pickupConfirmationInfo": "We have sent a notification to the client. Once they accept, the trip will begin.",
   "pickupConfirmationTitle": "Pickup confirmation",
   "pickupConfirmationMessage": "The driver has indicated that your pickup has been completed. Please confirm only if you are already with the driver; once confirmed, the trip will begin.",
-  "pickupConfirmationSentTitle": "Confirmation sent"
+  "pickupConfirmationSentTitle": "Confirmation sent",
+  "reviewSaveError": "Could not save your review",
+  "reviewThankYou": "Thank you for your time",
+  "reviewsLoadError": "Could not load reviews",
+  "dateFormat": "d 'of' MMMM 'of' y"
 }

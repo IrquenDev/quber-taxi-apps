@@ -1082,6 +1082,72 @@ abstract class AppLocalizations {
   /// **'Chapa: '**
   String get driverPlate;
 
+  /// No description provided for @tripPriceLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Precio del Viaje'**
+  String get tripPriceLabel;
+
+  /// No description provided for @tripDurationLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Tiempo Transcurrido'**
+  String get tripDurationLabel;
+
+  /// No description provided for @tripDistanceLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Distancia Recorrida'**
+  String get tripDistanceLabel;
+
+  /// No description provided for @originLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Origen'**
+  String get originLabel;
+
+  /// No description provided for @destinationLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Destino'**
+  String get destinationLabel;
+
+  /// No description provided for @dateLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Fecha'**
+  String get dateLabel;
+
+  /// No description provided for @quberCreditLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Crédito para Quber'**
+  String get quberCreditLabel;
+
+  /// No description provided for @commentsLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'comentarios'**
+  String get commentsLabel;
+
+  /// No description provided for @minutesLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'minutos'**
+  String get minutesLabel;
+
+  /// No description provided for @kilometersLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Km'**
+  String get kilometersLabel;
+
+  /// No description provided for @currencyLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'CUP'**
+  String get currencyLabel;
+
   /// No description provided for @aboutDeveloperTitle.
   ///
   /// In es, this message translates to:
@@ -2299,6 +2365,30 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Copiado al portapapeles'**
   String get copiedToClipboard;
+
+  /// No description provided for @reviewSaveError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo guardar tu valoración'**
+  String get reviewSaveError;
+
+  /// No description provided for @reviewThankYou.
+  ///
+  /// In es, this message translates to:
+  /// **'Gracias por tu tiempo'**
+  String get reviewThankYou;
+
+  /// No description provided for @reviewsLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudieron cargar las reseñas'**
+  String get reviewsLoadError;
+
+  /// No description provided for @dateFormat.
+  ///
+  /// In es, this message translates to:
+  /// **'d \'de\' MMMM \'de\' y'**
+  String get dateFormat;
 }
 
 class _AppLocalizationsDelegate

@@ -186,6 +186,17 @@
   "driverName": "Nombre: ",
   "driverPhone": "Teléfono: ",
   "driverPlate": "Chapa: ",
+  "tripPriceLabel": "Precio del Viaje",
+  "tripDurationLabel": "Tiempo Transcurrido",
+  "tripDistanceLabel": "Distancia Recorrida",
+  "originLabel": "Origen",
+  "destinationLabel": "Destino",
+  "dateLabel": "Fecha",
+  "quberCreditLabel": "Crédito para Quber",
+  "commentsLabel": "comentarios",
+  "minutesLabel": "minutos",
+  "kilometersLabel": "Km",
+  "currencyLabel": "CUP",
 
   "aboutDeveloperTitle": "Acerca del Desarrollador",
   "softwareCompany": "Empresa de software",
@@ -415,5 +426,9 @@
       "websiteAboutDev": "https://qnecesitas.nat.cu",
       "nameAboutUs": "Quber",
       "phoneAboutUs": "+53 52417814",
-      "copiedToClipboard": "Copiado al portapapeles"
+      "copiedToClipboard": "Copiado al portapapeles",
+      "reviewSaveError": "No se pudo guardar tu valoración",
+      "reviewThankYou": "Gracias por tu tiempo",
+      "reviewsLoadError": "No se pudieron cargar las reseñas",
+      "dateFormat": "d 'de' MMMM 'de' y"
 }
