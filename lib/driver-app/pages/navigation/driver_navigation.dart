@@ -26,7 +26,6 @@ import 'package:turf/distance.dart' as td;
 import 'package:turf/turf.dart' as turf;
 
 class DriverNavigationPage extends StatefulWidget {
-
   final Travel travel;
 
   const DriverNavigationPage({super.key, required this.travel});
@@ -36,7 +35,6 @@ class DriverNavigationPage extends StatefulWidget {
 }
 
 class _DriverNavigationPageState extends State<DriverNavigationPage> {
-
   // Map functionalities
   final _mapboxService = MapboxService();
   late final MapboxMap _mapController;
@@ -53,8 +51,7 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
       lineColor: 0xFF0000FF,
       lineWidth: 4.0,
       minZoom: 1,
-      maxZoom: 24
-  );
+      maxZoom: 24);
   bool _isRouteDrawn = false;
   bool _isGuidedRouteEnabled = false;
   // Real time distance calculation
@@ -79,14 +76,13 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
   // - Use only when travel destination is unfixed.
   // - "Guided Route" in fixed destination will use directly de MapboxRoute line.
   Future<void> _loadHavanaGeoJson() async {
-    final munName= Municipalities.resolveGeoJsonRef(widget.travel.destinationName);
+    final munName = Municipalities.resolveGeoJsonRef(widget.travel.destinationName);
     _municipalityPolygon = await GeoUtils.loadGeoJsonPolygon(munName!);
   }
 
   void _startTrackingDistance() {
-    _locationStream = g.Geolocator.getPositionStream(
-        locationSettings: g.LocationSettings(distanceFilter: 5)
-    ).listen(_onMove);
+    _locationStream =
+        g.Geolocator.getPositionStream(locationSettings: g.LocationSettings(distanceFilter: 5)).listen(_onMove);
   }
 
   void _onMove(g.Position newPosition) {
@@ -104,24 +100,21 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
   }
 
   void _updateTaxiMarker(g.Position newPosition) async {
-    if(_pointAnnotationManager != null) {
+    if (_pointAnnotationManager != null) {
       final point = Point(coordinates: Position(newPosition.longitude, newPosition.latitude));
-      if(_taxiMarker == null) {
+      if (_taxiMarker == null) {
         // Display marker
         final taxiMarkerBytes = await rootBundle.load('assets/markers/taxi/taxi_pin_x172.png');
-        await _pointAnnotationManager!.create(PointAnnotationOptions(
-            geometry: point,
-            image: taxiMarkerBytes.buffer.asUint8List(),
-            iconAnchor: IconAnchor.BOTTOM
-        )).then((value) => _taxiMarker = value);
+        await _pointAnnotationManager!
+            .create(PointAnnotationOptions(
+                geometry: point, image: taxiMarkerBytes.buffer.asUint8List(), iconAnchor: IconAnchor.BOTTOM))
+            .then((value) => _taxiMarker = value);
       } else {
         // Update geometry point
         _taxiMarker!.geometry = point;
         // Update icon rotation (orientation)
         final bearing = mb_util.calculateBearing(
-            _realTimeRoute.last.lat, _realTimeRoute.last.lng,
-            newPosition.latitude, newPosition.longitude
-        );
+            _realTimeRoute.last.lat, _realTimeRoute.last.lng, newPosition.latitude, newPosition.longitude);
         final adjustedBearing = (bearing - _mapBearing + 360) % 360;
         _taxiMarker!.iconRotate = adjustedBearing;
         // Then update marker
@@ -133,46 +126,33 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
   Future<void> _getAndDrownRoute(num originLng, num originLat, num destinationLng, num destinationLat) async {
     // Getting route and drown
     final route = await _mapboxService.getRoute(
-      originLng: originLng, originLat: originLat, destinationLng: destinationLng, destinationLat: destinationLat
-    );
+        originLng: originLng, originLat: originLat, destinationLng: destinationLng, destinationLat: destinationLat);
     // Applying dynamic zoom to fully expose the route.
     zoomToFitRoute(_mapController, route.coordinates);
     // Create or update destination marker
     final point = Point(coordinates: Position(destinationLng, destinationLat));
-    if(_destinationMarker == null) {
-      _pointAnnotationManager!.create(PointAnnotationOptions(
-          geometry: point,
-          image: _destinationMakerImage,
-          iconAnchor: IconAnchor.BOTTOM
-      )).then((value) => _destinationMarker = value);
-    }
-    else {
+    if (_destinationMarker == null) {
+      _pointAnnotationManager!
+          .create(PointAnnotationOptions(geometry: point, image: _destinationMakerImage, iconAnchor: IconAnchor.BOTTOM))
+          .then((value) => _destinationMarker = value);
+    } else {
       _destinationMarker!.geometry = point;
       _pointAnnotationManager!.update(_destinationMarker!);
     }
     // Drowning the rute
-    if(!_isRouteDrawn) {
+    if (!_isRouteDrawn) {
       final geoJsonData = {
         "type": "Feature",
         "id": "featureId",
-        "geometry": {
-          "type": "LineString",
-          "coordinates": route.coordinates
-        }
+        "geometry": {"type": "LineString", "coordinates": route.coordinates}
       };
-      await _mapController.style.addSource(
-          GeoJsonSource(id: "sourceId", data: jsonEncode(geoJsonData))
-      );
+      await _mapController.style.addSource(GeoJsonSource(id: "sourceId", data: jsonEncode(geoJsonData)));
       await _mapController.style.addLayer(_lineLayer);
       _isRouteDrawn = true;
-    }
-    else {
-      final coordinates = route.coordinates
-          .map((position) => Position(position[0], position[1]))
-          .toList();
+    } else {
+      final coordinates = route.coordinates.map((position) => Position(position[0], position[1])).toList();
       await _mapController.style.updateGeoJSONSourceFeatures(
-          "sourceId", "dataId", [Feature(id: "featureId", geometry: LineString(coordinates: coordinates))]
-      );
+          "sourceId", "dataId", [Feature(id: "featureId", geometry: LineString(coordinates: coordinates))]);
       await _mapController.style.updateLayer(_lineLayer);
     }
   }
@@ -189,12 +169,9 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
     // Display origin marker
     final originMarkerBytes = await rootBundle.load('assets/markers/route/x120/origin.png');
     await _pointAnnotationManager!.create(PointAnnotationOptions(
-        geometry: Point(
-            coordinates: position
-        ),
+        geometry: Point(coordinates: position),
         image: originMarkerBytes.buffer.asUint8List(),
-        iconAnchor: IconAnchor.BOTTOM
-    ));
+        iconAnchor: IconAnchor.BOTTOM));
     // Load destination marker image
     final destinationMarkerBytes = await rootBundle.load('assets/markers/route/x120/destination.png');
     _destinationMakerImage = destinationMarkerBytes.buffer.asUint8List();
@@ -204,17 +181,22 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
       if (widget.travel.destinationCoords != null) {
         // Exact destination point
         final dest = Position(widget.travel.destinationCoords![0], widget.travel.destinationCoords![1]);
-        await _pointAnnotationManager!.create(PointAnnotationOptions(
-          geometry: Point(coordinates: dest),
-          image: _destinationMakerImage,
-          iconAnchor: IconAnchor.BOTTOM,
-        )).then((value) => _destinationMarker = value);
+        await _pointAnnotationManager!
+            .create(PointAnnotationOptions(
+              geometry: Point(coordinates: dest),
+              image: _destinationMakerImage,
+              iconAnchor: IconAnchor.BOTTOM,
+            ))
+            .then((value) => _destinationMarker = value);
 
         final bounds = mb_util.calculateBounds([position, dest]);
         final cameraOptions = await _mapController.cameraForCoordinateBounds(
           bounds,
           MbxEdgeInsets(top: 50, bottom: 50, left: 50, right: 50),
-          0, 0, null, null,
+          0,
+          0,
+          null,
+          null,
         );
         _mapController.easeTo(cameraOptions, MapAnimationOptions(duration: 1000));
       } else {
@@ -245,7 +227,10 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
           final cameraOptions = await _mapController.cameraForCoordinateBounds(
             bounds,
             MbxEdgeInsets(top: 50, bottom: 50, left: 50, right: 50),
-            0, 0, null, null,
+            0,
+            0,
+            null,
+            null,
           );
           _mapController.easeTo(cameraOptions, MapAnimationOptions(duration: 1000));
         }
@@ -256,13 +241,13 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
   }
 
   void _onLongTapListener(MapContentGestureContext mapContext) async {
-    if(_isGuidedRouteEnabled) {
+    if (_isGuidedRouteEnabled) {
       // Getting coords
       final lng = mapContext.point.coordinates.lng;
       final lat = mapContext.point.coordinates.lat;
       // Check if inside of Havana
       final isInside = GeoBoundaries.isPointInPolygon(lng, lat, _municipalityPolygon);
-      if(!isInside) {
+      if (!isInside) {
         showToast(context: context, message: "Los destinos están limitados a ${widget.travel.destinationName}");
         return;
       } else {
@@ -273,48 +258,36 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
 
   void _onCameraChangeListener(CameraChangedEventData camera) {
     _mapBearing = camera.cameraState.bearing;
-    if(_taxiMarker != null) {
-      final bearing = mb_util.calculateBearing(
-          _realTimeRoute.last.lat, _realTimeRoute.last.lng,
-          _realTimeRoute[_realTimeRoute.length -1].lat, _realTimeRoute[_realTimeRoute.length -1].lng
-      );
+    if (_taxiMarker != null) {
+      final bearing = mb_util.calculateBearing(_realTimeRoute.last.lat, _realTimeRoute.last.lng,
+          _realTimeRoute[_realTimeRoute.length - 1].lat, _realTimeRoute[_realTimeRoute.length - 1].lng);
       final adjustedBearing = (bearing - _mapBearing + 360) % 360;
       _taxiMarker!.iconRotate = adjustedBearing;
       _pointAnnotationManager!.update(_taxiMarker!);
     }
   }
 
-  Future<bool> _onSearch (String query) async {
+  Future<bool> _onSearch(String query) async {
     final destination = await _mapboxService.getLocationCoords(
         query: query,
         proximity: [_realTimeRoute.last.lng, _realTimeRoute.last.lat],
-        types: [
-          MapboxPlaceType.place,
-          MapboxPlaceType.locality,
-          MapboxPlaceType.address,
-          MapboxPlaceType.district
-        ]
-    );
-    if(!mounted) return false;
+        types: [MapboxPlaceType.place, MapboxPlaceType.locality, MapboxPlaceType.address, MapboxPlaceType.district]);
+    if (!mounted) return false;
     // Depending on what was typed, result could be null
-    if(destination == null) {
+    if (destination == null) {
       showToast(context: context, message: "No se encontró dicho lugar");
       return false;
     }
     // Some places matches ...
     else {
-      await _getAndDrownRoute(
-          widget.travel.originCoords[0],
-          widget.travel.originCoords[1],
-          destination.coordinates[0],
-          destination.coordinates[1]
-      );
+      await _getAndDrownRoute(widget.travel.originCoords[0], widget.travel.originCoords[1], destination.coordinates[0],
+          destination.coordinates[1]);
       return true;
     }
   }
 
   void _onGuidedRouteSwitched(bool isEnabled) async {
-    if(!isEnabled && _isRouteDrawn) {
+    if (!isEnabled && _isRouteDrawn) {
       await _mapController.style.removeStyleLayer("line-layer");
       await _mapController.style.removeStyleSource("sourceId");
       await _pointAnnotationManager!.delete(_destinationMarker!);
@@ -344,14 +317,14 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
           if (response.statusCode == 200) {
             _driver = Driver.fromJson(jsonDecode(response.body));
             final savedFlag = await SessionPrefsManager.instance.save(_driver);
-            if(savedFlag) {
+            if (savedFlag) {
               setState(() => _isTravelCompleted = true);
               _locationStream.cancel();
               _travelStateHandler.deactivate();
             }
           }
-        }
-    )..activate();
+        })
+      ..activate();
   }
 
   @override
@@ -369,12 +342,11 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
         body: Stack(
           children: [
             MapWidget(
-              styleUri: MapboxStyles.STANDARD,
-              cameraOptions: cameraOptions,
-              onMapCreated: _onMapCreated,
-              onLongTapListener: _onLongTapListener,
-              onCameraChangeListener: _onCameraChangeListener
-            ),
+                styleUri: MapboxStyles.STANDARD,
+                cameraOptions: cameraOptions,
+                onMapCreated: _onMapCreated,
+                onLongTapListener: _onLongTapListener,
+                onCameraChangeListener: _onCameraChangeListener),
             Positioned(
               top: MediaQuery.of(context).padding.top + 16,
               left: 0,
@@ -413,55 +385,54 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
                       ),
                     ),
                     SizedBox(width: 12),
-                    if(!_isTravelCompleted)
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        print("attemp to send notification");
-                        WebSocketService.instance.send(
-                            "/app/travels/${widget.travel.id}/finish-confirmation", null
-                        );
-                      },
-                      icon: Icon(Icons.done_outline, color: Colors.white),
-                      label: Text(
-                        'Finalizar viaje',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
+                    if (!_isTravelCompleted)
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          print("attemp to send notification");
+                          WebSocketService.instance.send("/app/travels/${widget.travel.id}/finish-confirmation", null);
+                        },
+                        icon: Icon(Icons.done_outline, color: Colors.white),
+                        label: Text(
+                          'Finalizar viaje',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).colorScheme.primary,
+                          foregroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          elevation: 4,
                         ),
                       ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        foregroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        elevation: 4,
-                      ),
-                    ),
                   ],
                 ),
               ),
             ),
           ],
         ),
-        bottomSheet: _isTravelCompleted ? DriverTripCompleted(
-          travel: widget.travel,
-          driver: _driver,
-          duration: _stopwatch?.elapsed.inMinutes ?? 0,
-          distance: _distanceInKm,
-          finalPrice: _finalPrice,
-          travelPriceByTaxiType: _travelPriceByTaxiType,
-        ) : DriverTripInfo(
-          originName: widget.travel.originName,
-          destinationName: widget.travel.destinationName,
-          distance: _distanceInKm,
-          taxiType: widget.travel.taxiType,
-          finalPrice: _finalPrice,
-          travelPriceByTaxiType: _travelPriceByTaxiType,
-          onGuidedRouteSwitched: _onGuidedRouteSwitched,
-          onSearch: _onSearch,
-        )
-    );
+        bottomSheet: _isTravelCompleted
+            ? DriverTripCompleted(
+                travel: widget.travel,
+                driver: _driver,
+                duration: _stopwatch?.elapsed.inMinutes ?? 0,
+                distance: _distanceInKm,
+                finalPrice: _finalPrice,
+                travelPriceByTaxiType: _travelPriceByTaxiType,
+              )
+            : DriverTripInfo(
+                originName: widget.travel.originName,
+                destinationName: widget.travel.destinationName,
+                distance: _distanceInKm,
+                taxiType: widget.travel.taxiType,
+                finalPrice: _finalPrice,
+                travelPriceByTaxiType: _travelPriceByTaxiType,
+                onGuidedRouteSwitched: _onGuidedRouteSwitched,
+                onSearch: _onSearch,
+              ));
   }
 }

@@ -78,11 +78,10 @@ class _ClientNavigationState extends State<ClientNavigation> {
       if (_taxiMarker == null) {
         // Display marker
         final taxiMarkerBytes = await rootBundle.load('assets/markers/taxi/taxi_pin_x172.png');
-        await _pointAnnotationManager!.create(PointAnnotationOptions(
-            geometry: point,
-            image: taxiMarkerBytes.buffer.asUint8List(),
-            iconAnchor: IconAnchor.BOTTOM
-        )).then((value) => _taxiMarker = value);
+        await _pointAnnotationManager!
+            .create(PointAnnotationOptions(
+                geometry: point, image: taxiMarkerBytes.buffer.asUint8List(), iconAnchor: IconAnchor.BOTTOM))
+            .then((value) => _taxiMarker = value);
       } else {
         // Update geometry point
         _taxiMarker!.geometry = point;
@@ -111,8 +110,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
     await _pointAnnotationManager!.create(PointAnnotationOptions(
         geometry: Point(coordinates: position),
         image: originMarkerBytes.buffer.asUint8List(),
-        iconAnchor: IconAnchor.BOTTOM
-    ));
+        iconAnchor: IconAnchor.BOTTOM));
 
     // Render destination: marker for exact point or polygon for municipality
     try {
@@ -136,7 +134,10 @@ class _ClientNavigationState extends State<ClientNavigation> {
         final cameraOptions = await _mapController.cameraForCoordinateBounds(
           bounds,
           MbxEdgeInsets(top: 50, bottom: 50, left: 50, right: 50),
-          0, 0, null, null,
+          0,
+          0,
+          null,
+          null,
         );
         _mapController.easeTo(cameraOptions, MapAnimationOptions(duration: 1000));
       } else {
@@ -168,7 +169,10 @@ class _ClientNavigationState extends State<ClientNavigation> {
           final cameraOptions = await _mapController.cameraForCoordinateBounds(
             bounds,
             MbxEdgeInsets(top: 50, bottom: 50, left: 50, right: 50),
-            0, 0, null, null,
+            0,
+            0,
+            null,
+            null,
           );
           _mapController.easeTo(cameraOptions, MapAnimationOptions(duration: 1000));
         }
@@ -221,14 +225,11 @@ class _ClientNavigationState extends State<ClientNavigation> {
           final result = await showDialog<bool>(
               context: context,
               barrierDismissible: false,
-              builder: (context) =>
-              const ConfirmDialog(
+              builder: (context) => const ConfirmDialog(
                   title: 'Confirmación de finalización',
-                  message: "El conductor ha notificado que se ha llegado al destino. Acepte solo si esto es correcto"
-              )
-          );
+                  message: "El conductor ha notificado que se ha llegado al destino. Acepte solo si esto es correcto"));
           // Handle result
-          if(result == true) {
+          if (result == true) {
             _markTravelAsCompleted();
           }
         })
@@ -254,113 +255,110 @@ class _ClientNavigationState extends State<ClientNavigation> {
       zoom: 17,
     );
     return NetworkAlertTemplate(
-      alertBuilder: (_, status) => CustomNetworkAlert(status: status, useTopSafeArea: true),
-      alertPosition: Alignment.topCenter,
-      child: Scaffold(
-        resizeToAvoidBottomInset: true,
-        extendBody: true,
-        body: Stack(
-          children: [
-            MapWidget(
-              styleUri: MapboxStyles.STANDARD,
-              cameraOptions: cameraOptions,
-              onMapCreated: _onMapCreated,
-              onCameraChangeListener: _onCameraChangeListener,
-            ),
-            Positioned(
-              top: MediaQuery.of(context).padding.top + 16,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 4,
-                            offset: Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: IconButton(
-                        onPressed: () async {
-                          final position = await g.Geolocator.getCurrentPosition();
-                          _mapController.easeTo(
-                            CameraOptions(
-                              center: Point(
-                                coordinates: Position(position.longitude, position.latitude),
-                              ),
-                              zoom: 17,
-                            ),
-                            MapAnimationOptions(duration: 1000),
-                          );
-                        },
-                        icon: Icon(Icons.my_location, color: Theme.of(context).colorScheme.primary),
-                        tooltip: 'Ver mi ubicación',
-                      ),
-                    ),
-                    SizedBox(width: 12),
-                    if(!_isTravelCompleted)
-                    ElevatedButton.icon(
-                      onPressed: hasConnection(context) ? () async {
-                        // Confirmation dialog
-                        final result = await showDialog<bool>(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (context) => const ConfirmDialog(
-                                title: 'Confirmación de finalización',
-                                message: "Se le notificará inmediatamente al conductor que desea terminar el viaje. Acepte solo "
-                                    "si esto es correcto."
-                            )
-                        );
-                        if(result == true) {
-                          _markTravelAsCompleted();
-                        }
-                      } : null,
-                      icon: Icon(Icons.done_outline, color: Colors.white),
-                      label: Text(
-                        'Finalizar viaje',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        foregroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        elevation: 4,
-                      ),
-                    ),
-                  ],
+        alertBuilder: (_, status) => CustomNetworkAlert(status: status, useTopSafeArea: true),
+        alertPosition: Alignment.topCenter,
+        child: Scaffold(
+            resizeToAvoidBottomInset: true,
+            extendBody: true,
+            body: Stack(
+              children: [
+                MapWidget(
+                  styleUri: MapboxStyles.STANDARD,
+                  cameraOptions: cameraOptions,
+                  onMapCreated: _onMapCreated,
+                  onCameraChangeListener: _onCameraChangeListener,
                 ),
-              ),
+                Positioned(
+                  top: MediaQuery.of(context).padding.top + 16,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 4,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: IconButton(
+                            onPressed: () async {
+                              final position = await g.Geolocator.getCurrentPosition();
+                              _mapController.easeTo(
+                                CameraOptions(
+                                  center: Point(
+                                    coordinates: Position(position.longitude, position.latitude),
+                                  ),
+                                  zoom: 17,
+                                ),
+                                MapAnimationOptions(duration: 1000),
+                              );
+                            },
+                            icon: Icon(Icons.my_location, color: Theme.of(context).colorScheme.primary),
+                            tooltip: 'Ver mi ubicación',
+                          ),
+                        ),
+                        SizedBox(width: 12),
+                        if (!_isTravelCompleted)
+                          ElevatedButton.icon(
+                            onPressed: hasConnection(context)
+                                ? () async {
+                                    // Confirmation dialog
+                                    final result = await showDialog<bool>(
+                                        context: context,
+                                        barrierDismissible: false,
+                                        builder: (context) => const ConfirmDialog(
+                                            title: 'Confirmación de finalización',
+                                            message:
+                                                "Se le notificará inmediatamente al conductor que desea terminar el viaje. Acepte solo "
+                                                "si esto es correcto."));
+                                    if (result == true) {
+                                      _markTravelAsCompleted();
+                                    }
+                                  }
+                                : null,
+                            icon: Icon(Icons.done_outline, color: Colors.white),
+                            label: Text(
+                              'Finalizar viaje',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Theme.of(context).colorScheme.primary,
+                              foregroundColor: Colors.white,
+                              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              elevation: 4,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-        bottomSheet:  _isTravelCompleted
-            ? ClientTripCompleted(
-            travel: widget.travel,
-            duration: _finalDuration,
-            distance: _finalDistance.toInt(),
-            travelPriceByTaxiType: _travelPriceByTaxiType!
-        )
-            : ClientTripInfo(
-          distance: _finalDistance.toInt(),
-          travelPriceByTaxiType: _travelPriceByTaxiType,
-          originName: widget.travel.originName,
-          destinationName: widget.travel.destinationName,
-          taxiType: widget.travel.taxiType
-        )
-      )
-    );
+            bottomSheet: _isTravelCompleted
+                ? ClientTripCompleted(
+                    travel: widget.travel,
+                    duration: _finalDuration,
+                    distance: _finalDistance.toInt(),
+                    travelPriceByTaxiType: _travelPriceByTaxiType!)
+                : ClientTripInfo(
+                    distance: _finalDistance.toInt(),
+                    travelPriceByTaxiType: _travelPriceByTaxiType,
+                    originName: widget.travel.originName,
+                    destinationName: widget.travel.destinationName,
+                    taxiType: widget.travel.taxiType)));
   }
 }
