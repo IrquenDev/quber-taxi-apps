@@ -607,8 +607,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
     );
   }
 
-
-
   void _onNewTravel(Travel travel) {
     final travelNotification = TravelNotification(travel);
 

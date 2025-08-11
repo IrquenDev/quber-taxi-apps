@@ -524,6 +524,39 @@ class AppLocalizationsEs extends AppLocalizations {
   String get driverPlate => 'Chapa: ';
 
   @override
+  String get tripPriceLabel => 'Precio del Viaje';
+
+  @override
+  String get tripDurationLabel => 'Tiempo Transcurrido';
+
+  @override
+  String get tripDistanceLabel => 'Distancia Recorrida';
+
+  @override
+  String get originLabel => 'Origen';
+
+  @override
+  String get destinationLabel => 'Destino';
+
+  @override
+  String get dateLabel => 'Fecha';
+
+  @override
+  String get quberCreditLabel => 'Crédito para Quber';
+
+  @override
+  String get commentsLabel => 'comentarios';
+
+  @override
+  String get minutesLabel => 'minutos';
+
+  @override
+  String get kilometersLabel => 'Km';
+
+  @override
+  String get currencyLabel => 'CUP';
+
+  @override
   String get aboutDeveloperTitle => 'Acerca del Desarrollador';
 
   @override
@@ -1207,4 +1240,16 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get copiedToClipboard => 'Copiado al portapapeles';
+
+  @override
+  String get reviewSaveError => 'No se pudo guardar tu valoración';
+
+  @override
+  String get reviewThankYou => 'Gracias por tu tiempo';
+
+  @override
+  String get reviewsLoadError => 'No se pudieron cargar las reseñas';
+
+  @override
+  String get dateFormat => 'd \'de\' MMMM \'de\' y';
 }

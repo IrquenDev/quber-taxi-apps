@@ -520,6 +520,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String get driverPlate => 'License plate:';
 
   @override
+  String get tripPriceLabel => 'Trip Price';
+
+  @override
+  String get tripDurationLabel => 'Time Elapsed';
+
+  @override
+  String get tripDistanceLabel => 'Distance Traveled';
+
+  @override
+  String get originLabel => 'Origin';
+
+  @override
+  String get destinationLabel => 'Destination';
+
+  @override
+  String get dateLabel => 'Date';
+
+  @override
+  String get quberCreditLabel => 'Credit for Quber';
+
+  @override
+  String get commentsLabel => 'comments';
+
+  @override
+  String get minutesLabel => 'minutes';
+
+  @override
+  String get kilometersLabel => 'km';
+
+  @override
+  String get currencyLabel => 'CUP';
+
+  @override
   String get aboutDeveloperTitle => 'About Developer';
 
   @override
@@ -1197,4 +1230,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get copiedToClipboard => 'Copied to clipboard';
+
+  @override
+  String get reviewSaveError => 'Could not save your review';
+
+  @override
+  String get reviewThankYou => 'Thank you for your time';
+
+  @override
+  String get reviewsLoadError => 'Could not load reviews';
+
+  @override
+  String get dateFormat => 'd \'of\' MMMM \'of\' y';
 }

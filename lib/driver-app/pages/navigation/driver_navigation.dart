@@ -1,8 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:quber_taxi/common/models/driver.dart';
+import 'package:quber_taxi/common/services/account_service.dart';
+import 'package:quber_taxi/common/services/admin_service.dart';
 import 'package:quber_taxi/driver-app/pages/navigation/trip_completed.dart';
 import 'package:quber_taxi/enums/municipalities.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
+import 'package:quber_taxi/storage/session_prefs_manger.dart';
 import 'package:quber_taxi/utils/map/mapbox.dart' as mb_util;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -15,6 +19,7 @@ import 'package:quber_taxi/driver-app/pages/navigation/trip_info.dart';
 import 'package:quber_taxi/enums/mapbox_place_type.dart';
 import 'package:quber_taxi/utils/map/mapbox.dart';
 import 'package:quber_taxi/utils/map/turf.dart';
+import 'package:quber_taxi/utils/runtime.dart';
 import 'package:quber_taxi/utils/websocket/core/websocket_service.dart';
 import 'package:quber_taxi/utils/websocket/impl/travel_state_handler.dart';
 import 'package:turf/distance.dart' as td;
@@ -62,6 +67,12 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
   // Websocket for travel state changed (Here we must wait for the client to accept the finish confirmation or
   // trigger it be himself).
   late final TravelStateHandler _travelStateHandler;
+  bool _isTravelCompleted = false;
+  Driver _driver = Driver.fromJson(loggedInUser);
+  
+  // Price calculation
+  double? _travelPriceByTaxiType;
+  double get _finalPrice => _distanceInKm * (_travelPriceByTaxiType ?? 0);
 
   // TODO("yapmDev": @Error)
   // - This fails because destinationName is not a municipality when user choose a specific place.
@@ -258,40 +269,34 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
     setState(() => _isGuidedRouteEnabled = isEnabled);
   }
 
-  void _showTripCompletedBottomSheet() {
-    _stopwatch?.stop();
-    showModalBottomSheet(
-        context: context,
-        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-        isDismissible: false,
-        isScrollControlled: true,
-        showDragHandle: true,
-        builder: (context) => DriverTripCompleted(
-          travel: widget.travel,
-          duration: _stopwatch?.elapsed.inMinutes ?? 0,
-          distance: _distanceInKm,
-        )
-    );
-  }
-
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final quberConfig = await AdminService().getQuberConfig();
+      _travelPriceByTaxiType = quberConfig!.travelPrice[widget.travel.taxiType]!;
+    });
     _loadHavanaGeoJson();
     _realTimeRoute.add(turf.Position(widget.travel.originCoords[0], widget.travel.originCoords[1]));
     _startTrackingDistance();
     _travelStateHandler = TravelStateHandler(
         state: TravelState.completed,
         travelId: widget.travel.id,
-        onMessage: (_) => _showTripCompletedBottomSheet()
+        onMessage: (_) async {
+          _stopwatch?.stop();
+          final response = await AccountService().findDriver(_driver.id);
+          if (!mounted) return;
+          if (response.statusCode == 200) {
+            _driver = Driver.fromJson(jsonDecode(response.body));
+            final savedFlag = await SessionPrefsManager.instance.save(_driver);
+            if(savedFlag) {
+              setState(() => _isTravelCompleted = true);
+              _locationStream.cancel();
+              _travelStateHandler.deactivate();
+            }
+          }
+        }
     )..activate();
-  }
-
-  @override
-  void dispose() {
-    _locationStream.cancel();
-    _travelStateHandler.deactivate();
-    super.dispose();
   }
 
   @override
@@ -313,22 +318,32 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
           onLongTapListener: _onLongTapListener,
           onCameraChangeListener: _onCameraChangeListener
         ),
-        floatingActionButton: FloatingActionButton(
+        floatingActionButton: !_isTravelCompleted ? FloatingActionButton(
           onPressed: () {
-            print("attemp to send notification");
             WebSocketService.instance.send(
                 "/app/travels/${widget.travel.id}/finish-confirmation", null // no body needed
             );
+            showToast(context: context, message: "Se le notificará al cliente que se ha alcanzado el destino del "
+                "viaje.");
           },
           child: Icon(Icons.done_outline),
-        ),
-        bottomSheet: DriverTripInfo(
+        ) : null,
+        bottomSheet: _isTravelCompleted ? DriverTripCompleted(
+          travel: widget.travel,
+          driver: _driver,
+          duration: _stopwatch?.elapsed.inMinutes ?? 0,
+          distance: _distanceInKm,
+          finalPrice: _finalPrice,
+          travelPriceByTaxiType: _travelPriceByTaxiType,
+        ) : DriverTripInfo(
           originName: widget.travel.originName,
           destinationName: widget.travel.destinationName,
           distance: _distanceInKm,
           taxiType: widget.travel.taxiType,
+          finalPrice: _finalPrice,
+          travelPriceByTaxiType: _travelPriceByTaxiType,
           onGuidedRouteSwitched: _onGuidedRouteSwitched,
-          onSearch: _onSearch
+          onSearch: _onSearch,
         )
     );
   }
