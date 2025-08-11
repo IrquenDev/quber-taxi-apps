@@ -427,8 +427,27 @@
       "nameAboutUs": "Quber",
       "phoneAboutUs": "+53 52417814",
       "copiedToClipboard": "Copiado al portapapeles",
+      "nameAboutDev": "Irquen",
+      "emailAboutDev": "qnecesitas.desarrollo@gmail.com",
+      "phoneAboutDev": "+5355759386",
+      "websiteAboutDev": "https://qnecesitas.nat.cu",
+      "nameAboutUs": "Quber",
+      "phoneAboutUs": "+53 52417814",
       "reviewSaveError": "No se pudo guardar tu valoración",
       "reviewThankYou": "Gracias por tu tiempo",
       "reviewsLoadError": "No se pudieron cargar las reseñas",
-      "dateFormat": "d 'de' MMMM 'de' y"
+      "dateFormat": "d 'de' MMMM 'de' y",
+
+  "finalizarViaje": "Finalizar viaje",
+  "verMiUbicacion": "Ver mi ubicación",
+  "confirmacionFinalizacion": "Confirmación de finalización",
+  "confirmacionFinalizacionMensaje": "Se le notificará inmediatamente al conductor que desea terminar el viaje. Acepte solo si esto es correcto.",
+
+  "destinationsLimited": "Los destinos están limitados a {destinationName}",
+  "placeNotFound": "Lugar no encontrado",
+  "showMyLocation": "Ver mi ubicación",
+  "finishTrip": "Finalizar viaje",
+
+  "confirmacionLlegadaDestino": "Confirmación de llegada al destino",
+  "confirmacionLlegadaDestinoMensaje": "El conductor ha notificado que se ha llegado al destino. Acepte solo si esto es correcto"
 }

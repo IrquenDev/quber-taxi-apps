@@ -2389,6 +2389,21 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'d \'de\' MMMM \'de\' y'**
   String get dateFormat;
+
+  /// **'Finalizar viaje'**
+  String get finishTrip;
+
+  /// No description provided for @confirmacionLlegadaDestino.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirmación de llegada al destino'**
+  String get confirmacionLlegadaDestino;
+
+  /// No description provided for @confirmacionLlegadaDestinoMensaje.
+  ///
+  /// In es, this message translates to:
+  /// **'El conductor ha notificado que se ha llegado al destino. Acepte solo si esto es correcto'**
+  String get confirmacionLlegadaDestinoMensaje;
 }
 
 class _AppLocalizationsDelegate

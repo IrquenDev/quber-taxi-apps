@@ -1240,6 +1240,14 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get copiedToClipboard => 'Copiado al portapapeles';
+  String get finishTrip => 'Finalizar viaje';
+
+  @override
+  String get confirmacionLlegadaDestino => 'Confirmación de llegada al destino';
+
+  @override
+  String get confirmacionLlegadaDestinoMensaje =>
+      'El conductor ha notificado que se ha llegado al destino. Acepte solo si esto es correcto';
 
   @override
   String get reviewSaveError => 'No se pudo guardar tu valoración';
