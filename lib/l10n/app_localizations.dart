@@ -2365,8 +2365,6 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Copiado al portapapeles'**
   String get copiedToClipboard;
-  /// **'Copiado al portapapeles'**
-  String get copiedToClipboard;
 
   /// No description provided for @reviewSaveError.
   ///
