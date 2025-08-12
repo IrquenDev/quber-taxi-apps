@@ -61,6 +61,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get map => 'Map';
 
   @override
+  String get select => 'Select';
+
+  @override
+  String get origin => 'Origin';
+
+  @override
+  String get destination => 'Destination';
+
+  @override
+  String get marker => 'Marker';
+
+  @override
   String get mapBottomItem => 'Map';
 
   @override
@@ -506,6 +518,39 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get driverPlate => 'License plate:';
+
+  @override
+  String get tripPriceLabel => 'Trip Price';
+
+  @override
+  String get tripDurationLabel => 'Time Elapsed';
+
+  @override
+  String get tripDistanceLabel => 'Distance Traveled';
+
+  @override
+  String get originLabel => 'Origin';
+
+  @override
+  String get destinationLabel => 'Destination';
+
+  @override
+  String get dateLabel => 'Date';
+
+  @override
+  String get quberCreditLabel => 'Credit for Quber';
+
+  @override
+  String get commentsLabel => 'comments';
+
+  @override
+  String get minutesLabel => 'minutes';
+
+  @override
+  String get kilometersLabel => 'km';
+
+  @override
+  String get currencyLabel => 'CUP';
 
   @override
   String get aboutDeveloperTitle => 'About Developer';
@@ -1068,6 +1113,104 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myMarkers => 'My Markers';
 
   @override
+  String get notAvailable => 'N/A';
+
+  @override
+  String get currency => 'CUP';
+
+  @override
+  String get kilometers => 'km';
+
+  @override
+  String get minutes => 'min';
+
+  @override
+  String get onboardingPage1Title => 'Ready to Travel?';
+
+  @override
+  String get onboardingPage1Subtitle =>
+      'Just by selecting the destination municipality';
+
+  @override
+  String get onboardingPage1Description =>
+      'you will be able to travel quickly and safely';
+
+  @override
+  String get onboardingPage2Title => 'But first';
+
+  @override
+  String get onboardingPage2Subtitle => 'How did you hear about us?';
+
+  @override
+  String get referralSourceFriend => 'From a friend';
+
+  @override
+  String get referralSourcePoster => 'From a poster';
+
+  @override
+  String get referralSourcePlayStore => 'From PlayStore';
+
+  @override
+  String get onboardingPage3Title => 'Do you have a referral code?';
+
+  @override
+  String get onboardingPage3Subtitle => 'Help your friend and earn benefits';
+
+  @override
+  String get onboardingPage3Description =>
+      'Enter a referral code so your friend gets a discount on their next trip. If you don\'t have one, you can continue.';
+
+  @override
+  String get onboardingPage3InputHint => 'Enter your referral code';
+
+  @override
+  String get onboardingPage4Title => 'How is the trip price calculated?';
+
+  @override
+  String get onboardingPage4Subtitle => 'Based on distance and destination';
+
+  @override
+  String get onboardingPage4Description =>
+      'The app will calculate and show the price in real time according to the distance traveled. So depending on the municipality you\'re going to, you\'ll be shown an estimated price range at the beginning. This allows you to make stops and visit multiple destinations with greater freedom.';
+
+  @override
+  String get onboardingPage5Title => 'Quber Points';
+
+  @override
+  String get onboardingPage5Subtitle => 'Travel and earn discounts';
+
+  @override
+  String get onboardingPage5Description =>
+      'Every time you take a trip or someone enters your referral code, you accumulate Quber Points. These points allow you to get discounts on future trips. Travel more and save more!';
+
+  @override
+  String get tripAccepted => 'Trip Accepted';
+
+  @override
+  String get tripAcceptedDescription =>
+      'A driver has accepted your request. You are now waiting for their arrival. You will be able to see their location in real time on the map. We will ask for your confirmation when they are ready to pick you up.';
+
+  @override
+  String get seeDriverLocation => 'See driver\'s location';
+
+  @override
+  String get noDriverLocation => 'Driver location not available yet';
+
+  @override
+  String get pickupConfirmationInfo =>
+      'We have sent a notification to the client. Once they accept, the trip will begin.';
+
+  @override
+  String get pickupConfirmationTitle => 'Pickup confirmation';
+
+  @override
+  String get pickupConfirmationMessage =>
+      'The driver has indicated that your pickup has been completed. Please confirm only if you are already with the driver; once confirmed, the trip will begin.';
+
+  @override
+  String get pickupConfirmationSentTitle => 'Confirmation sent';
+
+  @override
   String get nameAboutDev => 'Irquen';
 
   @override
@@ -1087,16 +1230,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get copiedToClipboard => 'Copied to clipboard';
+  String get finishTrip => 'Finish Trip';
 
   @override
-  String get notAvailable => 'N/A';
+  String get confirmacionLlegadaDestino => 'Destination Arrival Confirmation';
 
   @override
-  String get currency => 'CUP';
+  String get confirmacionLlegadaDestinoMensaje =>
+      'The driver has notified that the destination has been reached. Please accept only if this is correct.';
 
   @override
-  String get kilometers => 'km';
+  String get reviewSaveError => 'Could not save your review';
 
   @override
-  String get minutes => 'min';
+  String get reviewThankYou => 'Thank you for your time';
+
+  @override
+  String get reviewsLoadError => 'Could not load reviews';
+
+  @override
+  String get dateFormat => 'd \'of\' MMMM \'of\' y';
 }

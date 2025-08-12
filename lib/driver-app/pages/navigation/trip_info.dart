@@ -10,6 +10,8 @@ class DriverTripInfo extends StatefulWidget {
   final String originName;
   final String destinationName;
   final TaxiType taxiType;
+  final double finalPrice;
+  final double? travelPriceByTaxiType;
   final Future<bool> Function(String query) onSearch;
   final void Function(bool isEnabled) onGuidedRouteSwitched;
 
@@ -19,6 +21,8 @@ class DriverTripInfo extends StatefulWidget {
     required this.destinationName,
     required this.distance,
     required this.taxiType,
+    required this.finalPrice,
+    required this.travelPriceByTaxiType,
     required this.onSearch,
     required this.onGuidedRouteSwitched
   });
@@ -76,7 +80,10 @@ class _DriverTripInfoState extends State<DriverTripInfo> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('${(widget.distance.toStringAsFixed(0))} Km'),
-                            Text('${(widget.distance * 100).toStringAsFixed(0)} CUP')
+                            Text(widget.travelPriceByTaxiType != null
+                                ? '${widget.finalPrice.toStringAsFixed(0)} CUP'
+                                : '...'
+                            )
                           ]
                       )
                     )

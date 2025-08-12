@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/client-app/pages/navigation/trip_completed.dart';
@@ -14,11 +15,12 @@ import 'package:quber_taxi/client-app/pages/navigation/trip_info.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/utils/runtime.dart';
 import 'package:quber_taxi/utils/websocket/impl/finish_confirmation_handler.dart';
+import 'package:quber_taxi/enums/municipalities.dart';
+import 'package:quber_taxi/utils/map/turf.dart' as turf_util;
 import 'package:turf/distance.dart' as td;
 import 'package:turf/turf.dart' as turf;
 
 class ClientNavigation extends StatefulWidget {
-
   final Travel travel;
 
   const ClientNavigation({super.key, required this.travel});
@@ -28,13 +30,14 @@ class ClientNavigation extends StatefulWidget {
 }
 
 class _ClientNavigationState extends State<ClientNavigation> {
-
   // Map functionalities
   late final MapboxMap _mapController;
   late double _mapBearing;
+
   // Markers
   PointAnnotationManager? _pointAnnotationManager;
   PointAnnotation? _taxiMarker;
+
   // Real time distance calculation
   final List<turf.Position> _realTimeRoute = [];
   late final StreamSubscription<g.Position> _locationStream;
@@ -43,14 +46,16 @@ class _ClientNavigationState extends State<ClientNavigation> {
   late final FinishConfirmationHandler _confirmationHandler;
   final _travelService = TravelService();
   double? _travelPriceByTaxiType;
+
   double get _finalPrice => _finalDistance * _travelPriceByTaxiType!;
+
   int get _finalDuration => _stopwatch?.elapsed.inMinutes ?? 0;
   late final double _creditForQuber;
+  bool _isTravelCompleted = false;
 
   void _startTrackingDistance() {
-    _locationStream = g.Geolocator.getPositionStream(
-        locationSettings: g.LocationSettings(distanceFilter: 5)
-    ).listen(_onMove);
+    _locationStream =
+        g.Geolocator.getPositionStream(locationSettings: g.LocationSettings(distanceFilter: 5)).listen(_onMove);
   }
 
   void _onMove(g.Position newPosition) {
@@ -68,24 +73,21 @@ class _ClientNavigationState extends State<ClientNavigation> {
   }
 
   void _updateTaxiMarker(g.Position newPosition) async {
-    if(_pointAnnotationManager != null) {
+    if (_pointAnnotationManager != null) {
       final point = Point(coordinates: Position(newPosition.longitude, newPosition.latitude));
-      if(_taxiMarker == null) {
+      if (_taxiMarker == null) {
         // Display marker
         final taxiMarkerBytes = await rootBundle.load('assets/markers/taxi/taxi_pin_x172.png');
-        await _pointAnnotationManager!.create(PointAnnotationOptions(
-            geometry: point,
-            image: taxiMarkerBytes.buffer.asUint8List(),
-            iconAnchor: IconAnchor.BOTTOM
-        )).then((value) => _taxiMarker = value);
+        await _pointAnnotationManager!
+            .create(PointAnnotationOptions(
+                geometry: point, image: taxiMarkerBytes.buffer.asUint8List(), iconAnchor: IconAnchor.BOTTOM))
+            .then((value) => _taxiMarker = value);
       } else {
         // Update geometry point
         _taxiMarker!.geometry = point;
         // Update icon rotation (orientation)
         final bearing = mb_util.calculateBearing(
-            _realTimeRoute.last.lat, _realTimeRoute.last.lng,
-            newPosition.latitude, newPosition.longitude
-        );
+            _realTimeRoute.last.lat, _realTimeRoute.last.lng, newPosition.latitude, newPosition.longitude);
         final adjustedBearing = (bearing - _mapBearing + 360) % 360;
         _taxiMarker!.iconRotate = adjustedBearing;
         // Then update marker
@@ -106,21 +108,86 @@ class _ClientNavigationState extends State<ClientNavigation> {
     // Display origin marker
     final originMarkerBytes = await rootBundle.load('assets/markers/route/x120/origin.png');
     await _pointAnnotationManager!.create(PointAnnotationOptions(
-        geometry: Point(
-            coordinates: position
-        ),
+        geometry: Point(coordinates: position),
         image: originMarkerBytes.buffer.asUint8List(),
-        iconAnchor: IconAnchor.BOTTOM
-    ));
+        iconAnchor: IconAnchor.BOTTOM));
+
+    // Render destination: marker for exact point or polygon for municipality
+    try {
+      // Exact destination point
+      if (widget.travel.destinationCoords != null) {
+        final destinationMarkerBytes = await rootBundle.load('assets/markers/route/x120/destination.png');
+        final destinationCoords = Position(
+          widget.travel.destinationCoords![0],
+          widget.travel.destinationCoords![1],
+        );
+        await _pointAnnotationManager!.create(
+          PointAnnotationOptions(
+            geometry: Point(coordinates: destinationCoords),
+            image: destinationMarkerBytes.buffer.asUint8List(),
+            iconAnchor: IconAnchor.BOTTOM,
+          ),
+        );
+
+        // Fit camera to show both origin and destination
+        final bounds = mb_util.calculateBounds([position, destinationCoords]);
+        final cameraOptions = await _mapController.cameraForCoordinateBounds(
+          bounds,
+          MbxEdgeInsets(top: 50, bottom: 50, left: 50, right: 50),
+          0,
+          0,
+          null,
+          null,
+        );
+        _mapController.easeTo(cameraOptions, MapAnimationOptions(duration: 1000));
+      } else {
+        // Municipality polygon
+        final path = Municipalities.resolveGeoJsonRef(widget.travel.destinationName);
+        if (path != null) {
+          final polygon = await turf_util.GeoUtils.loadGeoJsonPolygon(path);
+          final geoJsonString = jsonEncode(polygon.toJson());
+          await _mapController.style.addSource(GeoJsonSource(
+            id: 'destination-municipality-polygon',
+            data: geoJsonString,
+          ));
+          await _mapController.style.addLayer(FillLayer(
+            id: 'destination-municipality-fill',
+            sourceId: 'destination-municipality-polygon',
+            fillColor: Theme.of(context).colorScheme.onTertiaryContainer.withValues(alpha: 0.5).value,
+            fillOutlineColor: Theme.of(context).colorScheme.tertiary.value,
+          ));
+
+          // Fit camera to include origin and polygon bounds
+          final polygonCoords = polygon.coordinates[0];
+          final List<Position> allCoords = [position];
+          for (final coord in polygonCoords) {
+            if (coord[0] != null && coord[1] != null) {
+              allCoords.add(Position(coord[0]!, coord[1]!));
+            }
+          }
+          final bounds = mb_util.calculateBounds(allCoords);
+          final cameraOptions = await _mapController.cameraForCoordinateBounds(
+            bounds,
+            MbxEdgeInsets(top: 50, bottom: 50, left: 50, right: 50),
+            0,
+            0,
+            null,
+            null,
+          );
+          _mapController.easeTo(cameraOptions, MapAnimationOptions(duration: 1000));
+        }
+      }
+    } catch (e) {
+      // In case of any error, keep map centered at origin silently
+      // print('Error rendering destination: $e');
+    }
   }
 
   void _onCameraChangeListener(CameraChangedEventData camera) {
     _mapBearing = camera.cameraState.bearing;
-    if(_taxiMarker != null) {
-      final bearing = mb_util.calculateBearing(
-          _realTimeRoute.last.lat, _realTimeRoute.last.lng,
-          _realTimeRoute[_realTimeRoute.length -1].lat, _realTimeRoute[_realTimeRoute.length -1].lng
-      );
+    if (_taxiMarker != null) {
+      final bearing = mb_util.calculateBearing(_realTimeRoute.last.lat, _realTimeRoute.last.lng,
+          _realTimeRoute[_realTimeRoute.length - 1].lat, _realTimeRoute[_realTimeRoute.length - 1].lng);
       final adjustedBearing = (bearing - _mapBearing + 360) % 360;
       _taxiMarker!.iconRotate = adjustedBearing;
       _pointAnnotationManager!.update(_taxiMarker!);
@@ -128,7 +195,6 @@ class _ClientNavigationState extends State<ClientNavigation> {
   }
 
   void _markTravelAsCompleted() async {
-
     final response = await _travelService.markAsCompleted(
       travelId: widget.travel.id,
       finalDistance: _finalDistance.toInt(),
@@ -136,22 +202,11 @@ class _ClientNavigationState extends State<ClientNavigation> {
       finalPrice: _finalPrice,
       quberCredit: (_finalPrice * _creditForQuber) / 100,
     );
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       _stopwatch?.stop();
-      if(!mounted) return;
-      showModalBottomSheet(
-          context: context,
-          backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-          isDismissible: false,
-          isScrollControlled: true,
-          showDragHandle: true,
-          builder: (context) => ClientTripCompleted(
-            travel: widget.travel,
-            duration: _finalDuration,
-            distance: _finalDistance.toInt(),
-            travelPriceByTaxiType: _travelPriceByTaxiType!,
-          )
-      );
+      setState(() {
+        _isTravelCompleted = true;
+      });
     }
   }
 
@@ -170,18 +225,15 @@ class _ClientNavigationState extends State<ClientNavigation> {
           final result = await showDialog<bool>(
               context: context,
               barrierDismissible: false,
-              builder: (context) =>
-              const ConfirmDialog(
+              builder: (context) => const ConfirmDialog(
                   title: 'Confirmación de finalización',
-                  message: "El conductor ha notificado que se ha llegado al destino. Acepte solo si esto es correcto"
-              )
-          );
+                  message: "El conductor ha notificado que se ha llegado al destino. Acepte solo si esto es correcto"));
           // Handle result
-          if(result == true) {
+          if (result == true) {
             _markTravelAsCompleted();
           }
-        }
-    )..activate();
+        })
+      ..activate();
     _realTimeRoute.add(turf.Position(widget.travel.originCoords[0], widget.travel.originCoords[1]));
     _startTrackingDistance();
   }
@@ -203,44 +255,110 @@ class _ClientNavigationState extends State<ClientNavigation> {
       zoom: 17,
     );
     return NetworkAlertTemplate(
-      alertBuilder: (_, status) => CustomNetworkAlert(status: status, useTopSafeArea: true),
-      alertPosition: Alignment.topCenter,
-      child: Scaffold(
-        resizeToAvoidBottomInset: true,
-        extendBody: true,
-        body: MapWidget(
-          styleUri: MapboxStyles.STANDARD,
-          cameraOptions: cameraOptions,
-          onMapCreated: _onMapCreated,
-          onCameraChangeListener: _onCameraChangeListener,
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: hasConnection(context) ? () async {
-            // Confirmation dialog
-            final result = await showDialog<bool>(
-                context: context,
-                barrierDismissible: false,
-                builder: (context) => const ConfirmDialog(
-                    title: 'Confirmación de finalización',
-                    message: "Se le notificará inmediatamente al conductor que desea terminar el viaje. Acepte solo "
-                        "si esto es correcto."
-                )
-            );
-            // Handle result
-            if(result == true) {
-              _markTravelAsCompleted();
-            }
-          } : null,
-          child: Icon(Icons.done_outline)
-        ),
-        bottomSheet: ClientTripInfo(
-          distance: _finalDistance.toInt(),
-          travelPriceByTaxiType: _travelPriceByTaxiType,
-          originName: widget.travel.originName,
-          destinationName: widget.travel.destinationName,
-          taxiType: widget.travel.taxiType
-        )
-      )
-    );
+        alertBuilder: (_, status) => CustomNetworkAlert(status: status, useTopSafeArea: true),
+        alertPosition: Alignment.topCenter,
+        child: Scaffold(
+            resizeToAvoidBottomInset: true,
+            extendBody: true,
+            body: Stack(
+              children: [
+                MapWidget(
+                  styleUri: MapboxStyles.STANDARD,
+                  cameraOptions: cameraOptions,
+                  onMapCreated: _onMapCreated,
+                  onCameraChangeListener: _onCameraChangeListener,
+                ),
+                Positioned(
+                  top: MediaQuery.of(context).padding.top + 16,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 4,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: IconButton(
+                            onPressed: () async {
+                              final position = await g.Geolocator.getCurrentPosition();
+                              _mapController.easeTo(
+                                CameraOptions(
+                                  center: Point(
+                                    coordinates: Position(position.longitude, position.latitude),
+                                  ),
+                                  zoom: 17,
+                                ),
+                                MapAnimationOptions(duration: 1000),
+                              );
+                            },
+                            icon: Icon(Icons.my_location, color: Theme.of(context).colorScheme.primary),
+                            tooltip: 'Ver mi ubicación',
+                          ),
+                        ),
+                        SizedBox(width: 12),
+                        if (!_isTravelCompleted)
+                          ElevatedButton.icon(
+                            onPressed: hasConnection(context)
+                                ? () async {
+                                    // Confirmation dialog
+                                    final result = await showDialog<bool>(
+                                        context: context,
+                                        barrierDismissible: false,
+                                        builder: (context) => const ConfirmDialog(
+                                            title: 'Confirmación de finalización',
+                                            message:
+                                                "Se le notificará inmediatamente al conductor que desea terminar el viaje. Acepte solo "
+                                                "si esto es correcto."));
+                                    if (result == true) {
+                                      _markTravelAsCompleted();
+                                    }
+                                  }
+                                : null,
+                            icon: Icon(Icons.done_outline, color: Colors.white),
+                            label: Text(
+                              'Finalizar viaje',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Theme.of(context).colorScheme.primary,
+                              foregroundColor: Colors.white,
+                              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              elevation: 4,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            bottomSheet: _isTravelCompleted
+                ? ClientTripCompleted(
+                    travel: widget.travel,
+                    duration: _finalDuration,
+                    distance: _finalDistance.toInt(),
+                    travelPriceByTaxiType: _travelPriceByTaxiType!)
+                : ClientTripInfo(
+                    distance: _finalDistance.toInt(),
+                    travelPriceByTaxiType: _travelPriceByTaxiType,
+                    originName: widget.travel.originName,
+                    destinationName: widget.travel.destinationName,
+                    taxiType: widget.travel.taxiType)));
   }
 }

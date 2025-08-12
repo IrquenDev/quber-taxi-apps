@@ -1,13 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
 import 'package:geolocator/geolocator.dart' as g;
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/common/models/driver.dart';
@@ -28,7 +26,7 @@ import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/common_routes.dart';
 import 'package:quber_taxi/navigation/routes/driver_routes.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
-import 'package:quber_taxi/storage/session_manger.dart';
+import 'package:quber_taxi/storage/session_prefs_manger.dart';
 import 'package:quber_taxi/utils/map/geolocator.dart' as g_util;
 import 'package:quber_taxi/utils/map/mapbox.dart' as mb_util;
 import 'package:quber_taxi/utils/map/turf.dart' as turf_util;
@@ -85,6 +83,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
   late Position _coords;
   late Position _lastKnownCoords;
   bool _isLocationStreaming = false;
+  bool _isStartingLocationStream = false;
 
   // Selected travel. If not null, we should hide the available travel sheet.
   Travel? _selectedTravel;
@@ -122,7 +121,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
       context: context,
       onPermissionGranted: () async {
         // Start streaming location automatically
-        if (!_isLocationStreaming) _startStreamingLocation();
+        if (!_isLocationStreaming) await _startStreamingLocation();
       },
       onPermissionDenied: () {
         // Permission denied, but don't show error - user can still use the button
@@ -168,11 +167,11 @@ class _DriverHomePageState extends State<DriverHomePage> {
     if (response.statusCode == 200) {
       _driver = Driver.fromJson(jsonDecode(response.body));
       // Always update session
-      await SessionManager.instance.save(_driver);
+      await SessionPrefsManager.instance.save(_driver);
       // Show payment reminder (if applies)
-      if(_driver.credit > 0.0 && _driver.paymentDate != null) {
-      await _showPaymentReminder();
-      }
+      // if(_driver.credit > 0.0 && _driver.paymentDate != null) {
+      //   await _showPaymentReminder();
+      // }
       switch (_driver.accountState) {
         case DriverAccountState.notConfirmed: await _showNeedsConfirmationDialog();
         case DriverAccountState.canPay: setState(() => _isAccountEnabled = true);
@@ -209,125 +208,130 @@ class _DriverHomePageState extends State<DriverHomePage> {
     );
   }
 
-  Future<void> _showPaymentReminder() async {
-    final localizations = AppLocalizations.of(context)!;
-    final now = DateTime.now();
-    final paymentDate = _driver.paymentDate!;
-    final today = DateTime(now.year, now.month, now.day);
-    final paymentDay = DateTime(paymentDate.year, paymentDate.month, paymentDate.day);
-    final difference = paymentDay.difference(today).inDays;
-    final formattedPaymentDate = DateFormat("dd-MM-yyyy").format(paymentDate);
-    final bool isPaymentSoon = difference > 0 && difference <= 3;
-    final isSameDay = paymentDate.year == now.year && paymentDate.month == now.month && paymentDate.day == now.day;
+  // Future<void> _showPaymentReminder() async {
+  //   final localizations = AppLocalizations.of(context)!;
+  //   final now = DateTime.now();
+  //   final paymentDate = _driver.paymentDate!;
+  //   final today = DateTime(now.year, now.month, now.day);
+  //   final paymentDay = DateTime(paymentDate.year, paymentDate.month, paymentDate.day);
+  //   final difference = paymentDay.difference(today).inDays;
+  //   final formattedPaymentDate = DateFormat("dd-MM-yyyy").format(paymentDate);
+  //   final bool isPaymentSoon = difference > 0 && difference <= 3;
+  //   final isSameDay = paymentDate.year == now.year && paymentDate.month == now.month && paymentDate.day == now.day;
+  //
+  //   String title;
+  //   String dynamicMessage;
+  //
+  //   // ---- Payment Soon ----
+  //   if (isPaymentSoon) {
+  //     String remainingTimeText;
+  //     if (difference == 3) {
+  //       remainingTimeText = localizations.inThreeDays;
+  //     } else if (difference == 2) {
+  //       remainingTimeText = localizations.dayAfterTomorrow;
+  //     }
+  //     else {
+  //       remainingTimeText = localizations.tomorrow;
+  //     }
+  //     title = localizations.paymentSoon;
+  //     dynamicMessage = localizations.paymentReminderSoon(remainingTimeText);
+  //
+  //     // ---- Same Day ----
+  //   } else if (isSameDay) {
+  //     title = localizations.paymentPending;
+  //     dynamicMessage = localizations.paymentReminderToday;
+  //
+  //     // ---- The Payment Date Has Already Passed ----
+  //   } else if (!today.isBefore(paymentDay)) {
+  //     final daysSince = today.difference(paymentDay).inDays;
+  //     // Before four days
+  //     if (daysSince < 3) {
+  //       int daysLeft = 3 - daysSince;
+  //       String daysText = daysLeft == 1 ? localizations.day : localizations.days;
+  //       dynamicMessage = localizations.paymentOverdue(formattedPaymentDate, daysLeft.toString(), daysText);
+  //       // Last Day
+  //     } else if(daysSince == 3) {
+  //       dynamicMessage = localizations.paymentLastDay(formattedPaymentDate);
+  //     }
+  //     // Deadline Expired
+  //     else {
+  //       dynamicMessage = localizations.paymentExpired(formattedPaymentDate);
+  //     }
+  //     title = localizations.paymentPending;
+  //
+  //     // ---- No Condition Applies, We Don't Show Anything ----
+  //   } else {return;}
+  //
+  //   await showDialog(
+  //     context: context,
+  //     barrierDismissible: false,
+  //     builder: (_) => InfoDialog(
+  //       title: title,
+  //       bodyMessage: "$dynamicMessage${localizations.paymentOfficeInfo}",
+  //       footerMessage: localizations.thanksForAttention,
+  //     ),
+  //   );
+  // }
 
-    String title;
-    String dynamicMessage;
-
-    // ---- Payment Soon ----
-    if (isPaymentSoon) {
-      String remainingTimeText;
-      if (difference == 3) {
-        remainingTimeText = localizations.inThreeDays;
-      } else if (difference == 2) {
-        remainingTimeText = localizations.dayAfterTomorrow;
+  Future<void> _startStreamingLocation() async {
+    // Prevent concurrent starts that can create duplicate markers
+    if (_isLocationStreaming || _isStartingLocationStream) return;
+    _isStartingLocationStream = true;
+    
+    try {
+      // Clear any existing driver marker reference to prevent duplicates
+      if (_driverAnnotation != null) {
+        await _pointAnnotationManager?.delete(_driverAnnotation!);
+        _driverAnnotation = null;
       }
-      else {
-        remainingTimeText = localizations.tomorrow;
-      }
-      title = localizations.paymentSoon;
-      dynamicMessage = localizations.paymentReminderSoon(remainingTimeText);
 
-      // ---- Same Day ----
-    } else if (isSameDay) {
-      title = localizations.paymentPending;
-      dynamicMessage = localizations.paymentReminderToday;
-
-      // ---- The Payment Date Has Already Passed ----
-    } else if (!today.isBefore(paymentDay)) {
-      final daysSince = today.difference(paymentDay).inDays;
-      // Before four days
-      if (daysSince < 3) {
-        int daysLeft = 3 - daysSince;
-        String daysText = daysLeft == 1 ? localizations.day : localizations.days;
-        dynamicMessage = localizations.paymentOverdue(formattedPaymentDate, daysLeft.toString(), daysText);
-        // Last Day
-      } else if(daysSince == 3) {
-        dynamicMessage = localizations.paymentLastDay(formattedPaymentDate);
-      }
-      // Deadline Expired
-      else {
-        dynamicMessage = localizations.paymentExpired(formattedPaymentDate);
-      }
-      title = localizations.paymentPending;
-
-      // ---- No Condition Applies, We Don't Show Anything ----
-    } else {return;}
-
-    await showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => InfoDialog(
-        title: title,
-        bodyMessage: "$dynamicMessage${localizations.paymentOfficeInfo}",
-        footerMessage: localizations.thanksForAttention,
-      ),
-    );
-  }
-
-  void _startStreamingLocation() async {
-    // If already streaming, don't create duplicate markers
-    if (_isLocationStreaming) return;
-    
-    // Clear any existing driver markers to prevent duplicates
-    if (_driverAnnotation != null) {
-      await _pointAnnotationManager?.delete(_driverAnnotation!);
-      _driverAnnotation = null;
-    }
-    
-    // Get current position
-    final position = await g.Geolocator.getCurrentPosition();
-    final coords = Position(position.longitude, position.latitude);
-    // Update class's field coord references
-    _coords = coords;
-    _lastKnownCoords = coords;
-    
-    // Cancel existing subscription to avoid duplicates
-    _locationStreamSubscription?.cancel();
-    
-    // Only create marker if we don't have one yet
-    if (_driverAnnotation == null) {
-      // Add driver marker to map
-      _driverAnnotation = await _pointAnnotationManager?.create(
-        PointAnnotationOptions(
-          geometry: Point(coordinates: coords),
-          image: _driverMarkerImage,
-          iconAnchor: IconAnchor.CENTER,
-        ),
-      );
-    } else {
-      // Update existing marker position
-      _driverAnnotation!.geometry = Point(coordinates: coords);
-      _pointAnnotationManager?.update(_driverAnnotation!);
-    }
-    
-    // Listen for real location updates
-    _locationStreamSubscription = _locationBroadcast.listen((position) async {
-      // Update coords
+      // Get current position
+      final position = await g.Geolocator.getCurrentPosition();
       final coords = Position(position.longitude, position.latitude);
-      _lastKnownCoords = _coords;
+      // Update class's field coord references
       _coords = coords;
-      // Adjust bearing
-      final bearing = mb_util.calculateBearing(
-          _lastKnownCoords.lat, _lastKnownCoords.lng,
-          coords.lat, coords.lng
-      );
-      final adjustedBearing = (bearing - _mapBearing + 360) % 360;
-      _driverAnnotation!.iconRotate = adjustedBearing;
-      _driverAnnotation!.geometry = Point(coordinates: coords);
-      _pointAnnotationManager?.update(_driverAnnotation!);
-    });
-    
-    _isLocationStreaming = true;
+      _lastKnownCoords = coords;
+
+      // Cancel existing subscription to avoid duplicates
+      await _locationStreamSubscription?.cancel();
+
+      // Only create marker if we don't have one yet
+      if (_driverAnnotation == null) {
+        // Add driver marker to map
+        _driverAnnotation = await _pointAnnotationManager?.create(
+          PointAnnotationOptions(
+            geometry: Point(coordinates: coords),
+            image: _driverMarkerImage,
+            iconAnchor: IconAnchor.CENTER,
+          ),
+        );
+      } else {
+        // Update existing marker position
+        _driverAnnotation!.geometry = Point(coordinates: coords);
+        _pointAnnotationManager?.update(_driverAnnotation!);
+      }
+
+      // Listen for real location updates
+      _locationStreamSubscription = _locationBroadcast.listen((position) async {
+        // Update coords
+        final coords = Position(position.longitude, position.latitude);
+        _lastKnownCoords = _coords;
+        _coords = coords;
+        // Adjust bearing
+        final bearing = mb_util.calculateBearing(
+            _lastKnownCoords.lat, _lastKnownCoords.lng,
+            coords.lat, coords.lng
+        );
+        final adjustedBearing = (bearing - _mapBearing + 360) % 360;
+        _driverAnnotation!.iconRotate = adjustedBearing;
+        _driverAnnotation!.geometry = Point(coordinates: coords);
+        _pointAnnotationManager?.update(_driverAnnotation!);
+      });
+
+      _isLocationStreaming = true;
+    } finally {
+      _isStartingLocationStream = false;
+    }
   }
 
   void _startSharingLocation() {
@@ -336,7 +340,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
         "/app/drivers/${_driver.id}/location",
         {"longitude": position.longitude, "latitude": position.latitude},
       );
-      if(!_isLocationStreaming) _startStreamingLocation();
+      if(!_isLocationStreaming) await _startStreamingLocation();
     });
   }
 
@@ -409,8 +413,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
       }
       return;
     }
-    
     final response = await _driverService.acceptTravel(driverId: _driver.id, travelId: travel.id);
+    if(!mounted) return;
     if(response.statusCode == 200) {
       // Load marker images
       final originAssetBytes = await rootBundle.load('assets/markers/route/x120/origin.png');
@@ -524,10 +528,16 @@ class _DriverHomePageState extends State<DriverHomePage> {
       
       _startSharingLocation();
       setState(() => _selectedTravel = travel);
-    } else {
-      if(mounted) {
-        showToast(context: context, message: AppLocalizations.of(context)!.noAssignedTrip);
-      }
+    }
+    else if(response.statusCode == 403) {
+      showToast(context: context, message: "Permiso denegado");
+    }
+
+    else if(response.statusCode == 409) {
+      showToast(context: context, message: "Crédito Insuficiente");
+    }
+    else {
+      showToast(context: context, message: AppLocalizations.of(context)!.noAssignedTrip);
     }
   }
 
@@ -596,8 +606,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
       ),
     );
   }
-
-
 
   void _onNewTravel(Travel travel) {
     final travelNotification = TravelNotification(travel);
@@ -723,7 +731,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
                 final assetBytesB = await rootBundle.load('assets/markers/taxi/pin_mototaxix172.png');
                 final iconA = assetBytesA.buffer.asUint8List();
                 final iconB = assetBytesB.buffer.asUint8List();
-                _driverMarkerImage = assetBytesA.buffer.asUint8List();
+                // Driver's own marker should use taxi_hdpi
+                final driverAssetBytes = await rootBundle.load('assets/markers/taxi/taxi_hdpi.png');
+                _driverMarkerImage = driverAssetBytes.buffer.asUint8List();
                 // Add Fake Drivers Animation.
                 // FDA is too heavy for the emulator.
                 // As it is a requirement of the app, it will be enabled by default.
@@ -807,7 +817,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
                             context: context,
                             onPermissionGranted: () async {
                               // Start streaming location
-                              if(!_isLocationStreaming) _startStreamingLocation();
+                              if(!_isLocationStreaming) await _startStreamingLocation();
+                              // If still not streaming (e.g., error getting position), do nothing
+                              if(!_isLocationStreaming) return;
                               // Ease to current position (Whether the location is being streaming)
                               _mapController.easeTo(
                                   CameraOptions(center: Point(coordinates: _coords)),
@@ -861,7 +873,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
                         context: context,
                         onPermissionGranted: () async {
                           // Start streaming location
-                          if(!_isLocationStreaming) _startStreamingLocation();
+                          if(!_isLocationStreaming) await _startStreamingLocation();
+                          // If still not streaming (e.g., error getting position), do nothing
+                          if(!_isLocationStreaming) return;
                           // Ease to current position (Whether the location is being streaming)
                           _mapController.easeTo(
                               CameraOptions(center: Point(coordinates: _coords)),
@@ -1048,7 +1062,19 @@ class _DriverHomePageState extends State<DriverHomePage> {
                             onPickUpConfirmationRequest: () async {
                               // Clear municipality polygon when starting the trip
                               await _clearMunicipalityPolygon();
-                              
+
+                              // Notify driver about pickup confirmation flow
+                              if (mounted) {
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder: (_) => InfoDialog(
+                                    title: AppLocalizations.of(context)!.pickupConfirmationSentTitle,
+                                    bodyMessage: AppLocalizations.of(context)!.pickupConfirmationInfo,
+                                  ),
+                                );
+                              }
+
                               _travelStateHandler = TravelStateHandler(
                                 state: TravelState.inProgress,
                                 travelId: _selectedTravel!.id,

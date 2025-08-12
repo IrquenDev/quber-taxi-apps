@@ -9,9 +9,9 @@ class Driver implements Encodable {
   final int id;
   final String name;
   final String phone;
-  final bool isAvailable;
+  // final bool isAvailable;
   final double credit;
-  final DateTime? paymentDate;
+  // final DateTime? paymentDate;
   final double rating;
   final Taxi taxi;
   final DriverAccountState accountState;
@@ -20,9 +20,9 @@ class Driver implements Encodable {
     required this.id,
     required this.name,
     required this.phone,
-    required this.isAvailable,
+    // required this.isAvailable,
     required this.credit,
-    required this.paymentDate,
+    // required this.paymentDate,
     required this.rating,
     required this.taxi,
     required this.accountState
@@ -34,9 +34,9 @@ class Driver implements Encodable {
       id: json['id'],
       name: json['name'],
       phone: json['phone'],
-      isAvailable: json['available'],
+      // isAvailable: json['available'],
       credit: (json['credit']),
-      paymentDate: json['paymentDate'] != null ?DateTime.parse(json['paymentDate']) : null,
+      // paymentDate: json['paymentDate'] != null ?DateTime.parse(json['paymentDate']) : null,
       rating: (json['rating']),
       taxi: Taxi.fromJson(json['taxi']),
       accountState: DriverAccountState.resolve(json['accountState'] ?? "")
@@ -48,9 +48,9 @@ class Driver implements Encodable {
     "id": id,
     "name": name,
     "phone": phone,
-    "available": isAvailable,
+    // "available": isAvailable,
     "credit": credit,
-    "paymentDate": paymentDate?.toIso8601String(),
+    // "paymentDate": paymentDate?.toIso8601String(),
     "rating": rating,
     "taxi": taxi.toJson(),
     "accountState": accountState.apiValue

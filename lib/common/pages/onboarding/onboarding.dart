@@ -1,238 +1,239 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
+import 'package:quber_taxi/enums/referral_source.dart';
+import 'package:quber_taxi/l10n/app_localizations.dart';
+import 'package:quber_taxi/navigation/routes/common_routes.dart';
+import 'package:quber_taxi/storage/onboarding_prefs_manager.dart';
 
-class OnboardingScreen extends StatefulWidget {
-  const OnboardingScreen({super.key});
+class OnboardingPage extends StatefulWidget {
+  const OnboardingPage({super.key});
 
   @override
-  State<OnboardingScreen> createState() => _OnboardingScreenState();
+  State<OnboardingPage> createState() => _OnboardingPageState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen> {
-  final PageController _pageController = PageController();
-  int _currentPage = 0;
+class _OnboardingPageState extends State<OnboardingPage> {
 
-  final List<Map<String, dynamic>> _pages = [
+  final PageController _pageController = PageController();
+  final _animationDuration = const Duration(milliseconds: 300);
+  final _animationCurve = Curves.easeInOut;
+  int _currentPage = 0;
+  final Map<String, String> _onboardingData = {};
+  ReferralSource? _selectedRefSrc;
+
+  List<Map<String, dynamic>> _getLocalizedPages(AppLocalizations localizations) => [
     {
       'image': 'assets/images/client_map_curve.png',
-      'title': '¿Listo para Viajar?',
-      'subtitle': 'Con solo seleccionar el municipio de destino',
-      'description': 'podrá viajar de forma rápida y segura',
-      'topFactor': 0.65,
+      'title': localizations.onboardingPage1Title,
+      'subtitle': localizations.onboardingPage1Subtitle,
+      'description': localizations.onboardingPage1Description
     },
     {
       'image': 'assets/images/friends_phone_curve1.png',
-      'title': 'Pero primero',
-      'subtitle': '¿Cómo supo de nosotros?',
-      'options': ['Por un amigo', 'Por un cartel', 'Por PlayStore'],
-      'topFactor': 0.60,
+      'title': localizations.onboardingPage2Title,
+      'subtitle': localizations.onboardingPage2Subtitle,
+      'referral_source_options': ReferralSource.values
     },
     {
       'image': 'assets/images/friends_phone_curve2.png',
-      'title': '¿Tienes un código de referido?',
-      'subtitle': 'Ayuda a tu amigo y gana beneficios',
-      'description':
-      'Introduce un código de referido para que tu amigo obtenga un descuento en su próximo viaje. Si no dispones de uno, puedes continuar.',
-      'inputHint': 'Introduzca su Código de referido',
-      'topFactor': 0.55,
+      'title': localizations.onboardingPage3Title,
+      'subtitle': localizations.onboardingPage3Subtitle,
+      'description': localizations.onboardingPage3Description,
+      'inputHint': localizations.onboardingPage3InputHint
     },
     {
       'image': 'assets/images/trip_price_curve.png',
-      'title': '¿Cómo se calcula el precio del viaje?',
-      'subtitle': 'Basado en la distancia y el destino',
-      'description':
-      'La aplicación irá calculando y mostrando el precio en tiempo real según la distancia que se va recorriendo. Así dependiendo del municipio al que te dirijas, se te mostrará al inicio un rango estimado de precio. Esto te permite hacer paradas y visitar múltiples destinos con mayor libertad.',
-      'topFactor': 0.50,
+      'title': localizations.onboardingPage4Title,
+      'subtitle': localizations.onboardingPage4Subtitle,
+      'description': localizations.onboardingPage4Description
     },
     {
       'image': 'assets/images/quber_points_curve.png',
-      'title': 'Puntos Quber',
-      'subtitle': 'Viaja y gana descuentos',
-      'description':
-      'Cada vez que realizas un viaje o alguien introduce tu código de referido, acumulas Puntos Quber. Estos puntos te permiten obtener descuentos en futuros viajes. ¡Viaja más y ahorra más!',
-      'topFactor': 0.60,
-    },
+      'title': localizations.onboardingPage5Title,
+      'subtitle': localizations.onboardingPage5Subtitle,
+      'description': localizations.onboardingPage5Description
+    }
   ];
 
-  void _nextPage() {
-    if (_currentPage < _pages.length - 1) {
-      _pageController.nextPage(
-          duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+  void _prevPage() {
+    FocusScope.of(context).unfocus();
+    if (_currentPage > 0) {
+      _pageController.previousPage(
+          duration: _animationDuration, curve: _animationCurve);
     }
   }
 
-  void _prevPage() {
-    if (_currentPage > 0) {
-      _pageController.previousPage(
-          duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+  void _nextPage(int length) async {
+    FocusScope.of(context).unfocus();
+    if (_currentPage < length - 1) {
+      _pageController.nextPage(duration: _animationDuration, curve: _animationCurve);
+    } else {
+      final success = await OnboardingPrefsManager.instance.saveData(_onboardingData);
+      if(!mounted) return;
+      if(success) {
+        if (kDebugMode) {
+          print('ONBOARDING SAVED DATA: ${OnboardingPrefsManager.instance.getOnboardingData()}');
+        }
+        context.go(CommonRoutes.login);
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+
     final colorScheme = Theme.of(context).colorScheme;
-    final screenHeight = MediaQuery.of(context).size.height;
+    AppLocalizations localizations = AppLocalizations.of(context)!;
+    final pages = _getLocalizedPages(localizations);
 
     return Scaffold(
-      body: Stack(
-        children: [
-          PageView.builder(
-            controller: _pageController,
-            onPageChanged: (index) => setState(() => _currentPage = index),
-            itemCount: _pages.length,
-            itemBuilder: (context, index) {
-              final page = _pages[index];
-              final double topPadding =
-                  screenHeight * (page['topFactor'] ?? 0.5);
-
-              return Stack(
-                fit: StackFit.expand,
+        body: ColoredBox(
+            color: Colors.white,
+            child: Column(
                 children: [
-                  Image.asset(
-                    page['image'],
-                    fit: BoxFit.cover,
+                  // Page View
+                  Expanded(
+                      child: PageView.builder(
+                          controller: _pageController,
+                          onPageChanged: (index) => setState(() => _currentPage = index),
+                          itemCount: pages.length,
+                          itemBuilder: (context, index) => _buildPageView(pages[index], colorScheme, localizations)
+                      )
                   ),
-                  Column(
-                    children: [
-                      SizedBox(height: topPadding),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 16),
-                        width: double.infinity,
-                        color: colorScheme.surfaceContainerLowest,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            if (page['title'] != null)
-                              Text(
-                                page['title'],
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleLarge
-                                    ?.copyWith(fontWeight: FontWeight.bold),
-                              ),
-                            if (page['subtitle'] != null)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 8),
-                                child: Text(
-                                  page['subtitle'],
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium
-                                      ?.copyWith(
-                                    color: colorScheme.primaryContainer,
-                                    fontWeight: FontWeight.bold,
+                  // Controls
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        // Page Back
+                        if (_currentPage > 0)
+                          GestureDetector(
+                            onTap: _prevPage,
+                            child: CircleAvatar(
+                              radius: 22,
+                              backgroundColor: colorScheme.primaryContainer,
+                              child: Icon(Icons.arrow_back, color: colorScheme.secondary),
+                            ),
+                          )
+                        else const SizedBox(width: 44),
+                        // Dots Indicators
+                        Row(
+                          children: List.generate(
+                            pages.length,
+                                (dotIndex) => Container(
+                                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                                  width: 10,
+                                  height: 10,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: dotIndex == _currentPage
+                                        ? colorScheme.primaryContainer
+                                        : colorScheme.primaryContainer.withAlpha(75),
                                   ),
                                 ),
-                              ),
-                            if (page['description'] != null)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 8),
-                                child: Text(
-                                  page['description'],
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context).textTheme.bodyMedium,
-                                ),
-                              ),
-                            if (page['options'] != null)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 16),
-                                child: Column(
-                                  children: (page['options'] as List<String>)
-                                      .map((opt) {
-                                    return Padding(
-                                      padding:
-                                      const EdgeInsets.symmetric(vertical: 4),
-                                      child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: colorScheme
-                                              .surfaceContainerLowest,
-                                          foregroundColor:
-                                          colorScheme.onSurface,
-                                          minimumSize:
-                                          const Size.fromHeight(45),
-                                        ),
-                                        onPressed: () {},
-                                        child: Text(opt),
-                                      ),
-                                    );
-                                  }).toList(),
-                                ),
-                              ),
-                            if (page['inputHint'] != null)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 16),
-                                child: TextField(
-                                  decoration: InputDecoration(
-                                    hintText: page['inputHint'],
-                                    fillColor:
-                                    colorScheme.surfaceContainerLowest,
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ],
+                        // Next Page
+                        GestureDetector(
+                          onTap: () => _nextPage(pages.length),
+                          child: CircleAvatar(
+                            radius: 22,
+                            backgroundColor: colorScheme.primaryContainer,
+                            child: Icon(Icons.arrow_forward, color: colorScheme.secondary),
+                          )
+                        )
+                      ]
+                    )
                   )
-                ],
-              );
-            },
-          ),
+                ]
+            )
+        )
+    );
+  }
 
-          Positioned(
-            bottom: 20,
-            left: 0,
-            right: 0,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                if (_currentPage > 0)
-                  GestureDetector(
-                    onTap: _prevPage,
-                    child: CircleAvatar(
-                      radius: 22,
-                      backgroundColor: colorScheme.primaryContainer,
-                      child: Icon(Icons.arrow_back, color: colorScheme.secondary),
-                    ),
+  Widget _buildPageView (dynamic page, ColorScheme colorScheme, AppLocalizations localizations) {
+    final textTheme = Theme.of(context).textTheme;
+    return Column(
+        children: [
+          // Image
+          Expanded(
+              child: SizedBox(
+                  width: double.infinity,
+                  child: ColoredBox(
+                      color: colorScheme.surface,
+                      child: Image.asset(page['image'], fit: BoxFit.fill)
                   )
-                else
-                  const SizedBox(width: 44),
-
-                Row(
-                  children: List.generate(
-                    _pages.length,
-                        (dotIndex) => Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
-                      width: 10,
-                      height: 10,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: dotIndex == _currentPage
-                            ? colorScheme.primaryContainer
-                            : colorScheme.primaryContainer.withOpacity(0.3),
-                      ),
-                    ),
-                  ),
-                ),
-
-                GestureDetector(
-                  onTap: _nextPage,
-                  child: CircleAvatar(
-                    radius: 22,
-                    backgroundColor: colorScheme.primaryContainer,
-                    child: Icon(Icons.arrow_forward, color: colorScheme.secondary),
-                  ),
-                ),
-              ],
-            ),
+              )
           ),
-        ],
-      ),
+          // Data
+          Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                  spacing: 8.0,
+                  children: [
+                    if (page['title'] != null)
+                      Text(
+                          page['title'],
+                          style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)
+                      ),
+                    if (page['subtitle'] != null)
+                      Text(
+                          page['subtitle'],
+                          style: textTheme.bodyLarge?.copyWith(
+                              color: colorScheme.primaryContainer, fontWeight: FontWeight.bold
+                          )
+                      ),
+                    if (page['description'] != null)
+                      Text(page['description']),
+                    if (page['referral_source_options'] != null)
+                      Column(
+                        spacing: 8.0,
+                        children: (page['referral_source_options'] as List<ReferralSource>).map((referralOption) {
+                          final isSelected = referralOption == _selectedRefSrc;
+                          return OutlinedButton(
+                            style: Theme.of(context).outlinedButtonTheme.style?.copyWith(
+                                backgroundColor: const WidgetStatePropertyAll(Colors.transparent),
+                                side: WidgetStatePropertyAll(
+                                    BorderSide(
+                                        color: isSelected ? colorScheme.primary : colorScheme.onSurface,
+                                        width: isSelected ? 2.0 : 1.0
+                                    )
+                                )
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _onboardingData["referralSource"] = referralOption.apiValue;
+                                _selectedRefSrc = referralOption;
+                              });
+                            },
+                              child: Text(
+                                  ReferralSource.nameOf(referralOption, localizations),
+                                  style: textTheme.bodyMedium?.copyWith(
+                                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                      color: isSelected ? colorScheme.primary : null
+                                  )
+                              )
+                          );
+                        }).toList(),
+                      ),
+                    if (page['inputHint'] != null)
+                      Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: TextField(
+                              decoration: InputDecoration(
+                                  hintText: page['inputHint'],
+                                  fillColor: colorScheme.surface
+                              ),
+                              onChanged: (value) => _onboardingData["referralCode"] = value
+                          )
+                      )
+                  ]
+              )
+          )
+        ]
     );
   }
 }

@@ -24,6 +24,10 @@
   "quberPointsBottomItem": "Quber Points",
 
   "map": "Map",
+  "select": "Select",
+  "origin": "Origin",
+  "destination": "Destination",
+  "marker": "Marker",
   "quberPoints": "Quber Points",
   "accumulatedPoints": "Accumulated points",
   "quberPointsEarned": "Quber Points Earned",
@@ -181,6 +185,17 @@
     "driverName": "Name: ",
     "driverPhone": "Phone: ",
     "driverPlate": "License plate:",
+    "tripPriceLabel": "Trip Price",
+    "tripDurationLabel": "Time Elapsed",
+    "tripDistanceLabel": "Distance Traveled",
+    "originLabel": "Origin",
+    "destinationLabel": "Destination",
+    "dateLabel": "Date",
+    "quberCreditLabel": "Credit for Quber",
+    "commentsLabel": "comments",
+    "minutesLabel": "minutes",
+    "kilometersLabel": "km",
+    "currencyLabel": "CUP",
 
     "aboutDeveloperTitle": "About Developer",
     "softwareCompany": "Software company",
@@ -379,5 +394,56 @@
              "notAvailable": "N/A",
              "currency": "CUP",
              "kilometers": "km",
-             "minutes": "min"
+             "minutes": "min",
+
+             "onboardingPage1Title": "Ready to Travel?",
+             "onboardingPage1Subtitle": "Just by selecting the destination municipality",
+             "onboardingPage1Description": "you will be able to travel quickly and safely",
+
+             "onboardingPage2Title": "But first",
+             "onboardingPage2Subtitle": "How did you hear about us?",
+             "referralSourceFriend": "From a friend",
+             "referralSourcePoster": "From a poster",
+             "referralSourcePlayStore": "From PlayStore",
+
+             "onboardingPage3Title": "Do you have a referral code?",
+             "onboardingPage3Subtitle": "Help your friend and earn benefits",
+             "onboardingPage3Description": "Enter a referral code so your friend gets a discount on their next trip. If you don't have one, you can continue.",
+             "onboardingPage3InputHint": "Enter your referral code",
+
+             "onboardingPage4Title": "How is the trip price calculated?",
+             "onboardingPage4Subtitle": "Based on distance and destination",
+             "onboardingPage4Description": "The app will calculate and show the price in real time according to the distance traveled. So depending on the municipality you're going to, you'll be shown an estimated price range at the beginning. This allows you to make stops and visit multiple destinations with greater freedom.",
+
+             "onboardingPage5Title": "Quber Points",
+             "onboardingPage5Subtitle": "Travel and earn discounts",
+             "onboardingPage5Description": "Every time you take a trip or someone enters your referral code, you accumulate Quber Points. These points allow you to get discounts on future trips. Travel more and save more!",
+             
+             "tripAccepted": "Trip Accepted",
+             "tripAcceptedDescription": "A driver has accepted your request. You are now waiting for their arrival. You will be able to see their location in real time on the map. We will ask for your confirmation when they are ready to pick you up.",
+             "seeDriverLocation": "See driver's location",
+  "noDriverLocation": "Driver location not available yet",
+  "pickupConfirmationInfo": "We have sent a notification to the client. Once they accept, the trip will begin.",
+  "pickupConfirmationTitle": "Pickup confirmation",
+  "pickupConfirmationMessage": "The driver has indicated that your pickup has been completed. Please confirm only if you are already with the driver; once confirmed, the trip will begin.",
+  "pickupConfirmationSentTitle": "Confirmation sent",
+  "reviewSaveError": "Could not save your review",
+  "reviewThankYou": "Thank you for your time",
+  "reviewsLoadError": "Could not load reviews",
+  "dateFormat": "d 'of' MMMM 'of' y",
+  "pickupConfirmationSentTitle": "Confirmation sent",
+
+  "finalizarViaje": "Finish Trip",
+  "verMiUbicacion": "See My Location",
+  "confirmacionFinalizacion": "Finish Confirmation",
+  "confirmacionFinalizacionMensaje": "The driver will be notified immediately that you want to end the trip. Please accept only if this is correct.",
+
+  "destinationsLimited": "Destinations are limited to {destinationName}",
+  "placeNotFound": "Place not found",
+  "showMyLocation": "Show My Location",
+  "finishTrip": "Finish Trip",
+
+  "confirmacionLlegadaDestino": "Destination Arrival Confirmation",
+  "confirmacionLlegadaDestinoMensaje": "The driver has notified that the destination has been reached. Please accept only if this is correct.",
+  "pickupConfirmationSentTitle": "Confirmation sent"
 }
