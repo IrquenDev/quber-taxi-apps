@@ -1240,14 +1240,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get copiedToClipboard => 'Copiado al portapapeles';
-  String get finishTrip => 'Finalizar viaje';
-
-  @override
-  String get confirmacionLlegadaDestino => 'Confirmación de llegada al destino';
-
-  @override
-  String get confirmacionLlegadaDestinoMensaje =>
-      'El conductor ha notificado que se ha llegado al destino. Acepte solo si esto es correcto';
 
   @override
   String get reviewSaveError => 'No se pudo guardar tu valoración';
@@ -1260,4 +1252,50 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get dateFormat => 'd \'de\' MMMM \'de\' y';
+
+  @override
+  String get finalizarViaje => 'Finalizar viaje';
+
+  @override
+  String get verMiUbicacion => 'Ver mi ubicación';
+
+  @override
+  String get confirmacionFinalizacion => 'Confirmación de finalización';
+
+  @override
+  String get confirmacionFinalizacionMensaje =>
+      'Se le notificará inmediatamente al conductor que desea terminar el viaje. Acepte solo si esto es correcto.';
+
+  @override
+  String destinationsLimited(Object destinationName) {
+    return 'Los destinos están limitados a $destinationName';
+  }
+
+  @override
+  String get placeNotFound => 'Lugar no encontrado';
+
+  @override
+  String get showMyLocation => 'Ver mi ubicación';
+
+  @override
+  String get finishTrip => 'Finalizar viaje';
+
+  @override
+  String get confirmacionLlegadaDestino => 'Confirmación de llegada al destino';
+
+  @override
+  String get confirmacionLlegadaDestinoMensaje =>
+      'El conductor ha notificado que se ha llegado al destino. Acepte solo si esto es correcto';
+
+  @override
+  String get guidedRoute => 'Ruta guiada';
+
+  @override
+  String get exactRoute => 'Ruta exacta';
+
+  @override
+  String get emergencySOS => 'Emergencia (SOS)';
+
+  @override
+  String get fixedDestinationTrip => 'Este viaje tiene destino fijo';
 }

@@ -2390,6 +2390,51 @@ abstract class AppLocalizations {
   /// **'d \'de\' MMMM \'de\' y'**
   String get dateFormat;
 
+  /// No description provided for @finalizarViaje.
+  ///
+  /// In es, this message translates to:
+  /// **'Finalizar viaje'**
+  String get finalizarViaje;
+
+  /// No description provided for @verMiUbicacion.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver mi ubicación'**
+  String get verMiUbicacion;
+
+  /// No description provided for @confirmacionFinalizacion.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirmación de finalización'**
+  String get confirmacionFinalizacion;
+
+  /// No description provided for @confirmacionFinalizacionMensaje.
+  ///
+  /// In es, this message translates to:
+  /// **'Se le notificará inmediatamente al conductor que desea terminar el viaje. Acepte solo si esto es correcto.'**
+  String get confirmacionFinalizacionMensaje;
+
+  /// No description provided for @destinationsLimited.
+  ///
+  /// In es, this message translates to:
+  /// **'Los destinos están limitados a {destinationName}'**
+  String destinationsLimited(Object destinationName);
+
+  /// No description provided for @placeNotFound.
+  ///
+  /// In es, this message translates to:
+  /// **'Lugar no encontrado'**
+  String get placeNotFound;
+
+  /// No description provided for @showMyLocation.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver mi ubicación'**
+  String get showMyLocation;
+
+  /// No description provided for @finishTrip.
+  ///
+  /// In es, this message translates to:
   /// **'Finalizar viaje'**
   String get finishTrip;
 
@@ -2404,6 +2449,30 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'El conductor ha notificado que se ha llegado al destino. Acepte solo si esto es correcto'**
   String get confirmacionLlegadaDestinoMensaje;
+
+  /// No description provided for @guidedRoute.
+  ///
+  /// In es, this message translates to:
+  /// **'Ruta guiada'**
+  String get guidedRoute;
+
+  /// No description provided for @exactRoute.
+  ///
+  /// In es, this message translates to:
+  /// **'Ruta exacta'**
+  String get exactRoute;
+
+  /// No description provided for @emergencySOS.
+  ///
+  /// In es, this message translates to:
+  /// **'Emergencia (SOS)'**
+  String get emergencySOS;
+
+  /// No description provided for @fixedDestinationTrip.
+  ///
+  /// In es, this message translates to:
+  /// **'Este viaje tiene destino fijo'**
+  String get fixedDestinationTrip;
 }
 
 class _AppLocalizationsDelegate
