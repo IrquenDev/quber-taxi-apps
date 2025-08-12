@@ -530,7 +530,7 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                                                   spacing: 12.0,
                                                   children: [
                                                     Icon(Icons.local_taxi, size: 22),
-                                                    Text('Pedir Taxi', style: theme.textTheme.bodyLarge)
+                                                    Text(AppLocalizations.of(context)!.askTaxi, style: theme.textTheme.bodyLarge)
                                                   ]
                                               )
                                           ),

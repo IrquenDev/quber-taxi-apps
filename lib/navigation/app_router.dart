@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quber_taxi/admin-app/pages/driver_info/driver_info.dart';
 import 'package:quber_taxi/admin-app/pages/request_taxi/request_taxi.dart';
+import 'package:quber_taxi/admin-app/pages/request_taxi/request_taxi_screen.dart';
 import 'package:quber_taxi/admin-app/pages/settings/admin_settings.dart';
 import 'package:quber_taxi/admin-app/pages/trips_list/trip_list.dart';
 import 'package:quber_taxi/client-app/pages/create_account/create_account.dart';
@@ -192,7 +193,7 @@ final GoRouter appRouter = GoRouter(
 
       GoRoute(
           path: AdminRoutes.requestTaxi,
-          builder: (context, state) => const RequestTravelSheetAdmin())
+          builder: (context, state) => const RequestTaxiScreenAdmin())
     ]);
 
 String _resolveInitialLocation(AppProfile profile) {
