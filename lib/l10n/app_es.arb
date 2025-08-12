@@ -450,4 +450,9 @@
 
   "confirmacionLlegadaDestino": "Confirmación de llegada al destino",
   "confirmacionLlegadaDestinoMensaje": "El conductor ha notificado que se ha llegado al destino. Acepte solo si esto es correcto"
+,
+  "guidedRoute": "Ruta guiada",
+  "exactRoute": "Ruta exacta",
+  "emergencySOS": "Emergencia (SOS)",
+  "fixedDestinationTrip": "Este viaje tiene destino fijo"
 }

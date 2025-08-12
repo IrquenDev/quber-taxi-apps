@@ -446,4 +446,9 @@
   "confirmacionLlegadaDestino": "Destination Arrival Confirmation",
   "confirmacionLlegadaDestinoMensaje": "The driver has notified that the destination has been reached. Please accept only if this is correct.",
   "pickupConfirmationSentTitle": "Confirmation sent"
+,
+  "guidedRoute": "Guided route",
+  "exactRoute": "Exact route",
+  "emergencySOS": "Emergency (SOS)",
+  "fixedDestinationTrip": "This trip has a fixed destination"
 }

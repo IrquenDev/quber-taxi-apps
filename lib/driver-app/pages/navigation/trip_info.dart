@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quber_taxi/common/pages/sos/emergency_dialog.dart';
+import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/enums/asset_dpi.dart';
 import 'package:quber_taxi/enums/taxi_type.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
@@ -14,6 +15,7 @@ class DriverTripInfo extends StatefulWidget {
   final double? travelPriceByTaxiType;
   final Future<bool> Function(String query) onSearch;
   final void Function(bool isEnabled) onGuidedRouteSwitched;
+  final bool isFixedDestination;
 
   const DriverTripInfo({
     super.key,
@@ -24,7 +26,8 @@ class DriverTripInfo extends StatefulWidget {
     required this.finalPrice,
     required this.travelPriceByTaxiType,
     required this.onSearch,
-    required this.onGuidedRouteSwitched
+    required this.onGuidedRouteSwitched,
+    required this.isFixedDestination,
   });
 
   @override
@@ -39,22 +42,25 @@ class _DriverTripInfoState extends State<DriverTripInfo> {
 
   @override
   Widget build(BuildContext context) {
-    final dimensions = Theme.of(context).extension<DimensionExtension>()!;
+    final dims = Theme.of(context).extension<DimensionExtension>()!;
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final loc = AppLocalizations.of(context)!;
     final mediaHeight = MediaQuery.of(context).size.height;
     final overlayHeight = _showGuidedRoute
-        ? mediaHeight * 0.40
+        ? (widget.isFixedDestination ? mediaHeight * 0.30 : mediaHeight * 0.40)
         : mediaHeight * 0.30;
 
     return ClipRRect(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(dimensions.borderRadius)),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(dims.borderRadius)),
       child: SizedBox(
         height: overlayHeight,
         child: Stack(
           children: [
 
-            // Background Layer
+             // Background Layer
             Positioned.fill(
-              child: Container(color: Theme.of(context).colorScheme.primaryContainer),
+               child: Container(color: colorScheme.primaryContainer),
             ),
 
             // Distance & Price Info
@@ -74,15 +80,15 @@ class _DriverTripInfoState extends State<DriverTripInfo> {
                       spacing: 4.0,
                       children: [Text('DISTANCIA:'), Text('PRECIO:')],
                     ),
-                    DefaultTextStyle(
-                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold),
+                       DefaultTextStyle(
+                       style: textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold),
                       child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('${(widget.distance.toStringAsFixed(0))} Km'),
-                            Text(widget.travelPriceByTaxiType != null
-                                ? '${widget.finalPrice.toStringAsFixed(0)} CUP'
-                                : '...'
+                             Text('${(widget.distance.toStringAsFixed(0))} ${loc.kilometers}'),
+                             Text(widget.travelPriceByTaxiType != null
+                                 ? '${widget.finalPrice.toStringAsFixed(0)} ${loc.currency}'
+                                 : '...'
                             )
                           ]
                       )
@@ -98,14 +104,14 @@ class _DriverTripInfoState extends State<DriverTripInfo> {
               right: 0.0,
               left: 0.0,
               child: ClipRRect(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(dimensions.borderRadius)),
+                 borderRadius: BorderRadius.vertical(top: Radius.circular(dims.borderRadius)),
                 child: Column(
                   children: [
                     Container(
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.primaryFixed,
                       ),
-                      padding: EdgeInsets.all(20.0),
+                       padding: EdgeInsets.all(20.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -129,12 +135,10 @@ class _DriverTripInfoState extends State<DriverTripInfo> {
                                     Text.rich(
                                       TextSpan(
                                         children: [
-                                          TextSpan(
-                                            text: 'Desde: ',
-                                            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                                fontWeight: FontWeight.bold
-                                            )
-                                          ),
+                                           TextSpan(
+                                             text: loc.from,
+                                             style: textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.bold)
+                                           ),
                                           TextSpan(text: widget.originName),
                                         ]
                                       )
@@ -142,15 +146,13 @@ class _DriverTripInfoState extends State<DriverTripInfo> {
                                     Text.rich(
                                       TextSpan(
                                         children: [
-                                          TextSpan(
-                                            text: 'Hasta: ',
-                                            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                                fontWeight: FontWeight.bold
-                                            )
-                                          ),
+                                           TextSpan(
+                                             text: loc.until,
+                                             style: textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.bold)
+                                           ),
                                           TextSpan(
                                               text: widget.destinationName,
-                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                               style: textTheme.bodyMedium?.copyWith(
                                                   overflow: TextOverflow.ellipsis
                                               )
                                           )
@@ -166,14 +168,10 @@ class _DriverTripInfoState extends State<DriverTripInfo> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                'Ruta guiada',
-                                style: Theme.of(context).textTheme.bodyLarge!
-                                    .copyWith(fontWeight: FontWeight.bold),
-                              ),
+                              Text(loc.guidedRoute, style: textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold)),
                               Switch(
                                 value: _showGuidedRoute,
-                                activeColor: Theme.of(context).colorScheme.primaryFixedDim,
+                                 activeColor: colorScheme.primaryFixedDim,
                                 onChanged: (value) {
                                   _tfController.clear();
                                   setState(() => _showGuidedRoute = value);
@@ -182,22 +180,22 @@ class _DriverTripInfoState extends State<DriverTripInfo> {
                               )
                             ]
                           ),
-                          if (_showGuidedRoute) ... [
-                            Text('Ruta exacta', style: Theme.of(context).textTheme.bodyMedium),
+                          if (_showGuidedRoute && !widget.isFixedDestination) ... [
+                            Text(loc.exactRoute, style: textTheme.bodyMedium),
                             SizedBox(height: 8.0),
                             TextField(
                               controller: _tfController,
                               onChanged: (_) {setState(() {});},
                               decoration: InputDecoration(
                                 prefixIcon: Icon(Icons.location_on_outlined),
-                                hintText: 'Seleccione la ubicación de destino',
+                                 hintText: loc.destinationName,
                                 suffixIcon: !_isLoading ? IconButton(
                                     onPressed: _tfController.text.isNotEmpty ? () async {
                                       setState(() => _isLoading = true);
                                       final query = _tfController.text;
                                       final wasSearchSuccess = await widget.onSearch(query);
                                       if(wasSearchSuccess) {
-                                        // you can do something here about it
+                                        // do something more if applies
                                       }
                                       setState(() => _isLoading = false);
                                     } : null,
@@ -214,23 +212,20 @@ class _DriverTripInfoState extends State<DriverTripInfo> {
                       width: double.infinity,
                       child: OutlinedButton(
                         style: OutlinedButton.styleFrom(
-                          backgroundColor: Theme.of(context).colorScheme.secondary,
-                          padding: dimensions.contentPadding,
+                          backgroundColor: colorScheme.secondary,
+                          padding: dims.contentPadding,
                           side: BorderSide.none,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero)
                         ),
                         onPressed: () => showDialog(
                           context: context,
                           barrierDismissible: false,
-                          barrierColor: Theme.of(context).colorScheme.errorContainer.withAlpha(200),
+                          barrierColor: colorScheme.errorContainer.withAlpha(200),
                           builder: (context) => EmergencyDialog()
                         ),
                         child: Text(
-                          'Emergencia (SOS)',
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.onSecondary
-                          )
+                          loc.emergencySOS,
+                          style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.onSecondary)
                         )
                       )
                     )
@@ -242,7 +237,7 @@ class _DriverTripInfoState extends State<DriverTripInfo> {
             // Taxi Type Image
             Positioned(
               right: 16,
-              top: _showGuidedRoute ? 20.0 : 10.0,
+              top: _showGuidedRoute && !widget.isFixedDestination ? 20.0 : 10.0,
               child: SizedBox(
                 height: 80,
                 child: Transform(
