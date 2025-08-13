@@ -26,7 +26,3 @@ dynamic get loggedInUser => SessionPrefsManager.instance.getLoggedInUserAsRawTyp
 bool hasConnection(BuildContext context) => NetworkScope.statusOf(context) == ConnectionStatus.online;
 
 bool get isOnboardingDone => OnboardingPrefsManager.instance.isOnboardingDone();
-
-///TODO
-/// - Color activo para el referral source
-/// - Preparar el backend, enviar, probar

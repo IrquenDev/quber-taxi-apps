@@ -1,22 +1,21 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/client-app/pages/home/map.dart';
 import 'package:quber_taxi/client-app/pages/home/request_travel_sheet.dart';
+import 'package:quber_taxi/common/models/client.dart';
 import 'package:quber_taxi/client-app/pages/settings/account_setting.dart';
 import 'package:quber_taxi/common/services/app_announcement_service.dart';
 import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
 import 'package:quber_taxi/common/widgets/dialogs/circular_info_dialog.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
+import 'package:quber_taxi/navigation/routes/client_routes.dart';
 import 'package:quber_taxi/navigation/routes/common_routes.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-
-import '../../../common/models/client.dart';
-import '../../../utils/runtime.dart';
+import 'package:quber_taxi/utils/runtime.dart';
 
 class ClientHomePage extends StatefulWidget {
   const ClientHomePage({super.key, this.position});
@@ -30,7 +29,6 @@ class ClientHomePage extends StatefulWidget {
 class _ClientHomePageState extends State<ClientHomePage> {
   int _currentIndex = 0;
   final _navKey = GlobalKey<CurvedNavigationBarState>();
-  // BREAKPOINT: Verificar datos del cliente desde la BD
   final _client = Client.fromJson(loggedInUser);
   final List<Map<String, String>> _mockFavorites = [
     {

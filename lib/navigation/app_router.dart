@@ -36,14 +36,29 @@ import 'package:quber_taxi/navigation/routes/client_routes.dart';
 import 'package:quber_taxi/navigation/routes/driver_routes.dart';
 import 'package:quber_taxi/utils/runtime.dart' as runtime;
 import 'routes/common_routes.dart';
+import 'package:quber_taxi/navigation/backup_navigation_manager.dart';
 
 final GoRouter appRouter = GoRouter(
-  
-  // App start up route. You can change it for developing or testing, just remember to take it back in place.
-  initialLocation: (runtime.isClientMode && !runtime.isOnboardingDone)
-      ? CommonRoutes.onboarding
-      : runtime.isSessionOk ? _resolveInitialLocation(BuildConfig.appProfile) : CommonRoutes.login,
-  
+  initialLocation: _resolveInitialLocation(BuildConfig.appProfile),
+  redirect: (context, state) {
+    // 1) Onboarding
+    if (runtime.isClientMode && !runtime.isOnboardingDone && state.matchedLocation != CommonRoutes.onboarding) {
+      return CommonRoutes.onboarding;
+    }
+    // 2) Session
+    if (!runtime.isSessionOk && state.matchedLocation != CommonRoutes.login) {
+      return CommonRoutes.login;
+    }
+    // 3) Backup restore (client only)
+    try {
+      if (runtime.isClientMode && runtime.isSessionOk && BackupNavigationManager.instance.shouldRedirect()) {
+        if (state.matchedLocation != ClientRoutes.searchDriver) {
+          return ClientRoutes.searchDriver;
+        }
+      }
+    } catch (_) {}
+    return null;
+  },
   routes: [
 
     // COMMONS
@@ -123,8 +138,12 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
         path: ClientRoutes.searchDriver,
         builder: (context, state) {
-            final travelId = state.extra as int;
-            return SearchDriverPage(travelId: travelId);
+          if (state.extra is int) {
+            return SearchDriverPage(travelId: state.extra as int);
+          }
+          // Assume restoration if no extra was provided
+          final travel = BackupNavigationManager.instance.getSearchDriverTravel();
+          return SearchDriverPage(travelId: travel.id, wasRestored: true, restoredTravel: travel);
         }
     ),
 

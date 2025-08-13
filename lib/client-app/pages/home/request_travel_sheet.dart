@@ -16,6 +16,7 @@ import 'package:quber_taxi/enums/taxi_type.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/client_routes.dart';
+import 'package:quber_taxi/navigation/backup_navigation_manager.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/utils/runtime.dart';
 import 'package:quber_taxi/utils/map/turf.dart';
@@ -403,20 +404,31 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                     if (!context.mounted) return;
                     if(response.statusCode == 200) {
                       final travel = Travel.fromJson(jsonDecode(response.body));
+                      // Persist backup to restore search_driver in case of app closure
+                      await BackupNavigationManager.instance.saveSearchDriver(
+                        route: ClientRoutes.searchDriver,
+                        travel: travel,
+                      );
+                      if (!context.mounted) return;
                       // Radar animation while waiting for acceptation.
                       final updatedTravel = await context.push<Travel?>(
                           ClientRoutes.searchDriver,
                           extra: travel.id
                       );
-                      if (!context.mounted) return;
                       if (updatedTravel != null) {
+                        // Clear backup as flow has advanced
+                        await BackupNavigationManager.instance.clear();
+                        if (!context.mounted) return;
                         // Navigate to TrackDriver Screen.
                         context.go(ClientRoutes.trackDriver, extra: updatedTravel);
                       } else {
+                        if (!context.mounted) return;
                         // Cancel this travel request
                         if (hasConnection(context)) {
                           await _cancelTravelRequest(travel.id);
                         }
+                        // Clear backup on cancel or timeout
+                        await BackupNavigationManager.instance.clear();
                       }
                     } else {
                       showToast(context: context, message: "Ocurrió algo mal, por favor inténtelo más tarde");
