@@ -2,38 +2,29 @@ import 'dart:convert';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/storage/prefs_manager.dart';
 
-/// Manages backup navigation for client search_driver flow only.
+/// Manages backup navigation for client flows using a single generic entry.
 class BackupNavigationManager {
 
   BackupNavigationManager._internal();
 
   static final BackupNavigationManager instance = BackupNavigationManager._internal();
 
-  // Keys are client-scoped and specific to search_driver
-  static const String _shouldRedirectKey = 'client_sd_shouldRedirect';
-  static const String _routeKey = 'client_sd_route';
-  static const String _travelKey = 'client_sd_travel';
+  static const String _shouldRedirectKey = 'client_bu_shouldRedirect';
+  static const String _routeKey = 'client_bu_route';
+  static const String _travelKey = 'client_bu_travel';
 
   final SharedPrefsManager _prefsManager = SharedPrefsManager.instance;
 
-  /// Clears stored backup state for search_driver flow.
+  /// Clears stored backup state.
   Future<void> clear() async {
     await _prefsManager.remove(_routeKey);
     await _prefsManager.remove(_travelKey);
     await _prefsManager.remove(_shouldRedirectKey);
   }
 
-  /// Stores backup data for search_driver: route and travelId.
-  Future<bool> saveSearchDriver({required String route, required Travel travel}) async {
-    final a = await _prefsManager.setString(_routeKey, route);
-    final b = await _prefsManager.setString(_travelKey, jsonEncode(travel.toJson()));
-    final c = await _prefsManager.setBool(_shouldRedirectKey, true);
-    return (a == true && b == true && c == true);
-  }
-
-  /// Returns stored Travel for search_driver when redirection is required.
-  Travel getSearchDriverTravel() {
-    if (!shouldRedirect()) {
+  /// Returns stored Travel when redirection is required.
+  Travel getSavedTravel() {
+    if (!shouldRestorePage()) {
       throw StateError('Attempt to get travel when no redirection is required');
     }
     final raw = _prefsManager.getString(_travelKey);
@@ -43,13 +34,19 @@ class BackupNavigationManager {
     return Travel.fromJson(jsonDecode(raw));
   }
 
-  /// Returns the saved route (for debugging/telemetry purposes).
+  /// Returns the saved route (used to decide which page to restore).
   String? getSavedRoute() => _prefsManager.getString(_routeKey);
 
-  // No requestedAt storage. Use Travel.requestedDate from backend when needed.
+  /// Stores backup data: route and travel.
+  Future<bool> save({required String route, required Travel travel}) async {
+    final a = await _prefsManager.setString(_routeKey, route);
+    final b = await _prefsManager.setString(_travelKey, jsonEncode(travel.toJson()));
+    final c = await _prefsManager.setBool(_shouldRedirectKey, true);
+    return (a == true && b == true && c == true);
+  }
 
-  /// Whether the app should redirect to search_driver on startup.
-  bool shouldRedirect() => _prefsManager.getBool(_shouldRedirectKey) ?? false;
+  /// Whether the app should redirect on startup.
+  bool shouldRestorePage() => _prefsManager.getBool(_shouldRedirectKey) ?? false;
 }
 
 

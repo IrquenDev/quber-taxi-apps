@@ -405,7 +405,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                     if(response.statusCode == 200) {
                       final travel = Travel.fromJson(jsonDecode(response.body));
                       // Persist backup to restore search_driver in case of app closure
-                      await BackupNavigationManager.instance.saveSearchDriver(
+                      await BackupNavigationManager.instance.save(
                         route: ClientRoutes.searchDriver,
                         travel: travel,
                       );

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
@@ -11,15 +12,16 @@ import 'package:quber_taxi/common/widgets/dialogs/confirm_dialog.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/client_routes.dart';
+import 'package:quber_taxi/navigation/backup_navigation_manager.dart';
 import 'package:quber_taxi/utils/websocket/impl/driver_location_handler.dart';
 import 'package:quber_taxi/utils/map/mapbox.dart' as mb_util;
 import 'package:quber_taxi/utils/websocket/impl/pickup_confirmation_handler.dart';
-import 'package:quber_taxi/utils/websocket/core/websocket_service.dart';
 
 class TrackDriverPage extends StatefulWidget {
   final Travel travel;
+  final bool wasRestored;
 
-  const TrackDriverPage({super.key, required this.travel});
+  const TrackDriverPage({super.key, required this.travel, this.wasRestored = false});
 
   @override
   State<TrackDriverPage> createState() => _TrackDriverPageState();
@@ -47,7 +49,6 @@ class _TrackDriverPageState extends State<TrackDriverPage> {
   Future<void> _loadDriverMarkerImage() async {
     final assetBytes = await rootBundle.load('assets/markers/taxi/taxi_hdpi.png');
     _driverMarkerImage = assetBytes.buffer.asUint8List();
-    print('TrackDriverPage: Driver marker image loaded, size: ${_driverMarkerImage.length} bytes');
   }
 
   void _onDriverLocationUpdate(Position coords) async {
@@ -70,7 +71,9 @@ class _TrackDriverPageState extends State<TrackDriverPage> {
           ),
         );
       } catch (e) {
-        print('Error creating driver marker: $e');
+        if (kDebugMode) {
+          print('Error creating driver marker: $e');
+        }
       }
     } else {
       // Update coord
@@ -125,6 +128,8 @@ class _TrackDriverPageState extends State<TrackDriverPage> {
   @override
   void initState() {
     super.initState();
+    // Save backup for track_driver to allow restoration
+    BackupNavigationManager.instance.save(route: ClientRoutes.trackDriver, travel: widget.travel);
     // Prepare driver marker and activate handlers
     _loadDriverMarkerImage().then((_) {
       // Activate websocket handlers after image is loaded
@@ -156,6 +161,8 @@ class _TrackDriverPageState extends State<TrackDriverPage> {
             if(response.statusCode == 200) {
               // Navigate to ClientNavigation passing the corresponding travel
               context.go(ClientRoutes.navigation, extra: widget.travel);
+              // Clear backup once navigation starts
+              await BackupNavigationManager.instance.clear();
             }
           }
         }
@@ -164,6 +171,7 @@ class _TrackDriverPageState extends State<TrackDriverPage> {
 
   @override
   void dispose() {
+    // If the page is disposed without moving forward, keep backup (do not clear here)
     _locationHandler.deactivate();
     _confirmationHandler.deactivate();
     _draggableController.dispose();
