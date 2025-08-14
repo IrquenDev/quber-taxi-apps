@@ -41,7 +41,6 @@ import 'routes/common_routes.dart';
 
 final GoRouter appRouter = GoRouter(
 
-
     // App start up route. You can change it for developing or testing, just remember to take it back in place.
     initialLocation: runtime.isSessionOk
         ? _resolveInitialLocation(BuildConfig.appProfile)
@@ -115,93 +114,6 @@ final GoRouter appRouter = GoRouter(
       GoRoute(
           path: ClientRoutes.searchDriver,
           builder: (context, state) {
-
-  
-  // App start up route. You can change it for developing or testing, just remember to take it back in place.
-  initialLocation: (runtime.isClientMode && !runtime.isOnboardingDone)
-      ? CommonRoutes.onboarding
-      : runtime.isSessionOk ? _resolveInitialLocation(BuildConfig.appProfile) : CommonRoutes.login,
-  
-  routes: [
-
-    // COMMONS
-
-    GoRoute(path: CommonRoutes.onboarding,
-        builder: (context, state) => const OnboardingPage()
-    ),
-
-    GoRoute(
-        path: CommonRoutes.login,
-        builder: (context, state) => const LoginPage()
-    ),
-
-    GoRoute(
-        path: CommonRoutes.aboutDev,
-        builder: (context, state) => const AboutDevPage()
-    ),
-
-    GoRoute(
-        path: CommonRoutes.aboutUs,
-        builder: (context, state) => const AboutUsPage()
-    ),
-
-    GoRoute(
-        path: CommonRoutes.locationPicker,
-        builder: (context, state) {
-          final isOrigin = state.extra as bool? ?? true;
-          return LocationPicker(isOrigin: isOrigin);
-        }
-    ),
-
-    GoRoute(path: CommonRoutes.requestFaceId,
-        builder: (context, state) => const VerificationIdentityPage()
-    ),
-
-    GoRoute(
-        path: CommonRoutes.faceIdConfirmed,
-        builder: (context, state) {
-          final imageBytes = state.extra as Uint8List;
-          return FaceIdConfirmed(imageBytes: imageBytes);
-        }
-    ),
-
-    GoRoute(path: CommonRoutes.faceDetection,
-        builder: (context, state) => const FaceDetectionPage()
-    ),
-
-    // CLIENT
-
-    GoRoute(
-        path: ClientRoutes.createAccount,
-        builder: (context, state) {
-          final faceIdImage = state.extra as Uint8List;
-          return CreateClientAccountPage(faceIdImage: faceIdImage);
-        }
-    ),
-
-    GoRoute(path: ClientRoutes.settings,
-        builder: (context, state) => const ClientSettingsPage()
-    ),
-
-    GoRoute(
-      path: ClientRoutes.home,
-      builder: (context, state) => ClientHomePage()
-    ),
-
-    GoRoute(
-        path: ClientRoutes.searchOrigin,
-        builder: (context, state) => const SearchOriginPage()
-    ),
-
-    GoRoute(
-        path: ClientRoutes.searchDestination,
-        builder: (context, state) => const SearchDestinationPage()
-    ),
-
-    GoRoute(
-        path: ClientRoutes.searchDriver,
-        builder: (context, state) {
-
             final travelId = state.extra as int;
             return SearchDriverPage(travelId: travelId);
           }),
