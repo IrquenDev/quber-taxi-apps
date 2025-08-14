@@ -1,7 +1,7 @@
+
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quber_taxi/admin-app/pages/driver_info/driver_info.dart';
-import 'package:quber_taxi/admin-app/pages/request_taxi/request_taxi.dart';
 import 'package:quber_taxi/admin-app/pages/request_taxi/request_taxi_screen.dart';
 import 'package:quber_taxi/admin-app/pages/settings/admin_settings.dart';
 import 'package:quber_taxi/admin-app/pages/trips_list/trip_list.dart';
@@ -41,50 +41,57 @@ import 'routes/common_routes.dart';
 
 final GoRouter appRouter = GoRouter(
 
-    // App start up route. You can change it for developing or testing, just remember to take it back in place.
-    initialLocation: runtime.isSessionOk
-        ? _resolveInitialLocation(BuildConfig.appProfile)
-        : CommonRoutes.login,
+  // App start up route. You can change it for developing or testing, just remember to take it back in place.
+    initialLocation: (runtime.isClientMode && !runtime.isOnboardingDone)
+        ? CommonRoutes.onboarding
+        : runtime.isSessionOk ? _resolveInitialLocation(BuildConfig.appProfile) : CommonRoutes.login,
+
     routes: [
+
       // COMMONS
 
-      GoRoute(
-          path: CommonRoutes.onboarding,
-          builder: (context, state) => const OnboardingScreen()),
+      GoRoute(path: CommonRoutes.onboarding,
+          builder: (context, state) => const OnboardingPage()
+      ),
 
       GoRoute(
           path: CommonRoutes.login,
-          builder: (context, state) => const LoginPage()),
+          builder: (context, state) => const LoginPage()
+      ),
 
       GoRoute(
           path: CommonRoutes.aboutDev,
-          builder: (context, state) => const AboutDevPage()),
+          builder: (context, state) => const AboutDevPage()
+      ),
 
       GoRoute(
           path: CommonRoutes.aboutUs,
-          builder: (context, state) => const AboutUsPage()),
+          builder: (context, state) => const AboutUsPage()
+      ),
 
       GoRoute(
           path: CommonRoutes.locationPicker,
           builder: (context, state) {
             final isOrigin = state.extra as bool? ?? true;
             return LocationPicker(isOrigin: isOrigin);
-          }),
+          }
+      ),
 
-      GoRoute(
-          path: CommonRoutes.requestFaceId,
-          builder: (context, state) => const VerificationIdentityPage()),
+      GoRoute(path: CommonRoutes.requestFaceId,
+          builder: (context, state) => const VerificationIdentityPage()
+      ),
 
       GoRoute(
           path: CommonRoutes.faceIdConfirmed,
           builder: (context, state) {
             final imageBytes = state.extra as Uint8List;
             return FaceIdConfirmed(imageBytes: imageBytes);
-          }),
+          }
+      ),
 
-      GoRoute(
-          path: CommonRoutes.faceDetection,
-          builder: (context, state) => const FaceDetectionPage()),
+      GoRoute(path: CommonRoutes.faceDetection,
+          builder: (context, state) => const FaceDetectionPage()
+      ),
 
       // CLIENT
 
@@ -93,51 +100,59 @@ final GoRouter appRouter = GoRouter(
           builder: (context, state) {
             final faceIdImage = state.extra as Uint8List;
             return CreateClientAccountPage(faceIdImage: faceIdImage);
-          }),
+          }
+      ),
 
-      GoRoute(
-          path: ClientRoutes.settings,
-          builder: (context, state) => const ClientSettingsPage()),
+      GoRoute(path: ClientRoutes.settings,
+          builder: (context, state) => const ClientSettingsPage()
+      ),
 
       GoRoute(
           path: ClientRoutes.home,
-          builder: (context, state) => ClientHomePage()),
+          builder: (context, state) => ClientHomePage()
+      ),
 
       GoRoute(
           path: ClientRoutes.searchOrigin,
-          builder: (context, state) => const SearchOriginPage()),
+          builder: (context, state) => const SearchOriginPage()
+      ),
 
       GoRoute(
           path: ClientRoutes.searchDestination,
-          builder: (context, state) => const SearchDestinationPage()),
+          builder: (context, state) => const SearchDestinationPage()
+      ),
 
       GoRoute(
           path: ClientRoutes.searchDriver,
           builder: (context, state) {
             final travelId = state.extra as int;
             return SearchDriverPage(travelId: travelId);
-          }),
+          }
+      ),
 
       GoRoute(
           path: ClientRoutes.trackDriver,
           builder: (context, state) {
             final travel = state.extra as Travel;
             return TrackDriverPage(travel: travel);
-          }),
+          }
+      ),
 
       GoRoute(
           path: ClientRoutes.navigation,
           builder: (context, state) {
             final travel = state.extra as Travel;
             return ClientNavigation(travel: travel);
-          }),
+          }
+      ),
 
       GoRoute(
           path: ClientRoutes.quberReviews,
           builder: (context, state) {
             final reviews = state.extra as List<Review>;
             return QuberReviewsPage(reviews: reviews);
-          }),
+          }
+      ),
 
       // DRIVER
 
@@ -146,55 +161,63 @@ final GoRouter appRouter = GoRouter(
           builder: (context, state) {
             final faceIdImage = state.extra as Uint8List;
             return CreateDriverAccountPage(faceIdImage: faceIdImage);
-          }),
+          }
+      ),
 
       GoRoute(
           path: DriverRoutes.settings,
-          builder: (context, state) => const DriverSettingsPage()),
+          builder: (context, state) => const DriverSettingsPage()
+      ),
 
       GoRoute(
           path: DriverRoutes.home,
-          builder: (context, state) => DriverHomePage()),
+          builder: (context, state) => DriverHomePage()
+      ),
 
       GoRoute(
           path: DriverRoutes.navigation,
           builder: (context, state) {
             final travel = state.extra as Travel;
             return DriverNavigationPage(travel: travel);
-          }),
+          }
+      ),
 
       // ADMIN
 
       GoRoute(
           path: AdminRoutes.settings,
-          builder: (context, state) => const AdminSettingsPage()),
+          builder: (context, state) => const AdminSettingsPage()
+      ),
 
-      GoRoute(
-          path: AdminRoutes.tripsList,
-          builder: (context, state) => const CompletedTripsPage()),
+      GoRoute(path: AdminRoutes.tripsList,
+          builder: (context, state) => const CompletedTripsPage()
+      ),
 
-      GoRoute(
-          path: AdminRoutes.driversList,
-          builder: (context, state) => const DriversListPage()),
+      GoRoute(path: AdminRoutes.driversList,
+          builder: (context, state) => const DriversListPage()
+      ),
 
       GoRoute(
           path: AdminRoutes.driverInfo,
           builder: (context, state) {
             final driverId = state.extra as int;
             return DriverInfoPage(driverId: driverId);
-          }),
+          }
+      ),
 
       GoRoute(
           path: CommonRoutes.announcement,
           builder: (context, state) {
             final announcement = state.extra as AppAnnouncement?;
             return AppAnnouncementPage(announcement: announcement);
-          }),
+          }
+      ),
 
       GoRoute(
           path: AdminRoutes.requestTaxi,
           builder: (context, state) => const RequestTaxiScreenAdmin())
-    ]);
+    ]
+);
 
 String _resolveInitialLocation(AppProfile profile) {
   return switch (profile) {
