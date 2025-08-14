@@ -42,9 +42,9 @@ import 'routes/common_routes.dart';
 final GoRouter appRouter = GoRouter(
 
   // App start up route. You can change it for developing or testing, just remember to take it back in place.
-    initialLocation: (runtime.isClientMode && !runtime.isOnboardingDone)
-        ? CommonRoutes.onboarding
-        : runtime.isSessionOk ? _resolveInitialLocation(BuildConfig.appProfile) : CommonRoutes.login,
+    initialLocation: runtime.isSessionOk
+        ? _resolveInitialLocation(BuildConfig.appProfile)
+        : CommonRoutes.login,
 
     routes: [
 
@@ -217,6 +217,7 @@ final GoRouter appRouter = GoRouter(
           path: AdminRoutes.requestTaxi,
           builder: (context, state) => const RequestTaxiScreenAdmin())
     ]
+
 );
 
 String _resolveInitialLocation(AppProfile profile) {
