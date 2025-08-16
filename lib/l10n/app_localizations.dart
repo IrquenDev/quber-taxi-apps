@@ -2303,7 +2303,7 @@ abstract class AppLocalizations {
   /// No description provided for @pickupConfirmationInfo.
   ///
   /// In es, this message translates to:
-  /// **'Hemos enviado una notificación al cliente. Una vez la acepte, comenzará el viaje.'**
+  /// **'Enviaremos una notificación al cliente. Una vez la acepte, comenzará el viaje.'**
   String get pickupConfirmationInfo;
 
   /// No description provided for @pickupConfirmationTitle.

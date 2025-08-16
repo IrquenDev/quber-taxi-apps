@@ -11,7 +11,6 @@ class DriverTripInfo extends StatefulWidget {
   final String originName;
   final String destinationName;
   final TaxiType taxiType;
-  final double finalPrice;
   final double? travelPriceByTaxiType;
   final Future<bool> Function(String query) onSearch;
   final void Function(bool isEnabled) onGuidedRouteSwitched;
@@ -23,7 +22,6 @@ class DriverTripInfo extends StatefulWidget {
     required this.destinationName,
     required this.distance,
     required this.taxiType,
-    required this.finalPrice,
     required this.travelPriceByTaxiType,
     required this.onSearch,
     required this.onGuidedRouteSwitched,
@@ -57,12 +55,10 @@ class _DriverTripInfoState extends State<DriverTripInfo> {
         height: overlayHeight,
         child: Stack(
           children: [
-
              // Background Layer
             Positioned.fill(
                child: Container(color: colorScheme.primaryContainer),
             ),
-
             // Distance & Price Info
             Positioned(
               top: 0.0,
@@ -80,24 +76,23 @@ class _DriverTripInfoState extends State<DriverTripInfo> {
                       spacing: 4.0,
                       children: [Text('DISTANCIA:'), Text('PRECIO:')],
                     ),
-                       DefaultTextStyle(
-                       style: textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold),
-                      child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                             Text('${(widget.distance.toStringAsFixed(0))} ${loc.kilometers}'),
-                             Text(widget.travelPriceByTaxiType != null
-                                 ? '${widget.finalPrice.toStringAsFixed(0)} ${loc.currency}'
-                                 : '...'
-                            )
-                          ]
-                      )
+                    DefaultTextStyle(
+                        style: textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('${(widget.distance.toStringAsFixed(0))} ${loc.kilometers}'),
+                              Text(widget.travelPriceByTaxiType != null
+                                  ? '${(widget.distance * widget.travelPriceByTaxiType!).toStringAsFixed(0)} ${loc.currency}'
+                                  : '...'
+                              )
+                            ]
+                        )
                     )
                   ]
                 )
               )
             ),
-            
             // Top layer (Origin & Destination + Guided Route Section + SOS Button) 
             Positioned(
               bottom: 0.0,
@@ -233,7 +228,6 @@ class _DriverTripInfoState extends State<DriverTripInfo> {
                 )
               )
             ),
-            
             // Taxi Type Image
             Positioned(
               right: 16,

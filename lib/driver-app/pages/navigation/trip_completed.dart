@@ -17,7 +17,6 @@ class DriverTripCompleted extends StatefulWidget {
   final int duration;
   final num distance;
   final double finalPrice;
-  final double? travelPriceByTaxiType;
 
   const DriverTripCompleted({
     super.key,
@@ -25,8 +24,7 @@ class DriverTripCompleted extends StatefulWidget {
     required this.driver,
     required this.duration,
     required this.distance,
-    required this.finalPrice,
-    required this.travelPriceByTaxiType
+    required this.finalPrice
   });
 
   @override
