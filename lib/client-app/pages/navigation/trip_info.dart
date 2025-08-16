@@ -14,11 +14,11 @@ class ClientTripInfo extends StatelessWidget {
 
   const ClientTripInfo({
     super.key,
-    required this.distance,
+    this.distance,
     required this.originName,
     required this.destinationName,
     required this.taxiType,
-    required this.travelPriceByTaxiType
+    this.travelPriceByTaxiType
   });
 
   @override
@@ -53,10 +53,10 @@ class ClientTripInfo extends StatelessWidget {
                           style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold),
                             child: Column(
                                 children: [
-                                  Text('${distance?.toStringAsFixed(0)} Km'),
-                                  Text(travelPriceByTaxiType != null
+                                  Text(distance != null ? '${distance!.toStringAsFixed(0)} Km' : '-'),
+                                  Text(travelPriceByTaxiType != null && distance != null
                                       ? '${(distance! * travelPriceByTaxiType!).toStringAsFixed(0)} CUP'
-                                      : '...'
+                                      : '-'
                                   )
                                 ]
                             )

@@ -45,23 +45,63 @@ class _ClientNavigationState extends State<ClientNavigation> {
 
   // Real time distance calculation
   final List<turf.Position> _realTimeRoute = [];
-  late final StreamSubscription<g.Position> _locationStream;
+  StreamSubscription<g.Position>? _locationStream;
   num _distanceInKm = 0;
-  double get _finalPrice => _distanceInKm * (_travelPriceByTaxiType!);
+  double? get _finalPrice => (widget.wasRestored || _travelPriceByTaxiType == null) ? null : _distanceInKm * _travelPriceByTaxiType!;
   Stopwatch? _stopwatch;
   late final FinishConfirmationHandler _confirmationHandler;
   final _travelService = TravelService();
   double? _travelPriceByTaxiType;
 
-  int get _finalDuration => _stopwatch?.elapsed.inMinutes ?? 0;
+  int? get _finalDuration => widget.wasRestored ? null : _stopwatch?.elapsed.inMinutes;
   bool _isTravelCompleted = false;
+  late ScaffoldMessengerState _scaffoldMessenger;
+
+  void _showRestoredBanner() {
+    _scaffoldMessenger.showMaterialBanner(
+      MaterialBanner(
+        padding: EdgeInsets.all(8.0),
+        content: Text(
+          'Vista restaurada: Las métricas del viaje ya no son confiables. Guíese por la app del conductor.',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        backgroundColor: Theme.of(context).colorScheme.errorContainer,
+        surfaceTintColor: Theme.of(context).colorScheme.errorContainer,
+        leading: Icon(
+          Icons.warning_outlined,
+          color: Theme.of(context).colorScheme.onErrorContainer,
+          size: 24,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              _scaffoldMessenger.hideCurrentMaterialBanner();
+            },
+            child: Text(
+              'CERRAR',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onErrorContainer,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   void _startTrackingDistance() {
-    _locationStream =
-        g.Geolocator.getPositionStream(locationSettings: g.LocationSettings(distanceFilter: 5)).listen(_onMove);
+    if (!widget.wasRestored) {
+      _locationStream =
+          g.Geolocator.getPositionStream(locationSettings: g.LocationSettings(distanceFilter: 5)).listen(_onMove);
+    }
   }
 
   void _onMove(g.Position newPosition) {
+    if (widget.wasRestored) return; // Skip tracking if restored
     _stopwatch ??= Stopwatch()..start();
     _calcRealTimeDistance(newPosition);
     _updateTaxiMarker(newPosition);
@@ -69,6 +109,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
   }
 
   void _calcRealTimeDistance(g.Position newPosition) {
+    if (widget.wasRestored || _realTimeRoute.isEmpty) return;
     final point1 = turf.Point(coordinates: _realTimeRoute.last);
     final point2 = turf.Point(coordinates: turf.Position(newPosition.longitude, newPosition.latitude));
     final segmentDistance = td.distance(point1, point2, Unit.kilometers);
@@ -76,26 +117,27 @@ class _ClientNavigationState extends State<ClientNavigation> {
   }
 
   void _updateTaxiMarker(g.Position newPosition) async {
-    if (_pointAnnotationManager != null) {
-      final point = Point(coordinates: Position(newPosition.longitude, newPosition.latitude));
-      if (_taxiMarker == null) {
-        // Display marker
-        final taxiMarkerBytes = await rootBundle.load('assets/markers/taxi/taxi_pin_x172.png');
-        await _pointAnnotationManager!
-            .create(PointAnnotationOptions(
-                geometry: point, image: taxiMarkerBytes.buffer.asUint8List(), iconAnchor: IconAnchor.BOTTOM))
-            .then((value) => _taxiMarker = value);
-      } else {
-        // Update geometry point
-        _taxiMarker!.geometry = point;
-        // Update icon rotation (orientation)
+    if (widget.wasRestored || _pointAnnotationManager == null) return;
+    final point = Point(coordinates: Position(newPosition.longitude, newPosition.latitude));
+    if (_taxiMarker == null) {
+      // Display marker
+      final taxiMarkerBytes = await rootBundle.load('assets/markers/taxi/taxi_pin_x172.png');
+      await _pointAnnotationManager!
+          .create(PointAnnotationOptions(
+              geometry: point, image: taxiMarkerBytes.buffer.asUint8List(), iconAnchor: IconAnchor.BOTTOM))
+          .then((value) => _taxiMarker = value);
+    } else {
+      // Update geometry point
+      _taxiMarker!.geometry = point;
+      // Update icon rotation (orientation)
+      if (_realTimeRoute.isNotEmpty) {
         final bearing = mb_util.calculateBearing(
             _realTimeRoute.last.lat, _realTimeRoute.last.lng, newPosition.latitude, newPosition.longitude);
         final adjustedBearing = (bearing - _mapBearing + 360) % 360;
         _taxiMarker!.iconRotate = adjustedBearing;
-        // Then update marker
-        _pointAnnotationManager!.update(_taxiMarker!);
       }
+      // Then update marker
+      _pointAnnotationManager!.update(_taxiMarker!);
     }
   }
 
@@ -197,13 +239,30 @@ class _ClientNavigationState extends State<ClientNavigation> {
     }
   }
 
+  void _markTravelAsCompleted() async {
+    final response = await _travelService.changeState(travelId: widget.travel.id, state: TravelState.completed);
+    if(response.statusCode == 200) {
+      BackupNavigationManager.instance.clear();
+      setState(() {
+        _isTravelCompleted = true; // show completed travel metrics (bottom sheet)
+      });
+      _stopwatch?.stop();
+      _locationStream?.cancel();
+      _confirmationHandler.deactivate();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await BackupNavigationManager.instance.save(route: ClientRoutes.navigation, travel: widget.travel);
-      final quberConfig = await AdminService().getQuberConfig();
-      _travelPriceByTaxiType = quberConfig!.travelPrice[widget.travel.taxiType]!;
+      if(widget.wasRestored) {
+        _showRestoredBanner();
+      } else {
+        await BackupNavigationManager.instance.save(route: ClientRoutes.navigation, travel: widget.travel);
+        final quberConfig = await AdminService().getQuberConfig();
+        _travelPriceByTaxiType = quberConfig!.travelPrice[widget.travel.taxiType]!;
+      }
     });
     _confirmationHandler = FinishConfirmationHandler(
         travelId: widget.travel.id,
@@ -225,29 +284,17 @@ class _ClientNavigationState extends State<ClientNavigation> {
     _startTrackingDistance();
   }
 
-  void _markTravelAsCompleted() async {
-    final response = await _travelService.changeState(travelId: widget.travel.id, state: TravelState.completed);
-    if(response.statusCode == 200) {
-      BackupNavigationManager.instance.clear();
-      setState(() {
-        _isTravelCompleted = true; // show completed travel metrics (bottom sheet)
-      });
-      _stopwatch?.stop();
-      _locationStream.cancel();
-      _confirmationHandler.deactivate();
-    }
-  }
-
   @override
   void dispose() {
     _confirmationHandler.deactivate();
-    _locationStream.cancel();
+    _locationStream?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    _scaffoldMessenger = ScaffoldMessenger.of(context);
     // Init camera options
     final cameraOptions = CameraOptions(
       center: Point(coordinates: Position(widget.travel.originCoords[0], widget.travel.originCoords[1])),
@@ -347,16 +394,17 @@ class _ClientNavigationState extends State<ClientNavigation> {
                     ),
                   ),
                 ),
+
               ],
             ),
             bottomSheet: _isTravelCompleted
                 ? ClientTripCompleted(
                     travel: widget.travel,
                     duration: _finalDuration,
-                    distance: _distanceInKm.toInt(),
+                    distance: widget.wasRestored ? null : _distanceInKm.toInt(),
                     price: _finalPrice)
                 : ClientTripInfo(
-                    distance: _distanceInKm.toInt(),
+                    distance: widget.wasRestored ? null : _distanceInKm.toInt(),
                     travelPriceByTaxiType: _travelPriceByTaxiType,
                     originName: widget.travel.originName,
                     destinationName: widget.travel.destinationName,
