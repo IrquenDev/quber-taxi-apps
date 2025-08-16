@@ -144,8 +144,12 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
         path: ClientRoutes.navigation,
         builder: (context, state) {
-          final travel = state.extra as Travel;
-          return ClientNavigation(travel: travel);
+          if (state.extra is Travel) {
+            return ClientNavigation(travel: state.extra as Travel);
+          }
+          // Assume restoration if no extra was provided
+          final travel = BackupNavigationManager.instance.getSavedTravel();
+          return ClientNavigation(travel: travel, wasRestored: true);
         }
     ),
     GoRoute(

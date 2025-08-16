@@ -7,6 +7,9 @@ import 'package:quber_taxi/common/services/admin_service.dart';
 import 'package:quber_taxi/common/services/travel_service.dart';
 import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
 import 'package:quber_taxi/common/widgets/dialogs/confirm_dialog.dart';
+import 'package:quber_taxi/enums/travel_state.dart';
+import 'package:quber_taxi/navigation/backup_navigation_manager.dart';
+import 'package:quber_taxi/navigation/routes/client_routes.dart';
 import 'package:quber_taxi/utils/map/mapbox.dart' as mb_util;
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart' as g;
@@ -21,9 +24,11 @@ import 'package:turf/distance.dart' as td;
 import 'package:turf/turf.dart' as turf;
 
 class ClientNavigation extends StatefulWidget {
-  final Travel travel;
 
-  const ClientNavigation({super.key, required this.travel});
+  final Travel travel;
+  final bool wasRestored;
+
+  const ClientNavigation({super.key, required this.travel, this.wasRestored = false});
 
   @override
   State<ClientNavigation> createState() => _ClientNavigationState();
@@ -41,16 +46,14 @@ class _ClientNavigationState extends State<ClientNavigation> {
   // Real time distance calculation
   final List<turf.Position> _realTimeRoute = [];
   late final StreamSubscription<g.Position> _locationStream;
-  num _finalDistance = 0;
+  num _distanceInKm = 0;
+  double get _finalPrice => _distanceInKm * (_travelPriceByTaxiType!);
   Stopwatch? _stopwatch;
   late final FinishConfirmationHandler _confirmationHandler;
   final _travelService = TravelService();
   double? _travelPriceByTaxiType;
 
-  double get _finalPrice => _finalDistance * _travelPriceByTaxiType!;
-
   int get _finalDuration => _stopwatch?.elapsed.inMinutes ?? 0;
-  late final double _creditForQuber;
   bool _isTravelCompleted = false;
 
   void _startTrackingDistance() {
@@ -69,7 +72,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
     final point1 = turf.Point(coordinates: _realTimeRoute.last);
     final point2 = turf.Point(coordinates: turf.Position(newPosition.longitude, newPosition.latitude));
     final segmentDistance = td.distance(point1, point2, Unit.kilometers);
-    setState(() => _finalDistance += segmentDistance);
+    setState(() => _distanceInKm += segmentDistance);
   }
 
   void _updateTaxiMarker(g.Position newPosition) async {
@@ -96,7 +99,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
     }
   }
 
-  void _onMapCreated(MapboxMap controller) async {
+  void _onMapCreated(MapboxMap controller, ColorScheme colorScheme) async {
     // Init fields
     _mapController = controller;
     _mapBearing = await _mapController.getCameraState().then((c) => c.bearing);
@@ -153,8 +156,8 @@ class _ClientNavigationState extends State<ClientNavigation> {
           await _mapController.style.addLayer(FillLayer(
             id: 'destination-municipality-fill',
             sourceId: 'destination-municipality-polygon',
-            fillColor: Theme.of(context).colorScheme.onTertiaryContainer.withValues(alpha: 0.5).value,
-            fillOutlineColor: Theme.of(context).colorScheme.tertiary.value,
+            fillColor: colorScheme.onTertiaryContainer.withValues(alpha: 0.5).toARGB32(),
+            fillOutlineColor: colorScheme.tertiary.toARGB32(),
           ));
 
           // Fit camera to include origin and polygon bounds
@@ -194,29 +197,13 @@ class _ClientNavigationState extends State<ClientNavigation> {
     }
   }
 
-  void _markTravelAsCompleted() async {
-    final response = await _travelService.markAsCompleted(
-      travelId: widget.travel.id,
-      finalDistance: _finalDistance.toInt(),
-      finalDuration: _finalDuration,
-      finalPrice: _finalPrice,
-      quberCredit: (_finalPrice * _creditForQuber) / 100,
-    );
-    if (response.statusCode == 200) {
-      _stopwatch?.stop();
-      setState(() {
-        _isTravelCompleted = true;
-      });
-    }
-  }
-
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await BackupNavigationManager.instance.save(route: ClientRoutes.navigation, travel: widget.travel);
       final quberConfig = await AdminService().getQuberConfig();
       _travelPriceByTaxiType = quberConfig!.travelPrice[widget.travel.taxiType]!;
-      _creditForQuber = quberConfig.quberCredit;
     });
     _confirmationHandler = FinishConfirmationHandler(
         travelId: widget.travel.id,
@@ -238,6 +225,19 @@ class _ClientNavigationState extends State<ClientNavigation> {
     _startTrackingDistance();
   }
 
+  void _markTravelAsCompleted() async {
+    final response = await _travelService.changeState(travelId: widget.travel.id, state: TravelState.completed);
+    if(response.statusCode == 200) {
+      BackupNavigationManager.instance.clear();
+      setState(() {
+        _isTravelCompleted = true; // show completed travel metrics (bottom sheet)
+      });
+      _stopwatch?.stop();
+      _locationStream.cancel();
+      _confirmationHandler.deactivate();
+    }
+  }
+
   @override
   void dispose() {
     _confirmationHandler.deactivate();
@@ -247,6 +247,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     // Init camera options
     final cameraOptions = CameraOptions(
       center: Point(coordinates: Position(widget.travel.originCoords[0], widget.travel.originCoords[1])),
@@ -265,7 +266,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
                 MapWidget(
                   styleUri: MapboxStyles.STANDARD,
                   cameraOptions: cameraOptions,
-                  onMapCreated: _onMapCreated,
+                  onMapCreated: (controller) => _onMapCreated(controller, colorScheme),
                   onCameraChangeListener: _onCameraChangeListener,
                 ),
                 Positioned(
@@ -282,7 +283,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
                             borderRadius: BorderRadius.circular(8),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Colors.black.withAlpha(25),
                                 blurRadius: 4,
                                 offset: Offset(0, 2),
                               ),
@@ -352,10 +353,10 @@ class _ClientNavigationState extends State<ClientNavigation> {
                 ? ClientTripCompleted(
                     travel: widget.travel,
                     duration: _finalDuration,
-                    distance: _finalDistance.toInt(),
-                    travelPriceByTaxiType: _travelPriceByTaxiType!)
+                    distance: _distanceInKm.toInt(),
+                    price: _finalPrice)
                 : ClientTripInfo(
-                    distance: _finalDistance.toInt(),
+                    distance: _distanceInKm.toInt(),
                     travelPriceByTaxiType: _travelPriceByTaxiType,
                     originName: widget.travel.originName,
                     destinationName: widget.travel.destinationName,

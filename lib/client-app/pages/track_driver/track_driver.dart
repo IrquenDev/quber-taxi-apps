@@ -159,10 +159,12 @@ class _TrackDriverPageState extends State<TrackDriverPage> {
             );
             if(!mounted) return;
             if(response.statusCode == 200) {
-              // Navigate to ClientNavigation passing the corresponding travel
-              context.go(ClientRoutes.navigation, extra: widget.travel);
+              print("hola ???");
               // Clear backup once navigation starts
               await BackupNavigationManager.instance.clear();
+              if(!mounted) return;
+              // Navigate to ClientNavigation passing the corresponding travel
+              context.go(ClientRoutes.navigation, extra: widget.travel);
             }
           }
         }

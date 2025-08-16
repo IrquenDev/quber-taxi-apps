@@ -6,7 +6,7 @@ import 'package:quber_taxi/theme/dimensions.dart';
 
 class ClientTripInfo extends StatelessWidget {
 
-  final int distance;
+  final int? distance;
   final String originName;
   final String destinationName;
   final TaxiType taxiType;
@@ -53,9 +53,9 @@ class ClientTripInfo extends StatelessWidget {
                           style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold),
                             child: Column(
                                 children: [
-                                  Text('${distance.toStringAsFixed(0)} Km'),
+                                  Text('${distance?.toStringAsFixed(0)} Km'),
                                   Text(travelPriceByTaxiType != null
-                                      ? '${(distance * travelPriceByTaxiType!).toStringAsFixed(0)} CUP'
+                                      ? '${(distance! * travelPriceByTaxiType!).toStringAsFixed(0)} CUP'
                                       : '...'
                                   )
                                 ]

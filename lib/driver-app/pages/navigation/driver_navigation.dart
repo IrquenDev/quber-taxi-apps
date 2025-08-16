@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:quber_taxi/common/models/driver.dart';
 import 'package:quber_taxi/common/services/account_service.dart';
 import 'package:quber_taxi/common/services/admin_service.dart';
+import 'package:quber_taxi/common/services/travel_service.dart';
 import 'package:quber_taxi/driver-app/pages/navigation/trip_completed.dart';
 import 'package:quber_taxi/enums/municipalities.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
@@ -61,6 +62,7 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
   late final StreamSubscription<g.Position> _locationStream;
   num _distanceInKm = 0;
   Stopwatch? _stopwatch;
+  int get _duration => _stopwatch?.elapsed.inMinutes ?? 0;
   // Ignore points outside of selected municipality (when applicable)
   turf.Polygon? _municipalityPolygon;
   // Websocket for travel state changed (Here we must wait for the client to accept the finish confirmation or
@@ -68,15 +70,14 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
   late final TravelStateHandler _travelStateHandler;
   bool _isTravelCompleted = false;
   Driver _driver = Driver.fromJson(loggedInUser);
-
   // Price calculation
+  late final double _creditForQuber;
   double? _travelPriceByTaxiType;
-  double get _finalPrice => _distanceInKm * (_travelPriceByTaxiType ?? 0);
-
+  double get _finalPrice => _distanceInKm * (_travelPriceByTaxiType!);
   // Cached route for fixed destination
   List<List<num>>? _fixedRouteCoordinates;
-
   bool get _isFixedDestination => widget.travel.destinationCoords != null;
+  final _travelService = TravelService();
 
   Future<void> _loadHavanaGeoJson() async {
     if (_isFixedDestination) return;
@@ -372,6 +373,7 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final quberConfig = await AdminService().getQuberConfig();
       _travelPriceByTaxiType = quberConfig!.travelPrice[widget.travel.taxiType]!;
+      _creditForQuber = quberConfig.quberCredit;
       if(!mounted) return;
       // Prefetch route for fixed destination to avoid delays when toggling
       if (_isFixedDestination && hasConnection(context)) {
@@ -391,16 +393,28 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
         state: TravelState.completed,
         travelId: widget.travel.id,
         onMessage: (_) async {
+          // Cancel stopwatch
           _stopwatch?.stop();
-          final response = await AccountService().findDriver(_driver.id);
-          if (!mounted) return;
+          // Mark this travel as completed in the api
+          final response = await _travelService.markAsCompleted(
+            travelId: widget.travel.id,
+            finalDistance: _distanceInKm.toInt(),
+            finalDuration: _duration,
+            finalPrice: _finalPrice,
+            quberCredit: (_finalPrice * _creditForQuber) / 100,
+          );
+          // When success get the updated driver data and save it locally
           if (response.statusCode == 200) {
-            _driver = Driver.fromJson(jsonDecode(response.body));
-            final savedFlag = await SessionPrefsManager.instance.save(_driver);
-            if (savedFlag) {
-              setState(() => _isTravelCompleted = true);
-              _locationStream.cancel();
-              _travelStateHandler.deactivate();
+            final driverResponse = await AccountService().findDriver(_driver.id);
+            if (!mounted) return;
+            if (driverResponse.statusCode == 200) {
+              _driver = Driver.fromJson(jsonDecode(driverResponse.body));
+              final savedFlag = await SessionPrefsManager.instance.save(_driver);
+              if (savedFlag) {
+                setState(() => _isTravelCompleted = true); // show completed travel metrics (bottom sheet)
+                _locationStream.cancel();
+                _travelStateHandler.deactivate();
+              }
             }
           }
         })
@@ -499,17 +513,15 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
             ? DriverTripCompleted(
                 travel: widget.travel,
                 driver: _driver,
-                duration: _stopwatch?.elapsed.inMinutes ?? 0,
+                duration: _duration,
                 distance: _distanceInKm,
-                finalPrice: _finalPrice,
-                travelPriceByTaxiType: _travelPriceByTaxiType,
+                finalPrice: _finalPrice
               )
             : DriverTripInfo(
                 originName: widget.travel.originName,
                 destinationName: widget.travel.destinationName,
                 distance: _distanceInKm,
                 taxiType: widget.travel.taxiType,
-                finalPrice: _finalPrice,
                 travelPriceByTaxiType: _travelPriceByTaxiType,
                 isFixedDestination: _isFixedDestination,
                 onGuidedRouteSwitched: _onGuidedRouteSwitched,

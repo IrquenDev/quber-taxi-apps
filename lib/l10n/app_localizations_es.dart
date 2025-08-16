@@ -1208,7 +1208,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get pickupConfirmationInfo =>
-      'Hemos enviado una notificación al cliente. Una vez la acepte, comenzará el viaje.';
+      'Enviaremos una notificación al cliente. Una vez la acepte, comenzará el viaje.';
 
   @override
   String get pickupConfirmationTitle => 'Confirmación de recogida';

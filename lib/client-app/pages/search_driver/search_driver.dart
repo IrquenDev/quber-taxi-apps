@@ -29,7 +29,7 @@ class _SearchDriverPageState extends State<SearchDriverPage> with SingleTickerPr
   Timer? _ticker;
   late final TravelStateHandler _handler;
   final _travelService = TravelService();
-  static const Duration _timeout = Duration(minutes: 1);
+  static const Duration _timeout = Duration(minutes: 3);
   DateTime? _requestedAt;
   DateTime? _startedAt;
   Duration _remaining = _timeout;
