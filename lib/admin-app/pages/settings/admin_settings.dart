@@ -515,6 +515,25 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                                                   ]
                                               )
                                           ),
+                                        ),
+                                        Divider(
+                                          height: 1.0, thickness: 3.0,
+                                          color: Theme.of(context).colorScheme.surfaceContainer,
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.symmetric(horizontal: 20.0),
+                                          child: InkWell(
+                                              onTap: () {
+                                                context.push(AdminRoutes.requestTaxi);
+                                              },
+                                              child: Row(
+                                                  spacing: 12.0,
+                                                  children: [
+                                                    Icon(Icons.local_taxi, size: 22),
+                                                    Text(AppLocalizations.of(context)!.askTaxi, style: theme.textTheme.bodyLarge)
+                                                  ]
+                                              )
+                                          ),
                                         )
                                       ]
                                   )
