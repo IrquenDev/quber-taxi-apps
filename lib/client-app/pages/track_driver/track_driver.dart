@@ -159,7 +159,6 @@ class _TrackDriverPageState extends State<TrackDriverPage> {
             );
             if(!mounted) return;
             if(response.statusCode == 200) {
-              print("hola ???");
               // Clear backup once navigation starts
               await BackupNavigationManager.instance.clear();
               if(!mounted) return;

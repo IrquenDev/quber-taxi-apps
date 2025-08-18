@@ -122,34 +122,31 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
         path: ClientRoutes.searchDriver,
         builder: (context, state) {
-          if (state.extra is int) {
-            return SearchDriverPage(travelId: state.extra as int);
+          if (runtime.shouldRestorePage) {
+            final travel = BackupNavigationManager.instance.getSavedTravel();
+            return SearchDriverPage(travelId: travel.id, wasRestored: true, restoredTravel: travel);
           }
-          // Assume restoration if no extra was provided
-          final travel = BackupNavigationManager.instance.getSavedTravel();
-          return SearchDriverPage(travelId: travel.id, wasRestored: true, restoredTravel: travel);
+          return SearchDriverPage(travelId: state.extra as int);
         }
     ),
     GoRoute(
         path: ClientRoutes.trackDriver,
         builder: (context, state) {
-          if (state.extra is Travel) {
-            return TrackDriverPage(travel: state.extra as Travel);
+          if (runtime.shouldRestorePage) {
+            final travel = BackupNavigationManager.instance.getSavedTravel();
+            return TrackDriverPage(travel: travel, wasRestored: true);
           }
-          // Assume restoration if no extra was provided
-          final travel = BackupNavigationManager.instance.getSavedTravel();
-          return TrackDriverPage(travel: travel, wasRestored: true);
+          return TrackDriverPage(travel: state.extra as Travel);
         }
     ),
     GoRoute(
         path: ClientRoutes.navigation,
         builder: (context, state) {
-          if (state.extra is Travel) {
-            return ClientNavigation(travel: state.extra as Travel);
+          if (runtime.shouldRestorePage) {
+            final travel = BackupNavigationManager.instance.getSavedTravel();
+            return ClientNavigation(travel: travel, wasRestored: true);
           }
-          // Assume restoration if no extra was provided
-          final travel = BackupNavigationManager.instance.getSavedTravel();
-          return ClientNavigation(travel: travel, wasRestored: true);
+          return ClientNavigation(travel: state.extra as Travel);
         }
     ),
     GoRoute(
@@ -173,7 +170,13 @@ final GoRouter appRouter = GoRouter(
     ),
     GoRoute(
         path: DriverRoutes.home,
-        builder: (context, state) => DriverHomePage()
+        builder: (context, state) {
+          if(runtime.shouldRestorePage) {
+            final travel = BackupNavigationManager.instance.getSavedTravel();
+            return DriverHomePage(selectedTravel: travel, wasRestored: true);
+          }
+          return DriverHomePage();
+        }
     ),
     GoRoute(
         path: DriverRoutes.navigation,
