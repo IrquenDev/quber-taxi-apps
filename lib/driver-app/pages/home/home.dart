@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -8,6 +9,7 @@ import 'package:geolocator/geolocator.dart' as g;
 import 'package:go_router/go_router.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:network_checker/network_checker.dart';
+import 'package:quber_taxi/client-app/pages/home/map.dart';
 import 'package:quber_taxi/common/models/driver.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/services/account_service.dart';
@@ -21,6 +23,7 @@ import 'package:quber_taxi/driver-app/pages/home/info_travel_sheet.dart';
 import 'package:quber_taxi/driver-app/pages/home/trip_card.dart';
 import 'package:quber_taxi/driver-app/pages/home/trip_notification.dart';
 import 'package:quber_taxi/enums/driver_account_state.dart';
+import 'package:quber_taxi/enums/municipalities.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/common_routes.dart';
@@ -125,11 +128,15 @@ class _DriverHomePageState extends State<DriverHomePage> {
       },
       onPermissionDenied: () {
         // Permission denied, but don't show error - user can still use the button
-        print('Location permission denied on startup');
+        if (kDebugMode) {
+          print('Location permission denied on startup');
+        }
       },
       onPermissionDeniedForever: () {
         // Permission denied permanently, but don't show error - user can still use the button
-        print('Location permission denied permanently on startup');
+        if (kDebugMode) {
+          print('Location permission denied permanently on startup');
+        }
       }
     );
   }
@@ -344,30 +351,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
     });
   }
 
-  /// Maps municipality names to their corresponding GeoJSON file paths
-  String? _getMunicipalityGeoJsonPath(String municipalityName) {
-    final Map<String, String> municipalityMap = {
-      'Centro Habana': 'assets/geojson/polygon/CentroHabana.geojson',
-      'La Habana Vieja': 'assets/geojson/polygon/LaHabanaVieja.geojson',
-      'La Lisa': 'assets/geojson/polygon/LaLisa.geojson',
-      'Marianao': 'assets/geojson/polygon/Marianao.geojson',
-      'Playa': 'assets/geojson/polygon/Playa.geojson',
-      'Plaza': 'assets/geojson/polygon/Plaza.geojson',
-      'Regla': 'assets/geojson/polygon/Regla.geojson',
-      'San Miguel del Padrón': 'assets/geojson/polygon/SanMiguel.geojson',
-      'Cotorro': 'assets/geojson/polygon/Cotorro.geojson',
-      'Diez de Octubre': 'assets/geojson/polygon/DiezDeOctubre.geojson',
-      'El Cerro': 'assets/geojson/polygon/ElCerro.geojson',
-      'Guanabacoa': 'assets/geojson/polygon/Guanabacoa.geojson',
-      'Habana del Este': 'assets/geojson/polygon/HabanaDelEste.geojson',
-      'Arroyo Naranjo': 'assets/geojson/polygon/ArroyoNaranjo.geojson',
-      'Boyeros': 'assets/geojson/polygon/Boyeros.geojson',
-    };
-    
-    return municipalityMap[municipalityName];
-  }
-
   void _onTravelSelected(Travel travel) async {
+    final colorScheme = Theme.of(context).colorScheme;
     final localizations = AppLocalizations.of(context)!;
     // Check if driver has location before accepting travel
     if (!_isLocationStreaming) {
@@ -461,7 +446,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
         );
       } else {
         // Destination is a municipality - add polygon
-        final municipalityPath = _getMunicipalityGeoJsonPath(travel.destinationName);
+        final municipalityPath = Municipalities.resolveGeoJsonRef(travel.destinationName);
         if (municipalityPath != null) {
           try {
             // Load and add municipality polygon
@@ -479,8 +464,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
             await _mapController.style.addLayer(FillLayer(
               id: "municipality-fill",
               sourceId: "municipality-polygon",
-              fillColor: Theme.of(context).colorScheme.onTertiaryContainer.withValues(alpha: 0.5).value,
-              fillOutlineColor: Theme.of(context).colorScheme.tertiary.value,
+              fillColor: colorScheme.onTertiaryContainer.withValues(alpha: 0.5).toARGB32(),
+              fillOutlineColor: colorScheme.tertiary.toARGB32(),
             ));
             
             // Calculate bounds to include origin and municipality
@@ -510,7 +495,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
               MapAnimationOptions(duration: 1000)
             );
           } catch (e) {
-            print('Error loading municipality polygon: $e');
+            if (kDebugMode) {
+              print('Error loading municipality polygon: $e');
+            }
             // Fallback to just centering on origin
             _mapController.easeTo(
               CameraOptions(center: Point(coordinates: originCoords)),
@@ -656,7 +643,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
       await _mapController.style.removeStyleSource("municipality-polygon");
     } catch (e) {
       // Layer or source might not exist, ignore error
-      print('Error clearing municipality polygon: $e');
+      if (kDebugMode) {
+        print('Error clearing municipality polygon: $e');
+      }
     }
   }
 
@@ -693,7 +682,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
       }
     } catch (e) {
       // Handle error silently - announcements are not critical for app functionality
-      print('Error checking announcements: $e');
+      if (kDebugMode) {
+        print('Error checking announcements: $e');
+      }
     }
   }
 
@@ -1045,7 +1036,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                                 width: 24.0,
                                 height: 8.0,
                                 decoration: BoxDecoration(
-                                  color: colorScheme.onSurfaceVariant.withOpacity(0.4),
+                                  color: colorScheme.onSurfaceVariant.withAlpha(100),
                                   borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusSmall)
                                 )
                               ),
@@ -1064,7 +1055,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                               await _clearMunicipalityPolygon();
 
                               // Notify driver about pickup confirmation flow
-                              if (mounted) {
+                              if (context.mounted) {
                                 showDialog(
                                   context: context,
                                   barrierDismissible: false,
@@ -1112,58 +1103,4 @@ class _DriverHomePageState extends State<DriverHomePage> {
       },
     );
   }
-}
-
-/// Represent a fake driver.
-class AnimatedFakeDriver {
-
-  /// Fake route coords.
-  final List<List<num>> routeCoords;
-  /// The corresponding annotation (marker) in the map.
-  final PointAnnotation annotation;
-  /// The route's duration in milliseconds estimated by Mapbox API.
-  final Duration routeDuration;
-
-  // Total segments to be covered.
-  late final int _totalSegments;
-  // Keep track of a specific animation.
-  Duration startOffset = Duration.zero;
-
-  AnimatedFakeDriver({required this.routeCoords, required this.annotation, required this.routeDuration}) {
-    _totalSegments = routeCoords.length - 1;
-  }
-
-  /// Updates the geometry and orientation of the [AnimatedFakeDriver.annotation].
-  void updatePosition(Duration globalElapsed, double mapBearing) {
-    // Time a specific animation has been running
-    final elapsed = globalElapsed - startOffset;
-    // Real progress based in the suggested mapbox route duration
-    double progress = elapsed.inMilliseconds / routeDuration.inMilliseconds;
-    // Check total progress, if complete, then restart animation to the origin
-    if (progress >= 1.0) {
-      startOffset = globalElapsed;
-      progress = 0.0;
-    }
-    // Index of the start point of the current segment
-    final segmentIndex = (progress * _totalSegments).floor();
-    // Avoid index out of bounds exception
-    if (segmentIndex >= _totalSegments) return;
-    // Use next coords
-    final start = routeCoords[segmentIndex];
-    final end = routeCoords[segmentIndex + 1];
-    // Adjust bearing
-    final bearing = mb_util.calculateBearing(start[1], start[0], end[1], end[0]);
-    final adjustedBearing = (bearing - mapBearing + 360) % 360;
-    // Linear interpolation
-    final localT = (progress * _totalSegments) - segmentIndex;
-    final lon = _lerp(start[0], end[0], localT);
-    final lat = _lerp(start[1], end[1], localT);
-    // Update annotation fields
-    annotation
-      ..geometry = Point(coordinates: Position(lon, lat))
-      ..iconRotate = adjustedBearing;
-  }
-
-  // Basic linear interpolation.
-  static num _lerp(num a, num b, num t) => a + (b - a) * t;
 }
