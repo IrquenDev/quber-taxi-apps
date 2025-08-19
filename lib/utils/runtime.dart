@@ -29,3 +29,5 @@ bool hasConnection(BuildContext context) => NetworkScope.statusOf(context) == Co
 bool get isOnboardingDone => OnboardingPrefsManager.instance.isOnboardingDone();
 
 bool get shouldRestorePage => BackupNavigationManager.instance.shouldRestorePage();
+
+String? get savedRoute => BackupNavigationManager.instance.getSavedRoute();

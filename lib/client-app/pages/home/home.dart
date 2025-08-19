@@ -12,7 +12,6 @@ import 'package:quber_taxi/common/services/app_announcement_service.dart';
 import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
 import 'package:quber_taxi/common/widgets/dialogs/circular_info_dialog.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
-import 'package:quber_taxi/navigation/routes/client_routes.dart';
 import 'package:quber_taxi/navigation/routes/common_routes.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:quber_taxi/utils/runtime.dart';

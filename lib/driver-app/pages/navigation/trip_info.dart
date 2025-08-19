@@ -7,7 +7,7 @@ import 'package:quber_taxi/theme/dimensions.dart';
 
 class DriverTripInfo extends StatefulWidget {
 
-  final num distance;
+  final num? distance;
   final String originName;
   final String destinationName;
   final TaxiType taxiType;
@@ -81,10 +81,10 @@ class _DriverTripInfoState extends State<DriverTripInfo> {
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('${(widget.distance.toStringAsFixed(0))} ${loc.kilometers}'),
-                              Text(widget.travelPriceByTaxiType != null
-                                  ? '${(widget.distance * widget.travelPriceByTaxiType!).toStringAsFixed(0)} ${loc.currency}'
-                                  : '...'
+                              Text(widget.distance != null ? '${widget.distance!.toStringAsFixed(0)} Km' : '-'),
+                              Text(widget.travelPriceByTaxiType != null && widget.distance != null
+                                  ? '${(widget.distance! * widget.travelPriceByTaxiType!).toStringAsFixed(0)} CUP'
+                                  : '-'
                               )
                             ]
                         )

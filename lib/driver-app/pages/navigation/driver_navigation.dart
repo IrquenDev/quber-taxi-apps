@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:quber_taxi/common/models/driver.dart';
 import 'package:quber_taxi/common/services/account_service.dart';
 import 'package:quber_taxi/common/services/admin_service.dart';
@@ -7,6 +8,8 @@ import 'package:quber_taxi/common/services/travel_service.dart';
 import 'package:quber_taxi/driver-app/pages/navigation/trip_completed.dart';
 import 'package:quber_taxi/enums/municipalities.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
+import 'package:quber_taxi/navigation/backup_navigation_manager.dart';
+import 'package:quber_taxi/navigation/routes/driver_routes.dart';
 import 'package:quber_taxi/storage/session_prefs_manger.dart';
 import 'package:quber_taxi/utils/map/mapbox.dart' as mb_util;
 import 'package:flutter/material.dart';
@@ -30,8 +33,9 @@ import 'package:turf/turf.dart' as turf;
 
 class DriverNavigationPage extends StatefulWidget {
   final Travel travel;
+  final bool wasRestored;
 
-  const DriverNavigationPage({super.key, required this.travel});
+  const DriverNavigationPage({super.key, required this.travel, this.wasRestored = false});
 
   @override
   State<DriverNavigationPage> createState() => _DriverNavigationPageState();
@@ -63,6 +67,7 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
   num _distanceInKm = 0;
   Stopwatch? _stopwatch;
   int get _duration => _stopwatch?.elapsed.inMinutes ?? 0;
+  int? get _finalDuration => widget.wasRestored ? null : _duration;
   // Ignore points outside of selected municipality (when applicable)
   turf.Polygon? _municipalityPolygon;
   // Websocket for travel state changed (Here we must wait for the client to accept the finish confirmation or
@@ -78,24 +83,61 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
   List<List<num>>? _fixedRouteCoordinates;
   bool get _isFixedDestination => widget.travel.destinationCoords != null;
   final _travelService = TravelService();
+  late ScaffoldMessengerState _scaffoldMessenger;
 
-  Future<void> _loadHavanaGeoJson() async {
-    if (_isFixedDestination) return;
+  void _showRestoredBanner() {
+    _scaffoldMessenger.showMaterialBanner(
+      MaterialBanner(
+        padding: EdgeInsets.all(8.0),
+        content: Text(
+          'Vista restaurada: Las métricas del viaje ya no son confiables. Se le aplicará una penalización al '
+              'finalizar el viaje'
+              '${!_isFixedDestination ? " y se asumirá el precio máximo para calcular el crédito a descontar." : "."}',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        backgroundColor: Theme.of(context).colorScheme.errorContainer,
+        surfaceTintColor: Theme.of(context).colorScheme.errorContainer,
+        leading: Icon(
+          Icons.warning_outlined,
+          color: Theme.of(context).colorScheme.onErrorContainer,
+          size: 24,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              _scaffoldMessenger.hideCurrentMaterialBanner();
+            },
+            child: Text(
+              'CERRAR',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onErrorContainer,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _loadMunicipalityGeoJson() async {
     final munPath = Municipalities.resolveGeoJsonRef(widget.travel.destinationName);
     if (munPath == null) return;
     _municipalityPolygon = await GeoUtils.loadGeoJsonPolygon(munPath);
   }
 
-  void _startTrackingDistance() {
-    _locationStream =
-        g.Geolocator.getPositionStream(locationSettings: g.LocationSettings(distanceFilter: 5)).listen(_onMove);
-  }
-
   void _onMove(g.Position newPosition) {
-    _stopwatch ??= Stopwatch()..start();
-    _calcRealTimeDistance(newPosition);
-    _updateTaxiMarker(newPosition);
-    _realTimeRoute.add(turf.Position(newPosition.longitude, newPosition.latitude));
+    if(widget.wasRestored) {
+      _updateTaxiMarker(newPosition);
+    } else {
+      _stopwatch ??= Stopwatch()..start();
+      _calcRealTimeDistance(newPosition);
+      _updateTaxiMarker(newPosition);
+      _realTimeRoute.add(turf.Position(newPosition.longitude, newPosition.latitude));
+    }
   }
 
   void _calcRealTimeDistance(g.Position newPosition) {
@@ -370,41 +412,34 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final quberConfig = await AdminService().getQuberConfig();
-      _travelPriceByTaxiType = quberConfig!.travelPrice[widget.travel.taxiType]!;
-      _creditForQuber = quberConfig.quberCredit;
-      if(!mounted) return;
-      // Prefetch route for fixed destination to avoid delays when toggling
-      if (_isFixedDestination && hasConnection(context)) {
-        final route = await _mapboxService.getRoute(
-          originLng: widget.travel.originCoords[0],
-          originLat: widget.travel.originCoords[1],
-          destinationLng: widget.travel.destinationCoords![0],
-          destinationLat: widget.travel.destinationCoords![1],
-        );
-        _fixedRouteCoordinates = route.coordinates;
-      }
-    });
-    _loadHavanaGeoJson();
-    _realTimeRoute.add(turf.Position(widget.travel.originCoords[0], widget.travel.originCoords[1]));
-    _startTrackingDistance();
+    // ALWAYS RUNS ON START UP
+    // Websocket handler waiting for travel state changes (completed)
     _travelStateHandler = TravelStateHandler(
         state: TravelState.completed,
         travelId: widget.travel.id,
         onMessage: (_) async {
           // Cancel stopwatch
           _stopwatch?.stop();
-          // Mark this travel as completed in the api
-          final response = await _travelService.markAsCompleted(
-            travelId: widget.travel.id,
-            finalDistance: _distanceInKm.toInt(),
-            finalDuration: _duration,
-            finalPrice: _finalPrice,
-            quberCredit: (_finalPrice * _creditForQuber) / 100,
-          );
-          // When success get the updated driver data and save it locally
+          // Mark this travel as completed (or with issues) in the api
+          late http.Response response;
+          if(widget.wasRestored) {
+            response = await _travelService.markAsCompletedWithIssue(travelId: widget.travel.id);
+          } else {
+            response = await _travelService.markAsCompleted(
+              travelId: widget.travel.id,
+              finalDistance: _distanceInKm.toInt(),
+              finalDuration: _duration,
+              finalPrice: _finalPrice,
+              quberCredit: (_finalPrice * _creditForQuber) / 100,
+            );
+          }
+          print("RESPONSE STATUS CODE${response.statusCode}");
+          print("RESPONSE BODY: ${response.body}");
           if (response.statusCode == 200) {
+            // In any case (was page restored) the API has already applied discounts, penalties, etc. It's safe to
+            // clear the redirect backup right here.
+            await BackupNavigationManager.instance.clear();
+            // Get the updated driver data and save it locally
             final driverResponse = await AccountService().findDriver(_driver.id);
             if (!mounted) return;
             if (driverResponse.statusCode == 200) {
@@ -419,10 +454,45 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
           }
         })
       ..activate();
+    // Load municipality polygon if destination is a municipality (useful to limit the driver into the destination
+    // municipality boxing when selecting a guided route directly from map);
+    if (!_isFixedDestination) {
+      _loadMunicipalityGeoJson();
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // Prefetch route for fixed destination to avoid delays when toggling
+      if (_isFixedDestination && hasConnection(context)) {
+        final route = await _mapboxService.getRoute(
+          originLng: widget.travel.originCoords[0],
+          originLat: widget.travel.originCoords[1],
+          destinationLng: widget.travel.destinationCoords![0],
+          destinationLat: widget.travel.destinationCoords![1],
+        );
+        _fixedRouteCoordinates = route.coordinates;
+      }
+      // Start streaming location (_onMove behavior depends on wasPageRestored)
+      _locationStream = g.Geolocator
+          .getPositionStream(locationSettings: g.LocationSettings(distanceFilter: 5))
+          .listen(_onMove);
+      // DEPENDS ON WAS PAGE RESTORED
+      if(widget.wasRestored) {
+        _showRestoredBanner();
+      } else {
+        // Set redirection fallback to this page.
+        await BackupNavigationManager.instance.save(route: DriverRoutes.navigation, travel: widget.travel);
+        // Get travel price (base on driver's taxi) and percentage of credit to discount from REST API.
+        final quberConfig = await AdminService().getQuberConfig();
+        _travelPriceByTaxiType = quberConfig!.travelPrice[widget.travel.taxiType]!;
+        _creditForQuber = quberConfig.quberCredit;
+        // Set first coords (travel origin coords).
+        _realTimeRoute.add(turf.Position(widget.travel.originCoords[0], widget.travel.originCoords[1]));
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    _scaffoldMessenger = ScaffoldMessenger.of(context);
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final dims = Theme.of(context).extension<DimensionExtension>()!;
@@ -513,14 +583,16 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
             ? DriverTripCompleted(
                 travel: widget.travel,
                 driver: _driver,
-                duration: _duration,
-                distance: _distanceInKm,
-                finalPrice: _finalPrice
+                duration: _finalDuration,
+                distance: widget.wasRestored ? null : _distanceInKm.toInt(),
+                finalPrice: widget.wasRestored
+                    ? _isFixedDestination ? widget.travel.fixedPrice! : widget.travel.maxPrice!
+                    : _finalPrice
               )
             : DriverTripInfo(
                 originName: widget.travel.originName,
                 destinationName: widget.travel.destinationName,
-                distance: _distanceInKm,
+                distance: widget.wasRestored ? null : _distanceInKm.toInt(),
                 taxiType: widget.travel.taxiType,
                 travelPriceByTaxiType: _travelPriceByTaxiType,
                 isFixedDestination: _isFixedDestination,

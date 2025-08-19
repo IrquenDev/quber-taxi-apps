@@ -232,8 +232,18 @@ class _ClientTripCompletedState extends State<ClientTripCompleted> {
                         label: loc.tripPriceLabel,
                         text: widget.price != null ? '${widget.price!.toStringAsFixed(0)} ${loc.currencyLabel}' : '-'
                     ),
-                    TripDetailRow(label: loc.tripDurationLabel, text: widget.duration != null ? '${widget.duration!.toStringAsFixed(0)} ${loc.minutesLabel}' : '-'),
-                    TripDetailRow(label: loc.tripDistanceLabel, text: widget.distance != null ? '${widget.distance!.toStringAsFixed(0)} ${loc.kilometersLabel}' : '-'),
+                    TripDetailRow(
+                        label: loc.tripDurationLabel,
+                        text: widget.duration != null
+                            ? '${widget.duration!.toStringAsFixed(0)} ${loc.minutesLabel}'
+                            : '-'
+                    ),
+                    TripDetailRow(
+                        label: loc.tripDistanceLabel,
+                        text: widget.distance != null
+                            ? '${widget.distance!.toStringAsFixed(0)} ${loc.kilometersLabel}'
+                            : '-'
+                    ),
                     TripDetailRow(label: loc.originLabel, text: widget.travel.originName),
                     TripDetailRow(label: loc.destinationLabel, text: widget.travel.destinationName),
                   ]

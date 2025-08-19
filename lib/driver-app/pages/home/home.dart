@@ -1066,7 +1066,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
                             onPickUpConfirmationRequest: () async {
                               // Clear municipality polygon when starting the trip
                               await _clearMunicipalityPolygon();
-
                               // Notify driver about pickup confirmation flow
                               if (context.mounted) {
                                 showDialog(
@@ -1078,11 +1077,15 @@ class _DriverHomePageState extends State<DriverHomePage> {
                                   ),
                                 );
                               }
-
                               _travelStateHandler = TravelStateHandler(
                                 state: TravelState.inProgress,
                                 travelId: _selectedTravel!.id,
-                                onMessage: (travel) => context.go(DriverRoutes.navigation, extra: travel)
+                                onMessage: (travel) async {
+                                  // Clear backup once navigation starts
+                                  await BackupNavigationManager.instance.clear();
+                                  if(!context.mounted) return;
+                                  context.go(DriverRoutes.navigation, extra: travel);
+                                }
                               )..activate();
                             }
                           ),

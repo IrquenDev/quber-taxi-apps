@@ -51,7 +51,7 @@ final GoRouter appRouter = GoRouter(
       return CommonRoutes.login;
     }
     // 3) Backup restore (client only)
-    if (runtime.isClientMode && runtime.shouldRestorePage) {
+    if (runtime.shouldRestorePage) {
       final route = BackupNavigationManager.instance.getSavedRoute();
       if (route != null && state.matchedLocation != route) {
         return route;
@@ -181,8 +181,11 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
         path: DriverRoutes.navigation,
         builder: (context, state) {
-          final travel = state.extra as Travel;
-          return DriverNavigationPage(travel: travel);
+          if (runtime.shouldRestorePage) {
+            final travel = BackupNavigationManager.instance.getSavedTravel();
+            return DriverNavigationPage(travel: travel, wasRestored: true);
+          }
+          return DriverNavigationPage(travel: state.extra as Travel);
         }
     ),
     // ADMIN

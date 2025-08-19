@@ -14,8 +14,8 @@ class DriverTripCompleted extends StatefulWidget {
 
   final Travel travel;
   final Driver driver;
-  final int duration;
-  final num distance;
+  final int? duration;
+  final num? distance;
   final double finalPrice;
 
   const DriverTripCompleted({
@@ -113,11 +113,15 @@ class _DriverTripCompletedState extends State<DriverTripCompleted> {
                             ),
                             TripDetailRow(
                                 label: loc.tripDurationLabel,
-                                text: '${widget.duration.toStringAsFixed(0)} ${loc.minutesLabel}'
+                                text: widget.duration != null
+                                    ? '${widget.duration!.toStringAsFixed(0)} ${loc.minutesLabel}'
+                                    : '-'
                             ),
                             TripDetailRow(
                                 label: loc.tripDistanceLabel,
-                                text: '${widget.distance.toStringAsFixed(0)} ${loc.kilometersLabel}'
+                                text: widget.distance != null
+                                    ? '${widget.distance!.toStringAsFixed(0)} ${loc.kilometersLabel}'
+                                    : '-'
                             ),
                             TripDetailRow(label: loc.originLabel, text: widget.travel.originName),
                             TripDetailRow(label: loc.destinationLabel, text: widget.travel.destinationName),
