@@ -204,4 +204,12 @@ class TravelService {
       "credit": double.parse(quberCredit.toStringAsFixed(2))
     }));
   }
+
+  Future<http.Response> markAsCompletedWithIssue({
+    required int travelId,
+  }) async {
+    final url = Uri.parse("${_apiConfig.baseUrl}/$_endpoint/complete-with-issue/$travelId");
+    final headers = {'Content-Type': 'application/json'};
+    return await http.post(url, headers: headers);
+  }
 }

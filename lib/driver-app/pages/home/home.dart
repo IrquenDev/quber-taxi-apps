@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
@@ -8,6 +9,7 @@ import 'package:geolocator/geolocator.dart' as g;
 import 'package:go_router/go_router.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:network_checker/network_checker.dart';
+import 'package:quber_taxi/client-app/pages/home/map.dart';
 import 'package:quber_taxi/common/models/driver.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/services/account_service.dart';
@@ -21,8 +23,10 @@ import 'package:quber_taxi/driver-app/pages/home/info_travel_sheet.dart';
 import 'package:quber_taxi/driver-app/pages/home/trip_card.dart';
 import 'package:quber_taxi/driver-app/pages/home/trip_notification.dart';
 import 'package:quber_taxi/enums/driver_account_state.dart';
+import 'package:quber_taxi/enums/municipalities.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
+import 'package:quber_taxi/navigation/backup_navigation_manager.dart';
 import 'package:quber_taxi/navigation/routes/common_routes.dart';
 import 'package:quber_taxi/navigation/routes/driver_routes.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
@@ -49,8 +53,10 @@ class TravelNotification {
 class DriverHomePage extends StatefulWidget {
 
   final Position? coords;
+  final bool wasRestored;
+  final Travel? selectedTravel;
 
-  const DriverHomePage({super.key, this.coords});
+  const DriverHomePage({super.key, this.selectedTravel, this.wasRestored = false, this.coords});
 
   @override
   State<DriverHomePage> createState() => _DriverHomePageState();
@@ -90,7 +96,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
   final _driverService = DriverService();
 
   // Handling new travel requests
-  late final TravelRequestHandler _newTravelRequestHandler;
+  TravelRequestHandler? _newTravelRequestHandler;
   final List<TravelNotification> _newTravels = [];
   final Map<String, Timer> _notificationTimers = {}; // Timers for auto-removing notifications
 
@@ -125,27 +131,35 @@ class _DriverHomePageState extends State<DriverHomePage> {
       },
       onPermissionDenied: () {
         // Permission denied, but don't show error - user can still use the button
-        print('Location permission denied on startup');
+        if (kDebugMode) {
+          print('Location permission denied on startup');
+        }
       },
       onPermissionDeniedForever: () {
         // Permission denied permanently, but don't show error - user can still use the button
-        print('Location permission denied permanently on startup');
+        if (kDebugMode) {
+          print('Location permission denied permanently on startup');
+        }
       }
     );
   }
 
-  void _handleNetworkScopeAndListener() {
+  Future<void> _handleNetworkScopeAndListener() async {
     _scope = NetworkScope.of(context); // save the scope (depends on context) to safely access on dispose.
+    // We need to register a connection status listener, as it depends on ConnectionStatus being online to execute
+    // _checkDriverAccountState. If the driver is offline (any status other than checking or online), they won't be
+    // able to continue.
     _listener = _scope.registerListener(_checkDriverAccountStateListener);
-    // Check account state immediately when entering the home page
+    // Since execution times are not always the same, it's possible that when the listener is registered, the current
+    // status is already online, so the listener won't be notified. This is why we must make an initial manual call.
+    // In any case, calls will not be duplicated since they are being protected with the _didCheckAccount flag.
     _checkDriverAccountStateListener(NetworkScope.statusOf(context));
   }
 
-  void _checkDriverAccountStateListener(ConnectionStatus status) async {
+  Future<void> _checkDriverAccountStateListener(ConnectionStatus status) async {
     if (!_didCheckAccount) {
-      final connectionStatus =  NetworkScope.statusOf(context);
-      if(connectionStatus == ConnectionStatus.checking) return;
-      final isConnected =  connectionStatus == ConnectionStatus.online;
+      if(status == ConnectionStatus.checking) return;
+      final isConnected =  status == ConnectionStatus.online;
       if(isConnected) {
         await _checkDriverAccountState();
         _didCheckAccount = true;
@@ -344,29 +358,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
     });
   }
 
-  /// Maps municipality names to their corresponding GeoJSON file paths
-  String? _getMunicipalityGeoJsonPath(String municipalityName) {
-    final Map<String, String> municipalityMap = {
-      'Centro Habana': 'assets/geojson/polygon/CentroHabana.geojson',
-      'La Habana Vieja': 'assets/geojson/polygon/LaHabanaVieja.geojson',
-      'La Lisa': 'assets/geojson/polygon/LaLisa.geojson',
-      'Marianao': 'assets/geojson/polygon/Marianao.geojson',
-      'Playa': 'assets/geojson/polygon/Playa.geojson',
-      'Plaza': 'assets/geojson/polygon/Plaza.geojson',
-      'Regla': 'assets/geojson/polygon/Regla.geojson',
-      'San Miguel del Padrón': 'assets/geojson/polygon/SanMiguel.geojson',
-      'Cotorro': 'assets/geojson/polygon/Cotorro.geojson',
-      'Diez de Octubre': 'assets/geojson/polygon/DiezDeOctubre.geojson',
-      'El Cerro': 'assets/geojson/polygon/ElCerro.geojson',
-      'Guanabacoa': 'assets/geojson/polygon/Guanabacoa.geojson',
-      'Habana del Este': 'assets/geojson/polygon/HabanaDelEste.geojson',
-      'Arroyo Naranjo': 'assets/geojson/polygon/ArroyoNaranjo.geojson',
-      'Boyeros': 'assets/geojson/polygon/Boyeros.geojson',
-    };
-    
-    return municipalityMap[municipalityName];
-  }
-
   void _onTravelSelected(Travel travel) async {
     final localizations = AppLocalizations.of(context)!;
     // Check if driver has location before accepting travel
@@ -416,129 +407,126 @@ class _DriverHomePageState extends State<DriverHomePage> {
     final response = await _driverService.acceptTravel(driverId: _driver.id, travelId: travel.id);
     if(!mounted) return;
     if(response.statusCode == 200) {
-      // Load marker images
-      final originAssetBytes = await rootBundle.load('assets/markers/route/x120/origin.png');
-      final destinationAssetBytes = await rootBundle.load('assets/markers/route/x120/destination.png');
-      final originMarkerImage = originAssetBytes.buffer.asUint8List();
-      final destinationMarkerImage = destinationAssetBytes.buffer.asUint8List();
-      
-      // Create origin marker
-      final originCoords = Position(travel.originCoords[0], travel.originCoords[1]);
-      await _pointAnnotationManager?.create(
-        PointAnnotationOptions(
-          geometry: Point(coordinates: originCoords),
-          image: originMarkerImage,
-          iconAnchor: IconAnchor.BOTTOM,
-        ),
-      );
-      
-      // Handle destination based on whether it's a point or municipality
-      if (travel.destinationCoords != null) {
-        // Destination is a specific point - add marker
-        final destinationCoords = Position(travel.destinationCoords![0], travel.destinationCoords![1]);
-        await _pointAnnotationManager?.create(
-          PointAnnotationOptions(
-            geometry: Point(coordinates: destinationCoords),
-            image: destinationMarkerImage,
-            iconAnchor: IconAnchor.BOTTOM,
-          ),
-        );
-        
-        // Calculate bounds to include both origin and destination points
-        final bounds = mb_util.calculateBounds([originCoords, destinationCoords]);
-        
-        // Calculate camera options for the bounds
-        final cameraOptions = await _mapController.cameraForCoordinateBounds(
-          bounds,
-          MbxEdgeInsets(top: 50, bottom: 50, left: 50, right: 50),
-          0, 0, null, null,
-        );
-        
-        // Animate camera to show both points
-        _mapController.easeTo(
-          cameraOptions,
-          MapAnimationOptions(duration: 1000)
-        );
-      } else {
-        // Destination is a municipality - add polygon
-        final municipalityPath = _getMunicipalityGeoJsonPath(travel.destinationName);
-        if (municipalityPath != null) {
-          try {
-            // Load and add municipality polygon
-            final municipalityGeoJson = await turf_util.GeoUtils.loadGeoJsonPolygon(municipalityPath);
-            
-            // Convert polygon to GeoJSON string
-            final geoJsonString = jsonEncode(municipalityGeoJson.toJson());
-            
-            // Add polygon to map
-            await _mapController.style.addSource(GeoJsonSource(
-              id: "municipality-polygon",
-              data: geoJsonString
-            ));
-            
-            await _mapController.style.addLayer(FillLayer(
-              id: "municipality-fill",
-              sourceId: "municipality-polygon",
-              fillColor: Theme.of(context).colorScheme.onTertiaryContainer.withValues(alpha: 0.5).value,
-              fillOutlineColor: Theme.of(context).colorScheme.tertiary.value,
-            ));
-            
-            // Calculate bounds to include origin and municipality
-            // Get the polygon coordinates to calculate proper bounds
-            final polygonCoords = municipalityGeoJson.coordinates[0]; // First ring of the polygon
-            final List<Position> allCoords = [originCoords];
-            
-            // Add all polygon coordinates to the bounds calculation
-            for (final coord in polygonCoords) {
-              if(coord[0] != null && coord[1] != null) {
-                allCoords.add(Position(coord[0]!, coord[1]!));
-              }
-            }
-            
-            final bounds = mb_util.calculateBounds(allCoords);
-            
-            // Calculate camera options for the bounds
-            final cameraOptions = await _mapController.cameraForCoordinateBounds(
-              bounds,
-              MbxEdgeInsets(top: 50, bottom: 50, left: 50, right: 50),
-              0, 0, null, null,
-            );
-            
-            // Animate camera to show origin and municipality
-            _mapController.easeTo(
-              cameraOptions,
-              MapAnimationOptions(duration: 1000)
-            );
-          } catch (e) {
-            print('Error loading municipality polygon: $e');
-            // Fallback to just centering on origin
-            _mapController.easeTo(
-              CameraOptions(center: Point(coordinates: originCoords)),
-              MapAnimationOptions(duration: 500)
-            );
-          }
-        } else {
-          // Municipality not found, just center on origin
-          _mapController.easeTo(
-            CameraOptions(center: Point(coordinates: originCoords)),
-            MapAnimationOptions(duration: 500)
-          );
-        }
-      }
-      
-      _startSharingLocation();
-      setState(() => _selectedTravel = travel);
+      await BackupNavigationManager.instance.save(route: DriverRoutes.home, travel: travel);
+      _updateMapUiWithSelectedTravel(travel);
+      _startSelectedTravelMode(travel);
     }
     else if(response.statusCode == 403) {
       showToast(context: context, message: "Permiso denegado");
     }
-
     else if(response.statusCode == 409) {
       showToast(context: context, message: "Crédito Insuficiente");
     }
     else {
       showToast(context: context, message: AppLocalizations.of(context)!.noAssignedTrip);
     }
+  }
+
+  void _updateMapUiWithSelectedTravel(Travel travel) async {
+    final colorScheme = Theme.of(context).colorScheme;
+    // Load marker images
+    final originAssetBytes = await rootBundle.load('assets/markers/route/x120/origin.png');
+    final destinationAssetBytes = await rootBundle.load('assets/markers/route/x120/destination.png');
+    final originMarkerImage = originAssetBytes.buffer.asUint8List();
+    final destinationMarkerImage = destinationAssetBytes.buffer.asUint8List();
+    // Create origin marker
+    final originCoords = Position(travel.originCoords[0], travel.originCoords[1]);
+    // Handle destination based on whether it's a point or municipality
+    await _pointAnnotationManager?.create(
+      PointAnnotationOptions(
+        geometry: Point(coordinates: originCoords),
+        image: originMarkerImage,
+        iconAnchor: IconAnchor.BOTTOM,
+      ),
+    );
+    if (travel.destinationCoords != null) {
+      // Destination is a specific point - add marker
+      final destinationCoords = Position(travel.destinationCoords![0], travel.destinationCoords![1]);
+      await _pointAnnotationManager?.create(
+        PointAnnotationOptions(
+          geometry: Point(coordinates: destinationCoords),
+          image: destinationMarkerImage,
+          iconAnchor: IconAnchor.BOTTOM,
+        ),
+      );
+      // Calculate bounds to include both origin and destination points
+      final bounds = mb_util.calculateBounds([originCoords, destinationCoords]);
+      // Calculate camera options for the bounds
+      final cameraOptions = await _mapController.cameraForCoordinateBounds(
+        bounds,
+        MbxEdgeInsets(top: 50, bottom: 50, left: 50, right: 50),
+        0, 0, null, null,
+      );
+      // Animate camera to show both points
+      _mapController.easeTo(
+          cameraOptions,
+          MapAnimationOptions(duration: 1000)
+      );
+    } else {
+      // Destination is a municipality - add polygon
+      final municipalityPath = Municipalities.resolveGeoJsonRef(travel.destinationName);
+      if (municipalityPath != null) {
+        try {
+          // Load and add municipality polygon
+          final municipalityGeoJson = await turf_util.GeoUtils.loadGeoJsonPolygon(municipalityPath);
+          // Convert polygon to GeoJSON string
+          final geoJsonString = jsonEncode(municipalityGeoJson.toJson());
+          // Add polygon to map
+          await _mapController.style.addSource(GeoJsonSource(
+              id: "municipality-polygon",
+              data: geoJsonString
+          ));
+          await _mapController.style.addLayer(FillLayer(
+            id: "municipality-fill",
+            sourceId: "municipality-polygon",
+            fillColor: colorScheme.onTertiaryContainer.withValues(alpha: 0.5).toARGB32(),
+            fillOutlineColor: colorScheme.tertiary.toARGB32(),
+          ));
+          // Calculate bounds to include origin and municipality
+          // Get the polygon coordinates to calculate proper bounds
+          final polygonCoords = municipalityGeoJson.coordinates[0]; // First ring of the polygon
+          final List<Position> allCoords = [originCoords];
+          // Add all polygon coordinates to the bounds calculation
+          for (final coord in polygonCoords) {
+            if(coord[0] != null && coord[1] != null) {
+              allCoords.add(Position(coord[0]!, coord[1]!));
+            }
+          }
+          final bounds = mb_util.calculateBounds(allCoords);
+          // Calculate camera options for the bounds
+          final cameraOptions = await _mapController.cameraForCoordinateBounds(
+            bounds,
+            MbxEdgeInsets(top: 50, bottom: 50, left: 50, right: 50),
+            0, 0, null, null,
+          );
+          // Animate camera to show origin and municipality
+          _mapController.easeTo(
+              cameraOptions,
+              MapAnimationOptions(duration: 1000)
+          );
+        } catch (e) {
+          if (kDebugMode) {
+            print('Error loading municipality polygon: $e');
+          }
+          // Fallback to just centering on origin
+          _mapController.easeTo(
+              CameraOptions(center: Point(coordinates: originCoords)),
+              MapAnimationOptions(duration: 500)
+          );
+        }
+      } else {
+        // Municipality not found, just center on origin
+        _mapController.easeTo(
+            CameraOptions(center: Point(coordinates: originCoords)),
+            MapAnimationOptions(duration: 500)
+        );
+      }
+    }
+  }
+
+  void _startSelectedTravelMode(Travel travel) async {
+    _startSharingLocation();
+    setState(() => _selectedTravel = travel);
   }
 
   void _onTick(Duration elapsed) async {
@@ -636,16 +624,26 @@ class _DriverHomePageState extends State<DriverHomePage> {
   @override
   void initState() {
     super.initState();
-    _newTravelRequestHandler = TravelRequestHandler(
-        driverId: _driver.id,
-        onNewTravel: _onNewTravel
-    )..activate();
+    // ALWAYS RUNS ON START UP
+    // Init location streaming
     _locationBroadcast = g.Geolocator.getPositionStream().asBroadcastStream();
+    // Ticker controller for fake driver animations
     _ticker = Ticker(_onTick);
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      _handleNetworkScopeAndListener();
-      // Automatically try to get driver location on startup
-      _autoRequestLocation();
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      // Handle driver account state
+      await _handleNetworkScopeAndListener();
+      // Request and subscribe to location streaming
+      await _autoRequestLocation();
+      // DEPENDS ON WAS PAGE RESTORED
+      if(widget.wasRestored) {
+        _startSelectedTravelMode(widget.selectedTravel!);
+      } else {
+        // Activate new travel request ws handler, in order to receive notification.
+        _newTravelRequestHandler = TravelRequestHandler(
+            driverId: _driver.id,
+            onNewTravel: _onNewTravel
+        )..activate();
+      }
     });
   }
 
@@ -656,7 +654,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
       await _mapController.style.removeStyleSource("municipality-polygon");
     } catch (e) {
       // Layer or source might not exist, ignore error
-      print('Error clearing municipality polygon: $e');
+      if (kDebugMode) {
+        print('Error clearing municipality polygon: $e');
+      }
     }
   }
 
@@ -664,7 +664,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
   void dispose() {
     _scope.removeListener(_listener);
     _travelStateHandler?.deactivate();
-    _newTravelRequestHandler.deactivate();
+    _newTravelRequestHandler?.deactivate();
     _ticker.dispose();
     _locationShareSubscription?.cancel();
     _locationStreamSubscription?.cancel();
@@ -693,7 +693,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
       }
     } catch (e) {
       // Handle error silently - announcements are not critical for app functionality
-      print('Error checking announcements: $e');
+      if (kDebugMode) {
+        print('Error checking announcements: $e');
+      }
     }
   }
 
@@ -766,7 +768,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
                   }
                   _ticker.start();
                 }
-
+                if(widget.wasRestored) {
+                  _updateMapUiWithSelectedTravel(widget.selectedTravel!);
+                }
               },
               onCameraChangeListener: (cameraData) async {
                 // Always update bearing 'cause fake drivers animation depends on it
@@ -978,15 +982,15 @@ class _DriverHomePageState extends State<DriverHomePage> {
     final textTheme = Theme.of(context).textTheme;
     final localizations = AppLocalizations.of(context)!;
 
-                  return DraggableScrollableSheet(
-                controller: _travelInfoSheetController,
-                initialChildSize: 0.15,
-                minChildSize: 0.15,
-                maxChildSize: 0.7,
-      expand: false,
-      shouldCloseOnMinExtent: false,
-      builder: (context, scrollController) {
-        return Stack(
+    return DraggableScrollableSheet(
+        controller: _travelInfoSheetController,
+        initialChildSize: 0.15,
+        minChildSize: 0.15,
+        maxChildSize: 0.7,
+        expand: false,
+        shouldCloseOnMinExtent: false,
+        builder: (context, scrollController) {
+          return Stack(
           children: [
             // Background Container With Header
             Positioned.fill(
@@ -1045,7 +1049,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
                                 width: 24.0,
                                 height: 8.0,
                                 decoration: BoxDecoration(
-                                  color: colorScheme.onSurfaceVariant.withOpacity(0.4),
+                                  color: colorScheme.onSurfaceVariant.withAlpha(100),
                                   borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusSmall)
                                 )
                               ),
@@ -1062,9 +1066,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
                             onPickUpConfirmationRequest: () async {
                               // Clear municipality polygon when starting the trip
                               await _clearMunicipalityPolygon();
-
                               // Notify driver about pickup confirmation flow
-                              if (mounted) {
+                              if (context.mounted) {
                                 showDialog(
                                   context: context,
                                   barrierDismissible: false,
@@ -1074,11 +1077,15 @@ class _DriverHomePageState extends State<DriverHomePage> {
                                   ),
                                 );
                               }
-
                               _travelStateHandler = TravelStateHandler(
                                 state: TravelState.inProgress,
                                 travelId: _selectedTravel!.id,
-                                onMessage: (travel) => context.go(DriverRoutes.navigation, extra: travel)
+                                onMessage: (travel) async {
+                                  // Clear backup once navigation starts
+                                  await BackupNavigationManager.instance.clear();
+                                  if(!context.mounted) return;
+                                  context.go(DriverRoutes.navigation, extra: travel);
+                                }
                               )..activate();
                             }
                           ),
@@ -1112,58 +1119,4 @@ class _DriverHomePageState extends State<DriverHomePage> {
       },
     );
   }
-}
-
-/// Represent a fake driver.
-class AnimatedFakeDriver {
-
-  /// Fake route coords.
-  final List<List<num>> routeCoords;
-  /// The corresponding annotation (marker) in the map.
-  final PointAnnotation annotation;
-  /// The route's duration in milliseconds estimated by Mapbox API.
-  final Duration routeDuration;
-
-  // Total segments to be covered.
-  late final int _totalSegments;
-  // Keep track of a specific animation.
-  Duration startOffset = Duration.zero;
-
-  AnimatedFakeDriver({required this.routeCoords, required this.annotation, required this.routeDuration}) {
-    _totalSegments = routeCoords.length - 1;
-  }
-
-  /// Updates the geometry and orientation of the [AnimatedFakeDriver.annotation].
-  void updatePosition(Duration globalElapsed, double mapBearing) {
-    // Time a specific animation has been running
-    final elapsed = globalElapsed - startOffset;
-    // Real progress based in the suggested mapbox route duration
-    double progress = elapsed.inMilliseconds / routeDuration.inMilliseconds;
-    // Check total progress, if complete, then restart animation to the origin
-    if (progress >= 1.0) {
-      startOffset = globalElapsed;
-      progress = 0.0;
-    }
-    // Index of the start point of the current segment
-    final segmentIndex = (progress * _totalSegments).floor();
-    // Avoid index out of bounds exception
-    if (segmentIndex >= _totalSegments) return;
-    // Use next coords
-    final start = routeCoords[segmentIndex];
-    final end = routeCoords[segmentIndex + 1];
-    // Adjust bearing
-    final bearing = mb_util.calculateBearing(start[1], start[0], end[1], end[0]);
-    final adjustedBearing = (bearing - mapBearing + 360) % 360;
-    // Linear interpolation
-    final localT = (progress * _totalSegments) - segmentIndex;
-    final lon = _lerp(start[0], end[0], localT);
-    final lat = _lerp(start[1], end[1], localT);
-    // Update annotation fields
-    annotation
-      ..geometry = Point(coordinates: Position(lon, lat))
-      ..iconRotate = adjustedBearing;
-  }
-
-  // Basic linear interpolation.
-  static num _lerp(num a, num b, num t) => a + (b - a) * t;
 }
