@@ -103,6 +103,14 @@ class AccountService {
     return await http.get(url);
   }
 
+  /// Fetches a [Client] object by its [id] from the backend.
+  ///
+  /// Performs a GET request and parses the response as JSON.
+  Future<http.Response> findClient(int id) async {
+    final url = Uri.parse("$_endpoint/client/$id");
+    return await http.get(url);
+  }
+
   Future<List<Driver>> findAllDrivers() async {
     final url = Uri.parse('$_endpoint/driver/all');
     final response = await http.get(url);

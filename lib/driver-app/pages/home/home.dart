@@ -81,6 +81,10 @@ class _DriverHomePageState extends State<DriverHomePage> {
   PointAnnotationManager? _pointAnnotationManager;
   PointAnnotation? _driverAnnotation;
   late final Uint8List _driverMarkerImage;
+  
+  // Travel markers references for cleanup
+  PointAnnotation? _originMarker;
+  PointAnnotation? _destinationMarker;
 
   // Driver location streaming
   late final Stream<g.Position> _locationBroadcast;
@@ -432,7 +436,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
     // Create origin marker
     final originCoords = Position(travel.originCoords[0], travel.originCoords[1]);
     // Handle destination based on whether it's a point or municipality
-    await _pointAnnotationManager?.create(
+    _originMarker = await _pointAnnotationManager?.create(
       PointAnnotationOptions(
         geometry: Point(coordinates: originCoords),
         image: originMarkerImage,
@@ -442,7 +446,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
     if (travel.destinationCoords != null) {
       // Destination is a specific point - add marker
       final destinationCoords = Position(travel.destinationCoords![0], travel.destinationCoords![1]);
-      await _pointAnnotationManager?.create(
+      _destinationMarker = await _pointAnnotationManager?.create(
         PointAnnotationOptions(
           geometry: Point(coordinates: destinationCoords),
           image: destinationMarkerImage,
@@ -526,6 +530,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
 
   void _startSelectedTravelMode(Travel travel) async {
     _startSharingLocation();
+    _newTravelRequestHandler?.deactivate();
     setState(() => _selectedTravel = travel);
   }
 
@@ -660,6 +665,34 @@ class _DriverHomePageState extends State<DriverHomePage> {
     }
   }
 
+  /// Restores the app to its initial state when a travel is cancelled
+  /// This method cleans up all travel-related UI elements and resets the state
+  Future<void> _restoreToInitialState() async {
+    // Clear travel markers from map
+    if (_originMarker != null && _pointAnnotationManager != null) {
+      await _pointAnnotationManager!.delete(_originMarker!);
+      _originMarker = null;
+    }
+    if (_destinationMarker != null && _pointAnnotationManager != null) {
+      await _pointAnnotationManager!.delete(_destinationMarker!);
+      _destinationMarker = null;
+    }
+    // Clear municipality polygon if exists
+    await _clearMunicipalityPolygon();
+    // Stop sharing location coordinates
+    await _locationShareSubscription?.cancel();
+    _locationShareSubscription = null;
+    // Deactivate travel state handler
+    _travelStateHandler?.deactivate();
+    _travelStateHandler = null;
+    // Reset travel info sheet to initial size
+    if (_travelInfoSheetController.isAttached) {
+      _travelInfoSheetController.jumpTo(0.15);
+    }
+    // Clear backup navigation
+    await BackupNavigationManager.instance.clear();
+  }
+
   @override
   void dispose() {
     _scope.removeListener(_listener);
@@ -670,6 +703,10 @@ class _DriverHomePageState extends State<DriverHomePage> {
     _locationStreamSubscription?.cancel();
     _pointAnnotationManager?.deleteAll();
     _clearMunicipalityPolygon();
+    
+    // Clear travel marker references
+    _originMarker = null;
+    _destinationMarker = null;
     
     // Cancel all notification timers
     for (final timer in _notificationTimers.values) {
@@ -1062,6 +1099,18 @@ class _DriverHomePageState extends State<DriverHomePage> {
                         child: SingleChildScrollView(
                           controller: scrollController,
                           child: TravelInfoSheet(
+                            onReportClient: () async {
+                              // Restore app to initial state - clean up all travel-related UI and state
+                              await _restoreToInitialState();
+                              // Re-activate new travel request ws handler, in order to receive notification.
+                              _newTravelRequestHandler = TravelRequestHandler(
+                                  driverId: _driver.id,
+                                  onNewTravel: _onNewTravel
+                              )..activate();
+                              if(!context.mounted) return;
+                              showToast(context: context, message: "Reporte enviado correctamente");
+                              setState(() {_selectedTravel = null;});
+                            },
                             travel: _selectedTravel!,
                             onPickUpConfirmationRequest: () async {
                               // Clear municipality polygon when starting the trip
