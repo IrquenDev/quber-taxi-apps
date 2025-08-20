@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:quber_taxi/common/models/encodable.dart';
+import 'package:quber_taxi/enums/client_account_state.dart';
 
 @immutable
 class Client implements Encodable{
@@ -10,6 +11,7 @@ class Client implements Encodable{
   final String? profileImageUrl;
   final String referralCode;
   final double quberPoints;
+  final ClientAccountState accountState;
 
   const Client({
     required this.id,
@@ -17,7 +19,8 @@ class Client implements Encodable{
     required this.phone,
     this.profileImageUrl,
     required this.referralCode,
-    required this.quberPoints
+    required this.quberPoints,
+    required this.accountState
   });
 
   @override
@@ -27,7 +30,8 @@ class Client implements Encodable{
     "phone": phone,
     "profileImageUrl": profileImageUrl,
     "referralCode": referralCode,
-    "quberPoints": quberPoints
+    "quberPoints": quberPoints,
+    "state": accountState.apiValue
   };
 
   factory Client.fromJson(Map<String, dynamic> json) {
@@ -37,7 +41,8 @@ class Client implements Encodable{
         phone: json["phone"],
         profileImageUrl: json["profileImageUrl"],
         referralCode: json["referralCode"],
-        quberPoints: (json["quberPoints"] as num).toDouble()
+        quberPoints: (json["quberPoints"] as num).toDouble(),
+        accountState: ClientAccountState.resolve(json["state"])
     );
   }
 }

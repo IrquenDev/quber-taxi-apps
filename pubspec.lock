@@ -371,7 +371,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "198c3cfb7461d462ca54746430aaf2c4cfb903c5"
+      resolved-ref: "4a53dc07fb2e4f7504742f3ca06fe96130e251c3"
       url: "https://github.com/yapmDev/flutter-fusion.git"
     source: git
     version: "0.0.1"

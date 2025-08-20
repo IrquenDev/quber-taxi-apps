@@ -1,8 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_fusion/flutter_fusion.dart';
+import 'package:go_router/go_router.dart';
 import 'package:quber_taxi/common/models/travel.dart';
+import 'package:quber_taxi/common/services/driver_service.dart';
 import 'package:quber_taxi/enums/taxi_type.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
+import 'package:quber_taxi/navigation/backup_navigation_manager.dart';
+import 'package:quber_taxi/navigation/routes/driver_routes.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/utils/runtime.dart';
 import 'package:quber_taxi/utils/websocket/core/websocket_service.dart';
@@ -12,8 +17,14 @@ class TravelInfoSheet extends StatelessWidget {
 
   final Travel travel;
   final void Function() onPickUpConfirmationRequest;
+  final VoidCallback onReportClient;
 
-  const TravelInfoSheet({super.key, required this.travel, required this.onPickUpConfirmationRequest});
+  const TravelInfoSheet({
+    super.key,
+    required this.travel,
+    required this.onPickUpConfirmationRequest,
+    required this.onReportClient
+  });
 
   /// Opens the system phone dialer with the client's phone number.
   Future<void> _launchPhoneDialer(String phoneNumber) async {
@@ -22,21 +33,21 @@ class TravelInfoSheet extends StatelessWidget {
       String cleanPhone = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
       print('Original phone number: $phoneNumber');
       print('Clean phone number: $cleanPhone');
-      
+
       final Uri url = Uri(scheme: 'tel', path: cleanPhone);
       print('Attempting to launch phone dialer with URL: $url');
-      
+
       // Try with external application mode
       final bool launched = await launchUrl(
         url,
         mode: LaunchMode.externalApplication,
       );
-      
+
       if (launched) {
         print('Phone dialer launched successfully');
       } else {
         print('Failed to launch phone dialer');
-        
+
         // Try alternative approach with canLaunchUrl
         if (await canLaunchUrl(url)) {
           print('canLaunchUrl returned true, trying again...');
@@ -105,7 +116,7 @@ class TravelInfoSheet extends StatelessWidget {
                   IconButton(
                     onPressed: () async {
                       try {
-                        
+
                         await _launchPhoneDialer(travel.client.phone);
                       } catch (e) {
                         if (kDebugMode) {
@@ -139,7 +150,7 @@ class TravelInfoSheet extends StatelessWidget {
                 Row(
                   children: [
                     Icon(
-                      Icons.my_location, 
+                      Icons.my_location,
                       color: colorScheme.onSurfaceVariant,
                       size: 24.0,
                     ),
@@ -177,7 +188,7 @@ class TravelInfoSheet extends StatelessWidget {
                 Row(
                   children: [
                     Icon(
-                      Icons.location_on_outlined, 
+                      Icons.location_on_outlined,
                       color: colorScheme.onSurfaceVariant,
                       size: 24.0,
                     ),
@@ -283,9 +294,103 @@ class TravelInfoSheet extends StatelessWidget {
                 ),
               )
             )
+          ),
+          const SizedBox(height: 20.0),
+          // Report Client
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('¿El cliente nunca apareció ni hizo más contacto?'),
+              TextButton(
+                onPressed: hasConnection(context) ? () async {
+                  var reason = await _showReportClientDialog(context);
+                  if (reason != null) {
+                    final response = await DriverService().reportClient(
+                      driverId: loggedInUser['id'],
+                      clientId: travel.client.id,
+                      reason: reason
+                    );
+                    if(!context.mounted) return;
+                    if(response.statusCode == 200) {
+                      // Clear backup restoration
+                      await BackupNavigationManager.instance.clear();
+                      onReportClient();
+                    } else {
+                      showToast(context: context, message: "No se pudo llevar a acabo el reporte");
+                    }
+                  }
+                } : null,
+                child: Text(
+                  'Reportar',
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.error,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
+            ],
           )
         ]
       )
+    );
+  }
+
+  Future<String?> _showReportClientDialog(BuildContext context) async {
+    final localizations = AppLocalizations.of(context)!;
+    final dims = Theme.of(context).extension<DimensionExtension>()!;
+    final reasonTFController = TextEditingController();
+
+    return await showDialog<String>(
+      context: context,
+      builder: (_) {
+        return StatefulBuilder(
+          builder: (_, setState) {
+            final canSubmit = reasonTFController.text.trim().isNotEmpty;
+
+            return AlertDialog(
+              title: Text(
+                "Reportar cliente",
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(height: 12),
+                  const Text(
+                      "Continuar solo si el cliente tuvo un mal comportamiento real, "
+                          "pues se tomarán medidas severas con el mismo."
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: reasonTFController,
+                    onChanged: (_) => setState(() {}),
+                    decoration: InputDecoration(
+                      hintText: "Agregue el motivo de este reporte",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(dims.borderRadius),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => context.pop(null),
+                  child: Text(localizations.cancelButton),
+                ),
+                OutlinedButton(
+                  onPressed: canSubmit
+                      ? () => context.pop(reasonTFController.text.trim())
+                      : null,
+                  child: Text(localizations.acceptButton),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 }

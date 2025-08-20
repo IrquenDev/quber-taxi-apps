@@ -27,6 +27,7 @@ Future<void> main() async {
   //Initialization Block
   BuildConfig.loadConfig();
   await SharedPrefsManager.init();
+  // await BackupNavigationManager.instance.clear();
   await GeoBoundaries.loadHavanaPolygon();
   MapboxOptions.setAccessToken(ApiConfig().mapboxAccessToken);
   WebSocketService.instance.connect(baseUrl: ApiConfig().baseUrl);
