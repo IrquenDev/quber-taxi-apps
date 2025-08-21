@@ -16,7 +16,6 @@ import 'package:quber_taxi/utils/image/image_utils.dart';
 import 'package:quber_taxi/utils/runtime.dart';
 import 'package:quber_taxi/utils/workflow/core/workflow.dart';
 import 'package:quber_taxi/utils/workflow/impl/form_validations.dart';
-import 'package:quber_taxi/common/widgets/cached_profile_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class ClientSettingsPage extends StatefulWidget {
@@ -649,15 +648,30 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                   backgroundColor: colorScheme.onSecondary,
                   backgroundImage: FileImage(File(_profileImage!.path)),
                 )
-              : CachedProfileImage(
-                  radius: 80,
-                  imageUrl: _initialProfileImageUrl != null
-                      ? "${ApiConfig().baseUrl}/${_initialProfileImageUrl}"
-                      : null,
-                  backgroundColor: colorScheme.onSecondary,
-                  placeholderAsset: "assets/icons/user.svg",
-                  placeholderColor: colorScheme.onSecondaryContainer,
-                ),
+              // : CachedProfileImage(
+              //     radius: 80,
+              //     imageUrl: _initialProfileImageUrl != null
+              //         ? "${ApiConfig().baseUrl}/${_initialProfileImageUrl}"
+              //         : null,
+              //     backgroundColor: colorScheme.onSecondary,
+              //     placeholderAsset: "assets/icons/user.svg",
+              //     placeholderColor: colorScheme.onSecondaryContainer,
+              //   ),
+                : CircleStack(
+              count: 1, radius: 80.0, offset: 20.0,
+              prototypeBuilder: (index) {
+                final imageUrl = index == 0
+                    ? _client.profileImageUrl
+                    : _initialProfileImageUrl;
+                if(imageUrl != null) {
+                  return Image.network("${ApiConfig().baseUrl}/$imageUrl", fit: BoxFit.fill);
+                } else {
+                  return Image.asset(
+                      "assets/images/default_profile_picture.png"
+                  );
+                }
+              }
+          ),
         ),
         Positioned(
           bottom: 0,
