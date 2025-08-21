@@ -1288,4 +1288,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fixedDestinationTrip => 'This trip has a fixed destination';
+
+  @override
+  String get defaultName => 'Unnamed location';
+
+  @override
+  String get saveFavoritesTitle => 'Save to favorites';
+
+  @override
+  String get markerNameHint => 'Marker name';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get addedToFavorites => 'Added to Favorites';
+
+  @override
+  String get originSelected => 'Origin selected successfully';
+
+  @override
+  String get destinationSelected => 'Destination selected successfully';
+
+  @override
+  String get noFavorites => 'No favorites saved';
 }

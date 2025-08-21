@@ -2473,6 +2473,54 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Este viaje tiene destino fijo'**
   String get fixedDestinationTrip;
+
+  /// No description provided for @defaultName.
+  ///
+  /// In es, this message translates to:
+  /// **'Ubicación sin nombre'**
+  String get defaultName;
+
+  /// No description provided for @saveFavoritesTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar en favoritos'**
+  String get saveFavoritesTitle;
+
+  /// No description provided for @markerNameHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre del marcador'**
+  String get markerNameHint;
+
+  /// No description provided for @cancel.
+  ///
+  /// In es, this message translates to:
+  /// **'Cancelar'**
+  String get cancel;
+
+  /// No description provided for @addedToFavorites.
+  ///
+  /// In es, this message translates to:
+  /// **'Agregado a Favoritos'**
+  String get addedToFavorites;
+
+  /// No description provided for @originSelected.
+  ///
+  /// In es, this message translates to:
+  /// **'Origen seleccionado con éxito'**
+  String get originSelected;
+
+  /// No description provided for @destinationSelected.
+  ///
+  /// In es, this message translates to:
+  /// **'Destino seleccionado con éxito'**
+  String get destinationSelected;
+
+  /// No description provided for @noFavorites.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay Favoritos guardados'**
+  String get noFavorites;
 }
 
 class _AppLocalizationsDelegate
