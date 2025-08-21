@@ -201,6 +201,10 @@ class _SearchOriginPageState extends State<SearchOriginPage> {
                                 )
                             ),
                             // Use Current Location
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                              child: Divider(),
+                            ),
                             ListTile(
                                 minTileHeight: 48.0,
                                 onTap: _isLoadingCurrentLocation ? null : _handleCurrentLocationTap,

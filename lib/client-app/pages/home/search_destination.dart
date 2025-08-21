@@ -203,6 +203,10 @@ class _SearchDestinationPageState extends State<SearchDestinationPage> {
                                 )
                             ),
                             // Use Current Location
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                              child: Divider(),
+                            ),
                             ListTile(
                                 minTileHeight: 48.0,
                                 onTap: _isLoadingCurrentLocation ? null : _handleCurrentLocationTap,
@@ -217,11 +221,15 @@ class _SearchDestinationPageState extends State<SearchDestinationPage> {
                                 )
                             ),
                             // Choose By Municipality
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                              child: Divider(),
+                            ),
                             ListTile(
                                 minTileHeight: 48.0,
                                 contentPadding: EdgeInsets.only(left: 12.0),
                                 minVerticalPadding: 0.0,
-                                leading: Icon(Icons.location_city_outlined),
+                                leading: Icon(Icons.location_city_outlined, color: colorScheme.primary,),
                                 title: DropdownButtonFormField(
                                     icon: SizedBox.shrink(),
                                     decoration: InputDecoration(
@@ -231,7 +239,7 @@ class _SearchDestinationPageState extends State<SearchDestinationPage> {
                                     ),
                                     hint: Text(
                                         "Seleccionar un municipio como destino",
-                                        style: textTheme.bodyLarge
+                                        style: textTheme.bodyLarge?.copyWith(color: colorScheme.primary, fontWeight: FontWeight.bold),
                                     ),
                                     style: textTheme.bodyLarge,
                                     // style of selected value (not hint)
