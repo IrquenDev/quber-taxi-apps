@@ -774,15 +774,30 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
                   backgroundColor: colorScheme.onSecondary,
                   backgroundImage: FileImage(File(_profileImage!.path)),
                 )
-              : CachedProfileImage(
-                  radius: 80,
-                  imageUrl: _taxi.imageUrl != null
-                      ? "${ApiConfig().baseUrl}/${_taxi.imageUrl}"
-                      : null,
-                  backgroundColor: colorScheme.onSecondary,
-                  placeholderAsset: "assets/icons/taxi.svg",
-                  placeholderColor: colorScheme.onSecondaryContainer,
-                ),
+              // : CachedProfileImage(
+              //     radius: 80,
+              //     imageUrl: _taxi.imageUrl != null
+              //         ? "${ApiConfig().baseUrl}/${_taxi.imageUrl}"
+              //         : null,
+              //     backgroundColor: colorScheme.onSecondary,
+              //     placeholderAsset: "assets/icons/taxi.svg",
+              //     placeholderColor: colorScheme.onSecondaryContainer,
+              //   ),
+              : CircleStack(
+              count: 1, radius: 80.0, offset: 20.0,
+              prototypeBuilder: (index) {
+                final imageUrl = index == 0
+                    ? _taxi.imageUrl
+                    : null;
+                if(imageUrl != null) {
+                  return Image.network("${ApiConfig().baseUrl}/$imageUrl", fit: BoxFit.fill);
+                } else {
+                  return Image.asset(
+                      "assets/images/default_profile_driver.png"
+                  );
+                }
+              }
+          ),
         ),
         // Camera icon positioned at bottom right
         Positioned(
