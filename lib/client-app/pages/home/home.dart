@@ -22,6 +22,8 @@ import 'package:quber_taxi/storage/session_prefs_manger.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:quber_taxi/utils/runtime.dart';
 
+import 'package:quber_taxi/storage/favorites_prefs_manager.dart';
+
 class ClientHomePage extends StatefulWidget {
   const ClientHomePage({super.key, this.position});
 
@@ -34,27 +36,10 @@ class ClientHomePage extends StatefulWidget {
 class _ClientHomePageState extends State<ClientHomePage> {
   int _currentIndex = 0;
   final _navKey = GlobalKey<CurvedNavigationBarState>();
-  final List<Map<String, String>> _mockFavorites = [
-    {
-      'name': 'Mi oficina',
-    },
-    {
-      'name': 'Peluquería de María',
-    },
-    {
-      'name': 'Casa de mi abuela',
-    },
-    {
-      'name': 'Gym',
-    },
-    {
-      'name': 'Universidad de la habana',
-    },
-  ];
+
   bool _showRequestSheet = false;
   bool _showfavoriteDialog = false;
   bool _showQuberPointsDialog = false;
-
 
   // Announcement service
   final _announcementService = AppAnnouncementService();
@@ -200,7 +185,6 @@ class _ClientHomePageState extends State<ClientHomePage> {
           animationCurve: Curves.easeInOut,
           animationDuration: const Duration(milliseconds: 500),
           letIndexChange: (index) {
-            // Allow selection for first 4 items (0, 1, 2, 3), block index 4 (Quber Points)
             if (index < 5) {
               setState(() {
                 _currentIndex = index;
@@ -209,16 +193,13 @@ class _ClientHomePageState extends State<ClientHomePage> {
                 _showfavoriteDialog = index == 3;
                 _showQuberPointsDialog = index == 4;
               });
-              
-              // Show favorites dialog if needed
+
               if (_showfavoriteDialog) _showFavoritesDialog();
-              
-              // Show Quber Points dialog if needed
               if (_showQuberPointsDialog) _showQuberPointsCircularDialog();
-              
-              return true; // Allow the change
+
+              return true;
             }
-            return false; // Block the change for index 4
+            return false;
           },
           items: [
             Transform.scale(
@@ -238,8 +219,8 @@ class _ClientHomePageState extends State<ClientHomePage> {
             ),
             Transform.scale(
               scale: 1,
-              child: _buildNavItem(Icons.favorite_border, localizations.favoritesBottomItem, 3,
-              ),
+              child: _buildNavItem(
+                  Icons.favorite_border, localizations.favoritesBottomItem, 3),
             ),
             SizedBox(
               width: double.infinity,
@@ -285,13 +266,13 @@ class _ClientHomePageState extends State<ClientHomePage> {
   }
 
   Widget _buildNavItem(IconData icon, String text, int index) {
-    final double iconSize = 28; // Reduced from 32 to 28
+    final double iconSize = 28;
     final bool isSelected = _currentIndex == index;
 
     return SizedBox(
       width: double.infinity,
       child: Padding(
-        padding: EdgeInsets.only(top: isSelected ? 0.0 : 16.0), // No padding when selected
+        padding: EdgeInsets.only(top: isSelected ? 0.0 : 16.0),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -321,49 +302,17 @@ class _ClientHomePageState extends State<ClientHomePage> {
   }
 
   void _showFavoritesDialog() {
-    showDialog(
+    showDialog<FavoriteLocation>(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(AppLocalizations.of(context)!.myMarkers,
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge
-                      ?.copyWith(fontWeight: FontWeight.bold)),
-              IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () => context.pop('map'),
-              ),
-            ],
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: _mockFavorites
-                .map(
-                  (favorite) => ListTile(
-                    leading: Image.asset(
-                      'assets/markers/route/x60/pin_fav.png',
-                      width: 20,
-                      height: 20,
-                    ),
-                    title: Text(favorite['name']!),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete_outline_sharp),
-                      onPressed: () {},
-                    ),
-                  ),
-                )
-                .toList(),
-          ),
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(
-                  Theme.of(context).cardTheme.elevation ?? 12.0)),
-        );
+        return FavoritesDialog();
       },
-    ).then((_) => setState(() => _currentIndex = 0));
+    ).then((selectedFav) {
+      if (selectedFav != null) {
+        MapView.globalKey.currentState?.showFavoriteOnMap(selectedFav);
+      }
+      setState(() => _currentIndex = 0);
+    });
   }
 
   void _showQuberPointsCircularDialog() {
@@ -388,27 +337,124 @@ class _ClientHomePageState extends State<ClientHomePage> {
   Widget _getCurrentScreen() {
     switch (_currentIndex) {
       case 0:
-        return const MapView(usingExtendedScaffold: true);
+        return MapView(key: MapView.globalKey, usingExtendedScaffold: true);
       case 1:
-        return const MapView(usingExtendedScaffold: true);
+        return MapView(key: MapView.globalKey, usingExtendedScaffold: true);
       case 2:
         return const ClientSettingsPage();
       case 3:
-        return const MapView(usingExtendedScaffold: true);
+        return MapView(key: MapView.globalKey, usingExtendedScaffold: true);
       case 4:
-        return const MapView(usingExtendedScaffold: true);
+        return MapView(key: MapView.globalKey, usingExtendedScaffold: true);
       default:
         return const SizedBox.shrink();
     }
   }
 }
 
-class _RequestTravelSheetWidget extends StatefulWidget {
+class FavoritesDialog extends StatefulWidget {
+  const FavoritesDialog({super.key});
+
   @override
-  State<_RequestTravelSheetWidget> createState() => _RequestTravelSheetWidgetState();
+  State<FavoritesDialog> createState() => _FavoritesDialogState();
 }
 
-class _RequestTravelSheetWidgetState extends State<_RequestTravelSheetWidget> with TickerProviderStateMixin {
+class _FavoritesDialogState extends State<FavoritesDialog> {
+  List<FavoriteLocation> _favorites = [];
+  bool _loadingFavorites = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFavorites();
+  }
+
+  Future<void> _loadFavorites() async {
+    final favs = await FavoritesPrefsManager.getFavorites();
+    setState(() {
+      _favorites = favs;
+      _loadingFavorites = false;
+    });
+  }
+
+  Future<void> _removeFavoriteAt(int index) async {
+    await FavoritesPrefsManager.removeFavorite(index);
+    await _loadFavorites();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
+    if (_loadingFavorites) {
+      return AlertDialog(
+        content: SizedBox(
+          height: 80,
+          child: Center(child: CircularProgressIndicator()),
+        ),
+      );
+    }
+
+    return AlertDialog(
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(localizations.myMarkers,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(fontWeight: FontWeight.bold)),
+          IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ],
+      ),
+      content: _favorites.isEmpty
+          ? Text(AppLocalizations.of(context)!.noFavorites)
+          : SizedBox(
+        width: double.maxFinite,
+        child: ListView.builder(
+          shrinkWrap: true,
+          itemCount: _favorites.length,
+          itemBuilder: (context, index) {
+            final favorite = _favorites[index];
+            return ListTile(
+              leading: Image.asset(
+                'assets/markers/route/x60/pin_fav.png',
+                width: 20,
+                height: 20,
+              ),
+              title: Text(favorite.name),
+              onTap: () {
+                Navigator.pop(context, favorite);
+              },
+              trailing: IconButton(
+                icon: const Icon(Icons.delete_outline_sharp),
+                onPressed: () async {
+                  await _removeFavoriteAt(index);
+                },
+              ),
+            );
+          },
+        ),
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius:
+        BorderRadius.circular(Theme.of(context).cardTheme.elevation ?? 12.0),
+      ),
+    );
+  }
+}
+
+class _RequestTravelSheetWidget extends StatefulWidget {
+  @override
+  State<_RequestTravelSheetWidget> createState() =>
+      _RequestTravelSheetWidgetState();
+}
+
+class _RequestTravelSheetWidgetState extends State<_RequestTravelSheetWidget>
+    with TickerProviderStateMixin {
   double _sheetHeight = 0.0;
   double _dragStartY = 0;
   double _dragStartHeight = 0;
@@ -495,8 +541,9 @@ class _RequestTravelSheetWidgetState extends State<_RequestTravelSheetWidget> wi
                 Expanded(
                   child: SingleChildScrollView(
                     child: Padding(
-                      padding: EdgeInsets.only(left: 16.0, right: 16.0, bottom: 32.0),
-                      child: const RequestTravelSheet(),
+                      padding:
+                      EdgeInsets.only(left: 16.0, right: 16.0, bottom: 32.0),
+                      child: RequestTravelSheet(origin: MapView.globalKey.currentState?.origin, destination: MapView.globalKey.currentState?.destination),
                     ),
                   ),
                 ),

@@ -454,5 +454,15 @@
   "guidedRoute": "Ruta guiada",
   "exactRoute": "Ruta exacta",
   "emergencySOS": "Emergencia (SOS)",
-  "fixedDestinationTrip": "Este viaje tiene destino fijo"
+  "fixedDestinationTrip": "Este viaje tiene destino fijo",
+
+  "defaultName": "Ubicación sin nombre",
+    "saveFavoritesTitle": "Guardar en favoritos",
+    "markerNameHint": "Nombre del marcador",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "addedToFavorites": "Agregado a Favoritos",
+    "originSelected": "Origen seleccionado con éxito",
+    "destinationSelected": "Destino seleccionado con éxito",
+    "noFavorites": "No hay Favoritos guardados"
 }

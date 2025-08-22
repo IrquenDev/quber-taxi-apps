@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:quber_taxi/client-app/pages/home/map.dart';
 import 'package:quber_taxi/common/models/client.dart';
 import 'package:quber_taxi/common/models/mapbox_place.dart';
 import 'package:quber_taxi/common/models/travel.dart';
@@ -24,7 +25,10 @@ import 'package:turf/turf.dart' as turf;
 
 class RequestTravelSheet extends StatefulWidget {
 
-  const RequestTravelSheet({super.key});
+  const RequestTravelSheet({super.key, this.origin, this.destination});
+
+   final MapboxPlace? origin;
+   final MapboxPlace? destination;
 
   @override
   State<RequestTravelSheet> createState() => _RequestTravelSheetState();
@@ -155,6 +159,30 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
         }
       }
     });
+    if (widget.origin != null) {
+      _originName = widget.origin!.text;
+      _originCoords = widget.origin!.coordinates;
+    }
+    if (widget.destination != null) {
+      _destinationName = widget.destination!.text;
+      _destinationCoords = widget.destination!.coordinates;
+      _usingFixedDestination = true;
+    }
+
+    if (_originCoords != null && _destinationCoords != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_canEstimateDistance) _estimateDistance();
+      });
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (hasConnection(context)) {
+        final quberConfig = await AdminService().getQuberConfig();
+        if (quberConfig != null) {
+          _taxiPrices = quberConfig.travelPrice;
+        }
+      }
+    });
   }
 
   @override
@@ -195,6 +223,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                               onTap: () async {
                                 final mapboxPlace = await context.push<MapboxPlace>(ClientRoutes.searchOrigin);
                                 if(mapboxPlace != null) {
+                                  MapView.globalKey.currentState?.origin = null;
                                   setState(() {
                                     _originName = mapboxPlace.text;
                                     _originCoords = mapboxPlace.coordinates;
@@ -213,6 +242,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                                 final resultData = await context.push<Map<String, dynamic>?>(ClientRoutes.searchDestination);
                                 if(resultData != null) {
                                   _usingFixedDestination = resultData["usingFixedDestination"];
+                                  MapView.globalKey.currentState?.destination = null;
                                   // The user has chosen a specific destination
                                   if(_usingFixedDestination) {
                                     final place = resultData["destination"] as MapboxPlace;

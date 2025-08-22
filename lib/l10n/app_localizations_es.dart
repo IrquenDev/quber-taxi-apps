@@ -1298,4 +1298,28 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get fixedDestinationTrip => 'Este viaje tiene destino fijo';
+
+  @override
+  String get defaultName => 'Ubicación sin nombre';
+
+  @override
+  String get saveFavoritesTitle => 'Guardar en favoritos';
+
+  @override
+  String get markerNameHint => 'Nombre del marcador';
+
+  @override
+  String get cancel => 'Cancelar';
+
+  @override
+  String get addedToFavorites => 'Agregado a Favoritos';
+
+  @override
+  String get originSelected => 'Origen seleccionado con éxito';
+
+  @override
+  String get destinationSelected => 'Destino seleccionado con éxito';
+
+  @override
+  String get noFavorites => 'No hay Favoritos guardados';
 }

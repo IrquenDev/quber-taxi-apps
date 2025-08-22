@@ -1,5 +1,3 @@
-import 'dart:async';
-import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -12,12 +10,18 @@ import 'package:quber_taxi/utils/map/geolocator.dart';
 import 'package:geolocator/geolocator.dart' as g;
 import 'package:quber_taxi/utils/map/turf.dart';
 import 'package:quber_taxi/utils/map/mapbox.dart' as mb_util;
+import 'package:quber_taxi/common/services/mapbox_service.dart';
+import 'package:quber_taxi/storage/favorites_prefs_manager.dart';
+
+import '../../../common/models/mapbox_place.dart';
 
 class MapView extends StatefulWidget {
 
   const MapView({super.key, this.usingExtendedScaffold = false});
 
   final bool usingExtendedScaffold;
+
+  static final globalKey = GlobalKey<_MapViewState>();
 
   @override
   State<MapView> createState() => _MapViewState();
@@ -39,6 +43,9 @@ class _MapViewState extends State<MapView> {
   late Ticker _ticker;
   Duration _lastUpdate = Duration.zero;
   late final List<AnimatedFakeDriver> _taxis = [];
+  final _mapboxService = MapboxService();
+  MapboxPlace? origin;
+  MapboxPlace? destination;
 
   @override
   void initState() {
@@ -213,12 +220,119 @@ class _MapViewState extends State<MapView> {
             _selectedOption = result;
           });
           debugPrint('Selected option: $result');
+          if (result == 'markers') {
+            final place = await _mapboxService.getMapboxPlace(
+              longitude: mapContext.point.coordinates.lng,
+              latitude: mapContext.point.coordinates.lat,
+            );
+
+            String defaultName = place?.text ?? AppLocalizations.of(context)!.defaultName;
+            String customName = defaultName;
+
+            if (!mounted) return;
+            showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text(AppLocalizations.of(context)!.saveFavoritesTitle),
+                  content: TextField(
+                    autofocus: true,
+                    decoration: InputDecoration(
+                      hintText: AppLocalizations.of(context)!.markerNameHint,
+                    ),
+                    controller: TextEditingController(text: defaultName),
+                    onChanged: (value) {
+                      customName = value;
+                    },
+                  ),
+                  actions: [
+                    TextButton(
+                      child: Text(AppLocalizations.of(context)!.cancel),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    ElevatedButton(
+                      child: Text(AppLocalizations.of(context)!.save),
+                      onPressed: () async {
+                        await FavoritesPrefsManager.saveFavorite(
+                          FavoriteLocation(
+                            name: customName,
+                            longitude: mapContext.point.coordinates.lng.toDouble(),
+                            latitude: mapContext.point.coordinates.lat.toDouble(),
+                          ),
+                        );
+                        if (mounted) {
+                          Navigator.pop(context);
+                          showToast(context: context, message:
+                          AppLocalizations.of(context)!.addedToFavorites);
+                        }
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          }
+          if (result == 'origin') {
+            origin = await _mapboxService.getMapboxPlace(
+              longitude: mapContext.point.coordinates.lng,
+              latitude: mapContext.point.coordinates.lat,
+            );
+
+            if (!mounted) return;
+            showToast(context: context, message: AppLocalizations.of(context)!.originSelected);
+          }
+          if (result == 'destination') {
+            destination = await _mapboxService.getMapboxPlace(
+              longitude: mapContext.point.coordinates.lng,
+              latitude: mapContext.point.coordinates.lat,
+            );
+
+            if (!mounted) return;
+            showToast(context: context, message: AppLocalizations.of(context)
+            !.destinationSelected);
+          }
         }
       }
     } catch (e) {
       debugPrint('Error handling map long tap: $e');
     }
   }
+
+  Future<void> showFavoriteOnMap(FavoriteLocation fav) async {
+    if (_mapController == null) return;
+
+    if (_pointAnnotationManager == null) {
+      _pointAnnotationManager =
+      await _mapController?.annotations.createPointAnnotationManager();
+      if (_pointAnnotationManager == null) return;
+    }
+
+    if (_currentMarker != null) {
+      await _pointAnnotationManager?.delete(_currentMarker!);
+      _currentMarker = null;
+    }
+
+    final bytes = await rootBundle.load('assets/markers/route/x60/pin_fav.png');
+    final imageData = bytes.buffer.asUint8List();
+
+    final marker = await _pointAnnotationManager?.create(PointAnnotationOptions(
+      geometry: Point(coordinates: Position(fav.longitude, fav.latitude)),
+      image: imageData,
+      iconSize: 1.0,
+      iconAnchor: IconAnchor.BOTTOM,
+    ));
+
+    _currentMarker = marker;
+
+    _mapController!.easeTo(
+      CameraOptions(
+        center: Point(coordinates: Position(fav.longitude, fav.latitude)),
+        zoom: 16.0,
+      ),
+      MapAnimationOptions(duration: 1500, startDelay: 0),
+    );
+  }
+
 
   PopupMenuEntry<String> _buildMenuItem({
     required String title,
