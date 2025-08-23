@@ -23,39 +23,51 @@ class _OnboardingPageState extends State<OnboardingPage> {
   final Map<String, String> _onboardingData = {};
   ReferralSource? _selectedRefSrc;
 
-  List<Map<String, dynamic>> _getLocalizedPages(AppLocalizations localizations) => [
-    {
-      'image': 'assets/images/client_map_curve.png',
-      'title': localizations.onboardingPage1Title,
-      'subtitle': localizations.onboardingPage1Subtitle,
-      'description': localizations.onboardingPage1Description
-    },
-    {
-      'image': 'assets/images/friends_phone_curve1.png',
-      'title': localizations.onboardingPage2Title,
-      'subtitle': localizations.onboardingPage2Subtitle,
-      'referral_source_options': ReferralSource.values
-    },
-    {
-      'image': 'assets/images/friends_phone_curve2.png',
-      'title': localizations.onboardingPage3Title,
-      'subtitle': localizations.onboardingPage3Subtitle,
-      'description': localizations.onboardingPage3Description,
-      'inputHint': localizations.onboardingPage3InputHint
-    },
-    {
-      'image': 'assets/images/trip_price_curve.png',
-      'title': localizations.onboardingPage4Title,
-      'subtitle': localizations.onboardingPage4Subtitle,
-      'description': localizations.onboardingPage4Description
-    },
-    {
-      'image': 'assets/images/quber_points_curve.png',
-      'title': localizations.onboardingPage5Title,
-      'subtitle': localizations.onboardingPage5Subtitle,
-      'description': localizations.onboardingPage5Description
+  List<Map<String, dynamic>> _getLocalizedPages(AppLocalizations localizations) {
+    final pages = [
+      {
+        'image': 'assets/images/client_map_curve.png',
+        'title': localizations.onboardingPage1Title,
+        'subtitle': localizations.onboardingPage1Subtitle,
+        'description': localizations.onboardingPage1Description
+      },
+      {
+        'image': 'assets/images/friends_phone_curve1.png',
+        'title': localizations.onboardingPage2Title,
+        'subtitle': localizations.onboardingPage2Subtitle,
+        'referral_source_options': ReferralSource.values
+      }
+    ];
+
+    // Only show referral code page if friend is selected
+    if (_selectedRefSrc == ReferralSource.friend) {
+      pages.add({
+        'image': 'assets/images/friends_phone_curve2.png',
+        'title': localizations.onboardingPage3Title,
+        'subtitle': localizations.onboardingPage3Subtitle,
+        'description': localizations.onboardingPage3Description,
+        'inputHint': localizations.onboardingPage3InputHint
+      });
     }
-  ];
+
+    // Add remaining pages
+    pages.addAll([
+      {
+        'image': 'assets/images/trip_price_curve.png',
+        'title': localizations.onboardingPage4Title,
+        'subtitle': localizations.onboardingPage4Subtitle,
+        'description': localizations.onboardingPage4Description
+      },
+      {
+        'image': 'assets/images/quber_points_curve.png',
+        'title': localizations.onboardingPage5Title,
+        'subtitle': localizations.onboardingPage5Subtitle,
+        'description': localizations.onboardingPage5Description
+      }
+    ]);
+
+    return pages;
+  }
 
   void _prevPage() {
     FocusScope.of(context).unfocus();
@@ -207,6 +219,15 @@ class _OnboardingPageState extends State<OnboardingPage> {
                               setState(() {
                                 _onboardingData["referralSource"] = referralOption.apiValue;
                                 _selectedRefSrc = referralOption;
+                                // Clear referral code if not selecting friend
+                                if (referralOption != ReferralSource.friend) {
+                                  _onboardingData.remove("referralCode");
+                                }
+                                // Reset to first page when changing referral source to avoid navigation issues
+                                if (_currentPage > 1) {
+                                  _pageController.animateToPage(1, duration: _animationDuration, curve: _animationCurve);
+                                  _currentPage = 1;
+                                }
                               });
                             },
                               child: Text(
