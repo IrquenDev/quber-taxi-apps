@@ -44,43 +44,51 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _handleLogin() async {
+    // Always hide keyboard
     FocusScope.of(context).unfocus();
-    // Validate form
-    if (!_formKey.currentState!.validate()) return;
-    setState(() => _isLoading = true);
-    // Get form data
-    final phone = _normalizePhoneNumber(_phoneTFController.text);
-    final password = _passwordTFController.text;
-    final localization = AppLocalizations.of(context)!;
-    // Init variables
-    http.Response? response;
-    String route;
-    // Depending on appProfile, decide who we need to authenticate and set the next route
-    if (runtime.isClientMode) {
-      response = await _authService.loginClient(phone, password);
-      route = ClientRoutes.home;
-    } else if (runtime.isDriverMode) {
-      response = await _authService.loginDriver(phone, password);
-      route = DriverRoutes.home;
+    // Skip if form has invalid data
+    if(!_formKey.currentState!.validate()) return;
+    // Check connection
+    if(runtime.hasConnection(context)) {
+      // Enable loading state
+      setState(() => _isLoading = true);
+      // Get form data
+      final phone = _normalizePhoneNumber(_phoneTFController.text);
+      final password = _passwordTFController.text;
+      final localization = AppLocalizations.of(context)!;
+      // Depending on appProfile, decide who we need to authenticate and set the next route
+      http.Response? response;
+      String route;
+      if (runtime.isClientMode) {
+        response = await _authService.loginClient(phone, password);
+        route = ClientRoutes.home;
+      } else if (runtime.isDriverMode) {
+        response = await _authService.loginDriver(phone, password);
+        route = DriverRoutes.home;
+      } else {
+        response = await _authService.loginAdmin(phone, password);
+        route = AdminRoutes.settings;
+      }
+      // Cancel loading state
+      setState(() => _isLoading = false);
+      // Handle response
+      if (!mounted) return;
+      switch (response.statusCode) {
+        case 200:
+          context.go(route);
+          break;
+        case 401:
+          _showErrorToast(localization.incorrectPasswordMessage);
+          break;
+        case 404:
+          _showErrorToast(localization.phoneNotRegisteredMessage);
+          break;
+        default:
+          _showErrorToast(localization.unexpectedErrorLoginMessage);
+          break;
+      }
     } else {
-      response = await _authService.loginAdmin(phone, password);
-      route = AdminRoutes.settings;
-    }
-    // Handle response
-    if (!mounted) return;
-    switch (response.statusCode) {
-      case 200:
-        context.go(route);
-        break;
-      case 401:
-        _showErrorToast(localization.incorrectPasswordMessage);
-        break;
-      case 404:
-        _showErrorToast(localization.phoneNotRegisteredMessage);
-        break;
-      default:
-        _showErrorToast(localization.unexpectedErrorLoginMessage);
-        break;
+      showToast(context: context, message: "Por favor verifique su conexión a internet", durationInSeconds: 4);
     }
   }
 
@@ -204,11 +212,13 @@ class _LoginPageState extends State<LoginPage> {
                                   .proceed,
                             ),
                             // Login Button
-                            SizedBox(
+                            _isLoading
+                                ? CircularProgressIndicator()
+                                : SizedBox(
                               width: double.infinity,
                               height: 48,
                               child: ElevatedButton(
-                                onPressed: _isLoading ? null : () => _handleLogin(),
+                                onPressed: () => _handleLogin(),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: colorScheme.primary,
                                   foregroundColor: colorScheme.onPrimary,
@@ -217,9 +227,7 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                   elevation: 0,
                                 ),
-                                child: _isLoading
-                                    ? CircularProgressIndicator()
-                                    : Text(
+                                child: Text(
                                         localization.loginButton,
                                         style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
                                       ),
