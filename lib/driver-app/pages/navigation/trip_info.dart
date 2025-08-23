@@ -12,7 +12,6 @@ class DriverTripInfo extends StatefulWidget {
   final String destinationName;
   final TaxiType taxiType;
   final double? travelPriceByTaxiType;
-  final Future<bool> Function(String query) onSearch;
   final void Function(bool isEnabled) onGuidedRouteSwitched;
   final bool isFixedDestination;
 
@@ -23,7 +22,6 @@ class DriverTripInfo extends StatefulWidget {
     required this.distance,
     required this.taxiType,
     required this.travelPriceByTaxiType,
-    required this.onSearch,
     required this.onGuidedRouteSwitched,
     required this.isFixedDestination,
   });
@@ -36,7 +34,6 @@ class _DriverTripInfoState extends State<DriverTripInfo> {
 
   bool _showGuidedRoute = false;
   final _tfController = TextEditingController();
-  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -175,30 +172,8 @@ class _DriverTripInfoState extends State<DriverTripInfo> {
                               )
                             ]
                           ),
-                          if (_showGuidedRoute && !widget.isFixedDestination) ... [
-                            Text(loc.exactRoute, style: textTheme.bodyMedium),
-                            SizedBox(height: 8.0),
-                            TextField(
-                              controller: _tfController,
-                              onChanged: (_) {setState(() {});},
-                              decoration: InputDecoration(
-                                prefixIcon: Icon(Icons.location_on_outlined),
-                                 hintText: loc.destinationName,
-                                suffixIcon: !_isLoading ? IconButton(
-                                    onPressed: _tfController.text.isNotEmpty ? () async {
-                                      setState(() => _isLoading = true);
-                                      final query = _tfController.text;
-                                      final wasSearchSuccess = await widget.onSearch(query);
-                                      if(wasSearchSuccess) {
-                                        // do something more if applies
-                                      }
-                                      setState(() => _isLoading = false);
-                                    } : null,
-                                    icon: Icon(Icons.search_outlined)
-                                ) : CircularProgressIndicator()
-                              )
-                            )
-                          ]
+                          if (_showGuidedRoute && !widget.isFixedDestination)
+                            Text("Mantén pulsado en el mapa para escoger un destino")
                         ]
                       )
                     ),
