@@ -37,4 +37,45 @@ class AdminService {
     final headers = {'Content-Type': 'application/json'};
     return http.patch(url, headers: headers);
   }
+
+  Future<http.Response> requestNewTravel({
+    required String clientPhone,
+    required String originName,
+    required String destinationName,
+    required List<num> originCoords,
+    List<num>? destinationCoords,
+    required int requiredSeats,
+    required bool hasPets,
+    required TaxiType taxiType,
+    required double? fixedDistance,
+    required double? minDistance,
+    required double? maxDistance,
+    required double? fixedPrice,
+    required double? minPrice,
+    required double? maxPrice,
+  }) async {
+    final url = Uri.parse("${_apiConfig
+        .baseUrl}/$_endpoint/create-travel-request-offline/$clientPhone");
+    final headers = {'Content-Type': 'application/json'};
+    final response = await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode({
+        "originName": originName,
+        "destinationName": destinationName,
+        "originCoords": originCoords,
+        "destinationCoords": destinationCoords,
+        "requiredSeats": requiredSeats,
+        "hasPets": hasPets,
+        "taxiType": taxiType.apiValue,
+        "fixedDistance": fixedDistance,
+        "minDistance": minDistance,
+        "maxDistance": maxDistance,
+        "fixedPrice": fixedPrice,
+        "minPrice": minPrice,
+        "maxPrice": maxPrice,
+      }),
+    );
+    return response;
+  }
 }
