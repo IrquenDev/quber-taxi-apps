@@ -20,7 +20,6 @@ import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/services/mapbox_service.dart';
 import 'package:quber_taxi/driver-app/pages/navigation/trip_info.dart';
-import 'package:quber_taxi/enums/mapbox_place_type.dart';
 import 'package:quber_taxi/utils/map/mapbox.dart';
 import 'package:quber_taxi/utils/map/turf.dart';
 import 'package:quber_taxi/utils/runtime.dart';
@@ -322,40 +321,6 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
     }
   }
 
-  Future<bool> _onSearch(String query) async {
-    if (_isFixedDestination) {
-      final loc = AppLocalizations.of(context)!;
-      showToast(context: context, message: loc.fixedDestinationTrip);
-      return false;
-    }
-    final destination = await _mapboxService.getLocationCoords(
-        query: query,
-        proximity: [_realTimeRoute.last.lng, _realTimeRoute.last.lat],
-        types: [MapboxPlaceType.place, MapboxPlaceType.locality, MapboxPlaceType.address, MapboxPlaceType.district]);
-    if (!mounted) return false;
-    // Depending on what was typed, result could be null
-    if (destination == null) {
-      final loc = AppLocalizations.of(context)!;
-      showToast(context: context, message: loc.placeNotFound);
-      return false;
-    }
-    // Some places matches ...
-    else {
-      // Validate that the point is within the selected municipality (if applicable)
-      final lng = destination.coordinates[0];
-      final lat = destination.coordinates[1];
-      final hasPolygon = _municipalityPolygon != null;
-      final isInside = hasPolygon ? GeoBoundaries.isPointInPolygon(lng, lat, _municipalityPolygon!) : true;
-      if (!isInside) {
-        final loc = AppLocalizations.of(context)!;
-        showToast(context: context, message: loc.destinationsLimited(widget.travel.destinationName));
-        return false;
-      }
-      await _getAndDrownRoute(widget.travel.originCoords[0], widget.travel.originCoords[1], lng, lat);
-      return true;
-    }
-  }
-
   void _onGuidedRouteSwitched(bool isEnabled) async {
     if (!isEnabled && _isRouteDrawn) {
       await _mapController.style.removeStyleLayer("line-layer");
@@ -433,8 +398,6 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
               quberCredit: (_finalPrice * _creditForQuber) / 100,
             );
           }
-          print("RESPONSE STATUS CODE${response.statusCode}");
-          print("RESPONSE BODY: ${response.body}");
           if (response.statusCode == 200) {
             // In any case (was page restored) the API has already applied discounts, penalties, etc. It's safe to
             // clear the redirect backup right here.
@@ -597,7 +560,6 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
                 travelPriceByTaxiType: _travelPriceByTaxiType,
                 isFixedDestination: _isFixedDestination,
                 onGuidedRouteSwitched: _onGuidedRouteSwitched,
-                onSearch: _onSearch,
               ));
   }
 }
