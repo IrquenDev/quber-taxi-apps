@@ -8,6 +8,7 @@ import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/services/admin_service.dart';
 import 'package:quber_taxi/common/services/mapbox_service.dart';
 import 'package:quber_taxi/common/services/travel_service.dart';
+import 'package:quber_taxi/common/widgets/dialogs/info_dialog.dart';
 import 'package:quber_taxi/enums/asset_dpi.dart';
 import 'package:quber_taxi/enums/municipalities.dart';
 import 'package:quber_taxi/enums/taxi_type.dart';
@@ -432,8 +433,22 @@ class _RequestTravelAdminSheetState extends State<RequestTravelAdminSheet> {
                               _maxPrice != null
                                   ? '${_roundTo2Dec(_maxPrice!)} CUP'
                                   : "-")
-                        ])
-                    ]),
+                        ]),
+                      Row(
+                        spacing: 16.0,
+                        children: [
+                          Icon(Icons.warning_outlined, color: colorScheme.primary,),
+                          Expanded(
+                            child: Text(
+                                "Se recomienda informar primero al cliente de estos valores guía antes de solicitar el "
+                                    "viaje.",
+                                style: textTheme.bodySmall?.copyWith(color: colorScheme.error),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                ),
               // Submit travel request
               SizedBox(
                   width: double.infinity,
@@ -450,53 +465,67 @@ class _RequestTravelAdminSheetState extends State<RequestTravelAdminSheet> {
                         ? () async {
                             if (!_formKey.currentState!.validate()) return;
                             _formKey.currentState!.save();
-
-                            final response =
-                                await _adminService.requestNewTravel(
-                                    clientPhone: _normalizedPhone,
-                                    originName: _originName!,
-                                    destinationName: _destinationName!,
-                                    originCoords: _originCoords!,
-                                    destinationCoords: _destinationCoords,
-                                    requiredSeats: _passengerCount,
-                                    hasPets: _hasPets,
-                                    taxiType: _selectedTaxi,
-                                    fixedDistance: _fixedDistance,
-                                    minDistance: _minDistance,
-                                    maxDistance: _maxDistance,
-                                    fixedPrice: _fixedPrice,
-                                    minPrice: _minPrice,
-                                    maxPrice: _maxPrice);
+                            final response = await _adminService.requestNewTravel(
+                                clientPhone: _normalizedPhone,
+                                originName: _originName!,
+                                destinationName: _destinationName!,
+                                originCoords: _originCoords!,
+                                destinationCoords: _destinationCoords,
+                                requiredSeats: _passengerCount,
+                                hasPets: _hasPets,
+                                taxiType: _selectedTaxi,
+                                fixedDistance: _fixedDistance,
+                                minDistance: _minDistance,
+                                maxDistance: _maxDistance,
+                                fixedPrice: _fixedPrice,
+                                minPrice: _minPrice,
+                                maxPrice: _maxPrice);
                             if (!context.mounted) return;
                             if (response.statusCode == 200) {
-                              final travel =
-                                  Travel.fromJson(jsonDecode(response.body));
+                              final travel = Travel.fromJson(jsonDecode(response.body));
                               // Radar animation while waiting for acceptation.
                               final updatedTravel = await context.push<Travel?>(
-                                  ClientRoutes.searchDriver,
-                                  extra: travel.id);
+                                  ClientRoutes.searchDriver, extra: travel.id,
+                              );
                               if (!context.mounted) return;
                               if (updatedTravel != null) {
                                 // Navigate to TrackDriver Screen.
-                                context.go(ClientRoutes.trackDriver,
-                                    extra: updatedTravel);
+                                showDialog(
+                                    barrierDismissible: false,
+                                    context: context,
+                                    builder: (_) => InfoDialog(
+                                      title: "Viaje Aceptado",
+                                      bodyMessage: "Teléfono de contacto de conductor: ${updatedTravel.driver!.phone}",
+                                      onAccept: () => context.pop(),
+                                    )
+                                );
                               } else {
                                 // Cancel this travel request
                                 if (hasConnection(context)) {
                                   await _cancelTravelRequest(travel.id);
                                 }
                               }
-                            } else {
+                            }
+                            else if(response.statusCode == 404) {
                               showToast(
-                                  context: context,
-                                  message:
-                                      "Ocurrió algo mal, por favor inténtelo más tarde");
+                                context: context,
+                                message: "No hay ningún cliente registrado con el teléfono proporcionado.",
+                                durationInSeconds: 4,
+                              );
+                            }
+                            else {
+                              showToast(
+                                context: context,
+                                message: "Ocurrió algo mal, por favor inténtelo más tarde",
+                                durationInSeconds: 4,
+                              );
                             }
                           }
                         : null,
                     child: Text(AppLocalizations.of(context)!.askTaxi),
                   ))
-            ]),
+            ],
+        ),
       ),
     );
   }
