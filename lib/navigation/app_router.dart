@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:quber_taxi/admin-app/pages/driver_info/driver_info.dart';
 import 'package:quber_taxi/admin-app/pages/settings/admin_settings.dart';
 import 'package:quber_taxi/admin-app/pages/trips_list/trip_list.dart';
+import 'package:quber_taxi/admin-app/pages/request_taxi/request_taxi_screen.dart';
 import 'package:quber_taxi/client-app/pages/create_account/create_account.dart';
 import 'package:quber_taxi/client-app/pages/home/home.dart';
 import 'package:quber_taxi/client-app/pages/home/search_destination.dart';
@@ -157,13 +158,17 @@ final GoRouter appRouter = GoRouter(
     // ADMIN
     GoRoute(
         path: AdminRoutes.settings,
-        builder: (context, state) => const AdminSettingsPage()),
-    GoRoute(
-        path: AdminRoutes.tripsList,
-        builder: (context, state) => const CompletedTripsPage()),
-    GoRoute(
-        path: AdminRoutes.driversList,
-        builder: (context, state) => const DriversListPage()),
+        builder: (context, state) => const AdminSettingsPage()
+    ),
+    GoRoute(path: AdminRoutes.tripsList,
+        builder: (context, state) => const CompletedTripsPage()
+    ),
+    GoRoute(path: AdminRoutes.driversList,
+        builder: (context, state) => const DriversListPage()
+    ),
+    GoRoute(path: AdminRoutes.requestTaxi,
+        builder: (context, state) => const RequestTaxiScreenAdmin()
+    ),
     GoRoute(
         path: AdminRoutes.driverInfo,
         builder: (context, state) {

@@ -1,10 +1,8 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:quber_taxi/common/models/mapbox_place.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/services/admin_service.dart';
@@ -32,25 +30,33 @@ class RequestTravelAdminSheet extends StatefulWidget {
 class _RequestTravelAdminSheetState extends State<RequestTravelAdminSheet> {
   // The service in charge of travel-related operations
   final _travelService = TravelService();
+  final _adminService = AdminService();
+
   // Admin UI: no client object needed
   // Travel's origin
   String? _originName;
   List<num>? _originCoords;
+
   // Travel's destination
   String? _destinationName;
   List<num>? _destinationCoords;
+
   // Other aspects of the trip
   int _passengerCount = 1;
   TaxiType _selectedTaxi = TaxiType.standard;
   bool _hasPets = false;
+
   // It reflects whether the user has chosen a specific destination or municipality. The distance and price of the
   // trip will be calculated accordingly.
   bool _usingFixedDestination = false;
+
   // Specific destination case
   double? _fixedDistance, _fixedPrice;
+
   // Case of municipality as a destination
   double? _minDistance, _maxDistance;
   double? _minPrice, _maxPrice;
+
   // Price by type of taxi
   late final Map<TaxiType, double> _taxiPrices;
 
@@ -78,6 +84,23 @@ class _RequestTravelAdminSheetState extends State<RequestTravelAdminSheet> {
   // Allows to know whether travel price should be updated when changing the preferred taxi type for the trip.
   bool get _shouldUpdatePriceOnSelectedTaxiChanged =>
       (_minPrice != null && _maxPrice != null) || (_fixedPrice != null);
+
+  final _formKey = GlobalKey<FormState>();
+  late String _normalizedPhone;
+
+  String _normalizePhoneNumber(String phone) {
+    // Remove all spaces and trim
+    String cleanPhone = phone.trim().replaceAll(' ', '');
+    // Remove + if present
+    if (cleanPhone.startsWith('+')) {
+      cleanPhone = cleanPhone.substring(1);
+    }
+    // Remove country code (53) if present
+    if (cleanPhone.startsWith('53') && cleanPhone.length > 8) {
+      cleanPhone = cleanPhone.substring(2);
+    }
+    return cleanPhone;
+  }
 
   // It is responsible for calculating the distance and, consequently, the price of the trip. It should only be
   // called when _canEstimateDistance is true.
@@ -178,239 +201,302 @@ class _RequestTravelAdminSheetState extends State<RequestTravelAdminSheet> {
             spacing: 12.0,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-          // Origin / Destination inputs.
-          Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              spacing: 16.0,
-              children: [
-                Column(children: [
-                  const Icon(Icons.my_location),
-                  Padding(
-                      padding: EdgeInsets.symmetric(vertical: 2.0),
-                      child: Container(
-                          width: 1.5,
-                          height: 20.0,
-                          color: Theme.of(context).dividerColor)),
-                  const Icon(Icons.location_on_outlined)
-                ]),
-                Expanded(
-                    child: Column(
-                        spacing: 12.0,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                      GestureDetector(
-                          onTap: () async {
-                            final mapboxPlace = await context
-                                .push<MapboxPlace>(ClientRoutes.searchOrigin);
-                            if (mapboxPlace != null) {
-                              setState(() {
-                                _originName = mapboxPlace.text;
-                                _originCoords = mapboxPlace.coordinates;
-                              });
-                              if (_canEstimateDistance) _estimateDistance();
-                            }
-                          },
-                          child: Text(
-                              _originName ??
-                                  AppLocalizations.of(context)!.originName,
-                              style: textTheme.bodyLarge)),
-                      Divider(height: 1, thickness: 1),
-                      GestureDetector(
-                          onTap: () async {
-                            final resultData =
-                                await context.push<Map<String, dynamic>?>(
-                                    ClientRoutes.searchDestination);
-                            if (resultData != null) {
-                              _usingFixedDestination =
-                                  resultData["usingFixedDestination"];
-                              // The user has chosen a specific destination
-                              if (_usingFixedDestination) {
-                                final place =
-                                    resultData["destination"] as MapboxPlace;
-                                setState(() {
-                                  _destinationName = place.text;
-                                  _destinationCoords = place.coordinates;
-                                  _minDistance = null;
-                                  _maxDistance = null;
-                                  _minPrice = null;
-                                  _maxPrice = null;
-                                });
-                              }
-                              // The user has chosen a municipality as a destination
-                              else {
-                                final municipality =
-                                    resultData["destination"] as String;
-                                setState(() {
-                                  _destinationName = municipality;
-                                  _fixedDistance = null;
-                                  _fixedPrice = null;
-                                });
-                              }
-                              // Estimate distance regardless of the type of destination chosen
-                              if (_canEstimateDistance) _estimateDistance();
-                            }
-                          },
-                          child: Text(
-                              _destinationName ??
-                                  AppLocalizations.of(context)!.destinationName,
-                              style: textTheme.bodyLarge))
-                    ]))
+              // Origin / Destination inputs.
+              Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  spacing: 16.0,
+                  children: [
+                    Column(children: [
+                      const Icon(Icons.my_location),
+                      Padding(
+                          padding: EdgeInsets.symmetric(vertical: 2.0),
+                          child: Container(
+                              width: 1.5,
+                              height: 20.0,
+                              color: Theme.of(context).dividerColor)),
+                      const Icon(Icons.location_on_outlined)
+                    ]),
+                    Expanded(
+                        child: Column(
+                            spacing: 12.0,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                          GestureDetector(
+                              onTap: () async {
+                                final mapboxPlace =
+                                    await context.push<MapboxPlace>(
+                                        ClientRoutes.searchOrigin);
+                                if (mapboxPlace != null) {
+                                  setState(() {
+                                    _originName = mapboxPlace.text;
+                                    _originCoords = mapboxPlace.coordinates;
+                                  });
+                                  if (_canEstimateDistance) _estimateDistance();
+                                }
+                              },
+                              child: Text(
+                                  _originName ??
+                                      AppLocalizations.of(context)!.originName,
+                                  style: textTheme.bodyLarge)),
+                          Divider(height: 1, thickness: 1),
+                          GestureDetector(
+                              onTap: () async {
+                                final resultData =
+                                    await context.push<Map<String, dynamic>?>(
+                                        ClientRoutes.searchDestination);
+                                if (resultData != null) {
+                                  _usingFixedDestination =
+                                      resultData["usingFixedDestination"];
+                                  // The user has chosen a specific destination
+                                  if (_usingFixedDestination) {
+                                    final place = resultData["destination"]
+                                        as MapboxPlace;
+                                    setState(() {
+                                      _destinationName = place.text;
+                                      _destinationCoords = place.coordinates;
+                                      _minDistance = null;
+                                      _maxDistance = null;
+                                      _minPrice = null;
+                                      _maxPrice = null;
+                                    });
+                                  }
+                                  // The user has chosen a municipality as a destination
+                                  else {
+                                    final municipality =
+                                        resultData["destination"] as String;
+                                    setState(() {
+                                      _destinationName = municipality;
+                                      _fixedDistance = null;
+                                      _fixedPrice = null;
+                                    });
+                                  }
+                                  // Estimate distance regardless of the type of destination chosen
+                                  if (_canEstimateDistance) _estimateDistance();
+                                }
+                              },
+                              child: Text(
+                                  _destinationName ??
+                                      AppLocalizations.of(context)!
+                                          .destinationName,
+                                  style: textTheme.bodyLarge))
+                        ]))
+                  ]),
+              // Taxi preference header
+              Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(localizations.askTaxi,
+                      style: textTheme.bodyMedium
+                          ?.copyWith(fontWeight: FontWeight.bold))),
+              // Available taxis list view
+              SizedBox(
+                  height: 130,
+                  child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: TaxiType.values.length,
+                      itemBuilder: (context, index) => Padding(
+                          padding: const EdgeInsets.only(right: 12.0),
+                          child: _taxiItemBuilderAdmin(index, textTheme)))),
+              // Seats selection
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                Text(AppLocalizations.of(context)!.howTravels,
+                    style: textTheme.bodyMedium
+                        ?.copyWith(fontWeight: FontWeight.bold)),
+                Row(mainAxisSize: MainAxisSize.min, children: [
+                  IconButton(
+                      padding: EdgeInsets.zero,
+                      onPressed: () {
+                        if (_passengerCount > 1) {
+                          setState(() => _passengerCount--);
+                        }
+                      },
+                      icon: const Icon(Icons.remove)),
+                  Text("$_passengerCount",
+                      style: textTheme.bodyMedium
+                          ?.copyWith(fontWeight: FontWeight.bold)),
+                  IconButton(
+                      padding: EdgeInsets.zero,
+                      onPressed: () {
+                        if (_passengerCount < 20) {
+                          setState(() => _passengerCount++);
+                        }
+                      },
+                      icon: const Icon(Icons.add))
+                ])
               ]),
-          // Taxi preference header
-          Align(
-              alignment: Alignment.centerLeft,
-              child: Text(localizations.askTaxi,
-                  style: textTheme.bodyMedium
-                      ?.copyWith(fontWeight: FontWeight.bold))),
-          // Available taxis list view
-          SizedBox(
-              height: 130,
-              child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: TaxiType.values.length,
-                  itemBuilder: (context, index) => Padding(
-                      padding: const EdgeInsets.only(right: 12.0),
-                      child: _taxiItemBuilderAdmin(index, textTheme)))),
-          // Seats selection
-          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text(AppLocalizations.of(context)!.howTravels,
-                style: textTheme.bodyMedium
-                    ?.copyWith(fontWeight: FontWeight.bold)),
-            Row(mainAxisSize: MainAxisSize.min, children: [
-              IconButton(
-                  padding: EdgeInsets.zero,
-                  onPressed: () {
-                    if (_passengerCount > 1) {
-                      setState(() => _passengerCount--);
-                    }
-                  },
-                  icon: const Icon(Icons.remove)),
-              Text("$_passengerCount",
-                  style: textTheme.bodyMedium
-                      ?.copyWith(fontWeight: FontWeight.bold)),
-              IconButton(
-                  padding: EdgeInsets.zero,
-                  onPressed: () {
-                    if (_passengerCount < 20) {
-                      setState(() => _passengerCount++);
-                    }
-                  },
-                  icon: const Icon(Icons.add))
-            ])
-          ]),
-          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text(AppLocalizations.of(context)!.pets,
-                style: textTheme.bodyMedium
-                    ?.copyWith(fontWeight: FontWeight.bold)),
-            Switch(
-                value: _hasPets,
-                activeColor: colorScheme.primaryFixedDim,
-                onChanged: (value) => setState(() => _hasPets = value))
-          ]),
-          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(AppLocalizations.of(context)!.phoneNumber,
-                style: textTheme.bodyMedium
-                    ?.copyWith(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 12),
-            SizedBox(
-              width: 180,
-              child: TextFormField(
-                textAlign: TextAlign.start,
-                keyboardType: TextInputType.phone,
-                decoration: InputDecoration(
-                  errorMaxLines: 2,
-                  filled: true,
-                  fillColor: Theme.of(context).colorScheme.surface,
-                  hintText: AppLocalizations.of(context)!.phoneHint,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                Text(AppLocalizations.of(context)!.pets,
+                    style: textTheme.bodyMedium
+                        ?.copyWith(fontWeight: FontWeight.bold)),
+                Switch(
+                    value: _hasPets,
+                    activeColor: colorScheme.primaryFixedDim,
+                    onChanged: (value) => setState(() => _hasPets = value))
+              ]),
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(AppLocalizations.of(context)!.phoneNumber,
+                    style: textTheme.bodyMedium
+                        ?.copyWith(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+                Form(
+                  key: _formKey,
+                  child: TextFormField(
+                    textAlign: TextAlign.start,
+                    keyboardType: TextInputType.phone,
+                    maxLength: 12,
+                    decoration: InputDecoration(
+                      errorMaxLines: 2,
+                      filled: true,
+                      fillColor: Theme.of(context).colorScheme.surface,
+                      hintText: AppLocalizations.of(context)!.phoneHint,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 12.0, horizontal: 12.0),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return AppLocalizations.of(context)!.requiredField;
+                      }
+                      final normalizedPhone = _normalizePhoneNumber(value);
+                      if (normalizedPhone.length != 8 ||
+                          !RegExp(r'^\d{8}$').hasMatch(normalizedPhone)) {
+                        return AppLocalizations.of(context)!
+                            .invalidPhoneMessage;
+                      }
+                      return null;
+                    },
+                    onSaved: (value) {
+                      if (value != null) {
+                        _normalizedPhone = _normalizePhoneNumber(value);
+                      }
+                    },
                   ),
-                  contentPadding: const EdgeInsets.symmetric(
-                      vertical: 12.0, horizontal: 12.0),
-                ),
-              ),
-            )
-          ]),
-          // Divider
-          Divider(height: 24, thickness: 1),
-          // Estimations for distance and price
-          // if(_canEstimateDistance)
-          Column(spacing: 12.0, mainAxisSize: MainAxisSize.min, children: [
-            // if(_canEstimateWithUnfixedDestination)
-            Column(mainAxisSize: MainAxisSize.min, children: [
-              _buildEstimationInfoRowAdmin(
-                  textTheme,
-                  localizations.minDistance,
-                  _minDistance != null
-                      ? '${_roundTo2Dec(_minDistance!)} km'
-                      : "-"),
-              _buildEstimationInfoRowAdmin(
-                  textTheme,
-                  localizations.maxDistance,
-                  _maxDistance != null
-                      ? '${_roundTo2Dec(_maxDistance!)} km'
-                      : "-"),
-              _buildEstimationInfoRowAdmin(textTheme, localizations.minPrice,
-                  _minPrice != null ? '${_roundTo2Dec(_minPrice!)} CUP' : "-"),
-              _buildEstimationInfoRowAdmin(textTheme, localizations.maxPrice,
-                  _maxPrice != null ? '${_roundTo2Dec(_maxPrice!)} CUP' : "-")
-            ])
-          ]),
-          // Submit travel request
-          // SizedBox(
-          //     width: double.infinity,
-          //     child: ElevatedButton(
-          //       child: const SizedBox(height: 20,),
-          //         style: ElevatedButton.styleFrom(
-          //             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
-          //             foregroundColor: colorScheme.secondary,
-          //             backgroundColor: colorScheme.primaryContainer,
-          //             textStyle: TextStyle(fontWeight: FontWeight.bold),
-          //             padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 100)
-          //         ),
-          //         onPressed: _canEstimateDistance && hasConnection(context) ? () async {
-          //           final response = await _travelService.requestNewTravel(
-          //               clientId: _client.id,
-          //               originName: _originName!,
-          //               destinationName: _destinationName!,
-          //               originCoords: _originCoords!,
-          //               destinationCoords: _destinationCoords,
-          //               requiredSeats: _passengerCount,
-          //               hasPets: _hasPets,
-          //               taxiType: _selectedTaxi,
-          //               fixedDistance: _fixedDistance,
-          //               minDistance: _minDistance,
-          //               maxDistance: _maxDistance,
-          //               fixedPrice: _fixedPrice,
-          //               minPrice: _minPrice,
-          //               maxPrice: _maxPrice
-          //           );
-          //           if (!context.mounted) return;
-          //           if(response.statusCode == 200) {
-          //             final travel = Travel.fromJson(jsonDecode(response.body));
-          //             // Radar animation while waiting for acceptation.
-          //             final updatedTravel = await context.push<Travel?>(
-          //                 ClientRoutes.searchDriver,
-          //                 extra: travel.id
-          //             );
-          //             if (!context.mounted) return;
-          //             if (updatedTravel != null) {
-          //               // Navigate to TrackDriver Screen.
-          //               context.go(ClientRoutes.trackDriver, extra: updatedTravel);
-          //             } else {
-          //               // Cancel this travel request
-          //               if (hasConnection(context)) {
-          //                 await _cancelTravelRequest(travel.id);
-          //               }
-          //             }
-          //           } else {
-          //             showToast(context: context, message: "Ocurrió algo mal, por favor inténtelo más tarde");
-          //           }
-          //         } : null,
-          //     )
-          // )
-        ]),
+                )
+              ]),
+              // Divider
+              Divider(height: 24, thickness: 1),
+              // Estimations for distance and price
+              if (_canEstimateDistance)
+                Column(
+                    spacing: 12.0,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(localizations.tooltipAboutEstimations,
+                          style: textTheme.bodySmall),
+                      if (_canEstimateWithFixedDestination)
+                        Column(mainAxisSize: MainAxisSize.min, children: [
+                          // Fixed Distance
+                          _buildEstimationInfoRowAdmin(
+                              textTheme,
+                              localizations.distance,
+                              _fixedDistance != null
+                                  ? '${_roundTo2Dec(_fixedDistance!)} km'
+                                  : "-"),
+                          // Fixed Price
+                          _buildEstimationInfoRowAdmin(
+                              textTheme,
+                              localizations.price,
+                              _fixedPrice != null
+                                  ? '${_roundTo2Dec(_fixedPrice!)} CUP'
+                                  : "-")
+                        ]),
+                      if (_canEstimateWithUnfixedDestination)
+                        Column(mainAxisSize: MainAxisSize.min, children: [
+                          // Minimum Distance
+                          _buildEstimationInfoRowAdmin(
+                              textTheme,
+                              localizations.minDistance,
+                              _minDistance != null
+                                  ? '${_roundTo2Dec(_minDistance!)} km'
+                                  : "-"),
+                          // Minimum Price
+                          _buildEstimationInfoRowAdmin(
+                              textTheme,
+                              localizations.minPrice,
+                              _minPrice != null
+                                  ? '${_roundTo2Dec(_minPrice!)} CUP'
+                                  : "-"),
+                          // Maximum Distance
+                          _buildEstimationInfoRowAdmin(
+                              textTheme,
+                              localizations.maxDistance,
+                              _maxDistance != null
+                                  ? '${_roundTo2Dec(_maxDistance!)} km'
+                                  : "-"),
+                          // Maximum Price
+                          _buildEstimationInfoRowAdmin(
+                              textTheme,
+                              localizations.maxPrice,
+                              _maxPrice != null
+                                  ? '${_roundTo2Dec(_maxPrice!)} CUP'
+                                  : "-")
+                        ])
+                    ]),
+              // Submit travel request
+              SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(0)),
+                        foregroundColor: colorScheme.secondary,
+                        backgroundColor: colorScheme.primaryContainer,
+                        textStyle: TextStyle(fontWeight: FontWeight.bold),
+                        padding: EdgeInsets.symmetric(
+                            vertical: 12.0, horizontal: 100)),
+                    onPressed: _canEstimateDistance && hasConnection(context)
+                        ? () async {
+                            if (!_formKey.currentState!.validate()) return;
+                            _formKey.currentState!.save();
+
+                            final response =
+                                await _adminService.requestNewTravel(
+                                    clientPhone: _normalizedPhone,
+                                    originName: _originName!,
+                                    destinationName: _destinationName!,
+                                    originCoords: _originCoords!,
+                                    destinationCoords: _destinationCoords,
+                                    requiredSeats: _passengerCount,
+                                    hasPets: _hasPets,
+                                    taxiType: _selectedTaxi,
+                                    fixedDistance: _fixedDistance,
+                                    minDistance: _minDistance,
+                                    maxDistance: _maxDistance,
+                                    fixedPrice: _fixedPrice,
+                                    minPrice: _minPrice,
+                                    maxPrice: _maxPrice);
+                            if (!context.mounted) return;
+                            if (response.statusCode == 200) {
+                              final travel =
+                                  Travel.fromJson(jsonDecode(response.body));
+                              // Radar animation while waiting for acceptation.
+                              final updatedTravel = await context.push<Travel?>(
+                                  ClientRoutes.searchDriver,
+                                  extra: travel.id);
+                              if (!context.mounted) return;
+                              if (updatedTravel != null) {
+                                // Navigate to TrackDriver Screen.
+                                context.go(ClientRoutes.trackDriver,
+                                    extra: updatedTravel);
+                              } else {
+                                // Cancel this travel request
+                                if (hasConnection(context)) {
+                                  await _cancelTravelRequest(travel.id);
+                                }
+                              }
+                            } else {
+                              showToast(
+                                  context: context,
+                                  message:
+                                      "Ocurrió algo mal, por favor inténtelo más tarde");
+                            }
+                          }
+                        : null,
+                    child: Text(AppLocalizations.of(context)!.askTaxi),
+                  ))
+            ]),
       ),
     );
   }
@@ -490,14 +576,26 @@ class _RequestTravelAdminSheetState extends State<RequestTravelAdminSheet> {
                                                       taxi, localizations),
                                                   style: textTheme.labelLarge)
                                             ])
-                                      ])))))),
+                                      ]
+                                  )
+                              )
+                          )
+                      )
+                  )
+              ),
               // Vehicle Image
               Align(
                   alignment: Alignment.bottomCenter,
                   child: Padding(
                       padding: EdgeInsets.only(bottom: 8.0, right: 8.0),
-                      child: Image.asset(taxi.assetRef(AssetDpi.xhdpi))))
-            ])));
+                      child: Image.asset(taxi.assetRef(AssetDpi.xhdpi)
+                      )
+                  )
+              )
+            ]
+            )
+        )
+    );
   }
 
   Widget _buildEstimationInfoRowAdmin(
