@@ -67,10 +67,9 @@ class InfoDialog extends StatelessWidget {
       actions: [
         OutlinedButton(
           onPressed: () {
+            context.pop();
             if (onAccept != null) {
               onAccept!();
-            } else {
-              context.pop();
             }
           },
           child: Text(AppLocalizations.of(context)!.acceptButton),

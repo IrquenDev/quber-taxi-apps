@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quber_taxi/admin-app/pages/request_taxi/request_taxi.dart';
 import 'package:quber_taxi/client-app/pages/home/map.dart';
-import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/admin_routes.dart';
 
 class RequestTaxiScreenAdmin extends StatelessWidget {
