@@ -506,6 +506,14 @@ class _RequestTravelAdminSheetState extends State<RequestTravelAdminSheet> {
                                 }
                               }
                             }
+                            else if(response.statusCode == 403) {
+                              showToast(
+                                context: context,
+                                message: "El estado actual de la cuenta del cliente es BLOQUEADO. Puesto que ha sido "
+                                    "reportado por mal comportamiento ya no se le permite solicitar nuevos viajes.",
+                                durationInSeconds: 4,
+                              );
+                            }
                             else if(response.statusCode == 404) {
                               showToast(
                                 context: context,
