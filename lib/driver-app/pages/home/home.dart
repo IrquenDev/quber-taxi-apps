@@ -24,6 +24,7 @@ import 'package:quber_taxi/driver-app/pages/home/trip_card.dart';
 import 'package:quber_taxi/driver-app/pages/home/trip_notification.dart';
 import 'package:quber_taxi/enums/driver_account_state.dart';
 import 'package:quber_taxi/enums/municipalities.dart';
+import 'package:quber_taxi/enums/travel_request_type.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/backup_navigation_manager.dart';
@@ -1112,31 +1113,42 @@ class _DriverHomePageState extends State<DriverHomePage> {
                               setState(() {_selectedTravel = null;});
                             },
                             travel: _selectedTravel!,
-                            onPickUpConfirmationRequest: () async {
-                              // Clear municipality polygon when starting the trip
-                              await _clearMunicipalityPolygon();
-                              // Notify driver about pickup confirmation flow
-                              if (context.mounted) {
-                                showDialog(
-                                  context: context,
-                                  barrierDismissible: false,
-                                  builder: (_) => InfoDialog(
-                                    title: AppLocalizations.of(context)!.pickupConfirmationSentTitle,
-                                    bodyMessage: AppLocalizations.of(context)!.pickupConfirmationInfo,
-                                  ),
-                                );
-                              }
-                              _travelStateHandler = TravelStateHandler(
-                                state: TravelState.inProgress,
-                                travelId: _selectedTravel!.id,
-                                onMessage: (travel) async {
-                                  // Clear backup once navigation starts
-                                  await BackupNavigationManager.instance.clear();
-                                  if(!context.mounted) return;
-                                  context.go(DriverRoutes.navigation, extra: travel);
+                              onPickUpConfirmationRequest: () async {
+                                // Behavior for travel requested normally, needs pick up confirmation through ws
+                                if(_selectedTravel!.requestType == TravelRequestType.online) {
+                                  // Check connection (web socket depends on it)
+                                  if(hasConnection(context)) {
+                                    // Notify driver about pickup confirmation flow
+                                    showDialog(
+                                      context: context,
+                                      barrierDismissible: false,
+                                      builder: (_) => InfoDialog(
+                                        title: AppLocalizations.of(context)!.pickupConfirmationSentTitle,
+                                        bodyMessage: AppLocalizations.of(context)!.pickupConfirmationInfo,
+                                        onAccept: () {
+                                          // Send pick up confirmation
+                                          WebSocketService.instance.send(
+                                              "/app/travels/${_selectedTravel!.id}/pick-up-confirmation", null // no body needed
+                                          );
+                                          // Only subscribes once
+                                          _travelStateHandler = TravelStateHandler(
+                                              state: TravelState.inProgress,
+                                              travelId: _selectedTravel!.id,
+                                              onMessage: _goToNavigationPage
+                                          )..activate();
+                                        },
+                                      ),
+                                    );
+                                  }
+                                  else {
+                                    showToast(context: context, message: "Revise su conexión a internet");
+                                  }
                                 }
-                              )..activate();
-                            }
+                                // If client if offline, we don't wait for pick up confirmation
+                                else {
+                                  _goToNavigationPage(_selectedTravel!);
+                                }
+                              }
                           ),
                         ),
                       ),
@@ -1150,7 +1162,16 @@ class _DriverHomePageState extends State<DriverHomePage> {
       }
     );
   }
-
+  
+  void _goToNavigationPage(Travel travel) async {
+    // Clear municipality polygon when starting the trip
+    await _clearMunicipalityPolygon();
+    // Clear backup once navigation starts
+    await BackupNavigationManager.instance.clear();
+    if(!mounted) return;
+    context.go(DriverRoutes.navigation, extra: travel);
+  }
+  
   void _showDriverCreditDialog() {
     showDialog(
       context: context,
