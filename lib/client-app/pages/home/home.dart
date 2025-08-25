@@ -1,28 +1,22 @@
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter/services.dart';
-import 'dart:convert';
 import 'package:go_router/go_router.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/client-app/pages/home/map.dart';
 import 'package:quber_taxi/client-app/pages/home/request_travel_sheet.dart';
-import 'package:quber_taxi/common/models/client.dart';
 import 'package:quber_taxi/client-app/pages/settings/account_setting.dart';
+import 'package:quber_taxi/common/models/client.dart';
 import 'package:quber_taxi/common/services/app_announcement_service.dart';
-import 'package:quber_taxi/common/services/account_service.dart';
 import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
 import 'package:quber_taxi/common/widgets/dialogs/circular_info_dialog.dart';
 import 'package:quber_taxi/common/widgets/dialogs/info_dialog.dart';
-import 'package:quber_taxi/enums/client_account_state.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/common_routes.dart';
-import 'package:quber_taxi/storage/session_prefs_manger.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:quber_taxi/utils/runtime.dart';
-
 import 'package:quber_taxi/storage/favorites_prefs_manager.dart';
+import 'package:quber_taxi/utils/runtime.dart';
 
 class ClientHomePage extends StatefulWidget {
   const ClientHomePage({super.key, this.position});
@@ -51,65 +45,25 @@ class _ClientHomePageState extends State<ClientHomePage> {
 
   // Client account state verification
   late Client _client;
-  bool _didCheckAccount = false;
-  bool _isAccountEnabled = false;
 
   void _handleNetworkScopeAndListener() {
     _scope = NetworkScope.of(context);
     // We need to register a connection status listener, as it depends on ConnectionStatus being online to execute
     // _checkClientAccountState. If the client is offline (any status other than checking or online), they won't be
     // able to continue.
-    _listener = _scope.registerListener(_checkClientAccountStateListener);
+    _listener = _scope.registerListener(_checkAnnouncementsListener);
     // Since execution times are not always the same, it's possible that when the listener is registered, the current
     // status is already online, so the listener won't be notified. This is why we must make an initial manual call.
     // In any case, calls will not be duplicated since they are being protected with the _didCheckAccount flag.
-    _checkClientAccountStateListener(NetworkScope.statusOf(context));
+    _checkAnnouncementsListener(NetworkScope.statusOf(context));
   }
 
-  Future<void> _checkClientAccountStateListener(ConnectionStatus status) async {
-    if (!_didCheckAccount) {
-      if(status == ConnectionStatus.checking) return;
-      final isConnected =  status == ConnectionStatus.online;
-      if(isConnected) {
-        await _checkClientAccountState();
-        _didCheckAccount = true;
-        // Check announcements after account state is verified
-        await _checkAnnouncements();
-      }
-      else {
-        await _showNoConnectionDialog();
-      }
+  Future<void> _checkAnnouncementsListener(ConnectionStatus status) async {
+    if(status == ConnectionStatus.checking) return;
+    final isConnected =  status == ConnectionStatus.online;
+    if(isConnected) {
+      await _checkAnnouncements();
     }
-  }
-
-  Future<void> _checkClientAccountState() async {
-    // Update client data
-    final response = await AccountService().findClient(_client.id);
-    // Avoid context's gaps
-    if (!mounted) return;
-    // Handle OK
-    if (response.statusCode == 200) {
-      _client = Client.fromJson(jsonDecode(response.body));
-      // Always update session
-      await SessionPrefsManager.instance.save(_client);
-      switch (_client.accountState) {
-        case ClientAccountState.blocked: await _showAccountBlockedDialog();
-        case ClientAccountState.active: setState(() => _isAccountEnabled = true);
-      }
-    }
-  }
-
-  Future<void> _showNoConnectionDialog() async {
-    final localizations = AppLocalizations.of(context)!;
-    return await showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => InfoDialog(
-          title: localizations.noConnection,
-          bodyMessage: localizations.noConnectionMessage,
-          onAccept: ()=> SystemNavigator.pop(),
-        ),
-    );
   }
 
   Future<void> _showAccountBlockedDialog() async {
@@ -189,7 +143,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
               setState(() {
                 _currentIndex = index;
                 // Show request sheet when taxi item is selected, but only if account is enabled
-                _showRequestSheet = index == 1 && _isAccountEnabled;
+                _showRequestSheet = index == 1;
                 _showfavoriteDialog = index == 3;
                 _showQuberPointsDialog = index == 4;
               });
@@ -253,7 +207,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
           ],
           onTap: (index) {
             // Check if trying to access taxi request (index 1) with blocked account
-            if (index == 1 && !_isAccountEnabled) {
+            if (index == 1) {
               _showAccountBlockedDialog();
               return;
             }
@@ -453,8 +407,7 @@ class _RequestTravelSheetWidget extends StatefulWidget {
       _RequestTravelSheetWidgetState();
 }
 
-class _RequestTravelSheetWidgetState extends State<_RequestTravelSheetWidget>
-    with TickerProviderStateMixin {
+class _RequestTravelSheetWidgetState extends State<_RequestTravelSheetWidget> with TickerProviderStateMixin {
   double _sheetHeight = 0.0;
   double _dragStartY = 0;
   double _dragStartHeight = 0;
