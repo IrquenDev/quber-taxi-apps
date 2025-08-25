@@ -7,6 +7,7 @@ import 'package:quber_taxi/common/services/admin_service.dart';
 import 'package:quber_taxi/common/services/travel_service.dart';
 import 'package:quber_taxi/driver-app/pages/navigation/trip_completed.dart';
 import 'package:quber_taxi/enums/municipalities.dart';
+import 'package:quber_taxi/enums/travel_request_type.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
 import 'package:quber_taxi/navigation/backup_navigation_manager.dart';
 import 'package:quber_taxi/navigation/routes/driver_routes.dart';
@@ -374,6 +375,41 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
     setState(() => _isGuidedRouteEnabled = isEnabled);
   }
 
+  void _completeTravel(Travel travel) async {
+    // Cancel stopwatch
+    _stopwatch?.stop();
+    // Mark this travel as completed (or with issues) in the api
+    late http.Response response;
+    if(widget.wasRestored) {
+      response = await _travelService.markAsCompletedWithIssue(travelId: widget.travel.id);
+    } else {
+      response = await _travelService.markAsCompleted(
+        travelId: widget.travel.id,
+        finalDistance: _distanceInKm.toInt(),
+        finalDuration: _duration,
+        finalPrice: _finalPrice,
+        quberCredit: (_finalPrice * _creditForQuber) / 100,
+      );
+    }
+    if (response.statusCode == 200) {
+      // In any case (was page restored) the API has already applied discounts, penalties, etc. It's safe to
+      // clear the redirect backup right here.
+      await BackupNavigationManager.instance.clear();
+      // Get the updated driver data and save it locally
+      final driverResponse = await AccountService().findDriver(_driver.id);
+      if (!mounted) return;
+      if (driverResponse.statusCode == 200) {
+        _driver = Driver.fromJson(jsonDecode(driverResponse.body));
+        final savedFlag = await SessionPrefsManager.instance.save(_driver);
+        if (savedFlag) {
+          setState(() => _isTravelCompleted = true); // show completed travel metrics (bottom sheet)
+          _locationStream.cancel();
+          _travelStateHandler.deactivate();
+        }
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -382,41 +418,8 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
     _travelStateHandler = TravelStateHandler(
         state: TravelState.completed,
         travelId: widget.travel.id,
-        onMessage: (_) async {
-          // Cancel stopwatch
-          _stopwatch?.stop();
-          // Mark this travel as completed (or with issues) in the api
-          late http.Response response;
-          if(widget.wasRestored) {
-            response = await _travelService.markAsCompletedWithIssue(travelId: widget.travel.id);
-          } else {
-            response = await _travelService.markAsCompleted(
-              travelId: widget.travel.id,
-              finalDistance: _distanceInKm.toInt(),
-              finalDuration: _duration,
-              finalPrice: _finalPrice,
-              quberCredit: (_finalPrice * _creditForQuber) / 100,
-            );
-          }
-          if (response.statusCode == 200) {
-            // In any case (was page restored) the API has already applied discounts, penalties, etc. It's safe to
-            // clear the redirect backup right here.
-            await BackupNavigationManager.instance.clear();
-            // Get the updated driver data and save it locally
-            final driverResponse = await AccountService().findDriver(_driver.id);
-            if (!mounted) return;
-            if (driverResponse.statusCode == 200) {
-              _driver = Driver.fromJson(jsonDecode(driverResponse.body));
-              final savedFlag = await SessionPrefsManager.instance.save(_driver);
-              if (savedFlag) {
-                setState(() => _isTravelCompleted = true); // show completed travel metrics (bottom sheet)
-                _locationStream.cancel();
-                _travelStateHandler.deactivate();
-              }
-            }
-          }
-        })
-      ..activate();
+        onMessage: _completeTravel
+    )..activate();
     // Load municipality polygon if destination is a municipality (useful to limit the driver into the destination
     // municipality boxing when selecting a guided route directly from map);
     if (!_isFixedDestination) {
@@ -519,7 +522,20 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
                     if (!_isTravelCompleted)
                       ElevatedButton.icon(
                         onPressed: () {
-                          WebSocketService.instance.send("/app/travels/${widget.travel.id}/finish-confirmation", null);
+                          if(widget.travel.requestType == TravelRequestType.online) {
+                            if(hasConnection(context)) {
+                              WebSocketService.instance.send(
+                                  "/app/travels/${widget.travel.id}/finish-confirmation",
+                                  null
+                              );
+                            }
+                            else {
+                              showToast(context: context, message: "Por favor revise su conexión a internet");
+                            }
+                          }
+                          else {
+                            _completeTravel(widget.travel);
+                          }
                         },
                         icon: Icon(Icons.done_outline, color: colorScheme.onPrimary),
                         label: Text(

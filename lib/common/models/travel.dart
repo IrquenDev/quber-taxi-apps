@@ -2,6 +2,7 @@ import 'package:quber_taxi/common/models/client.dart';
 import 'package:quber_taxi/common/models/driver.dart';
 import 'package:quber_taxi/common/models/encodable.dart';
 import 'package:quber_taxi/enums/taxi_type.dart';
+import 'package:quber_taxi/enums/travel_request_type.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
 
 class Travel implements Encodable{
@@ -21,6 +22,7 @@ class Travel implements Encodable{
   final double? minPrice;
   final double? maxPrice;
   final TravelState state;
+  final TravelRequestType requestType;
   final Client client;
   final Driver? driver;
   final double? finalDistance;
@@ -29,7 +31,7 @@ class Travel implements Encodable{
   final DateTime? endDate;
   final DateTime requestedDate;
 
-  Travel({
+  const Travel({
     required this.id,
     required this.originName,
     required this.destinationName,
@@ -45,6 +47,7 @@ class Travel implements Encodable{
     this.minPrice,
     this.maxPrice,
     required this.state,
+    required this.requestType,
     required this.client,
     required this.requestedDate,
     this.driver,
@@ -73,6 +76,7 @@ class Travel implements Encodable{
         minPrice: json["minPrice"],
         maxPrice: json["maxPrice"],
         state: TravelState.resolve(json["state"]),
+        requestType: TravelRequestType.resolve(json["requestType"]),
         client: Client.fromJson(json["client"]),
         requestedDate: DateTime.parse(json["requestedDate"]),
         driver: json["driver"] != null ? Driver.fromJson(json["driver"]) : null,
@@ -100,6 +104,7 @@ class Travel implements Encodable{
     "minPrice": minPrice,
     "maxPrice": maxPrice,
     "state": state.apiValue,
+    "requestType": requestType.apiValue,
     "client": client.toJson(),
     "requestedDate": requestedDate.toIso8601String(),
     "driver": driver?.toJson(),

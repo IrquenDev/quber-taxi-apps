@@ -174,15 +174,6 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
         if (_canEstimateDistance) _estimateDistance();
       });
     }
-
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (hasConnection(context)) {
-        final quberConfig = await AdminService().getQuberConfig();
-        if (quberConfig != null) {
-          _taxiPrices = quberConfig.travelPrice;
-        }
-      }
-    });
   }
 
   @override

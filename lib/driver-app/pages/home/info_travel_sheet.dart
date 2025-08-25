@@ -7,7 +7,6 @@ import 'package:quber_taxi/common/services/driver_service.dart';
 import 'package:quber_taxi/enums/taxi_type.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/backup_navigation_manager.dart';
-import 'package:quber_taxi/navigation/routes/driver_routes.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/utils/runtime.dart';
 import 'package:quber_taxi/utils/websocket/core/websocket_service.dart';
@@ -33,16 +32,13 @@ class TravelInfoSheet extends StatelessWidget {
       String cleanPhone = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
       print('Original phone number: $phoneNumber');
       print('Clean phone number: $cleanPhone');
-
       final Uri url = Uri(scheme: 'tel', path: cleanPhone);
       print('Attempting to launch phone dialer with URL: $url');
-
       // Try with external application mode
       final bool launched = await launchUrl(
         url,
         mode: LaunchMode.externalApplication,
       );
-
       if (launched) {
         print('Phone dialer launched successfully');
       } else {
@@ -237,7 +233,7 @@ class TravelInfoSheet extends StatelessWidget {
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                             TextSpan(
-                              text: '${travel.hasPets ? localizations.withPet : localizations.withoutPet}',
+                              text: travel.hasPets ? localizations.withPet : localizations.withoutPet,
                             ),
                           ],
                         ),
@@ -254,7 +250,7 @@ class TravelInfoSheet extends StatelessWidget {
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                             TextSpan(
-                              text: '${TaxiType.nameOf(travel.taxiType, localizations)}',
+                              text: TaxiType.nameOf(travel.taxiType, localizations),
                             ),
                           ],
                         ),
@@ -280,12 +276,7 @@ class TravelInfoSheet extends StatelessWidget {
                   vertical: 12.0,
                 ),
               ),
-              onPressed: hasConnection(context) ? () {
-                WebSocketService.instance.send(
-                    "/app/travels/${travel.id}/pick-up-confirmation", null // no body needed
-                );
-                onPickUpConfirmationRequest.call();
-              } : null,
+              onPressed:  () => onPickUpConfirmationRequest.call(),
               child: Text(
                 localizations.startTrip,
                 style: textTheme.labelLarge?.copyWith(
