@@ -9,14 +9,15 @@ import 'package:quber_taxi/client-app/pages/home/map.dart';
 import 'package:quber_taxi/client-app/pages/home/request_travel_sheet.dart';
 import 'package:quber_taxi/client-app/pages/settings/account_setting.dart';
 import 'package:quber_taxi/common/models/client.dart';
+import 'package:quber_taxi/common/services/admin_service.dart';
 import 'package:quber_taxi/common/services/app_announcement_service.dart';
-import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
 import 'package:quber_taxi/common/widgets/dialogs/circular_info_dialog.dart';
-import 'package:quber_taxi/common/widgets/dialogs/info_dialog.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/common_routes.dart';
+import 'package:quber_taxi/storage/config_prefs_manager.dart';
 import 'package:quber_taxi/storage/favorites_prefs_manager.dart';
 import 'package:quber_taxi/utils/runtime.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ClientHomePage extends StatefulWidget {
   const ClientHomePage({super.key, this.position});
@@ -32,7 +33,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
   final _navKey = GlobalKey<CurvedNavigationBarState>();
 
   bool _showRequestSheet = false;
-  bool _showfavoriteDialog = false;
+  bool _showFavoriteDialog = false;
   bool _showQuberPointsDialog = false;
 
   // Announcement service
@@ -66,20 +67,71 @@ class _ClientHomePageState extends State<ClientHomePage> {
     }
   }
 
-  Future<void> _showAccountBlockedDialog() async {
+  /// Opens the system phone dialer with the given [phoneNumber].
+  ///
+  /// If the dialer cannot be launched, throws an exception.
+  void _launchPhoneDialer(String phoneNumber) async {
+    final Uri url = Uri(scheme: 'tel', path: phoneNumber);
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      throw 'Could not launch dialer with number $phoneNumber';
+    }
+  }
+
+  Future<void> _showOfflineModeDialog() async {
     showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (_) => InfoDialog(
-            title: "Cuenta Bloqueada",
-            bodyMessage: "Su cuenta ha sido bloqueada por mal comportamiento. Póngase en contacto con soporte si cree que esto es incorrecto."
+        builder: (_) => AlertDialog(
+          title: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(child: Text("¡Upps!. Parece que no tiene conexión")),
+              IconButton(icon: Icon(Icons.close_outlined), onPressed: () => context.pop()),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 12.0,
+            children: [
+              Text("No hemos detectado conexión para pedir el viaje, pero aquí le traemos otras alternativas:"),
+              // Call option
+              FilledButton(
+                  onPressed: () {
+                    final phoneNumber = ConfigPrefsManager.instance.getOperatorPhone();
+                    _launchPhoneDialer(phoneNumber ?? "+5352417814");
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    spacing: 12.0,
+                    children: [
+                      Icon(Icons.phone_outlined),
+                      Text("Pedir por llamada")
+                    ],
+                  )
+              ),
+              // SMS option
+              FilledButton(
+                  onPressed: null,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    spacing: 12.0,
+                    children: [
+                      Icon(Icons.sms_outlined),
+                      Expanded(child: Text("Pedir por SMS (Diponible pronto)"))
+                    ],
+                  )
+              )
+            ],
+          ),
         )
     );
   }
 
   Future<void> _checkAnnouncements() async {
     if (_didCheckAnnouncements) return;
-
     try {
       final announcements = await _announcementService.getActiveAnnouncements();
 
@@ -101,7 +153,15 @@ class _ClientHomePageState extends State<ClientHomePage> {
     super.initState();
     // Initialize client from logged in user
     _client = Client.fromJson(loggedInUser);
-    SchedulerBinding.instance.addPostFrameCallback((_) {
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      // Check operator phone' s change and cached it locally. If no connection at this moment, do nothing. (App will
+      // continue using de current one saved locally).
+      if(hasConnection(context)) {
+        final quberConfig  = await AdminService().getQuberConfig();
+        if(quberConfig != null) {
+          await ConfigPrefsManager.instance.saveOperatorPhone(quberConfig.operatorPhone);
+        }
+      }
       _handleNetworkScopeAndListener();
     });
   }
@@ -115,106 +175,99 @@ class _ClientHomePageState extends State<ClientHomePage> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-
-    return NetworkAlertTemplate(
-      alertBuilder: (_, status) =>
-          CustomNetworkAlert(status: status, useTopSafeArea: true),
-      alertPosition: Alignment.topCenter,
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        extendBody: true,
-        body: Stack(
-          children: [
-            _getCurrentScreen(),
-            if (_showRequestSheet) _RequestTravelSheetWidget(),
-          ],
-        ),
-        bottomNavigationBar: CurvedNavigationBar(
-          key: _navKey,
-          index: _currentIndex,
-          height: 70,
-          color: Theme.of(context).colorScheme.primaryContainer,
-          buttonBackgroundColor: Theme.of(context).colorScheme.primaryContainer,
-          backgroundColor: Colors.transparent,
-          animationCurve: Curves.easeInOut,
-          animationDuration: const Duration(milliseconds: 500),
-          letIndexChange: (index) {
-            if (index < 5) {
-              setState(() {
-                _currentIndex = index;
-                // Show request sheet when taxi item is selected, but only if account is enabled
-                _showRequestSheet = index == 1;
-                _showfavoriteDialog = index == 3;
-                _showQuberPointsDialog = index == 4;
-              });
-
-              if (_showfavoriteDialog) _showFavoritesDialog();
-              if (_showQuberPointsDialog) _showQuberPointsCircularDialog();
-
-              return true;
-            }
-            return false;
-          },
-          items: [
-            Transform.scale(
-              scale: 1,
-              child: _buildNavItem(
-                  Icons.location_on, localizations.mapBottomItem, 0),
-            ),
-            Transform.scale(
-              scale: 1,
-              child: _buildNavItem(Icons.local_taxi_outlined,
-                  localizations.requestTaxiBottomItem, 1),
-            ),
-            Transform.scale(
-              scale: 1,
-              child: _buildNavItem(
-                  Icons.settings_outlined, localizations.settingsBottomItem, 2),
-            ),
-            Transform.scale(
-              scale: 1,
-              child: _buildNavItem(
-                  Icons.favorite_border, localizations.favoritesBottomItem, 3),
-            ),
-            SizedBox(
-              width: double.infinity,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 16.0),
-                child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        _client.quberPoints.toInt().toString(),
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.onPrimaryContainer,
-                        ),
+    final colorScheme = Theme.of(context).colorScheme;
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      extendBody: true,
+      body: Stack(
+        children: [
+          _getCurrentScreen(),
+          if (_showRequestSheet) _RequestTravelSheetWidget(),
+        ],
+      ),
+      bottomNavigationBar: CurvedNavigationBar(
+        key: _navKey,
+        index: _currentIndex,
+        height: 70,
+        color: colorScheme.primaryContainer,
+        buttonBackgroundColor: colorScheme.primaryContainer,
+        backgroundColor: Colors.transparent,
+        animationCurve: Curves.easeInOut,
+        animationDuration: const Duration(milliseconds: 500),
+        letIndexChange: (index) {
+          if (index < 5) {
+            setState(() {
+              _currentIndex = index;
+              // Show request sheet when taxi item is selected and client has connection
+              _showRequestSheet = index == 1 && hasConnection(context);
+              _showFavoriteDialog = index == 3;
+              _showQuberPointsDialog = index == 4;
+            });
+            if (_showFavoriteDialog) _showFavoritesDialog();
+            if (_showQuberPointsDialog) _showQuberPointsCircularDialog();
+            return true;
+          }
+          return false;
+        },
+        items: [
+          Transform.scale(
+            scale: 1,
+            child: _buildNavItem(
+                Icons.location_on, localizations.mapBottomItem, 0),
+          ),
+          Transform.scale(
+            scale: 1,
+            child: _buildNavItem(Icons.local_taxi_outlined,
+                localizations.requestTaxiBottomItem, 1),
+          ),
+          Transform.scale(
+            scale: 1,
+            child: _buildNavItem(
+                Icons.settings_outlined, localizations.settingsBottomItem, 2),
+          ),
+          Transform.scale(
+            scale: 1,
+            child: _buildNavItem(
+                Icons.favorite_border, localizations.favoritesBottomItem, 3),
+          ),
+          SizedBox(
+            width: double.infinity,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 16.0),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      _client.quberPoints.toInt().toString(),
+                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
                       ),
-                      Text(
-                        localizations.quberPointsBottomItem,
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.onPrimaryContainer,
-                        ),
+                    ),
+                    Text(
+                      localizations.quberPointsBottomItem,
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-            )
-          ],
-          onTap: (index) {
-            // Check if trying to access taxi request (index 1) with blocked account
-            if (index == 1) {
-              _showAccountBlockedDialog();
-              return;
-            }
-            // Navigation logic is now handled in letIndexChange
-            // This callback is kept for any additional functionality if needed
-          },
-        ),
+            ),
+          )
+        ],
+        onTap: (index) {
+          // Check if trying to access taxi request with no connection
+          if (index == 1 && !hasConnection(context)) {
+            _showOfflineModeDialog();
+            return;
+          }
+          // Navigation logic is now handled in letIndexChange
+          // This callback is kept for any additional functionality if needed
+        },
       ),
     );
   }
@@ -403,8 +456,7 @@ class _FavoritesDialogState extends State<FavoritesDialog> {
 
 class _RequestTravelSheetWidget extends StatefulWidget {
   @override
-  State<_RequestTravelSheetWidget> createState() =>
-      _RequestTravelSheetWidgetState();
+  State<_RequestTravelSheetWidget> createState() => _RequestTravelSheetWidgetState();
 }
 
 class _RequestTravelSheetWidgetState extends State<_RequestTravelSheetWidget> with TickerProviderStateMixin {

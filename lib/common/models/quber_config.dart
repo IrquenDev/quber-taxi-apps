@@ -7,16 +7,19 @@ class QuberConfig implements Encodable {
 
   final double quberCredit;
   final Map<TaxiType, double> travelPrice;
+  final String operatorPhone;
 
   const QuberConfig({
     required this.quberCredit,
-    required this.travelPrice
+    required this.travelPrice,
+    required this.operatorPhone
   });
 
   @override
   Map<String, dynamic> toJson() => {
     "driverCredit": quberCredit,
-    "travelPrice": travelPrice.map((key, value) => MapEntry(key.apiValue, value))
+    "travelPrice": travelPrice.map((key, value) => MapEntry(key.apiValue, value)),
+    "operatorPhone": operatorPhone
   };
 
   factory QuberConfig.fromJson(Map<String, dynamic> json) {
@@ -30,7 +33,8 @@ class QuberConfig implements Encodable {
     
     return QuberConfig(
       quberCredit: json["driverCredit"],
-      travelPrice: vehiclePricesMap
+      travelPrice: vehiclePricesMap,
+      operatorPhone: json["operatorPhone"]
     );
   }
 }
