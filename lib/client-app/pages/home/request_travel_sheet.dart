@@ -451,7 +451,15 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                         // Clear backup on cancel or timeout
                         await BackupNavigationManager.instance.clear();
                       }
-                    } else {
+                    }
+                    else if (response.statusCode == 403) {
+                      showToast(
+                        context: context,
+                        message: "BLOQUEADO: Puesto que ha sido reportado por mal comportamiento ya no se le permite solicitar nuevos viajes.",
+                        durationInSeconds: 4,
+                      );
+                    }
+                    else {
                       showToast(context: context, message: "Ocurrió algo mal, por favor inténtelo más tarde");
                     }
                   } : null,

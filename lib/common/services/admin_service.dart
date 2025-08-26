@@ -11,14 +11,16 @@ class AdminService {
 
   Future<http.Response> updateConfig({
     required double driverCredit, 
-    required Map<TaxiType, double> vehiclePrices
+    required Map<TaxiType, double> vehiclePrices,
+    required String operatorPhone,
   }) async {
     final url = Uri.parse("${_apiConfig.baseUrl}/$_endpoint");
     final headers = {'Content-Type': 'application/json'};
     final vehiclePricesJson = vehiclePrices.map((key, value) => MapEntry(key.apiValue, value));
     return await http.post(url, headers: headers, body: jsonEncode({
       "driverCredit": driverCredit,
-      "travelPrice": vehiclePricesJson
+      "travelPrice": vehiclePricesJson,
+      "operatorPhone": operatorPhone
     }));
   }
 
