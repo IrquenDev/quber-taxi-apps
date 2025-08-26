@@ -32,7 +32,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
         'description': localizations.onboardingPage1Description
       },
       {
-        'image': 'assets/images/friends_phone_curve1.png',
+        'image': 'assets/images/friends_phone_curve.png',
         'title': localizations.onboardingPage2Title,
         'subtitle': localizations.onboardingPage2Subtitle,
         'referral_source_options': ReferralSource.values
@@ -42,7 +42,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
     // Only show referral code page if friend is selected
     if (_selectedRefSrc == ReferralSource.friend) {
       pages.add({
-        'image': 'assets/images/friends_phone_curve2.png',
+        'image': 'assets/images/friends_phone_curve.png',
         'title': localizations.onboardingPage3Title,
         'subtitle': localizations.onboardingPage3Subtitle,
         'description': localizations.onboardingPage3Description,
@@ -103,62 +103,76 @@ class _OnboardingPageState extends State<OnboardingPage> {
     return Scaffold(
         body: ColoredBox(
             color: Colors.white,
-            child: Column(
+            child: Stack(
                 children: [
                   // Page View
-                  Expanded(
-                      child: PageView.builder(
-                          controller: _pageController,
-                          onPageChanged: (index) => setState(() => _currentPage = index),
-                          itemCount: pages.length,
-                          itemBuilder: (context, index) => _buildPageView(pages[index], colorScheme, localizations)
-                      )
+                  PageView.builder(
+                      controller: _pageController,
+                      onPageChanged: (index) => setState(() => _currentPage = index),
+                      itemCount: pages.length,
+                      itemBuilder: (context, index) => _buildPageView(pages[index], colorScheme, localizations)
                   ),
-                  // Controls
-                  Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        // Page Back
-                        if (_currentPage > 0)
+                  // Controls - superpuestos al contenido
+                  Positioned(
+                    bottom: 20.0,
+                    left: 20.0,
+                    right: 20.0,
+                    child: Container(
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.9),
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 10,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          // Page Back
+                          if (_currentPage > 0)
+                            GestureDetector(
+                              onTap: _prevPage,
+                              child: CircleAvatar(
+                                radius: 18,
+                                backgroundColor: colorScheme.primaryContainer,
+                                child: Icon(Icons.arrow_back, color: colorScheme.secondary, size: 20),
+                              ),
+                            )
+                          else const SizedBox(width: 36),
+                          // Dots Indicators
+                          Row(
+                            children: List.generate(
+                              pages.length,
+                                  (dotIndex) => Container(
+                                    margin: const EdgeInsets.symmetric(horizontal: 3),
+                                    width: 8,
+                                    height: 8,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: dotIndex == _currentPage
+                                          ? colorScheme.primaryContainer
+                                          : colorScheme.primaryContainer.withAlpha(75),
+                                    ),
+                                  ),
+                            ),
+                          ),
+                          // Next Page
                           GestureDetector(
-                            onTap: _prevPage,
+                            onTap: () => _nextPage(pages.length),
                             child: CircleAvatar(
-                              radius: 22,
+                              radius: 18,
                               backgroundColor: colorScheme.primaryContainer,
-                              child: Icon(Icons.arrow_back, color: colorScheme.secondary),
+                              child: Icon(Icons.arrow_forward, color: colorScheme.secondary, size: 20),
                             ),
                           )
-                        else const SizedBox(width: 44),
-                        // Dots Indicators
-                        Row(
-                          children: List.generate(
-                            pages.length,
-                                (dotIndex) => Container(
-                                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                                  width: 10,
-                                  height: 10,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: dotIndex == _currentPage
-                                        ? colorScheme.primaryContainer
-                                        : colorScheme.primaryContainer.withAlpha(75),
-                                  ),
-                                ),
-                          ),
-                        ),
-                        // Next Page
-                        GestureDetector(
-                          onTap: () => _nextPage(pages.length),
-                          child: CircleAvatar(
-                            radius: 22,
-                            backgroundColor: colorScheme.primaryContainer,
-                            child: Icon(Icons.arrow_forward, color: colorScheme.secondary),
-                          )
-                        )
-                      ]
-                    )
+                        ]
+                      ),
+                    ),
                   )
                 ]
             )
@@ -170,88 +184,111 @@ class _OnboardingPageState extends State<OnboardingPage> {
     final textTheme = Theme.of(context).textTheme;
     return Column(
         children: [
-          // Image
-          Expanded(
-              child: SizedBox(
-                  width: double.infinity,
-                  child: ColoredBox(
-                      color: colorScheme.surface,
-                      child: Image.asset(page['image'], fit: BoxFit.fill)
-                  )
+          // Image - now takes full width and maintains aspect ratio
+          SizedBox(
+              width: double.infinity,
+              child: Image.asset(
+                page['image'], 
+                fit: BoxFit.fitWidth,
+                width: double.infinity,
               )
           ),
-          // Data
-          Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                  spacing: 8.0,
-                  children: [
-                    if (page['title'] != null)
-                      Text(
-                          page['title'],
-                          style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)
-                      ),
-                    if (page['subtitle'] != null)
-                      Text(
-                          page['subtitle'],
-                          style: textTheme.bodyLarge?.copyWith(
-                              color: colorScheme.primaryContainer, fontWeight: FontWeight.bold
-                          )
-                      ),
-                    if (page['description'] != null)
-                      Text(page['description']),
-                    if (page['referral_source_options'] != null)
-                      Column(
-                        spacing: 8.0,
-                        children: (page['referral_source_options'] as List<ReferralSource>).map((referralOption) {
-                          final isSelected = referralOption == _selectedRefSrc;
-                          return OutlinedButton(
-                            style: Theme.of(context).outlinedButtonTheme.style?.copyWith(
-                                backgroundColor: const WidgetStatePropertyAll(Colors.transparent),
-                                side: WidgetStatePropertyAll(
-                                    BorderSide(
-                                        color: isSelected ? colorScheme.primary : colorScheme.onSurface,
-                                        width: isSelected ? 2.0 : 1.0
-                                    )
+          // Data - now has scroll if content doesn't fit
+          Expanded(
+              child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 20.0),
+                  child: Column(
+                      children: [
+                        if (page['title'] != null)
+                          Text(
+                              page['title'],
+                              style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)
+                          ),
+                        if (page['subtitle'] != null)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text(
+                                page['subtitle'],
+                                style: textTheme.bodyLarge?.copyWith(
+                                    color: colorScheme.primaryContainer, fontWeight: FontWeight.bold
                                 )
                             ),
-                            onPressed: () {
-                              setState(() {
-                                _onboardingData["referralSource"] = referralOption.apiValue;
-                                _selectedRefSrc = referralOption;
-                                // Clear referral code if not selecting friend
-                                if (referralOption != ReferralSource.friend) {
-                                  _onboardingData.remove("referralCode");
-                                }
-                                // Reset to first page when changing referral source to avoid navigation issues
-                                if (_currentPage > 1) {
-                                  _pageController.animateToPage(1, duration: _animationDuration, curve: _animationCurve);
-                                  _currentPage = 1;
-                                }
-                              });
-                            },
-                              child: Text(
-                                  ReferralSource.nameOf(referralOption, localizations),
-                                  style: textTheme.bodyMedium?.copyWith(
-                                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                      color: isSelected ? colorScheme.primary : null
-                                  )
+                          ),
+                        if (page['description'] != null)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text(page['description']),
+                          ),
+                        if (page['referral_source_options'] != null)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 16.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: (page['referral_source_options'] as List<ReferralSource>).map((referralOption) {
+                                final isSelected = referralOption == _selectedRefSrc;
+                                return Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                                    child: OutlinedButton(
+                                      style: Theme.of(context).outlinedButtonTheme.style?.copyWith(
+                                          backgroundColor: WidgetStatePropertyAll(
+                                              isSelected 
+                                                  ? colorScheme.primary.withOpacity(0.1)
+                                                  : Colors.grey.withOpacity(0.1)
+                                          ),
+                                          side: WidgetStatePropertyAll(
+                                              BorderSide(
+                                                  color: isSelected ? colorScheme.primary : colorScheme.onSurface,
+                                                  width: isSelected ? 2.0 : 1.0
+                                              )
+                                          ),
+                                          padding: const WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 8.0)),
+                                          minimumSize: const WidgetStatePropertyAll(Size(0, 36)),
+                                          maximumSize: const WidgetStatePropertyAll(Size(double.infinity, 36))
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          _onboardingData["referralSource"] = referralOption.apiValue;
+                                          _selectedRefSrc = referralOption;
+                                          // Clear referral code if not selecting friend
+                                          if (referralOption != ReferralSource.friend) {
+                                            _onboardingData.remove("referralCode");
+                                          }
+                                          // Reset to first page when changing referral source to avoid navigation issues
+                                          if (_currentPage > 1) {
+                                            _pageController.animateToPage(1, duration: _animationDuration, curve: _animationCurve);
+                                            _currentPage = 1;
+                                          }
+                                        });
+                                      },
+                                        child: Text(
+                                            ReferralSource.nameOf(referralOption, localizations),
+                                            style: textTheme.bodyMedium?.copyWith(
+                                                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                                color: isSelected ? colorScheme.primary : null
+                                            )
+                                        )
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        if (page['inputHint'] != null)
+                          Padding(
+                              padding: const EdgeInsets.only(top: 16.0),
+                              child: TextField(
+                                  decoration: InputDecoration(
+                                      hintText: page['inputHint'],
+                                      fillColor: colorScheme.surface
+                                  ),
+                                  onChanged: (value) => _onboardingData["referralCode"] = value
                               )
-                          );
-                        }).toList(),
-                      ),
-                    if (page['inputHint'] != null)
-                      Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: TextField(
-                              decoration: InputDecoration(
-                                  hintText: page['inputHint'],
-                                  fillColor: colorScheme.surface
-                              ),
-                              onChanged: (value) => _onboardingData["referralCode"] = value
-                          )
-                      )
-                  ]
+                          ),
+                        // Espaciado para evitar que el contenido quede oculto detrás de los controles
+                        const SizedBox(height: 100)
+                      ]
+                  )
               )
           )
         ]
