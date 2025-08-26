@@ -27,6 +27,7 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
   final TextEditingController _newPasswordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
   final TextEditingController _driverCreditController = TextEditingController();
+  final TextEditingController _operatorPhoneTFController = TextEditingController();
   final Map<TaxiType, TextEditingController> _vehiclePriceControllers = {
     TaxiType.mototaxi: TextEditingController(),
     TaxiType.standard: TextEditingController(),
@@ -55,11 +56,13 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
             final price = config.travelPrice[vehicleType] ?? 50.0;
             _vehiclePriceControllers[vehicleType]!.text = price.toString();
           }
+          _operatorPhoneTFController.text = config.operatorPhone.toString();
         } else {
           _driverCreditController.text = "10";
           for (final vehicleType in TaxiType.values) {
             _vehiclePriceControllers[vehicleType]!.text = "50";
           }
+          _operatorPhoneTFController.text = "+5352417814";
         }
       });
       return null;
@@ -154,24 +157,18 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                                               crossAxisAlignment: CrossAxisAlignment.start,
                                               spacing: 8.0,
                                               children: [
-                                                Text(
-                                                  localizations.pricesSectionTitle,
-                                                  style: theme.textTheme.titleMedium?.copyWith(
-                                                    fontWeight: FontWeight.bold,
-                                                    color: theme.colorScheme.onSurface,
-                                                  ),
-                                                ),
                                                 // Credit Percentage
-                                                Text(
-                                                  localizations.driverCreditPercentage,
-                                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                                    color: theme.colorScheme.onSurface,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
                                                 Column(
                                                   crossAxisAlignment: CrossAxisAlignment.start,
+                                                  spacing: 8.0,
                                                   children: [
+                                                    Text(
+                                                      localizations.driverCreditPercentage,
+                                                      style: theme.textTheme.bodyMedium?.copyWith(
+                                                        color: theme.colorScheme.onSurface,
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
+                                                    ),
                                                     SizedBox(
                                                         width: 100,
                                                         child: TextFormField(
@@ -199,59 +196,97 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                                                   ],
                                                 ),
                                                 // Travel price per km and vehicle
-                                                Text(
-                                                  localizations.tripPricePerKm,
-                                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                                    color: theme.colorScheme.onSurface,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                                // Price fields by vehicle type
-                                                ...TaxiType.values.map((vehicleType) =>
-                                                    Padding(
-                                                      padding: EdgeInsets.only(top: 8.0),
-                                                      child: Row(
-                                                        children: [
-                                                          SizedBox(
-                                                            width: 80.0,
-                                                            child: Text(
-                                                              "${TaxiType.nameOf(vehicleType, localizations)}:",
-                                                              style: theme.textTheme.bodyMedium?.copyWith(
-                                                                color: theme.colorScheme.onSurface,
-                                                                fontWeight: FontWeight.w500,
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          SizedBox(
-                                                            width: 120,
-                                                            child: TextFormField(
-                                                                keyboardType: TextInputType.number,
-                                                                controller: _vehiclePriceControllers[vehicleType],
-                                                                decoration: InputDecoration(
-                                                                  errorMaxLines: 3,
-                                                                  fillColor: theme.colorScheme.surface,
-                                                                  border: OutlineInputBorder(
-                                                                    borderRadius: BorderRadius.circular(dimensions.borderRadius),
-                                                                  ),
-                                                                  suffixText: 'CUP',
-                                                                  suffixStyle: theme.textTheme.bodyMedium?.copyWith(
-                                                                    color: theme.colorScheme.onSurfaceVariant,
-                                                                  ),
-                                                                ),
-                                                                validator: (value) => Workflow<String?>()
-                                                                    .step(RequiredStep(errorMessage: localizations.requiredField))
-                                                                    .step(ValidPositiveNumberStep(errorMessage: localizations.invalidPrice))
-                                                                    .breakOnFirstApply(true)
-                                                                    .withDefault((_) => null)
-                                                                    .proceed(value),
-                                                                onChanged: (s) => setState(() {
-                                                                  _vehiclePriceControllers[vehicleType]!.text = s;
-                                                                })
-                                                            ),
-                                                          ),
-                                                        ],
+                                                Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  spacing: 8.0,
+                                                  children: [
+                                                    Text(
+                                                      localizations.tripPricePerKm,
+                                                      style: theme.textTheme.bodyMedium?.copyWith(
+                                                        color: theme.colorScheme.onSurface,
+                                                        fontWeight: FontWeight.bold,
                                                       ),
                                                     ),
+                                                    // Price fields by vehicle type
+                                                    ...TaxiType.values.map((vehicleType) =>
+                                                        Padding(
+                                                          padding: EdgeInsets.only(top: 8.0),
+                                                          child: Row(
+                                                            children: [
+                                                              SizedBox(
+                                                                width: 80.0,
+                                                                child: Text(
+                                                                  "${TaxiType.nameOf(vehicleType, localizations)}:",
+                                                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                                                    color: theme.colorScheme.onSurface,
+                                                                    fontWeight: FontWeight.w500,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              SizedBox(
+                                                                width: 120,
+                                                                child: TextFormField(
+                                                                    keyboardType: TextInputType.number,
+                                                                    controller: _vehiclePriceControllers[vehicleType],
+                                                                    decoration: InputDecoration(
+                                                                      errorMaxLines: 3,
+                                                                      fillColor: theme.colorScheme.surface,
+                                                                      border: OutlineInputBorder(
+                                                                        borderRadius: BorderRadius.circular(dimensions.borderRadius),
+                                                                      ),
+                                                                      suffixText: 'CUP',
+                                                                      suffixStyle: theme.textTheme.bodyMedium?.copyWith(
+                                                                        color: theme.colorScheme.onSurfaceVariant,
+                                                                      ),
+                                                                    ),
+                                                                    validator: (value) => Workflow<String?>()
+                                                                        .step(RequiredStep(errorMessage: localizations.requiredField))
+                                                                        .step(ValidPositiveNumberStep(errorMessage: localizations.invalidPrice))
+                                                                        .breakOnFirstApply(true)
+                                                                        .withDefault((_) => null)
+                                                                        .proceed(value),
+                                                                    onChanged: (s) => setState(() {
+                                                                      _vehiclePriceControllers[vehicleType]!.text = s;
+                                                                    })
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                // Operator Phone
+                                                Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  spacing: 8.0,
+                                                  children: [
+                                                    Text(
+                                                      "Teléfono de la operadora",
+                                                      style: theme.textTheme.bodyMedium?.copyWith(
+                                                        color: theme.colorScheme.onSurface,
+                                                        fontWeight: FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                        width: 150,
+                                                        child: TextFormField(
+                                                            keyboardType: TextInputType.number,
+                                                            controller: _operatorPhoneTFController,
+                                                            decoration: InputDecoration(
+                                                              errorMaxLines: 3,
+                                                              fillColor: theme.colorScheme.surface,
+                                                              border: OutlineInputBorder(
+                                                                borderRadius: BorderRadius.circular(dimensions.borderRadius),
+                                                              ),
+                                                            ),
+                                                            validator: (value) => Workflow<String?>()
+                                                                .step(RequiredStep(errorMessage: localizations.requiredField))
+                                                                .withDefault((_) => null)
+                                                                .proceed(value),
+                                                        )
+                                                    ),
+                                                  ],
                                                 ),
                                                 // Save button (aligned to right)
                                                 Align(
@@ -267,7 +302,8 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                                                           }
                                                           final response = await adminService.updateConfig(
                                                               driverCredit: double.parse(_driverCreditController.text),
-                                                              vehiclePrices: vehiclePrices
+                                                              vehiclePrices: vehiclePrices,
+                                                              operatorPhone: _operatorPhoneTFController.text
                                                           );
                                                           if(!context.mounted) return;
                                                           if(response.statusCode == 200) {

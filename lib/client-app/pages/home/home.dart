@@ -1,5 +1,4 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:go_router/go_router.dart';
@@ -38,7 +37,7 @@ class _ClientHomePageState extends State<ClientHomePage> {
 
   // Announcement service
   final _announcementService = AppAnnouncementService();
-  bool _didCheckAnnouncements = false;
+  bool _didCheckNews = false;
 
   // Network Checker
   late void Function() _listener;
@@ -52,18 +51,18 @@ class _ClientHomePageState extends State<ClientHomePage> {
     // We need to register a connection status listener, as it depends on ConnectionStatus being online to execute
     // _checkClientAccountState. If the client is offline (any status other than checking or online), they won't be
     // able to continue.
-    _listener = _scope.registerListener(_checkAnnouncementsListener);
+    _listener = _scope.registerListener(_checkNewsListener);
     // Since execution times are not always the same, it's possible that when the listener is registered, the current
     // status is already online, so the listener won't be notified. This is why we must make an initial manual call.
     // In any case, calls will not be duplicated since they are being protected with the _didCheckAccount flag.
-    _checkAnnouncementsListener(NetworkScope.statusOf(context));
+    _checkNewsListener(NetworkScope.statusOf(context));
   }
 
-  Future<void> _checkAnnouncementsListener(ConnectionStatus status) async {
+  Future<void> _checkNewsListener(ConnectionStatus status) async {
     if(status == ConnectionStatus.checking) return;
-    final isConnected =  status == ConnectionStatus.online;
+    final isConnected = status == ConnectionStatus.online;
     if(isConnected) {
-      await _checkAnnouncements();
+      await _checkNews();
     }
   }
 
@@ -130,22 +129,18 @@ class _ClientHomePageState extends State<ClientHomePage> {
     );
   }
 
-  Future<void> _checkAnnouncements() async {
-    if (_didCheckAnnouncements) return;
-    try {
-      final announcements = await _announcementService.getActiveAnnouncements();
-
-      if (announcements.isNotEmpty && mounted) {
+  Future<void> _checkNews() async {
+    if (_didCheckNews) return;
+    final quberConfig  = await AdminService().getQuberConfig();
+    if(quberConfig != null) {
+      await ConfigPrefsManager.instance.saveOperatorPhone(quberConfig.operatorPhone);
+    }
+    final announcements = await _announcementService.getActiveAnnouncements();
+    if (announcements.isNotEmpty && mounted) {
         // Navigate to the first announcement, passing the announcement data
         context.push(CommonRoutes.announcement, extra: announcements.first);
-        _didCheckAnnouncements = true;
+        _didCheckNews = true;
       }
-    } catch (e) {
-      // Handle error silently - announcements are not critical for app functionality
-      if (kDebugMode) {
-        print('Error checking announcements: $e');
-      }
-    }
   }
 
   @override
@@ -156,12 +151,6 @@ class _ClientHomePageState extends State<ClientHomePage> {
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       // Check operator phone' s change and cached it locally. If no connection at this moment, do nothing. (App will
       // continue using de current one saved locally).
-      if(hasConnection(context)) {
-        final quberConfig  = await AdminService().getQuberConfig();
-        if(quberConfig != null) {
-          await ConfigPrefsManager.instance.saveOperatorPhone(quberConfig.operatorPhone);
-        }
-      }
       _handleNetworkScopeAndListener();
     });
   }
@@ -377,9 +366,9 @@ class _FavoritesDialogState extends State<FavoritesDialog> {
   }
 
   Future<void> _loadFavorites() async {
-    final favs = await FavoritesPrefsManager.getFavorites();
+    final favorites = await FavoritesPrefsManager.getFavorites();
     setState(() {
-      _favorites = favs;
+      _favorites = favorites;
       _loadingFavorites = false;
     });
   }
