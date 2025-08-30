@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'package:quber_taxi/common/models/app_announcement.dart';
 import 'package:quber_taxi/common/services/announcement_condition_service.dart';
 import 'package:quber_taxi/config/api_config.dart';
+import 'package:quber_taxi/config/app_profile.dart';
+import 'package:quber_taxi/config/build_config.dart';
 
 /// A service responsible for handling app announcements from the backend.
 ///
@@ -10,14 +12,19 @@ import 'package:quber_taxi/config/api_config.dart';
 /// methods to retrieve and parse them into [AppAnnouncement] objects.
 class AppAnnouncementService {
   /// Base endpoint for announcement-related operations.
-  final _endpoint = "${ApiConfig().baseUrl}/announcements";
+  final _baseEndpoint = "${ApiConfig().baseUrl}/announcements";
 
   /// Retrieves all announcements from the backend.
   ///
   /// Returns a [Future<http.Response>] containing the raw HTTP response.
   /// On success (HTTP 200), the response body contains a JSON array of announcements.
   Future<http.Response> getAllAnnouncements() async {
-    final url = Uri.parse(_endpoint);
+    final endpoint = switch(BuildConfig.appProfile) {
+      AppProfile.driver => "$_baseEndpoint/driver",
+      AppProfile.client => "$_baseEndpoint/client",
+      AppProfile.admin => "$_baseEndpoint/admin",
+    };
+    final url = Uri.parse(endpoint);
     final response = await http.get(url);
     return response;
   }
