@@ -9,6 +9,7 @@ import 'package:quber_taxi/enums/taxi_type.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/admin_routes.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
+import 'package:quber_taxi/utils/app_version_utils.dart';
 import 'package:quber_taxi/utils/runtime.dart' as runtime;
 import 'package:quber_taxi/utils/workflow/core/workflow.dart';
 import 'package:quber_taxi/utils/workflow/impl/form_validations.dart';
@@ -39,6 +40,7 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
   bool _isConfirmPasswordVisible = false;
   final adminService = AdminService();
   late Future<QuberConfig?> futureQuberConfigs;
+  String _appVersion = '';
 
   bool get canSubmitNewPassword => _newPasswordController.text.isNotEmpty
       && (_confirmPasswordController.text == _newPasswordController.text);
@@ -73,6 +75,16 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
   void initState() {
     super.initState();
     _loadQuberConfigs();
+    _loadAppVersion();
+  }
+
+  Future<void> _loadAppVersion() async {
+    final version = await AppVersionUtils.getCurrentVersion();
+    if (mounted) {
+      setState(() {
+        _appVersion = 'v$version';
+      });
+    }
   }
 
   @override
@@ -574,8 +586,17 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                                       ]
                                   )
                               ),
-                              // Extra spacing
-                              SizedBox(height: 10.0)
+                              // App Version
+                              Center(
+                                child: Text(
+                                  _appVersion,
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                    fontWeight: FontWeight.normal,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 20.0)
                             ]
                         )
                     ),
