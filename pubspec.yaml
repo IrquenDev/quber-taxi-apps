@@ -9,7 +9,7 @@ publish_to: 'none'
 
 # App version: 1.4.0 is the semantic version.
 # Flutter uses this to set versionName and versionCode on Android, and version on iOS.
-version: 1.4.0
+version: 1.5.0
 
 # Defines the minimum Dart SDK version supported by this app.
 environment:
