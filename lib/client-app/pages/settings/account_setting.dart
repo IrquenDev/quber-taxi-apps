@@ -12,6 +12,7 @@ import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/common_routes.dart';
 import 'package:quber_taxi/storage/session_prefs_manger.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
+import 'package:quber_taxi/utils/app_version_utils.dart';
 import 'package:quber_taxi/utils/image/image_utils.dart';
 import 'package:quber_taxi/utils/runtime.dart';
 import 'package:quber_taxi/utils/workflow/core/workflow.dart';
@@ -37,6 +38,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
   late TextEditingController _phoneTFController;
   bool passwordVisible = false;
   bool confirmPasswordVisible = false;
+  String _appVersion = '';
 
   XFile? _profileImage;
   String? _initialProfileImageUrl;
@@ -58,6 +60,16 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
     _nameTFController = TextEditingController(text: _client.name);
     _phoneTFController = TextEditingController(text: _client.phone);
     _initialProfileImageUrl = _client.profileImageUrl;
+    _loadAppVersion();
+  }
+
+  Future<void> _loadAppVersion() async {
+    final version = await AppVersionUtils.getCurrentVersion();
+    if (mounted) {
+      setState(() {
+        _appVersion = 'v$version';
+      });
+    }
   }
 
   @override
@@ -433,11 +445,12 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                   // Logout
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                    child: _buildLogoutItem(
+                    child: _buildLogoutItemWithVersion(
                       text: localization.logout,
                       icon: Icons.logout,
                       textColor: colorScheme.error,
                       iconColor: colorScheme.error,
+                      version: _appVersion,
                       onTap: () async {
                         await SessionPrefsManager.instance.clear();
                         if (!context.mounted) return;
@@ -744,6 +757,50 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLogoutItemWithVersion({
+    required String text,
+    required IconData icon,
+    required VoidCallback onTap,
+    required String version,
+    Color? textColor,
+    Color? iconColor,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(Theme.of(context).extension<DimensionExtension>()!.buttonBorderRadius),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Text(
+              version,
+              style: TextStyle(
+                fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.normal,
+              ),
+            ),
+            const Spacer(),
+            Text(
+              text,
+              style: TextStyle(
+                fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize,
+                color: textColor ?? Theme.of(context).colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Icon(
+              icon,
+              size: 20,
+              color: iconColor ?? Theme.of(context).colorScheme.onSurface,
             ),
           ],
         ),
