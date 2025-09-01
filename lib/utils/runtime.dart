@@ -24,7 +24,11 @@ bool get isSessionOk => SessionPrefsManager.instance.isSessionOk();
 /// ```
 dynamic get loggedInUser => SessionPrefsManager.instance.getLoggedInUserAsRawType();
 
-bool hasConnection(BuildContext context) => NetworkScope.statusOf(context) == ConnectionStatus.online;
+bool hasConnection(BuildContext context) {
+  NetworkScope.of(context).forceRetry;
+  var status = NetworkScope.statusOf(context);
+  return status == ConnectionStatus.online;
+}
 
 bool get isOnboardingDone => OnboardingPrefsManager.instance.isOnboardingDone();
 
