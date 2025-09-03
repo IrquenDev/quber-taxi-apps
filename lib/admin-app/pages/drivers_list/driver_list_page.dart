@@ -37,6 +37,7 @@ class _DriversListPageState extends State<DriversListPage> {
   Timer? _animationTimer;
   int _currentFilterIndex = 0;
   bool _userInteracted = false;
+  bool _showDropdownContent = false;
   final List<FilterType> _filterOrder = [FilterType.name, FilterType.phone, FilterType.state];
 
   void _loadDrivers() => _futureDrivers = _accountService.findAllDrivers();
@@ -78,6 +79,7 @@ class _DriversListPageState extends State<DriversListPage> {
       _phoneFilterController.clear();
       _selectedStateFilter = null;
       _expandedFilter = null;
+      _showDropdownContent = false;
     });
     _applyFilters();
   }
@@ -88,7 +90,20 @@ class _DriversListPageState extends State<DriversListPage> {
     
     setState(() {
       _expandedFilter = _expandedFilter == filterType ? null : filterType;
+      // Reset dropdown content visibility
+      _showDropdownContent = false;
     });
+    
+    // Show dropdown content after container expansion for state filter
+    if (_expandedFilter == FilterType.state) {
+      Future.delayed(const Duration(milliseconds: 200), () {
+        if (mounted && _expandedFilter == FilterType.state) {
+          setState(() {
+            _showDropdownContent = true;
+          });
+        }
+      });
+    }
   }
 
   void _startAnimation() {
@@ -102,8 +117,20 @@ class _DriversListPageState extends State<DriversListPage> {
       
       setState(() {
         _expandedFilter = _filterOrder[_currentFilterIndex];
+        _showDropdownContent = false;
         _currentFilterIndex = (_currentFilterIndex + 1) % _filterOrder.length;
       });
+      
+      // Show dropdown content for state filter after delay
+      if (_filterOrder[(_currentFilterIndex - 1) % _filterOrder.length] == FilterType.state) {
+        Future.delayed(const Duration(milliseconds: 200), () {
+          if (mounted && _expandedFilter == FilterType.state) {
+            setState(() {
+              _showDropdownContent = true;
+            });
+          }
+        });
+      }
     });
   }
 
@@ -532,54 +559,59 @@ class _DriversListPageState extends State<DriversListPage> {
                   ? const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0)
                   : const EdgeInsets.all(12.0),
                 child: _expandedFilter == FilterType.state
-                  ? ClipRect(
-                      child: SizedBox(
-                        height: 36,
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButtonFormField<DriverAccountState?>(
-                            value: _selectedStateFilter,
-                            isExpanded: true,
-                            isDense: true,
-                            menuMaxHeight: 200,
-                            decoration: InputDecoration(
-                              hintText: localizations.filterByState,
-                              hintStyle: Theme.of(context).textTheme.bodySmall,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(borderRadius),
-                                borderSide: BorderSide.none,
-                              ),
-                              contentPadding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
-                              filled: true,
-                              fillColor: colorScheme.surfaceContainerLowest,
-                            ),
-                            style: Theme.of(context).textTheme.bodySmall,
-                            items: [
-                              DropdownMenuItem<DriverAccountState?>(
-                                value: null,
-                                child: Text(
-                                  localizations.allStates,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: Theme.of(context).textTheme.bodySmall,
+                  ? AnimatedScale(
+                      scale: _showDropdownContent ? 1.0 : 0.0,
+                      duration: const Duration(milliseconds: 200),
+                      curve: Curves.easeOutBack,
+                      child: ClipRect(
+                        child: SizedBox(
+                          height: 36,
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButtonFormField<DriverAccountState?>(
+                              value: _selectedStateFilter,
+                              isExpanded: false,
+                              isDense: true,
+                              menuMaxHeight: 200,
+                              decoration: InputDecoration(
+                                hintText: localizations.filterByState,
+                                hintStyle: Theme.of(context).textTheme.bodySmall,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(borderRadius),
+                                  borderSide: BorderSide.none,
                                 ),
+                                contentPadding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                                filled: true,
+                                fillColor: colorScheme.surfaceContainerLowest,
                               ),
-                              ...DriverAccountState.values.map((state) =>
+                              style: Theme.of(context).textTheme.bodySmall,
+                              items: [
                                 DropdownMenuItem<DriverAccountState?>(
-                                  value: state,
+                                  value: null,
                                   child: Text(
-                                    DriverAccountState.nameOf(state, localizations),
+                                    localizations.allStates,
                                     overflow: TextOverflow.ellipsis,
                                     style: Theme.of(context).textTheme.bodySmall,
                                   ),
                                 ),
-                              ),
-                            ],
-                                                    onChanged: (value) {
-                          _onUserInteraction();
-                          setState(() {
-                            _selectedStateFilter = value;
-                          });
-                          _applyFilters();
-                        },
+                                ...DriverAccountState.values.map((state) =>
+                                  DropdownMenuItem<DriverAccountState?>(
+                                    value: state,
+                                    child: Text(
+                                      DriverAccountState.nameOf(state, localizations),
+                                      overflow: TextOverflow.ellipsis,
+                                      style: Theme.of(context).textTheme.bodySmall,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                              onChanged: (value) {
+                                _onUserInteraction();
+                                setState(() {
+                                  _selectedStateFilter = value;
+                                });
+                                _applyFilters();
+                              },
+                            ),
                           ),
                         ),
                       ),

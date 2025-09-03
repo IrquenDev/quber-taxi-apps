@@ -46,7 +46,7 @@ Future<void> main() async {
       appRunner: () => runApp(
         //Device Preview allows us to have a cool preview mode to test the responsiveness of all the screens
         DevicePreview(
-            enabled: !kReleaseMode && true, //chance this to false if you don't want to see the preview mode
+            enabled: !kReleaseMode && false, //chance this to false if you don't want to see the preview mode
             builder: (context) => App()
         )
       )
