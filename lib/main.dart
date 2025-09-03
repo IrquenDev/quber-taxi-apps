@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:device_preview/device_preview.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -13,7 +15,6 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'app.dart';
 
 Future<void> main() async {
-
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   
@@ -42,6 +43,12 @@ Future<void> main() async {
         ..dsn='https://5fc6d3f519f940929ab3d6b863651d30@app.glitchtip.com/12236'
         ..tracesSampleRate=0.00 // Performance trace 1% of events
         ..enableAutoSessionTracking=false,
-      appRunner: () => runApp(App())
+      appRunner: () => runApp(
+        //Device Preview allows us to have a cool preview mode to test the responsiveness of all the screens
+        DevicePreview(
+            enabled: !kReleaseMode && true, //chance this to false if you don't want to see the preview mode
+            builder: (context) => App()
+        )
+      )
   );
 }

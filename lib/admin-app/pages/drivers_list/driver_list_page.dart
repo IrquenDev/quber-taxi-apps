@@ -330,7 +330,7 @@ class _DriversListPageState extends State<DriversListPage> {
                             children: [
                               Icon(Icons.account_balance_wallet_outlined, size: 16),
                               Text(
-                                localizations.creditAmount(driver.credit.toStringAsFixed(2)),
+                                localizations.creditAmount(driver.credit.toInt().toString()),
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   fontWeight: FontWeight.w500,
                                 ),
