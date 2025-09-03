@@ -34,6 +34,9 @@ class _ClientHomePageState extends State<ClientHomePage> {
   bool _showRequestSheet = false;
   bool _showFavoriteDialog = false;
   bool _showQuberPointsDialog = false;
+  
+  // Single MapView instance to avoid GlobalKey conflicts
+  late final MapView _mapViewInstance;
 
   // Announcement service
   final _announcementService = AppAnnouncementService();
@@ -148,6 +151,8 @@ class _ClientHomePageState extends State<ClientHomePage> {
     super.initState();
     // Initialize client from logged in user
     _client = Client.fromJson(loggedInUser);
+    // Initialize single MapView instance
+    _mapViewInstance = MapView(key: MapView.globalKey, usingExtendedScaffold: true);
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       // Check operator phone' s change and cached it locally. If no connection at this moment, do nothing. (App will
       // continue using de current one saved locally).
@@ -333,15 +338,15 @@ class _ClientHomePageState extends State<ClientHomePage> {
   Widget _getCurrentScreen() {
     switch (_currentIndex) {
       case 0:
-        return MapView(key: MapView.globalKey, usingExtendedScaffold: true);
+        return _mapViewInstance;
       case 1:
-        return MapView(key: MapView.globalKey, usingExtendedScaffold: true);
+        return _mapViewInstance;
       case 2:
         return const ClientSettingsPage();
       case 3:
-        return MapView(key: MapView.globalKey, usingExtendedScaffold: true);
+        return _mapViewInstance;
       case 4:
-        return MapView(key: MapView.globalKey, usingExtendedScaffold: true);
+        return _mapViewInstance;
       default:
         return const SizedBox.shrink();
     }
