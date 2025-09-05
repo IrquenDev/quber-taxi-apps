@@ -16,6 +16,7 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
   final TextEditingController _phoneController = TextEditingController();
   final _authService = AuthService();
   final _formKey = GlobalKey<FormState>();
+  var _isLoading = false;
 
   String _normalizePhoneNumber(String phone) {
     // Remove all spaces and trim
@@ -38,10 +39,16 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
     // Validate form first
     if (!_formKey.currentState!.validate()) return;
 
+    // Set loading state to prevent multiple submissions
+    setState(() => _isLoading = true);
+
     final normalizedPhone = _normalizePhoneNumber(_phoneController.text);
     final localization = AppLocalizations.of(context)!;
 
     final response = await _authService.requestPasswordReset(normalizedPhone);
+
+    // Reset loading state
+    setState(() => _isLoading = false);
 
     if (!context.mounted) return;
 
@@ -127,7 +134,7 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
                 width: double.infinity,
                 height: 44,
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: _isLoading ? null : () {
                     FocusScope.of(context).unfocus();
                     _submitPhoneNumber();
                   },
@@ -138,7 +145,16 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
                       borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
                     ),
                   ),
-                  child: Text(localization.sendButton),
+                  child: _isLoading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
+                      : Text(localization.sendButton),
                 ),
               ),
             ],

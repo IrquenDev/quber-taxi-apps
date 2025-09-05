@@ -20,6 +20,7 @@ import 'package:quber_taxi/common/widgets/dialogs/circular_info_dialog.dart';
 import 'package:quber_taxi/common/widgets/dialogs/info_dialog.dart';
 import 'package:quber_taxi/driver-app/pages/home/available_travels_sheet.dart';
 import 'package:quber_taxi/driver-app/pages/home/info_travel_sheet.dart';
+import 'package:quber_taxi/driver-app/pages/home/needs_approval_sheet.dart';
 import 'package:quber_taxi/driver-app/pages/home/trip_card.dart';
 import 'package:quber_taxi/driver-app/pages/home/trip_notification.dart';
 import 'package:quber_taxi/enums/driver_account_state.dart';
@@ -112,6 +113,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
   Driver _driver = Driver.fromJson(loggedInUser);
   bool _didCheckAccount = false;
   bool _isAccountEnabled = false;
+  bool _showNeedsApprovalSheet = false;
 
   // Announcement service
   final _announcementService = AppAnnouncementService();
@@ -192,11 +194,20 @@ class _DriverHomePageState extends State<DriverHomePage> {
       //   await _showPaymentReminder();
       // }
       switch (_driver.accountState) {
-        case DriverAccountState.notConfirmed: await _showNeedsConfirmationDialog();
-        case DriverAccountState.canPay: setState(() => _isAccountEnabled = true);
-        case DriverAccountState.paymentRequired: break;
-        case DriverAccountState.enabled: setState(() => _isAccountEnabled = true);
-        case DriverAccountState.disabled: break;
+        case DriverAccountState.notConfirmed: 
+          _showApprovalSheet();
+        case DriverAccountState.canPay: 
+          _hideApprovalSheet();
+          setState(() => _isAccountEnabled = true);
+        case DriverAccountState.paymentRequired: 
+          _hideApprovalSheet();
+          break;
+        case DriverAccountState.enabled: 
+          _hideApprovalSheet();
+          setState(() => _isAccountEnabled = true);
+        case DriverAccountState.disabled: 
+          _hideApprovalSheet();
+          break;
       }
     }
   }
@@ -214,17 +225,16 @@ class _DriverHomePageState extends State<DriverHomePage> {
     );
   }
 
-  Future<void> _showNeedsConfirmationDialog() async {
-    final localizations = AppLocalizations.of(context)!;
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => InfoDialog(
-            title: localizations.needsApproval,
-            bodyMessage: localizations.needsApprovalMessage,
-            footerMessage: localizations.weWaitForYou
-        )
-    );
+  void _showApprovalSheet() {
+    setState(() {
+      _showNeedsApprovalSheet = true;
+    });
+  }
+
+  void _hideApprovalSheet() {
+    setState(() {
+      _showNeedsApprovalSheet = false;
+    });
   }
 
   // Future<void> _showPaymentReminder() async {
@@ -1007,6 +1017,14 @@ class _DriverHomePageState extends State<DriverHomePage> {
               Align(
                 alignment: Alignment.bottomCenter,
                 child: _buildTravelInfoSheet()
+              ),
+            // Needs approval sheet
+            if(_showNeedsApprovalSheet)
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: NeedsApprovalSheet(),
               )
           ]
         )

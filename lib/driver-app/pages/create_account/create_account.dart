@@ -221,14 +221,18 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
             builder: (context, setDialogState) {
               // Start countdown timer
               resendTimer ??= Timer.periodic(const Duration(seconds: 1), (timer) {
-                  setDialogState(() {
-                    if (resendTimeoutSeconds > 0) {
-                      resendTimeoutSeconds--;
-                    } else {
-                      canResendCode = true;
-                      timer.cancel();
-                    }
-                  });
+                  if (mounted) {
+                    setDialogState(() {
+                      if (resendTimeoutSeconds > 0) {
+                        resendTimeoutSeconds--;
+                      } else {
+                        canResendCode = true;
+                        timer.cancel();
+                      }
+                    });
+                  } else {
+                    timer.cancel();
+                  }
                 });
 
               return AlertDialog(
@@ -324,14 +328,18 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
                               resendTimeoutSeconds = 240;
                               resendTimer?.cancel();
                               resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-                                setDialogState(() {
-                                  if (resendTimeoutSeconds > 0) {
-                                    resendTimeoutSeconds--;
-                                  } else {
-                                    canResendCode = true;
-                                    timer.cancel();
-                                  }
-                                });
+                                if (mounted) {
+                                  setDialogState(() {
+                                    if (resendTimeoutSeconds > 0) {
+                                      resendTimeoutSeconds--;
+                                    } else {
+                                      canResendCode = true;
+                                      timer.cancel();
+                                    }
+                                  });
+                                } else {
+                                  timer.cancel();
+                                }
                               });
                             });
                             // Send verification code again
@@ -508,6 +516,16 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
     });
 
     try {
+      // Log request data
+      print('=== DRIVER REGISTRATION REQUEST ===');
+      print('Name: ${_nameTFController.text}');
+      print('Phone: ${_phoneTFController.text}');
+      print('Plate: ${_plateTFController.text}');
+      print('Type: ${_selectedTaxi!}');
+      print('Seats: ${int.parse(_seatsTFController.text)}');
+      print('Has taxi image: ${_taxiImage != null}');
+      print('Has face ID image: ${widget.faceIdImage.isNotEmpty}');
+      
       // Make the register request
       final response = await AccountService().registerDriver(
           name: _nameTFController.text,
@@ -521,38 +539,59 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
           faceIdImage: widget.faceIdImage
       );
       
+      // Log complete server response
+      print('=== DRIVER REGISTRATION RESPONSE ===');
+      print('Status Code: ${response.statusCode}');
+      print('Response Headers: ${response.headers}');
+      print('Response Body: ${response.body}');
+      print('Response Body Length: ${response.body.length}');
+      print('Response Body Type: ${response.body.runtimeType}');
+      print('======================================');
+      
       // Avoid context's gaps
       if(!context.mounted) return;
       
       // Handle responses (depends on status code)
       // OK
       if(response.statusCode == 200) {
+        print('Success: Processing 200 response');
         final json = jsonDecode(response.body);
+        print('Parsed JSON: $json');
         final driver = Driver.fromJson(json);
+        print('Driver object created: ${driver.name} - ID: ${driver.id}');
         // Save the user's session
         final success = await SessionPrefsManager.instance.save(driver);
+        print('Session save success: $success');
         if(success) {
           // Avoid context's gaps
           if(!context.mounted) return;
           // Navigate to home safely
+          print('Navigating to driver home');
           context.go(DriverRoutes.home);
         } else {
+          print('Failed to save session');
           showToast(context: context, message: localizations.registrationError);
         }
       }
       // CONFLICT
       else if(response.statusCode == 409) {
+        print('Conflict: Phone already registered');
         showToast(context: context, message: localizations.phoneAlreadyRegistered);
       }
       // ANY OTHER STATUS CODE
       else {
+        print('Error: Unexpected status code ${response.statusCode}');
         showToast(
             context: context,
             message: localizations.registrationError
         );
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       // Handle any network or parsing errors
+      print('=== DRIVER REGISTRATION ERROR ===');
+      print('Error: $e');
+      print('Stack trace: $stackTrace');
+      print('=================================');
       if(context.mounted) {
         showToast(context: context, message: localizations.registrationError);
       }
