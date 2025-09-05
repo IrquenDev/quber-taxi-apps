@@ -208,14 +208,18 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
             builder: (context, setDialogState) {
               // Start countdown timer
               resendTimer ??= Timer.periodic(const Duration(seconds: 1), (timer) {
-                  setDialogState(() {
-                    if (resendTimeoutSeconds > 0) {
-                      resendTimeoutSeconds--;
-                    } else {
-                      canResendCode = true;
-                      timer.cancel();
-                    }
-                  });
+                  if (mounted) {
+                    setDialogState(() {
+                      if (resendTimeoutSeconds > 0) {
+                        resendTimeoutSeconds--;
+                      } else {
+                        canResendCode = true;
+                        timer.cancel();
+                      }
+                    });
+                  } else {
+                    timer.cancel();
+                  }
                 });
 
               return AlertDialog(
@@ -311,14 +315,18 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
                               resendTimeoutSeconds = 240;
                               resendTimer?.cancel();
                               resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-                                setDialogState(() {
-                                  if (resendTimeoutSeconds > 0) {
-                                    resendTimeoutSeconds--;
-                                  } else {
-                                    canResendCode = true;
-                                    timer.cancel();
-                                  }
-                                });
+                                if (mounted) {
+                                  setDialogState(() {
+                                    if (resendTimeoutSeconds > 0) {
+                                      resendTimeoutSeconds--;
+                                    } else {
+                                      canResendCode = true;
+                                      timer.cancel();
+                                    }
+                                  });
+                                } else {
+                                  timer.cancel();
+                                }
                               });
                             });
                             // Send verification code again
