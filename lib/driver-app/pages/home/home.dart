@@ -226,6 +226,10 @@ class _DriverHomePageState extends State<DriverHomePage> {
   }
 
   void _showApprovalSheet() {
+    // Deactivate travel request handler and clear notifications when not approved
+    _newTravelRequestHandler?.deactivate();
+    _newTravelRequestHandler = null;
+    _clearAllNotifications();
     setState(() {
       _showNeedsApprovalSheet = true;
     });
@@ -235,6 +239,23 @@ class _DriverHomePageState extends State<DriverHomePage> {
     setState(() {
       _showNeedsApprovalSheet = false;
     });
+    // Reactivate travel request handler when account becomes enabled
+    if (_isAccountEnabled && _selectedTravel == null) {
+      _newTravelRequestHandler = TravelRequestHandler(
+          driverId: _driver.id,
+          onNewTravel: _onNewTravel
+      )..activate();
+    }
+  }
+
+  void _clearAllNotifications() {
+    // Cancel all timers
+    for (final timer in _notificationTimers.values) {
+      timer.cancel();
+    }
+    _notificationTimers.clear();
+    // Clear notifications list
+    _newTravels.clear();
   }
 
   // Future<void> _showPaymentReminder() async {
@@ -954,17 +975,18 @@ class _DriverHomePageState extends State<DriverHomePage> {
                 )
               )
             ],
-            // Notification area
-            Positioned(
-                top: 32,
-                right: 0.0,
-                left: 0.0,
-                child: Container(
-                    margin: EdgeInsets.all(12.0),
-                    child: Column(
-                        children: List.generate(
-                          _newTravels.length > 2 ? 2 : _newTravels.length, 
-                          (index) {
+            // Notification area - only show when account is enabled
+            if(_isAccountEnabled)
+              Positioned(
+                  top: 32,
+                  right: 0.0,
+                  left: 0.0,
+                  child: Container(
+                      margin: EdgeInsets.all(12.0),
+                      child: Column(
+                          children: List.generate(
+                            _newTravels.length > 2 ? 2 : _newTravels.length, 
+                            (index) {
                             final isSecondary = index == 1;
                             
                             return AnimatedContainer(
