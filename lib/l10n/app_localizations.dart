@@ -1802,6 +1802,18 @@ abstract class AppLocalizations {
   /// **'Deshabilitado'**
   String get driverStateDisabled;
 
+  /// No description provided for @driverBlocked.
+  ///
+  /// In es, this message translates to:
+  /// **'Cuenta Bloqueada'**
+  String get driverBlocked;
+
+  /// No description provided for @driverBlockedMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Su cuenta de conductor ha sido bloqueada. Por favor, diríjase a nuestra oficina en Calle 4ta / Central y mercado, reparto Martín Pérez, San Miguel del Padrón'**
+  String get driverBlockedMessage;
+
   /// No description provided for @filterByName.
   ///
   /// In es, this message translates to:

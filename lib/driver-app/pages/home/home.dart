@@ -21,6 +21,7 @@ import 'package:quber_taxi/common/widgets/dialogs/info_dialog.dart';
 import 'package:quber_taxi/driver-app/pages/home/available_travels_sheet.dart';
 import 'package:quber_taxi/driver-app/pages/home/info_travel_sheet.dart';
 import 'package:quber_taxi/driver-app/pages/home/needs_approval_sheet.dart';
+import 'package:quber_taxi/driver-app/pages/home/blocked_sheet.dart';
 import 'package:quber_taxi/driver-app/pages/home/trip_card.dart';
 import 'package:quber_taxi/driver-app/pages/home/trip_notification.dart';
 import 'package:quber_taxi/enums/driver_account_state.dart';
@@ -114,6 +115,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
   bool _didCheckAccount = false;
   bool _isAccountEnabled = false;
   bool _showNeedsApprovalSheet = false;
+  bool _showDriverBlockedSheet = false;
 
   // Announcement service
   final _announcementService = AppAnnouncementService();
@@ -195,18 +197,23 @@ class _DriverHomePageState extends State<DriverHomePage> {
       // }
       switch (_driver.accountState) {
         case DriverAccountState.notConfirmed: 
+          _hideBlockedSheet();
           _showApprovalSheet();
         case DriverAccountState.canPay: 
           _hideApprovalSheet();
+          _hideBlockedSheet();
           setState(() => _isAccountEnabled = true);
         case DriverAccountState.paymentRequired: 
           _hideApprovalSheet();
+          _hideBlockedSheet();
           break;
         case DriverAccountState.enabled: 
           _hideApprovalSheet();
+          _hideBlockedSheet();
           setState(() => _isAccountEnabled = true);
         case DriverAccountState.disabled: 
           _hideApprovalSheet();
+          _showBlockedSheet();
           break;
       }
     }
@@ -238,6 +245,29 @@ class _DriverHomePageState extends State<DriverHomePage> {
   void _hideApprovalSheet() {
     setState(() {
       _showNeedsApprovalSheet = false;
+    });
+    // Reactivate travel request handler when account becomes enabled
+    if (_isAccountEnabled && _selectedTravel == null) {
+      _newTravelRequestHandler = TravelRequestHandler(
+          driverId: _driver.id,
+          onNewTravel: _onNewTravel
+      )..activate();
+    }
+  }
+
+  void _showBlockedSheet() {
+    // Deactivate travel request handler and clear notifications when blocked
+    _newTravelRequestHandler?.deactivate();
+    _newTravelRequestHandler = null;
+    _clearAllNotifications();
+    setState(() {
+      _showDriverBlockedSheet = true;
+    });
+  }
+
+  void _hideBlockedSheet() {
+    setState(() {
+      _showDriverBlockedSheet = false;
     });
     // Reactivate travel request handler when account becomes enabled
     if (_isAccountEnabled && _selectedTravel == null) {
@@ -454,6 +484,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
       showToast(context: context, message: "Crédito Insuficiente");
     }
     else {
+      
       showToast(context: context, message: AppLocalizations.of(context)!.noAssignedTrip);
     }
   }
@@ -1047,6 +1078,14 @@ class _DriverHomePageState extends State<DriverHomePage> {
                 right: 0,
                 bottom: 0,
                 child: NeedsApprovalSheet(),
+              ),
+            // Blocked sheet
+            if(_showDriverBlockedSheet)
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: BlockedSheet(),
               )
           ]
         )

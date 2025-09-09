@@ -927,6 +927,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get driverStateDisabled => 'Disabled';
 
   @override
+  String get driverBlocked => 'Account Blocked';
+
+  @override
+  String get driverBlockedMessage =>
+      'Your driver account has been blocked. Please visit our office at Calle 4ta / Central y mercado, reparto Martín Pérez, San Miguel del Padrón';
+
+  @override
   String get filterByName => 'Filter by name';
 
   @override
