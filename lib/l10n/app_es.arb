@@ -322,6 +322,8 @@
       "driverStatePaymentRequired": "Pago requerido",
       "driverStateEnabled": "Habilitado",
       "driverStateDisabled": "Deshabilitado",
+      "driverBlocked": "Cuenta Bloqueada",
+      "driverBlockedMessage": "Su cuenta de conductor ha sido bloqueada. Por favor, diríjase a nuestra oficina en Calle 4ta / Central y mercado, reparto Martín Pérez, San Miguel del Padrón",
 
       "filterByName": "Filtrar por nombre",
       "filterByPhone": "Filtrar por teléfono",
