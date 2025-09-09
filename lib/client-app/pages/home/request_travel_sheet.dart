@@ -24,78 +24,82 @@ import 'package:quber_taxi/utils/map/turf.dart';
 import 'package:turf/turf.dart' as turf;
 
 class RequestTravelSheet extends StatefulWidget {
-
   const RequestTravelSheet({super.key, this.origin, this.destination});
 
-   final MapboxPlace? origin;
-   final MapboxPlace? destination;
+  final MapboxPlace? origin;
+  final MapboxPlace? destination;
 
   @override
   State<RequestTravelSheet> createState() => _RequestTravelSheetState();
 }
 
 class _RequestTravelSheetState extends State<RequestTravelSheet> {
-
   // The service in charge of travel-related operations
   final _travelService = TravelService();
+
   // The logged in client
   final Client _client = Client.fromJson(loggedInUser);
+
   // Travel's origin
   String? _originName;
   List<num>? _originCoords;
+
   // Travel's destination
   String? _destinationName;
   List<num>? _destinationCoords;
+
   // Other aspects of the trip
   int _passengerCount = 1;
   TaxiType _selectedTaxi = TaxiType.standard;
   bool _hasPets = false;
+
   // It reflects whether the user has chosen a specific destination or municipality. The distance and price of the
   // trip will be calculated accordingly.
   bool _usingFixedDestination = false;
+
   // Specific destination case
   double? _fixedDistance, _fixedPrice;
+
   // Case of municipality as a destination
   double? _minDistance, _maxDistance;
   double? _minPrice, _maxPrice;
+
   // Price by type of taxi
   late final Map<TaxiType, double> _taxiPrices;
 
   // Calculate the price according to the given distance and the type of taxi already selected
-  double _getPriceByDistance (double distance) => _taxiPrices[_selectedTaxi]! * distance;
+  double _getPriceByDistance(double distance) => _taxiPrices[_selectedTaxi]! * distance;
 
   // It reflects when it is already possible to estimate a distance for when a specific destination has been set.
-  bool get _canEstimateWithFixedDestination => _usingFixedDestination == true
-      &&  (_originName != null && _originCoords != null)
-      && (_destinationName != null && _destinationCoords != null);
+  bool get _canEstimateWithFixedDestination =>
+      _usingFixedDestination == true &&
+      (_originName != null && _originCoords != null) &&
+      (_destinationName != null && _destinationCoords != null);
 
   // It reflects when it is already possible to estimate a distance for when a municipality has been set as a
   // destination
-  bool get _canEstimateWithUnfixedDestination => _usingFixedDestination == false
-      &&  (_originName != null && _originCoords != null)
-      && (_destinationName != null);
+  bool get _canEstimateWithUnfixedDestination =>
+      _usingFixedDestination == false && (_originName != null && _originCoords != null) && (_destinationName != null);
 
   // It is possible to estimate a distance when any of the above conditions are met
   bool get _canEstimateDistance => _canEstimateWithFixedDestination || _canEstimateWithUnfixedDestination;
 
   // Allows to know whether travel price should be updated when changing the preferred taxi type for the trip.
-  bool get _shouldUpdatePriceOnSelectedTaxiChanged => (_minPrice != null && _maxPrice != null)
-      || (_fixedPrice != null);
+  bool get _shouldUpdatePriceOnSelectedTaxiChanged => (_minPrice != null && _maxPrice != null) || (_fixedPrice != null);
 
   // It is responsible for calculating the distance and, consequently, the price of the trip. It should only be
   // called when _canEstimateDistance is true.
   Future<void> _estimateDistance() async {
-    if(_usingFixedDestination) {
+    if (_usingFixedDestination) {
       // Check connection first
-      if(hasConnection(context)) {
+      if (hasConnection(context)) {
         // Get the Mapbox suggested route. Even if we only care about the distance from here, the estimate between
         // two points is very precise.
         final route = await MapboxService().getRoute(
             originLng: _originCoords![0],
             originLat: _originCoords![1],
             destinationLng: _destinationCoords![0],
-            destinationLat: _destinationCoords![1]
-        );
+            destinationLat: _destinationCoords![1]);
         // Mapbox.distance is given in meters, we need to convert to km here
         final distance = route.distance / 1000;
         // Update UI with results
@@ -110,10 +114,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
       // Match .geojson
       final geoJsonPath = Municipalities.resolveGeoJsonRef(_destinationName!);
       if (geoJsonPath == null) {
-        showToast(
-            context: context,
-            message: "${AppLocalizations.of(context)!.unknown} ${_destinationName!}"
-        );
+        showToast(context: context, message: "${AppLocalizations.of(context)!.unknown} ${_destinationName!}");
         return;
       }
       // Load .geojson
@@ -139,10 +140,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
     final response = await _travelService.changeState(travelId: travelId, state: TravelState.canceled);
     if (!mounted) return;
     if (response.statusCode == 200) {
-      showToast(
-          context: context,
-          message: AppLocalizations.of(context)!.tripRequestCancelled
-      );
+      showToast(context: context, message: AppLocalizations.of(context)!.tripRequestCancelled);
     }
   }
 
@@ -152,9 +150,9 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if(hasConnection(context)) {
+      if (hasConnection(context)) {
         final quberConfig = await AdminService().getQuberConfig();
-        if(quberConfig != null) {
+        if (quberConfig != null) {
           _taxiPrices = quberConfig.travelPrice;
         }
       }
@@ -182,230 +180,213 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     return Column(
-        mainAxisSize: MainAxisSize.min,
-        spacing: 12.0,
-        children: [
-          // Origin / Destination inputs.
-          Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              spacing: 16.0,
-              children: [
-                Column(
-                  children: [
-                    const Icon(Icons.my_location),
-                    Padding(
-                        padding: EdgeInsets.symmetric(vertical: 2.0),
-                        child: Container(
-                            width: 1.5,
-                            height: 20.0,
-                            color: Theme.of(context).dividerColor
-                        )
-                    ),
-                    const Icon(Icons.location_on_outlined)
-                  ]
-                ),
-                Expanded(
-                    child: Column(
-                        spacing: 12.0,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          GestureDetector(
-                              onTap: () async {
-                                final mapboxPlace = await context.push<MapboxPlace>(ClientRoutes.searchOrigin);
-                                if(mapboxPlace != null) {
-                                  MapView.globalKey.currentState?.origin = null;
-                                  setState(() {
-                                    _originName = mapboxPlace.text;
-                                    _originCoords = mapboxPlace.coordinates;
-                                  });
-                                  if (_canEstimateDistance) _estimateDistance();
-                                }
-                              },
-                              child: Text(
-                                  _originName ?? AppLocalizations.of(context)!.originName,
-                                  style: textTheme.bodyLarge
-                              )
-                          ),
-                          Divider(height: 1),
-                          GestureDetector(
-                              onTap: () async {
-                                final resultData = await context.push<Map<String, dynamic>?>(ClientRoutes.searchDestination);
-                                if(resultData != null) {
-                                  _usingFixedDestination = resultData["usingFixedDestination"];
-                                  MapView.globalKey.currentState?.destination = null;
-                                  // The user has chosen a specific destination
-                                  if(_usingFixedDestination) {
-                                    final place = resultData["destination"] as MapboxPlace;
-                                    setState(() {
-                                      _destinationName = place.text;
-                                      _destinationCoords = place.coordinates;
-                                      _minDistance = null;
-                                      _maxDistance = null;
-                                      _minPrice = null;
-                                      _maxPrice = null;
-                                    });
-                                  }
-                                  // The user has chosen a municipality as a destination
-                                  else {
-                                    final municipality = resultData["destination"] as String;
-                                    setState(() {
-                                      _destinationName = municipality;
-                                      _fixedDistance = null;
-                                      _fixedPrice = null;
-                                    });
-                                  }
-                                  // Estimate distance regardless of the type of destination chosen
-                                  if (_canEstimateDistance) _estimateDistance();
-                                }
-                              },
-                              child: Text(
-                                  _destinationName ?? AppLocalizations.of(context)!.destinationName,
-                                  style: textTheme.bodyLarge
-                              )
-                          )
-                        ]
-                    )
-                )
-              ]
-          ),
-          // Taxi preference header
-          Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                  localizations.askTaxi,
-                  style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)
-              )
-          ),
-          // Available taxis list view
-          SizedBox(
-            height: 130,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: TaxiType.values.length,
-              itemBuilder: (context, index) => Padding(
-                padding: const EdgeInsets.only(right: 12.0),
-                child: _taxiItemBuilder(index, textTheme)
-              )
-            )
-          ),
-          // Seats selection
-          Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                    AppLocalizations.of(context)!.howTravels,
-                    style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)
-                ),
-                Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        padding: EdgeInsets.zero,
-                        onPressed: () {
-                          if (_passengerCount > 1) {
-                            setState(() => _passengerCount--);
-                          }
-                        },
-                        icon: const Icon(Icons.remove)
-                      ),
-                      Text(
-                          "$_passengerCount",
-                          style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)
-                      ),
-                      IconButton(
-                        padding: EdgeInsets.zero,
-                        onPressed: () {
-                          if (_passengerCount < 20) {
-                            setState(() => _passengerCount++);
-                          }
-                        },
-                        icon: const Icon(Icons.add)
-                      )
-                    ]
-                )
-              ]
-          ),
-          // Has pets ?
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                  AppLocalizations.of(context)!.pets,
-                  style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)
-              ),
-              Switch(
-                  value: _hasPets,
-                  activeColor: colorScheme.primaryFixedDim,
-                  onChanged: (value) => setState(() => _hasPets = value)
-              )
-            ]
-          ),
-          // Divider
-          Divider(height: 1),
-          // Estimations for distance and price
-          if(_canEstimateDistance)
+      mainAxisSize: MainAxisSize.min,
+      spacing: 12.0,
+      children: [
+        // Origin / Destination inputs.
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          spacing: 16.0,
+          children: [
             Column(
-              spacing: 12.0,
+              children: [
+                const Icon(Icons.my_location),
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 2.0),
+                  child: Container(width: 1.5, height: 20.0, color: Theme.of(context).dividerColor),
+                ),
+                const Icon(Icons.location_on_outlined),
+              ],
+            ),
+            Expanded(
+              child: Column(
+                spacing: 12.0,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  GestureDetector(
+                      onTap: () async {
+                        final mapboxPlace = await context.push<MapboxPlace>(ClientRoutes.searchOrigin);
+                        if (mapboxPlace != null) {
+                          MapView.globalKey.currentState?.origin = null;
+                          setState(() {
+                            _originName = mapboxPlace.text;
+                            _originCoords = mapboxPlace.coordinates;
+                          });
+                          if (_canEstimateDistance) _estimateDistance();
+                        }
+                      },
+                      child: Text(_originName ?? AppLocalizations.of(context)!.originName, style: textTheme.bodyLarge)),
+                  Divider(height: 1),
+                  GestureDetector(
+                    onTap: () async {
+                      final resultData = await context.push<Map<String, dynamic>?>(ClientRoutes.searchDestination);
+                      if (resultData != null) {
+                        _usingFixedDestination = resultData["usingFixedDestination"];
+                        MapView.globalKey.currentState?.destination = null;
+                        // The user has chosen a specific destination
+                        if (_usingFixedDestination) {
+                          final place = resultData["destination"] as MapboxPlace;
+                          setState(() {
+                            _destinationName = place.text;
+                            _destinationCoords = place.coordinates;
+                            _minDistance = null;
+                            _maxDistance = null;
+                            _minPrice = null;
+                            _maxPrice = null;
+                          });
+                        }
+                        // The user has chosen a municipality as a destination
+                        else {
+                          final municipality = resultData["destination"] as String;
+                          setState(() {
+                            _destinationName = municipality;
+                            _fixedDistance = null;
+                            _fixedPrice = null;
+                          });
+                        }
+                        // Estimate distance regardless of the type of destination chosen
+                        if (_canEstimateDistance) _estimateDistance();
+                      }
+                    },
+                    child: Text(
+                      _destinationName ?? AppLocalizations.of(context)!.destinationName,
+                      style: textTheme.bodyLarge,
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
+        // Taxi preference header
+        Align(
+            alignment: Alignment.centerLeft,
+            child: Text(localizations.askTaxi, style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold))),
+        // Available taxis list view
+        SizedBox(
+          height: 130,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: TaxiType.values.length,
+            itemBuilder: (context, index) => Padding(
+              padding: const EdgeInsets.only(right: 12.0),
+              child: _taxiItemBuilder(index, textTheme),
+            ),
+          ),
+        ),
+        // Seats selection
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              AppLocalizations.of(context)!.howTravels,
+              style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(localizations.tooltipAboutEstimations, style: textTheme.bodySmall),
-                if(_canEstimateWithFixedDestination)
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Fixed Distance
-                      _buildEstimationInfoRow(
-                          textTheme, localizations.distance,
-                          _fixedDistance != null ? '${_roundTo2Dec(_fixedDistance!)} km' : "-"
-                      ),
-                      // Fixed Price
-                      _buildEstimationInfoRow(
-                          textTheme, localizations.price,
-                          _fixedPrice != null ? '${_roundTo2Dec(_fixedPrice!)} CUP' : "-"
-                      )
-                    ]
-                  ),
-                if(_canEstimateWithUnfixedDestination)
-                  Column(
+                IconButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: () {
+                    if (_passengerCount > 1) {
+                      setState(() => _passengerCount--);
+                    }
+                  },
+                  icon: const Icon(Icons.remove),
+                ),
+                Text("$_passengerCount", style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
+                IconButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: () {
+                    if (_passengerCount < 20) {
+                      setState(() => _passengerCount++);
+                    }
+                  },
+                  icon: const Icon(Icons.add),
+                )
+              ],
+            ),
+          ],
+        ),
+        // Has pets ?
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(AppLocalizations.of(context)!.pets,
+                style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
+            Switch(
+                value: _hasPets,
+                activeColor: colorScheme.primaryFixedDim,
+                onChanged: (value) => setState(() => _hasPets = value))
+          ],
+        ),
+        // Divider
+        Divider(height: 1),
+        // Estimations for distance and price
+        if (_canEstimateDistance)
+          Column(
+            spacing: 12.0,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(localizations.tooltipAboutEstimations, style: textTheme.bodySmall),
+              if (_canEstimateWithFixedDestination)
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Fixed Distance
+                    _buildEstimationInfoRow(textTheme, localizations.distance,
+                        _fixedDistance != null ? '${_roundTo2Dec(_fixedDistance!)} km' : "-"),
+                    // Fixed Price
+                    _buildEstimationInfoRow(textTheme, localizations.price,
+                        _fixedPrice != null ? '${_roundTo2Dec(_fixedPrice!)} CUP' : "-"),
+                  ],
+                ),
+              if (_canEstimateWithUnfixedDestination)
+                Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // Minimum Distance
-                    _buildEstimationInfoRow(
-                        textTheme, localizations.minDistance,
-                        _minDistance != null ? '${_roundTo2Dec(_minDistance!)} km' : "-"
-                    ),
+                    _buildEstimationInfoRow(textTheme, localizations.minDistance,
+                        _minDistance != null ? '${_roundTo2Dec(_minDistance!)} km' : "-"),
                     // Minimum Price
                     _buildEstimationInfoRow(
-                        textTheme, localizations.minPrice,
-                        _minPrice != null ? '${_roundTo2Dec(_minPrice!)} CUP' : "-"
-                    ),
+                        textTheme, localizations.minPrice, _minPrice != null ? '${_roundTo2Dec(_minPrice!)} CUP' : "-"),
                     // Maximum Distance
-                    _buildEstimationInfoRow(
-                        textTheme, localizations.maxDistance,
-                        _maxDistance != null ? '${_roundTo2Dec(_maxDistance!)} km' : "-"
-                    ),
+                    _buildEstimationInfoRow(textTheme, localizations.maxDistance,
+                        _maxDistance != null ? '${_roundTo2Dec(_maxDistance!)} km' : "-"),
                     // Maximum Price
                     _buildEstimationInfoRow(
-                        textTheme, localizations.maxPrice,
-                        _maxPrice != null ? '${_roundTo2Dec(_maxPrice!)} CUP' : "-"
-                    )
-                  ]
-                )
-              ]
-            ),
-          // Submit travel request
-          SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
-                    foregroundColor: colorScheme.secondary,
-                    backgroundColor: colorScheme.primaryContainer,
-                    textStyle: TextStyle(fontWeight: FontWeight.bold),
-                    padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 100)
-                  ),
-                  onPressed: _canEstimateDistance && hasConnection(context) ? () async {
+                        textTheme, localizations.maxPrice, _maxPrice != null ? '${_roundTo2Dec(_maxPrice!)} CUP' : "-"),
+                  ],
+                ),
+            ],
+          ),
+        // Submit travel request
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
+                foregroundColor: colorScheme.secondary,
+                backgroundColor: colorScheme.primaryContainer,
+                textStyle: TextStyle(fontWeight: FontWeight.bold),
+                padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 100)),
+            onPressed: _canEstimateDistance && hasConnection(context)
+                ? () async {
+                    // Check it's a valid distance (means correct selection of origin and destination)
+                    final distance = _usingFixedDestination ? _fixedDistance! * 1000 : _minDistance! * 1000;
+                    print(distance);
+                    final isValidDistance = distance > 100;
+                    if (!isValidDistance) {
+                      showToast(
+                        context: context,
+                        message: "La distancia calculada no es suficiente como para "
+                            "solicitar un viaje, es posible que tenga que ajustar su origen o destino.",
+                        durationInSeconds: 4,
+                      );
+                      return;
+                    }
                     final response = await _travelService.requestNewTravel(
                         clientId: _client.id,
                         originName: _originName!,
@@ -420,10 +401,9 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                         maxDistance: _maxDistance,
                         fixedPrice: _fixedPrice,
                         minPrice: _minPrice,
-                        maxPrice: _maxPrice
-                    );
+                        maxPrice: _maxPrice);
                     if (!context.mounted) return;
-                    if(response.statusCode == 200) {
+                    if (response.statusCode == 200) {
                       final travel = Travel.fromJson(jsonDecode(response.body));
                       // Persist backup to restore search_driver in case of app closure
                       await BackupNavigationManager.instance.save(
@@ -432,10 +412,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                       );
                       if (!context.mounted) return;
                       // Radar animation while waiting for acceptation.
-                      final updatedTravel = await context.push<Travel?>(
-                          ClientRoutes.searchDriver,
-                          extra: travel.id
-                      );
+                      final updatedTravel = await context.push<Travel?>(ClientRoutes.searchDriver, extra: travel.id);
                       if (updatedTravel != null) {
                         // Clear backup as flow has advanced
                         await BackupNavigationManager.instance.clear();
@@ -451,22 +428,22 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                         // Clear backup on cancel or timeout
                         await BackupNavigationManager.instance.clear();
                       }
-                    }
-                    else if (response.statusCode == 403) {
+                    } else if (response.statusCode == 403) {
                       showToast(
                         context: context,
-                        message: "BLOQUEADO: Puesto que ha sido reportado por mal comportamiento ya no se le permite solicitar nuevos viajes.",
+                        message:
+                            "BLOQUEADO: Puesto que ha sido reportado por mal comportamiento ya no se le permite solicitar nuevos viajes.",
                         durationInSeconds: 4,
                       );
-                    }
-                    else {
+                    } else {
                       showToast(context: context, message: "Ocurrió algo mal, por favor inténtelo más tarde");
                     }
-                  } : null,
-                  child: Text(AppLocalizations.of(context)!.askTaxi)
-              )
-          )
-        ]
+                  }
+                : null,
+            child: Text(AppLocalizations.of(context)!.askTaxi),
+          ),
+        ),
+      ],
     );
   }
 
@@ -476,98 +453,85 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
     final dimensions = Theme.of(context).extension<DimensionExtension>()!;
     final localizations = AppLocalizations.of(context)!;
     return GestureDetector(
-        onTap: () {
-          if(_shouldUpdatePriceOnSelectedTaxiChanged) {
-            if(_usingFixedDestination) {
-              setState(() {
-                _selectedTaxi = taxi;
-                _fixedPrice = _getPriceByDistance(_fixedDistance!);
-              });
-            } else {
-              setState(() {
-                _selectedTaxi = taxi;
-                _minPrice = _getPriceByDistance(_minDistance!);
-                _maxPrice = _getPriceByDistance(_maxDistance!);
-              });
-            }
+      onTap: () {
+        if (_shouldUpdatePriceOnSelectedTaxiChanged) {
+          if (_usingFixedDestination) {
+            setState(() {
+              _selectedTaxi = taxi;
+              _fixedPrice = _getPriceByDistance(_fixedDistance!);
+            });
           } else {
             setState(() {
               _selectedTaxi = taxi;
+              _minPrice = _getPriceByDistance(_minDistance!);
+              _maxPrice = _getPriceByDistance(_maxDistance!);
             });
           }
-        },
-        child: SizedBox(
-            height: 120,
-            width: 130,
-            child: Stack(
-                children: [
-                  // Background Card
-                  Align(
-                      alignment: Alignment.centerRight,
-                      child: LayoutBuilder(
-                          builder: (context, constraints) => SizedBox(
-                            // Using a responsive 80% width from parent, also resolved
-                            // dynamically by Flexible widget, who's wrapping this items.
-                              width: constraints.maxWidth * 0.8,
-                              child: Card(
-                                  elevation: dimensions.elevation,
-                                  child: Padding(
-                                      padding: const EdgeInsets.only(top: 8.0, bottom: 8.0, left: 8.0),
-                                      child: Row(
-                                          mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Column(
-                                                crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                                children: [
-                                                  Row(
-                                                      children: [
-                                                        Text(localizations.vehicle, style: textTheme.bodySmall),
-                                                        if (isSelected)
-                                                          SizedBox(width: 8.0),
-                                                        if (isSelected)
-                                                          SizedBox(
-                                                            width: Theme.of(context).iconTheme.size! * 0.75,
-                                                            height: Theme.of(context).iconTheme.size! * 0.75,
-                                                            child: SvgPicture.asset("assets/icons/yellow_check.svg"),
-                                                          )
-                                                      ]
-                                                  ),
-                                                  Text(
-                                                      TaxiType.nameOf(taxi, localizations),
-                                                      style: textTheme.labelLarge
-                                                  )
-                                                ]
-                                            )
-                                          ]
-                                      )
-                                  )
-                              )
-                          )
-                      )
+        } else {
+          setState(() {
+            _selectedTaxi = taxi;
+          });
+        }
+      },
+      child: SizedBox(
+        height: 120,
+        width: 130,
+        child: Stack(
+          children: [
+            // Background Card
+            Align(
+              alignment: Alignment.centerRight,
+              child: LayoutBuilder(
+                builder: (context, constraints) => SizedBox(
+                  // Using a responsive 80% width from parent, also resolved
+                  // dynamically by Flexible widget, who's wrapping this items.
+                  width: constraints.maxWidth * 0.8,
+                  child: Card(
+                    elevation: dimensions.elevation,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 8.0, bottom: 8.0, left: 8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                            Row(children: [
+                              Text(localizations.vehicle, style: textTheme.bodySmall),
+                              if (isSelected) SizedBox(width: 8.0),
+                              if (isSelected)
+                                SizedBox(
+                                  width: Theme.of(context).iconTheme.size! * 0.75,
+                                  height: Theme.of(context).iconTheme.size! * 0.75,
+                                  child: SvgPicture.asset("assets/icons/yellow_check.svg"),
+                                )
+                            ]),
+                            Text(TaxiType.nameOf(taxi, localizations), style: textTheme.labelLarge)
+                          ])
+                        ],
+                      ),
+                    ),
                   ),
-                  // Vehicle Image
-                  Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Padding(
-                          padding: EdgeInsets.only(bottom: 8.0, right: 8.0),
-                          child: Image.asset(taxi.assetRef(AssetDpi.xhdpi))
-                      )
-                  )
-                ]
-            )
-        )
+                ),
+              ),
+            ),
+            // Vehicle Image
+            Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                    padding: EdgeInsets.only(bottom: 8.0, right: 8.0),
+                    child: Image.asset(taxi.assetRef(AssetDpi.xhdpi))))
+          ],
+        ),
+      ),
     );
   }
 
   Widget _buildEstimationInfoRow(TextTheme textTheme, String label, String value) {
     return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label, style: textTheme.bodyLarge),
-          Text(value, style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold))
-        ]
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label, style: textTheme.bodyLarge),
+        Text(value, style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold))
+      ],
     );
   }
 }
