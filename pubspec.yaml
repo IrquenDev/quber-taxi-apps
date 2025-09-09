@@ -73,6 +73,9 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
+  # Cupertino icons for iOS-style icons
+  cupertino_icons: ^1.0.8
+
   # Launch external URLs (browser, email, phone).
   url_launcher: ^6.3.1
 

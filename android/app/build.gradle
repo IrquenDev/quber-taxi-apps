@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.irquen.quber_taxi"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
