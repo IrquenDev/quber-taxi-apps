@@ -42,9 +42,10 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
 
   XFile? _profileImage;
   String? _initialProfileImageUrl;
+
   bool get _shouldUpdateImage =>
-    _profileImage != null ||
-    (_profileImage == null && _initialProfileImageUrl == null && _client.profileImageUrl != null);
+      _profileImage != null ||
+      (_profileImage == null && _initialProfileImageUrl == null && _client.profileImageUrl != null);
   bool _isProcessingImage = false;
   bool _isSubmittingPersonalInfo = false;
   bool _isSubmittingPasswords = false;
@@ -183,269 +184,257 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
     return Scaffold(
       body: Stack(
         children: [
-          Container(color: colorScheme.onSecondary),
-          // Header Background
+          // Curved Yellow Header
           Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              height: 180,
-              decoration: BoxDecoration(
-                color: colorScheme.primaryContainer,
-                borderRadius: BorderRadius.vertical(
-                  bottom: Radius.circular(dimensions.borderRadius),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: colorScheme.shadow.withOpacity(0.2),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-            ),
-          ),
+              top: 0.0,
+              left: 0,
+              right: 0,
+              child: Container(
+                  height: 240.0,
+                  decoration: BoxDecoration(
+                      color: colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(dimensions.borderRadius),
+                        bottomRight: Radius.circular(dimensions.borderRadius),
+                      )),
+                  child: SafeArea(
+                      child: Align(
+                          alignment: Alignment.topCenter,
+                          child: Padding(
+                              padding: EdgeInsets.only(top: 30),
+                              child: Text(localization.myAccount,
+                                  style: textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ))))))),
           // Content
           Positioned(
+            right: 20.0,
+            left: 20.0,
+            bottom: 0.0,
             top: 120,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: SingleChildScrollView(
-              controller: _scrollController,
-              physics: const BouncingScrollPhysics(),
-              child: Column(
-                children: [
-                  // Card 1: Personal Information
-                  Container(
-                    key: _personalInfoKey,
-                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                    padding: const EdgeInsets.all(16.0),
-                    decoration: BoxDecoration(
-                      color: colorScheme.surfaceContainerLowest,
-                      borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusLarge),
-                    ),
-                    child: Form(
-                      key: _personalInfoFormKey,
-                      child: Column(
-                        children: [
-                          Center(
-                            child: Column(
-                              key: _imageKey,
-                              children: [
-                                _buildCircleImagePicker(),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          _buildTextField(
-                            controller: _nameTFController,
-                            label: localization.name,
-                            hint: localization.nameAndLastName,
-                            maxLength: 50,
-                          ),
-                          const SizedBox(height: 12),
-                          _buildTextField(
-                            controller: _phoneTFController,
-                            label: localization.phoneNumber,
-                            hint: localization.phoneNumber,
-                            inputType: TextInputType.phone,
-                            maxLength: 8,
-                            readOnly: true,
-                          ),
-                          const SizedBox(height: 24),
-                          SizedBox(
-                            width: double.infinity,
-                            height: 48,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: colorScheme.primaryContainer,
-                                foregroundColor: colorScheme.onPrimaryContainer,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
-                                ),
-                              ),
-                              onPressed: _isSubmittingPersonalInfo ? null : _validateAndSavePersonalInfo,
-                              child: _isSubmittingPersonalInfo
-                                  ? SizedBox(
-                                      height: 20,
-                                      width: 20,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        valueColor: AlwaysStoppedAnimation<Color>(colorScheme.onPrimaryContainer),
-                                      ),
-                                    )
-                                  : Text(
-                                      localization.save,
-                                      style: textTheme.bodyLarge?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                            ),
-                          ),
-                        ],
+            child: ClipRRect(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(dimensions.borderRadius),
+                topRight: Radius.circular(dimensions.borderRadius),
+              ),
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                  children: [
+                    // Card 1: Personal Information
+                    Container(
+                      key: _personalInfoKey,
+                      padding: const EdgeInsets.all(20.0),
+                      decoration: BoxDecoration(
+                        color: colorScheme.surfaceContainerLowest,
+                        borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusLarge),
                       ),
-                    ),
-                  ),
-                  // Card 2: Passwords
-                  Container(
-                    key: _passwordKey,
-                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: colorScheme.surfaceContainerLowest,
-                      borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusLarge),
-                    ),
-                    child: Form(
-                      key: _passwordFormKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildPasswordField(
-                            controller: _passwordController,
-                            label: localization.passwordLabel,
-                            hint: localization.passwordHint,
-                            visible: passwordVisible,
-                            onToggle: (v) => setState(() => passwordVisible = v),
-                            validationWorkflow: Workflow<String?>()
-                                .step(RequiredStep(errorMessage: localization.requiredField))
-                                .step(MinLengthStep(min: 6, errorMessage: localization.passwordMinLengthError))
-                                .breakOnFirstApply(true)
-                                .withDefault((_) => null),
-                          ),
-                          const SizedBox(height: 24),
-                          _buildPasswordField(
-                            controller: _confirmPasswordController,
-                            label: localization.confirmPasswordLabel,
-                            hint: localization.confirmPasswordHint,
-                            visible: confirmPasswordVisible,
-                            onToggle: (v) => setState(() => confirmPasswordVisible = v),
-                            validationWorkflow: Workflow<String?>()
-                                .step(RequiredStep(errorMessage: localization.requiredField))
-                                .step(MatchOtherStep(
-                                  other: _passwordController.text,
-                                  errorMessage: localization.passwordsDoNotMatch,
-                                ))
-                                .breakOnFirstApply(true)
-                                .withDefault((_) => null),
-                          ),
-                          const SizedBox(height: 24),
-                          SizedBox(
-                            width: double.infinity,
-                            height: 48,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: colorScheme.primaryContainer,
-                                foregroundColor: colorScheme.onPrimaryContainer,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
-                                ),
+                      child: Form(
+                        key: _personalInfoFormKey,
+                        child: Column(
+                          children: [
+                            Center(
+                              child: Column(
+                                key: _imageKey,
+                                children: [
+                                  _buildCircleImagePicker(),
+                                ],
                               ),
-                              onPressed: _isSubmittingPasswords ? null : _validateAndSavePasswords,
-                              child: _isSubmittingPasswords
-                                  ? SizedBox(
-                                      height: 20,
-                                      width: 20,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        valueColor: AlwaysStoppedAnimation<Color>(colorScheme.onPrimaryContainer),
-                                      ),
-                                    )
-                                  : Text(
-                                      localization.saveButtonPanel,
-                                      style: textTheme.bodyLarge?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                            // Referral Code Card
-                            Container(
-                                margin: const EdgeInsets.symmetric(horizontal: 16.0),
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: colorScheme.surfaceContainerLowest,
-                                  borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusLarge),
+                            const SizedBox(height: 20),
+                            _buildTextField(
+                              controller: _nameTFController,
+                              label: localization.name,
+                              hint: localization.nameAndLastName,
+                              maxLength: 50,
+                            ),
+                            const SizedBox(height: 12),
+                            _buildTextField(
+                              controller: _phoneTFController,
+                              label: localization.phoneNumber,
+                              hint: localization.phoneNumber,
+                              inputType: TextInputType.phone,
+                              maxLength: 8,
+                              readOnly: true,
+                            ),
+                            const SizedBox(height: 24),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 48,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: colorScheme.primaryContainer,
+                                  foregroundColor: colorScheme.onPrimaryContainer,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+                                  ),
                                 ),
-                                child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(AppLocalizations.of(context)!.myDiscountCode,
-                                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                              fontWeight: FontWeight.bold,
-                                              color: colorScheme.secondary
-                                          )
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Text(
-                                          AppLocalizations.of(context)!.inviteFriendDiscount,
-                                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colorScheme.secondary)
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                                              decoration: BoxDecoration(
-                                                border: Border.all(color: colorScheme.outline),
-                                                borderRadius: BorderRadius.circular(10),
-                                              ),
-                                              child: Text(_client.referralCode)
-                                            ),
-                                          ),
-                                          IconButton(
-                                            icon: const Icon(Icons.copy),
-                                            onPressed: () {
-                                              Clipboard.setData(ClipboardData(text: _client.referralCode));
-                                              showToast(context: context, message: AppLocalizations.of(context)!.copied);
-                                            },
-                                          )
-                                        ]
+                                onPressed: _isSubmittingPersonalInfo ? null : _validateAndSavePersonalInfo,
+                                child: _isSubmittingPersonalInfo
+                                    ? SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          valueColor: AlwaysStoppedAnimation<Color>(colorScheme.onPrimaryContainer),
+                                        ),
                                       )
-                                    ]
-                                )
+                                    : Text(
+                                        localization.save,
+                                        style: textTheme.bodyLarge?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                              ),
                             ),
-                            const SizedBox(height: 16),
-                  // Card 3: About Us/Dev
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                    decoration: BoxDecoration(
-                      color: colorScheme.surfaceContainerLowest,
-                      borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusLarge),
+                          ],
+                        ),
+                      ),
                     ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _buildMenuItem(
-                          icon: Icons.local_taxi,
-                          text: localization.aboutUs,
-                          onTap: () => context.push(CommonRoutes.aboutUs),
+                    // Card 2: Passwords
+                    Container(
+                      key: _passwordKey,
+                      padding: const EdgeInsets.all(20.0),
+                      decoration: BoxDecoration(
+                        color: colorScheme.surfaceContainerLowest,
+                        borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusLarge),
+                      ),
+                      child: Form(
+                        key: _passwordFormKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildPasswordField(
+                              controller: _passwordController,
+                              label: localization.passwordLabel,
+                              hint: localization.passwordHint,
+                              visible: passwordVisible,
+                              onToggle: (v) => setState(() => passwordVisible = v),
+                              validationWorkflow: Workflow<String?>()
+                                  .step(RequiredStep(errorMessage: localization.requiredField))
+                                  .step(MinLengthStep(min: 6, errorMessage: localization.passwordMinLengthError))
+                                  .breakOnFirstApply(true)
+                                  .withDefault((_) => null),
+                            ),
+                            const SizedBox(height: 24),
+                            _buildPasswordField(
+                              controller: _confirmPasswordController,
+                              label: localization.confirmPasswordLabel,
+                              hint: localization.confirmPasswordHint,
+                              visible: confirmPasswordVisible,
+                              onToggle: (v) => setState(() => confirmPasswordVisible = v),
+                              validationWorkflow: Workflow<String?>()
+                                  .step(RequiredStep(errorMessage: localization.requiredField))
+                                  .step(MatchOtherStep(
+                                    other: _passwordController.text,
+                                    errorMessage: localization.passwordsDoNotMatch,
+                                  ))
+                                  .breakOnFirstApply(true)
+                                  .withDefault((_) => null),
+                            ),
+                            const SizedBox(height: 24),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 48,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: colorScheme.primaryContainer,
+                                  foregroundColor: colorScheme.onPrimaryContainer,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+                                  ),
+                                ),
+                                onPressed: _isSubmittingPasswords ? null : _validateAndSavePasswords,
+                                child: _isSubmittingPasswords
+                                    ? SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          valueColor: AlwaysStoppedAnimation<Color>(colorScheme.onPrimaryContainer),
+                                        ),
+                                      )
+                                    : Text(
+                                        localization.saveButtonPanel,
+                                        style: textTheme.bodyLarge?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                              ),
+                            ),
+                          ],
                         ),
-                        Divider(
-                          height: 1,
-                          color: colorScheme.outlineVariant,
-                          indent: 12,
-                          endIndent: 12,
-                        ),
-                        _buildMenuItem(
-                          icon: Icons.code,
-                          text: localization.aboutDeveloper,
-                          onTap: () => context.push(CommonRoutes.aboutDev),
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
-                  // Logout
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                    child: _buildLogoutItemWithVersion(
+                    // Referral Code Card
+                    Container(
+                        padding: const EdgeInsets.all(20.0),
+                        decoration: BoxDecoration(
+                          color: colorScheme.surfaceContainerLowest,
+                          borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusLarge),
+                        ),
+                        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Text(AppLocalizations.of(context)!.myDiscountCode,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.secondary)),
+                          const SizedBox(height: 8),
+                          Text(AppLocalizations.of(context)!.inviteFriendDiscount,
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colorScheme.secondary)),
+                          const SizedBox(height: 8),
+                          Row(children: [
+                            Expanded(
+                              child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: colorScheme.outline),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Text(_client.referralCode)),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.copy),
+                              onPressed: () {
+                                Clipboard.setData(ClipboardData(text: _client.referralCode));
+                                showToast(context: context, message: AppLocalizations.of(context)!.copied);
+                              },
+                            )
+                          ])
+                        ])),
+                    const SizedBox(height: 16),
+                    // Card 3: About Us/Dev
+                    Container(
+                      padding: const EdgeInsets.all(20.0),
+                      decoration: BoxDecoration(
+                        color: colorScheme.surfaceContainerLowest,
+                        borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusLarge),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _buildMenuItem(
+                            icon: Icons.local_taxi,
+                            text: localization.aboutUs,
+                            onTap: () => context.push(CommonRoutes.aboutUs),
+                          ),
+                          Divider(
+                            height: 1,
+                            color: colorScheme.outlineVariant,
+                            indent: 12,
+                            endIndent: 12,
+                          ),
+                          _buildMenuItem(
+                            icon: Icons.code,
+                            text: localization.aboutDeveloper,
+                            onTap: () => context.push(CommonRoutes.aboutDev),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Logout
+                    _buildLogoutItemWithVersion(
                       text: localization.logout,
                       icon: Icons.logout,
                       textColor: colorScheme.error,
@@ -457,33 +446,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                         context.go(CommonRoutes.login);
                       },
                     ),
-                  ),
-                  const SizedBox(height: 80),
-                ],
-              ),
-            ),
-          ),
-          // Header
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  children: [
-                    // Removed back button
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0, top: 8.0),
-                      child: Text(
-                        localization.myAccount,
-                        style: textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.onPrimaryContainer,
-                        ),
-                      ),
-                    ),
+                    const SizedBox(height: 80),
                   ],
                 ),
               ),
@@ -664,9 +627,8 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                 )
               : CachedProfileImage(
                   radius: 80,
-                  imageUrl: _initialProfileImageUrl != null
-                      ? "${ApiConfig().baseUrl}/${_initialProfileImageUrl}"
-                      : null,
+                  imageUrl:
+                      _initialProfileImageUrl != null ? "${ApiConfig().baseUrl}/${_initialProfileImageUrl}" : null,
                   backgroundColor: colorScheme.onSecondary,
                   placeholderAsset: "assets/icons/user.svg",
                   placeholderColor: colorScheme.onSecondaryContainer,
