@@ -27,7 +27,6 @@ class _CompletedTripsPageState extends State<CompletedTripsPage> {
   int _currentPage = 0;
   bool _hasMoreData = true;
   bool _isLoadingMore = false;
-  bool _isInitialLoading = true;
 
   @override
   void initState() {
@@ -44,7 +43,6 @@ class _CompletedTripsPageState extends State<CompletedTripsPage> {
     setState(() {
       _allTravels = newTravels;
       _hasMoreData = !travelPage.last;
-      _isInitialLoading = false;
     });
   }
 
@@ -55,7 +53,6 @@ class _CompletedTripsPageState extends State<CompletedTripsPage> {
 
       _allTravels = travels;
       _hasMoreData = !travelPage.last;
-      _isInitialLoading = false;
       return _allTravels;
     });
   }
@@ -140,8 +137,7 @@ class _CompletedTripsPageState extends State<CompletedTripsPage> {
                   top: 140, left: 20.0, right: 20.0, bottom: 0.0,
                   child: ClipRRect(
                       borderRadius: BorderRadiusGeometry.circular(dimensions.borderRadius),
-                      child: _isInitialLoading
-                          ? FutureBuilder(
+                      child: FutureBuilder(
                           future: _futureTravels,
                           builder: (context, snapshot) {
                             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -154,7 +150,6 @@ class _CompletedTripsPageState extends State<CompletedTripsPage> {
                               return _buildTravelsList();
                             }
                           })
-                          : _buildTravelsList()
                   )
               )
             ]
