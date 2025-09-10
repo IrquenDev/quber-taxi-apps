@@ -191,7 +191,7 @@ class _DriverTripInfoState extends State<DriverTripInfo> {
                           context: context,
                           barrierDismissible: false,
                           barrierColor: colorScheme.errorContainer.withAlpha(200),
-                          builder: (context) => EmergencyDialog()
+                          builder: (context) => const EmergencyDialog()
                         ),
                         child: Text(
                           loc.emergencySOS,

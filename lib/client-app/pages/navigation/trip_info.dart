@@ -18,7 +18,7 @@ class ClientTripInfo extends StatelessWidget {
     required this.originName,
     required this.destinationName,
     required this.taxiType,
-    this.travelPriceByTaxiType
+    this.travelPriceByTaxiType,
   });
 
   @override
@@ -138,7 +138,7 @@ class ClientTripInfo extends StatelessWidget {
                           context: context,
                           barrierDismissible: false,
                           barrierColor:Theme.of(context).colorScheme.errorContainer.withAlpha(200),
-                          builder: (context) => EmergencyDialog()
+                          builder: (context) => const EmergencyDialog()
                         ),
                         child: Text(
                             'Emergencia (SOS)',
