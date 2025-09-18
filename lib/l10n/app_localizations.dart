@@ -113,7 +113,7 @@ abstract class AppLocalizations {
   /// No description provided for @destinationName.
   ///
   /// In es, this message translates to:
-  /// **'Seleccione el municipio de destino'**
+  /// **'Seleccione la ubicación de destino'**
   String get destinationName;
 
   /// No description provided for @carPrefer.
@@ -134,6 +134,12 @@ abstract class AppLocalizations {
   /// **'¿Lleva mascota?'**
   String get pets;
 
+  /// No description provided for @distance.
+  ///
+  /// In es, this message translates to:
+  /// **'Distancia:'**
+  String get distance;
+
   /// No description provided for @minDistance.
   ///
   /// In es, this message translates to:
@@ -146,6 +152,12 @@ abstract class AppLocalizations {
   /// **'Distancia máxima:'**
   String get maxDistance;
 
+  /// No description provided for @price.
+  ///
+  /// In es, this message translates to:
+  /// **'Precio:'**
+  String get price;
+
   /// No description provided for @minPrice.
   ///
   /// In es, this message translates to:
@@ -155,7 +167,7 @@ abstract class AppLocalizations {
   /// No description provided for @maxPrice.
   ///
   /// In es, this message translates to:
-  /// **'Precio máximo que puede costar:'**
+  /// **'Precio máximo:'**
   String get maxPrice;
 
   /// No description provided for @askTaxi.
@@ -170,6 +182,12 @@ abstract class AppLocalizations {
   /// **'Vehículo'**
   String get vehicle;
 
+  /// No description provided for @tooltipAboutEstimations.
+  ///
+  /// In es, this message translates to:
+  /// **'Las estimaciones que se presentan a continuación, a pesar de ser muy prescisas, siguen siendo valores aproximados. Refiérase a ellas como una guía. La distancia y precio reales se calcularán durante la travesía.'**
+  String get tooltipAboutEstimations;
+
   /// No description provided for @settingsHome.
   ///
   /// In es, this message translates to:
@@ -182,11 +200,29 @@ abstract class AppLocalizations {
   /// **'Mapa'**
   String get map;
 
-  /// No description provided for @quberPoints.
+  /// No description provided for @select.
   ///
   /// In es, this message translates to:
-  /// **'Puntos Quber'**
-  String get quberPoints;
+  /// **'Seleccionar'**
+  String get select;
+
+  /// No description provided for @origin.
+  ///
+  /// In es, this message translates to:
+  /// **'Origen'**
+  String get origin;
+
+  /// No description provided for @destination.
+  ///
+  /// In es, this message translates to:
+  /// **'Destino'**
+  String get destination;
+
+  /// No description provided for @marker.
+  ///
+  /// In es, this message translates to:
+  /// **'Marcador'**
+  String get marker;
 
   /// No description provided for @mapBottomItem.
   ///
@@ -209,8 +245,44 @@ abstract class AppLocalizations {
   /// No description provided for @quberPointsBottomItem.
   ///
   /// In es, this message translates to:
-  /// **'Puntos Quber'**
+  /// **'P. Quber'**
   String get quberPointsBottomItem;
+
+  /// No description provided for @quberPoints.
+  ///
+  /// In es, this message translates to:
+  /// **'Puntos Quber'**
+  String get quberPoints;
+
+  /// No description provided for @accumulatedPoints.
+  ///
+  /// In es, this message translates to:
+  /// **'Puntos acumulados'**
+  String get accumulatedPoints;
+
+  /// No description provided for @quberPointsEarned.
+  ///
+  /// In es, this message translates to:
+  /// **'Puntos Quber Ganados'**
+  String get quberPointsEarned;
+
+  /// No description provided for @inviteFriendsDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Invita amigos con tu código de referido para ganar más puntos. Úsalos para comprar descuentos en tus viajes.'**
+  String get inviteFriendsDescription;
+
+  /// No description provided for @driverCredit.
+  ///
+  /// In es, this message translates to:
+  /// **'Crédito del Conductor'**
+  String get driverCredit;
+
+  /// No description provided for @driverCreditDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Saldo disponible en tu cuenta. Este crédito se actualiza después de cada viaje completado.'**
+  String get driverCreditDescription;
 
   /// No description provided for @ubicationFailed.
   ///
@@ -229,6 +301,30 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Permiso de ubicación denegado permanentemente'**
   String get permissionDeniedPermanently;
+
+  /// No description provided for @locationError.
+  ///
+  /// In es, this message translates to:
+  /// **'Error al obtener la ubicación'**
+  String get locationError;
+
+  /// No description provided for @destinationsLimitedToHavana.
+  ///
+  /// In es, this message translates to:
+  /// **'Los destinos están limitados a La Habana'**
+  String get destinationsLimitedToHavana;
+
+  /// No description provided for @selectLocation.
+  ///
+  /// In es, this message translates to:
+  /// **'Seleccionar ubicación'**
+  String get selectLocation;
+
+  /// No description provided for @tapMapToSelectLocation.
+  ///
+  /// In es, this message translates to:
+  /// **'Toque el mapa para seleccionar una ubicación'**
+  String get tapMapToSelectLocation;
 
   /// No description provided for @writeUbication.
   ///
@@ -254,11 +350,23 @@ abstract class AppLocalizations {
   /// **'Su ubicación actual está fuera de los límites de La Habana'**
   String get outLimits;
 
-  /// No description provided for @noResults.
+  /// No description provided for @noResultsTitle.
   ///
   /// In es, this message translates to:
-  /// **'Sin resultados'**
-  String get noResults;
+  /// **'¡Upps!'**
+  String get noResultsTitle;
+
+  /// No description provided for @noResultsMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Nuestro proveedor no fue capaz de encontrar resultados similares.'**
+  String get noResultsMessage;
+
+  /// No description provided for @noResultsHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Intenta con una búsqueda más genérica y luego afínala desde el mapa.'**
+  String get noResultsHint;
 
   /// No description provided for @searchDrivers.
   ///
@@ -311,7 +419,7 @@ abstract class AppLocalizations {
   /// No description provided for @startTrip.
   ///
   /// In es, this message translates to:
-  /// **'Iniciar viaje'**
+  /// **'Iniciar Viaje (Cliente Recogido)'**
   String get startTrip;
 
   /// No description provided for @people.
@@ -319,6 +427,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Personas'**
   String get people;
+
+  /// No description provided for @profileUpdatedSuccessfully.
+  ///
+  /// In es, this message translates to:
+  /// **'Perfil actualizado exitosamente'**
+  String get profileUpdatedSuccessfully;
 
   /// No description provided for @from.
   ///
@@ -440,12 +554,6 @@ abstract class AppLocalizations {
   /// **'Restablecer Contraseña'**
   String get resetPasswordTitle;
 
-  /// No description provided for @verificationCodeHint.
-  ///
-  /// In es, this message translates to:
-  /// **'Código de verificación'**
-  String get verificationCodeHint;
-
   /// No description provided for @newPasswordHint.
   ///
   /// In es, this message translates to:
@@ -523,6 +631,30 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Ocurrió algo mal, por favor inténtelo más tarde'**
   String get unexpectedErrorLoginMessage;
+
+  /// No description provided for @locationNotFoundTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Ubicación no encontrada'**
+  String get locationNotFoundTitle;
+
+  /// No description provided for @locationNotFoundMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Aún no hemos encontrado su ubicación.'**
+  String get locationNotFoundMessage;
+
+  /// No description provided for @locationNotFoundHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Seleccione este botón para intentar de nuevo.'**
+  String get locationNotFoundHint;
+
+  /// No description provided for @locationNotFoundButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Entendido'**
+  String get locationNotFoundButton;
 
   /// No description provided for @identityVerify.
   ///
@@ -701,13 +833,13 @@ abstract class AppLocalizations {
   /// No description provided for @driverCreditPercentage.
   ///
   /// In es, this message translates to:
-  /// **'Porciento de crédito para conductores:'**
+  /// **'Porciento de crédito para Quber:'**
   String get driverCreditPercentage;
 
   /// No description provided for @tripPricePerKm.
   ///
   /// In es, this message translates to:
-  /// **'Precio de viaje por KM:'**
+  /// **'Precio de viaje por KM y vehículo:'**
   String get tripPricePerKm;
 
   /// No description provided for @saveButtonPanel.
@@ -950,6 +1082,72 @@ abstract class AppLocalizations {
   /// **'Chapa: '**
   String get driverPlate;
 
+  /// No description provided for @tripPriceLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Precio del Viaje'**
+  String get tripPriceLabel;
+
+  /// No description provided for @tripDurationLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Tiempo Transcurrido'**
+  String get tripDurationLabel;
+
+  /// No description provided for @tripDistanceLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Distancia Recorrida'**
+  String get tripDistanceLabel;
+
+  /// No description provided for @originLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Origen'**
+  String get originLabel;
+
+  /// No description provided for @destinationLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Destino'**
+  String get destinationLabel;
+
+  /// No description provided for @dateLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Fecha'**
+  String get dateLabel;
+
+  /// No description provided for @quberCreditLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Crédito para Quber'**
+  String get quberCreditLabel;
+
+  /// No description provided for @commentsLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'comentarios'**
+  String get commentsLabel;
+
+  /// No description provided for @minutesLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'minutos'**
+  String get minutesLabel;
+
+  /// No description provided for @kilometersLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Km'**
+  String get kilometersLabel;
+
+  /// No description provided for @currencyLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'CUP'**
+  String get currencyLabel;
+
   /// No description provided for @aboutDeveloperTitle.
   ///
   /// In es, this message translates to:
@@ -1157,7 +1355,7 @@ abstract class AppLocalizations {
   /// No description provided for @passwordLabel.
   ///
   /// In es, this message translates to:
-  /// **'Contraseña'**
+  /// **'Contraseña:'**
   String get passwordLabel;
 
   /// No description provided for @passwordHint.
@@ -1169,7 +1367,7 @@ abstract class AppLocalizations {
   /// No description provided for @confirmPasswordLabel.
   ///
   /// In es, this message translates to:
-  /// **'Confirmar contraseña:'**
+  /// **'Confirme contraseña:'**
   String get confirmPasswordLabel;
 
   /// No description provided for @finishButton.
@@ -1189,6 +1387,1152 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Vehículo de dos o tres ruedas, ideal para trayectos cortos en zonas con tráfico intenso. Económico, ágil y perfecto para movilizarse rápidamente por calles estrechas.'**
   String get motoTaxiDescription;
+
+  /// No description provided for @updatePasswordSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Contraseña actualizada'**
+  String get updatePasswordSuccess;
+
+  /// No description provided for @somethingWentWrong.
+  ///
+  /// In es, this message translates to:
+  /// **'Algo salió mal, por favor inténtelo más tarde'**
+  String get somethingWentWrong;
+
+  /// No description provided for @checkConnection.
+  ///
+  /// In es, this message translates to:
+  /// **'Revise su conexión a internet'**
+  String get checkConnection;
+
+  /// No description provided for @save.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar'**
+  String get save;
+
+  /// No description provided for @aboutUs.
+  ///
+  /// In es, this message translates to:
+  /// **'Sobre Nosotros'**
+  String get aboutUs;
+
+  /// No description provided for @aboutDeveloper.
+  ///
+  /// In es, this message translates to:
+  /// **'Sobre el desarrollador'**
+  String get aboutDeveloper;
+
+  /// No description provided for @hintPassword.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduzca la contraseña deseada'**
+  String get hintPassword;
+
+  /// No description provided for @labelNameDriver.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre:'**
+  String get labelNameDriver;
+
+  /// No description provided for @labelCarRegistration.
+  ///
+  /// In es, this message translates to:
+  /// **'Chapa:'**
+  String get labelCarRegistration;
+
+  /// No description provided for @labelPhoneNumberDriver.
+  ///
+  /// In es, this message translates to:
+  /// **'Num. teléfono:'**
+  String get labelPhoneNumberDriver;
+
+  /// No description provided for @labelNumberOfSeats.
+  ///
+  /// In es, this message translates to:
+  /// **'Número de asientos:'**
+  String get labelNumberOfSeats;
+
+  /// No description provided for @balanceLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Balance:'**
+  String get balanceLabel;
+
+  /// No description provided for @quberCreditsLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Crédito de Quber acumulado:'**
+  String get quberCreditsLabel;
+
+  /// No description provided for @nextPayLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Próxima fecha de pago:'**
+  String get nextPayLabel;
+
+  /// No description provided for @valuationLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Valoración acumulada:'**
+  String get valuationLabel;
+
+  /// No description provided for @androidOnlyText.
+  ///
+  /// In es, this message translates to:
+  /// **'-'**
+  String get androidOnlyText;
+
+  /// No description provided for @cameraPermissionDenied.
+  ///
+  /// In es, this message translates to:
+  /// **'Permiso de cámara denegado.'**
+  String get cameraPermissionDenied;
+
+  /// No description provided for @goBackButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Regresar'**
+  String get goBackButton;
+
+  /// No description provided for @faceDetectionStep.
+  ///
+  /// In es, this message translates to:
+  /// **'1. Detección de rostro'**
+  String get faceDetectionStep;
+
+  /// No description provided for @livenessDetectionStep.
+  ///
+  /// In es, this message translates to:
+  /// **'2. Detección de vida'**
+  String get livenessDetectionStep;
+
+  /// No description provided for @selfieCapturingStep.
+  ///
+  /// In es, this message translates to:
+  /// **'3. Captura de selfie'**
+  String get selfieCapturingStep;
+
+  /// No description provided for @compatibilityErrorTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Error de compatibilidad'**
+  String get compatibilityErrorTitle;
+
+  /// No description provided for @faceDetectionInstruction.
+  ///
+  /// In es, this message translates to:
+  /// **'Le aconsejamos que coloque su rostro en la zona indicada.'**
+  String get faceDetectionInstruction;
+
+  /// No description provided for @livenessDetectionInstruction.
+  ///
+  /// In es, this message translates to:
+  /// **'Le aconsejamos que no actúe de forma rígida, sin pestañear o respirar de manera natural, para asegurar una detección precisa del rostro.'**
+  String get livenessDetectionInstruction;
+
+  /// No description provided for @selfieProcessingInstruction.
+  ///
+  /// In es, this message translates to:
+  /// **'Nuestra inteligencia artificial está procesando la selfie. Por favor, manténgase conectado a internet y evite cerrar la aplicación.'**
+  String get selfieProcessingInstruction;
+
+  /// No description provided for @deviceNotCompatibleMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Su dispositivo no es compatible con la verificación facial. Por favor, contacte con soporte técnico o intente con otro dispositivo.'**
+  String get deviceNotCompatibleMessage;
+
+  /// No description provided for @imageProcessingErrorTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Error de Procesamiento de Imagen'**
+  String get imageProcessingErrorTitle;
+
+  /// No description provided for @imageProcessingErrorMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Ocurrió un error al procesar su imagen. Por favor, inténtelo de nuevo más tarde.'**
+  String get imageProcessingErrorMessage;
+
+  /// No description provided for @cameraPermissionPermanentlyDeniedTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Permiso de Cámara Requerido'**
+  String get cameraPermissionPermanentlyDeniedTitle;
+
+  /// No description provided for @cameraPermissionPermanentlyDeniedMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'El acceso a la cámara ha sido denegado permanentemente. Para usar la verificación de identidad, por favor habilite el permiso de cámara en la configuración de su dispositivo.'**
+  String get cameraPermissionPermanentlyDeniedMessage;
+
+  /// No description provided for @goToSettingsButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Ir a Configuración'**
+  String get goToSettingsButton;
+
+  /// No description provided for @confirmExitTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirmar salida'**
+  String get confirmExitTitle;
+
+  /// No description provided for @confirmExitMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Está seguro que desea salir? Perderá todo el progreso realizado hasta ahora.'**
+  String get confirmExitMessage;
+
+  /// No description provided for @passwordMinLengthError.
+  ///
+  /// In es, this message translates to:
+  /// **'La contraseña debe tener al menos 6 caracteres'**
+  String get passwordMinLengthError;
+
+  /// No description provided for @passwordsDoNotMatch.
+  ///
+  /// In es, this message translates to:
+  /// **'Las contraseñas no coinciden'**
+  String get passwordsDoNotMatch;
+
+  /// No description provided for @phoneAlreadyRegistered.
+  ///
+  /// In es, this message translates to:
+  /// **'El número de teléfono ya se encuentra registrado'**
+  String get phoneAlreadyRegistered;
+
+  /// No description provided for @registrationError.
+  ///
+  /// In es, this message translates to:
+  /// **'No pudimos completar su registro. Por favor inténtelo más tarde'**
+  String get registrationError;
+
+  /// No description provided for @creatingAccount.
+  ///
+  /// In es, this message translates to:
+  /// **'Creando cuenta...'**
+  String get creatingAccount;
+
+  /// No description provided for @newTrip.
+  ///
+  /// In es, this message translates to:
+  /// **'Nuevo Viaje'**
+  String get newTrip;
+
+  /// No description provided for @noConnection.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin conexión'**
+  String get noConnection;
+
+  /// No description provided for @noConnectionMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'La app no podrá continuar sin conexión a internet'**
+  String get noConnectionMessage;
+
+  /// No description provided for @needsApproval.
+  ///
+  /// In es, this message translates to:
+  /// **'Necesita Aprobación'**
+  String get needsApproval;
+
+  /// No description provided for @needsApprovalMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Su cuenta está en proceso de activación. Para continuar, por favor preséntese en nuestras oficinas para la revisión técnica de su vehículo y la firma del contrato. Nos encontramos en Calle 4ta / Central y mercado, reparto Martín Pérez, San Miguel del Padrón. Una vez complete este paso, podrá comenzar a usar la app normalmente y se mostrarán las peticiones de viaje disponibles.'**
+  String get needsApprovalMessage;
+
+  /// No description provided for @weWaitForYou.
+  ///
+  /// In es, this message translates to:
+  /// **'¡Le esperamos!'**
+  String get weWaitForYou;
+
+  /// No description provided for @paymentSoon.
+  ///
+  /// In es, this message translates to:
+  /// **'Pago próximo'**
+  String get paymentSoon;
+
+  /// No description provided for @paymentPending.
+  ///
+  /// In es, this message translates to:
+  /// **'Pago pendiente'**
+  String get paymentPending;
+
+  /// No description provided for @inThreeDays.
+  ///
+  /// In es, this message translates to:
+  /// **'en 3 días'**
+  String get inThreeDays;
+
+  /// No description provided for @dayAfterTomorrow.
+  ///
+  /// In es, this message translates to:
+  /// **'pasado mañana'**
+  String get dayAfterTomorrow;
+
+  /// No description provided for @tomorrow.
+  ///
+  /// In es, this message translates to:
+  /// **'mañana'**
+  String get tomorrow;
+
+  /// No description provided for @paymentReminderSoon.
+  ///
+  /// In es, this message translates to:
+  /// **'Le recordamos que su próxima fecha de pago es {timeText}.'**
+  String paymentReminderSoon(Object timeText);
+
+  /// No description provided for @paymentReminderToday.
+  ///
+  /// In es, this message translates to:
+  /// **'La fecha de pago programada para hoy ha llegado. Tiene hasta 4 días para realizar el pago.'**
+  String get paymentReminderToday;
+
+  /// No description provided for @paymentExpired.
+  ///
+  /// In es, this message translates to:
+  /// **'La fecha límite para el pago previamente fijado para el día {date} ha expirado.'**
+  String paymentExpired(Object date);
+
+  /// No description provided for @paymentOverdue.
+  ///
+  /// In es, this message translates to:
+  /// **'La fecha de pago programada fue el {date}. Tiene {days} {daysText} para realizar el pago.'**
+  String paymentOverdue(Object date, Object days, Object daysText);
+
+  /// No description provided for @paymentLastDay.
+  ///
+  /// In es, this message translates to:
+  /// **'La fecha de pago programada fue el {date}. Hoy es su último día para realizar el pago.'**
+  String paymentLastDay(Object date);
+
+  /// No description provided for @day.
+  ///
+  /// In es, this message translates to:
+  /// **'día'**
+  String get day;
+
+  /// No description provided for @days.
+  ///
+  /// In es, this message translates to:
+  /// **'días'**
+  String get days;
+
+  /// No description provided for @paymentOfficeInfo.
+  ///
+  /// In es, this message translates to:
+  /// **' Por favor, diríjase a nuestra oficina en Calle 4ta / Central y mercado, reparto Martín Pérez, San Miguel del Padrón para realizarlo. Puede consultar el monto accediendo a su perfil en la app.'**
+  String get paymentOfficeInfo;
+
+  /// No description provided for @thanksForAttention.
+  ///
+  /// In es, this message translates to:
+  /// **'Gracias por su atención.'**
+  String get thanksForAttention;
+
+  /// No description provided for @distanceFixed.
+  ///
+  /// In es, this message translates to:
+  /// **'Distancia: {distance}km'**
+  String distanceFixed(Object distance);
+
+  /// No description provided for @distanceMinimum.
+  ///
+  /// In es, this message translates to:
+  /// **'Distancia Mínima: {distance}km'**
+  String distanceMinimum(Object distance);
+
+  /// No description provided for @distanceMaximum.
+  ///
+  /// In es, this message translates to:
+  /// **'Distancia Máxima: {distance}km'**
+  String distanceMaximum(Object distance);
+
+  /// No description provided for @priceFixedCost.
+  ///
+  /// In es, this message translates to:
+  /// **'Precio: {price} CUP'**
+  String priceFixedCost(Object price);
+
+  /// No description provided for @priceMinimumCost.
+  ///
+  /// In es, this message translates to:
+  /// **'Precio mínimo que puede costar: {price} CUP'**
+  String priceMinimumCost(Object price);
+
+  /// No description provided for @priceMaximumCost.
+  ///
+  /// In es, this message translates to:
+  /// **'Precio máximo que puede costar: {price} CUP'**
+  String priceMaximumCost(Object price);
+
+  /// No description provided for @driverStateNotConfirmed.
+  ///
+  /// In es, this message translates to:
+  /// **'No confirmado'**
+  String get driverStateNotConfirmed;
+
+  /// No description provided for @driverStateCanPay.
+  ///
+  /// In es, this message translates to:
+  /// **'Puede pagar'**
+  String get driverStateCanPay;
+
+  /// No description provided for @driverStatePaymentRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Pago requerido'**
+  String get driverStatePaymentRequired;
+
+  /// No description provided for @driverStateEnabled.
+  ///
+  /// In es, this message translates to:
+  /// **'Habilitado'**
+  String get driverStateEnabled;
+
+  /// No description provided for @driverStateDisabled.
+  ///
+  /// In es, this message translates to:
+  /// **'Deshabilitado'**
+  String get driverStateDisabled;
+
+  /// No description provided for @driverBlocked.
+  ///
+  /// In es, this message translates to:
+  /// **'Cuenta Bloqueada'**
+  String get driverBlocked;
+
+  /// No description provided for @driverBlockedMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Su cuenta de conductor ha sido bloqueada. Por favor, diríjase a nuestra oficina en Calle 4ta / Central y mercado, reparto Martín Pérez, San Miguel del Padrón'**
+  String get driverBlockedMessage;
+
+  /// No description provided for @filterByName.
+  ///
+  /// In es, this message translates to:
+  /// **'Filtrar por nombre'**
+  String get filterByName;
+
+  /// No description provided for @filterByPhone.
+  ///
+  /// In es, this message translates to:
+  /// **'Filtrar por teléfono'**
+  String get filterByPhone;
+
+  /// No description provided for @filterByState.
+  ///
+  /// In es, this message translates to:
+  /// **'Filtrar por estado'**
+  String get filterByState;
+
+  /// No description provided for @allStates.
+  ///
+  /// In es, this message translates to:
+  /// **'Todos los estados'**
+  String get allStates;
+
+  /// No description provided for @clearFilters.
+  ///
+  /// In es, this message translates to:
+  /// **'Limpiar filtros'**
+  String get clearFilters;
+
+  /// No description provided for @drivers.
+  ///
+  /// In es, this message translates to:
+  /// **'Conductores'**
+  String get drivers;
+
+  /// No description provided for @noDriversYet.
+  ///
+  /// In es, this message translates to:
+  /// **'Aún no hay conductores'**
+  String get noDriversYet;
+
+  /// No description provided for @noDriversFound.
+  ///
+  /// In es, this message translates to:
+  /// **'No se encontraron conductores con los filtros aplicados'**
+  String get noDriversFound;
+
+  /// No description provided for @confirmAccount.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirmar Cuenta'**
+  String get confirmAccount;
+
+  /// No description provided for @confirmPayment.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirmar Pago'**
+  String get confirmPayment;
+
+  /// No description provided for @actions.
+  ///
+  /// In es, this message translates to:
+  /// **'Acciones'**
+  String get actions;
+
+  /// No description provided for @recharge.
+  ///
+  /// In es, this message translates to:
+  /// **'Recargar'**
+  String get recharge;
+
+  /// No description provided for @rechargeAmount.
+  ///
+  /// In es, this message translates to:
+  /// **'Monto a recargar'**
+  String get rechargeAmount;
+
+  /// No description provided for @credit.
+  ///
+  /// In es, this message translates to:
+  /// **'Crédito'**
+  String get credit;
+
+  /// No description provided for @creditAmount.
+  ///
+  /// In es, this message translates to:
+  /// **'Crédito: {amount} CUP'**
+  String creditAmount(Object amount);
+
+  /// No description provided for @rechargeSuccess.
+  ///
+  /// In es, this message translates to:
+  /// **'Crédito recargado exitosamente'**
+  String get rechargeSuccess;
+
+  /// No description provided for @rechargeError.
+  ///
+  /// In es, this message translates to:
+  /// **'Error al recargar el crédito'**
+  String get rechargeError;
+
+  /// No description provided for @invalidAmount.
+  ///
+  /// In es, this message translates to:
+  /// **'Monto inválido'**
+  String get invalidAmount;
+
+  /// No description provided for @blockAccount.
+  ///
+  /// In es, this message translates to:
+  /// **'Bloquear cuenta'**
+  String get blockAccount;
+
+  /// No description provided for @enableAccount.
+  ///
+  /// In es, this message translates to:
+  /// **'Habilitar cuenta'**
+  String get enableAccount;
+
+  /// No description provided for @errorTryLater.
+  ///
+  /// In es, this message translates to:
+  /// **'Algo salió mal, por favor inténtelo más tarde'**
+  String get errorTryLater;
+
+  /// No description provided for @peopleCount.
+  ///
+  /// In es, this message translates to:
+  /// **'{count} personas'**
+  String peopleCount(Object count);
+
+  /// No description provided for @withPet.
+  ///
+  /// In es, this message translates to:
+  /// **'Con mascota'**
+  String get withPet;
+
+  /// No description provided for @withoutPet.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin mascota'**
+  String get withoutPet;
+
+  /// No description provided for @fromLocation.
+  ///
+  /// In es, this message translates to:
+  /// **'Desde: {location}'**
+  String fromLocation(Object location);
+
+  /// No description provided for @toLocation.
+  ///
+  /// In es, this message translates to:
+  /// **'Hasta: {location}'**
+  String toLocation(Object location);
+
+  /// No description provided for @acceptTrip.
+  ///
+  /// In es, this message translates to:
+  /// **'Aceptar Viaje'**
+  String get acceptTrip;
+
+  /// No description provided for @acceptTripConfirmMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Se le notificará al cliente que se ha aceptado su solicitud de viaje. Su ubicación se comenzará a compartir solo con él.'**
+  String get acceptTripConfirmMessage;
+
+  /// No description provided for @accept.
+  ///
+  /// In es, this message translates to:
+  /// **'Aceptar'**
+  String get accept;
+
+  /// No description provided for @locationPermissionRequired.
+  ///
+  /// In es, this message translates to:
+  /// **'Para comenzar a compartir su ubicación con el cliente se necesita su acceso explícito'**
+  String get locationPermissionRequired;
+
+  /// No description provided for @locationPermissionBlocked.
+  ///
+  /// In es, this message translates to:
+  /// **'Permiso de ubicación bloqueado. Habilitar nuevamente en ajustes'**
+  String get locationPermissionBlocked;
+
+  /// No description provided for @invalidCreditPercentage.
+  ///
+  /// In es, this message translates to:
+  /// **'El porcentaje debe estar entre 0 y 100'**
+  String get invalidCreditPercentage;
+
+  /// No description provided for @invalidPrice.
+  ///
+  /// In es, this message translates to:
+  /// **'El precio debe ser mayor a 0'**
+  String get invalidPrice;
+
+  /// No description provided for @passwordMinLength.
+  ///
+  /// In es, this message translates to:
+  /// **'La contraseña debe tener al menos 6 caracteres'**
+  String get passwordMinLength;
+
+  /// No description provided for @tripDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Descripción del viaje'**
+  String get tripDescription;
+
+  /// No description provided for @myDiscountCode.
+  ///
+  /// In es, this message translates to:
+  /// **'Mi código de descuento:'**
+  String get myDiscountCode;
+
+  /// No description provided for @inviteFriendDiscount.
+  ///
+  /// In es, this message translates to:
+  /// **'Invita a un amigo a usar la app y pídele que ingrese tu código al registrarse o desde Ajustes. Así recibirá un 10% de descuento en su próximo viaje.'**
+  String get inviteFriendDiscount;
+
+  /// No description provided for @copied.
+  ///
+  /// In es, this message translates to:
+  /// **'Copiado'**
+  String get copied;
+
+  /// No description provided for @accountVerification.
+  ///
+  /// In es, this message translates to:
+  /// **'Verificación de cuenta'**
+  String get accountVerification;
+
+  /// No description provided for @verificationCodeMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'Le hemos enviado un código de verificación a su número de teléfono por WhatsApp, por favor coloque el código a continuación.'**
+  String get verificationCodeMessage;
+
+  /// No description provided for @verificationCodeLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Código de verificación'**
+  String get verificationCodeLabel;
+
+  /// No description provided for @verificationCodeHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Ingrese el código'**
+  String get verificationCodeHint;
+
+  /// No description provided for @sendCode.
+  ///
+  /// In es, this message translates to:
+  /// **'Enviar'**
+  String get sendCode;
+
+  /// No description provided for @resendCode.
+  ///
+  /// In es, this message translates to:
+  /// **'Reenviar código'**
+  String get resendCode;
+
+  /// No description provided for @sendingCode.
+  ///
+  /// In es, this message translates to:
+  /// **'Enviando código...'**
+  String get sendingCode;
+
+  /// No description provided for @verifying.
+  ///
+  /// In es, this message translates to:
+  /// **'Verificando...'**
+  String get verifying;
+
+  /// No description provided for @sendCodeError.
+  ///
+  /// In es, this message translates to:
+  /// **'Error al enviar el código. Intente nuevamente.'**
+  String get sendCodeError;
+
+  /// No description provided for @verifyCodeError.
+  ///
+  /// In es, this message translates to:
+  /// **'Error al verificar el código. Intente nuevamente.'**
+  String get verifyCodeError;
+
+  /// No description provided for @invalidVerificationCode.
+  ///
+  /// In es, this message translates to:
+  /// **'Código de verificación inválido'**
+  String get invalidVerificationCode;
+
+  /// No description provided for @verificationCodeExpired.
+  ///
+  /// In es, this message translates to:
+  /// **'Código de verificación expirado'**
+  String get verificationCodeExpired;
+
+  /// No description provided for @tripRequestCancelled.
+  ///
+  /// In es, this message translates to:
+  /// **'Se ha cancelado la solicitud de este viaje'**
+  String get tripRequestCancelled;
+
+  /// No description provided for @operationSuccessful.
+  ///
+  /// In es, this message translates to:
+  /// **'Operación realizada con éxito'**
+  String get operationSuccessful;
+
+  /// No description provided for @errorChangingConfiguration.
+  ///
+  /// In es, this message translates to:
+  /// **'Error. No se pudo cambiar la configuración'**
+  String get errorChangingConfiguration;
+
+  /// No description provided for @errorChangingPassword.
+  ///
+  /// In es, this message translates to:
+  /// **'Error. No se pudo cambiar la contraseña'**
+  String get errorChangingPassword;
+
+  /// No description provided for @couldNotOpenPhoneDialer.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo abrir el marcador de teléfono'**
+  String get couldNotOpenPhoneDialer;
+
+  /// No description provided for @favoritesBottomItem.
+  ///
+  /// In es, this message translates to:
+  /// **'Favoritos'**
+  String get favoritesBottomItem;
+
+  /// No description provided for @myMarkers.
+  ///
+  /// In es, this message translates to:
+  /// **'Mis marcadores'**
+  String get myMarkers;
+
+  /// No description provided for @notAvailable.
+  ///
+  /// In es, this message translates to:
+  /// **'N/A'**
+  String get notAvailable;
+
+  /// No description provided for @currency.
+  ///
+  /// In es, this message translates to:
+  /// **'CUP'**
+  String get currency;
+
+  /// No description provided for @kilometers.
+  ///
+  /// In es, this message translates to:
+  /// **'km'**
+  String get kilometers;
+
+  /// No description provided for @minutes.
+  ///
+  /// In es, this message translates to:
+  /// **'min'**
+  String get minutes;
+
+  /// No description provided for @onboardingPage1Title.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Listo para Viajar?'**
+  String get onboardingPage1Title;
+
+  /// No description provided for @onboardingPage1Subtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Con solo seleccionar el municipio de destino'**
+  String get onboardingPage1Subtitle;
+
+  /// No description provided for @onboardingPage1Description.
+  ///
+  /// In es, this message translates to:
+  /// **'podrá viajar de forma rápida y segura'**
+  String get onboardingPage1Description;
+
+  /// No description provided for @onboardingPage2Title.
+  ///
+  /// In es, this message translates to:
+  /// **'Pero primero'**
+  String get onboardingPage2Title;
+
+  /// No description provided for @onboardingPage2Subtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Cómo supo de nosotros?'**
+  String get onboardingPage2Subtitle;
+
+  /// No description provided for @referralSourceFriend.
+  ///
+  /// In es, this message translates to:
+  /// **'Por un amigo'**
+  String get referralSourceFriend;
+
+  /// No description provided for @referralSourcePoster.
+  ///
+  /// In es, this message translates to:
+  /// **'Por un cartel'**
+  String get referralSourcePoster;
+
+  /// No description provided for @referralSourcePlayStore.
+  ///
+  /// In es, this message translates to:
+  /// **'Por PlayStore'**
+  String get referralSourcePlayStore;
+
+  /// No description provided for @onboardingPage3Title.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Tienes un código de referido?'**
+  String get onboardingPage3Title;
+
+  /// No description provided for @onboardingPage3Subtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Ayuda a tu amigo y gana beneficios'**
+  String get onboardingPage3Subtitle;
+
+  /// No description provided for @onboardingPage3Description.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduce un código de referido para que tu amigo obtenga un descuento en su próximo viaje. Si no dispones de uno, puedes continuar.'**
+  String get onboardingPage3Description;
+
+  /// No description provided for @onboardingPage3InputHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Introduzca su Código de referido'**
+  String get onboardingPage3InputHint;
+
+  /// No description provided for @onboardingPage4Title.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Cómo se calcula el precio del viaje?'**
+  String get onboardingPage4Title;
+
+  /// No description provided for @onboardingPage4Subtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Basado en la distancia y el destino'**
+  String get onboardingPage4Subtitle;
+
+  /// No description provided for @onboardingPage4Description.
+  ///
+  /// In es, this message translates to:
+  /// **'La aplicación irá calculando y mostrando el precio en tiempo real según la distancia que se va recorriendo. Así dependiendo del municipio al que te dirijas, se te mostrará al inicio un rango estimado de precio. Esto te permite hacer paradas y visitar múltiples destinos con mayor libertad.'**
+  String get onboardingPage4Description;
+
+  /// No description provided for @onboardingPage5Title.
+  ///
+  /// In es, this message translates to:
+  /// **'Puntos Quber'**
+  String get onboardingPage5Title;
+
+  /// No description provided for @onboardingPage5Subtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Viaja y gana descuentos'**
+  String get onboardingPage5Subtitle;
+
+  /// No description provided for @onboardingPage5Description.
+  ///
+  /// In es, this message translates to:
+  /// **'Cada vez que realizas un viaje o alguien introduce tu código de referido, acumulas Puntos Quber. Estos puntos te permiten obtener descuentos en futuros viajes. ¡Viaja más y ahorra más!'**
+  String get onboardingPage5Description;
+
+  /// No description provided for @tripAccepted.
+  ///
+  /// In es, this message translates to:
+  /// **'Viaje Aceptado'**
+  String get tripAccepted;
+
+  /// No description provided for @tripAcceptedDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Un conductor ha aceptado su solicitud. Ahora está en espera de su llegada. Podrá ver su ubicación en tiempo real en el mapa. Le pediremos confirmación cuando esté listo para recogerle.'**
+  String get tripAcceptedDescription;
+
+  /// No description provided for @seeDriverLocation.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver ubicación del conductor'**
+  String get seeDriverLocation;
+
+  /// No description provided for @noDriverLocation.
+  ///
+  /// In es, this message translates to:
+  /// **'Aún no hay ubicación del conductor'**
+  String get noDriverLocation;
+
+  /// No description provided for @pickupConfirmationInfo.
+  ///
+  /// In es, this message translates to:
+  /// **'Enviaremos una notificación al cliente. Una vez la acepte, comenzará el viaje.'**
+  String get pickupConfirmationInfo;
+
+  /// No description provided for @pickupConfirmationTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirmación de recogida'**
+  String get pickupConfirmationTitle;
+
+  /// No description provided for @pickupConfirmationMessage.
+  ///
+  /// In es, this message translates to:
+  /// **'El conductor ha indicado que su recogida se ha realizado. Confirme únicamente si ya se encuentra con el conductor; una vez confirmada, dará inicio el viaje.'**
+  String get pickupConfirmationMessage;
+
+  /// No description provided for @pickupConfirmationSentTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirmación enviada'**
+  String get pickupConfirmationSentTitle;
+
+  /// No description provided for @nameAboutDev.
+  ///
+  /// In es, this message translates to:
+  /// **'Irquen'**
+  String get nameAboutDev;
+
+  /// No description provided for @emailAboutDev.
+  ///
+  /// In es, this message translates to:
+  /// **'qnecesitas.desarrollo@gmail.com'**
+  String get emailAboutDev;
+
+  /// No description provided for @phoneAboutDev.
+  ///
+  /// In es, this message translates to:
+  /// **'+5355759386'**
+  String get phoneAboutDev;
+
+  /// No description provided for @websiteAboutDev.
+  ///
+  /// In es, this message translates to:
+  /// **'https://qnecesitas.nat.cu'**
+  String get websiteAboutDev;
+
+  /// No description provided for @nameAboutUs.
+  ///
+  /// In es, this message translates to:
+  /// **'Quber'**
+  String get nameAboutUs;
+
+  /// No description provided for @phoneAboutUs.
+  ///
+  /// In es, this message translates to:
+  /// **'+53 52417814'**
+  String get phoneAboutUs;
+
+  /// No description provided for @copiedToClipboard.
+  ///
+  /// In es, this message translates to:
+  /// **'Copiado al portapapeles'**
+  String get copiedToClipboard;
+
+  /// No description provided for @reviewSaveError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo guardar tu valoración'**
+  String get reviewSaveError;
+
+  /// No description provided for @reviewThankYou.
+  ///
+  /// In es, this message translates to:
+  /// **'Gracias por tu tiempo'**
+  String get reviewThankYou;
+
+  /// No description provided for @reviewsLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudieron cargar las reseñas'**
+  String get reviewsLoadError;
+
+  /// No description provided for @dateFormat.
+  ///
+  /// In es, this message translates to:
+  /// **'d \'de\' MMMM \'de\' y'**
+  String get dateFormat;
+
+  /// No description provided for @finalizarViaje.
+  ///
+  /// In es, this message translates to:
+  /// **'Finalizar viaje'**
+  String get finalizarViaje;
+
+  /// No description provided for @verMiUbicacion.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver mi ubicación'**
+  String get verMiUbicacion;
+
+  /// No description provided for @confirmacionFinalizacion.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirmación de finalización'**
+  String get confirmacionFinalizacion;
+
+  /// No description provided for @confirmacionFinalizacionMensaje.
+  ///
+  /// In es, this message translates to:
+  /// **'Se le notificará inmediatamente al conductor que desea terminar el viaje. Acepte solo si esto es correcto.'**
+  String get confirmacionFinalizacionMensaje;
+
+  /// No description provided for @destinationsLimited.
+  ///
+  /// In es, this message translates to:
+  /// **'Los destinos están limitados a {destinationName}'**
+  String destinationsLimited(Object destinationName);
+
+  /// No description provided for @placeNotFound.
+  ///
+  /// In es, this message translates to:
+  /// **'Lugar no encontrado'**
+  String get placeNotFound;
+
+  /// No description provided for @showMyLocation.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver mi ubicación'**
+  String get showMyLocation;
+
+  /// No description provided for @finishTrip.
+  ///
+  /// In es, this message translates to:
+  /// **'Finalizar viaje'**
+  String get finishTrip;
+
+  /// No description provided for @confirmacionLlegadaDestino.
+  ///
+  /// In es, this message translates to:
+  /// **'Confirmación de llegada al destino'**
+  String get confirmacionLlegadaDestino;
+
+  /// No description provided for @confirmacionLlegadaDestinoMensaje.
+  ///
+  /// In es, this message translates to:
+  /// **'El conductor ha notificado que se ha llegado al destino. Acepte solo si esto es correcto'**
+  String get confirmacionLlegadaDestinoMensaje;
+
+  /// No description provided for @guidedRoute.
+  ///
+  /// In es, this message translates to:
+  /// **'Ruta guiada'**
+  String get guidedRoute;
+
+  /// No description provided for @exactRoute.
+  ///
+  /// In es, this message translates to:
+  /// **'Ruta exacta'**
+  String get exactRoute;
+
+  /// No description provided for @emergencySOS.
+  ///
+  /// In es, this message translates to:
+  /// **'Emergencia (SOS)'**
+  String get emergencySOS;
+
+  /// No description provided for @fixedDestinationTrip.
+  ///
+  /// In es, this message translates to:
+  /// **'Este viaje tiene destino fijo'**
+  String get fixedDestinationTrip;
+
+  /// No description provided for @defaultName.
+  ///
+  /// In es, this message translates to:
+  /// **'Ubicación sin nombre'**
+  String get defaultName;
+
+  /// No description provided for @saveFavoritesTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar en favoritos'**
+  String get saveFavoritesTitle;
+
+  /// No description provided for @markerNameHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre del marcador'**
+  String get markerNameHint;
+
+  /// No description provided for @cancel.
+  ///
+  /// In es, this message translates to:
+  /// **'Cancelar'**
+  String get cancel;
+
+  /// No description provided for @addedToFavorites.
+  ///
+  /// In es, this message translates to:
+  /// **'Agregado a Favoritos'**
+  String get addedToFavorites;
+
+  /// No description provided for @originSelected.
+  ///
+  /// In es, this message translates to:
+  /// **'Origen seleccionado con éxito'**
+  String get originSelected;
+
+  /// No description provided for @destinationSelected.
+  ///
+  /// In es, this message translates to:
+  /// **'Destino seleccionado con éxito'**
+  String get destinationSelected;
+
+  /// No description provided for @noFavorites.
+  ///
+  /// In es, this message translates to:
+  /// **'No hay Favoritos guardados'**
+  String get noFavorites;
 }
 
 class _AppLocalizationsDelegate

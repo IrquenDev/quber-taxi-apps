@@ -1,12 +1,14 @@
 enum TravelState {
 
-  canceled,
-  waiting,
-  accepted,
-  inProgress,
-  completed;
+  canceled("CANCELED"),
+  waiting("WAITING"),
+  accepted("ACCEPTED"),
+  inProgress("IN_PROGRESS"),
+  completed("COMPLETED");
 
-  String get apiValue => name.toUpperCase();
+  const TravelState(this.apiValue);
+
+  final String apiValue;
 
   /// Resolves a [TravelState] from a given string value.
   static TravelState resolve(String value) {

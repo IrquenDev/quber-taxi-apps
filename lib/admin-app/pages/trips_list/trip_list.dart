@@ -6,19 +6,27 @@ import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/services/travel_service.dart';
 import 'package:quber_taxi/common/widgets/dashed_line.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
+import 'package:quber_taxi/theme/dimensions.dart';
 
-class TripsPage extends StatefulWidget {
+class CompletedTripsPage extends StatefulWidget {
 
-  const TripsPage({super.key});
+  const CompletedTripsPage({super.key});
 
   @override
-  State<TripsPage> createState() => _TripsPageState();
+  State<CompletedTripsPage> createState() => _CompletedTripsPageState();
 }
 
-class _TripsPageState extends State<TripsPage> {
+class _CompletedTripsPageState extends State<CompletedTripsPage> {
 
   final _travelService = TravelService();
   late Future<List<Travel>> _futureTravels;
+
+  int? _expandedTileIndex;
+
+  List<Travel> _allTravels = [];
+  int _currentPage = 0;
+  bool _hasMoreData = true;
+  bool _isLoadingMore = false;
 
   @override
   void initState() {
@@ -27,186 +35,340 @@ class _TripsPageState extends State<TripsPage> {
   }
 
   Future<void> _refreshTravels() async {
-    final newTravels = await _travelService.fetchAllCompletedTravels();
+    _currentPage = 0;
+    _hasMoreData = true;
+    final travelPage = await _travelService.fetchAllCompletedTravels(page: 0, size: 20);
+    final newTravels = travelPage.content;
+
     setState(() {
-      _futureTravels = Future.value(newTravels);
+      _allTravels = newTravels;
+      _hasMoreData = !travelPage.last;
     });
   }
 
-  void _loadTravels() => _futureTravels = _travelService.fetchAllCompletedTravels();
+  void _loadTravels() {
+    _currentPage = 0;
+    _futureTravels = _travelService.fetchAllCompletedTravels(page: 0, size: 20).then((travelPage) {
+      final travels = travelPage.content;
+
+      _allTravels = travels;
+      _hasMoreData = !travelPage.last;
+      return _allTravels;
+    });
+  }
+
+  Future<void> _loadMoreTravels() async {
+    if (_isLoadingMore || !_hasMoreData) return;
+
+    setState(() {
+      _isLoadingMore = true;
+    });
+
+    try {
+      _currentPage++;
+      final travelPage = await _travelService.fetchAllCompletedTravels(page: _currentPage, size: 20);
+      final newTravels = travelPage.content;
+
+      setState(() {
+        _allTravels.addAll(newTravels);
+        _hasMoreData = !travelPage.last;
+        _isLoadingMore = false;
+      });
+    } catch (e) {
+      setState(() {
+        _currentPage--;
+        _isLoadingMore = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final dimensions = Theme.of(context).extension<DimensionExtension>()!;
     return Scaffold(
-      body: Stack(
-        children: [
-          // Header container
-          Positioned(
-            top: 0, left: 0, right: 0,
-            child: Container(
-              width: double.infinity,
-              height: 200,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primaryContainer,
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(20),
-                  bottomRight: Radius.circular(20),
-                ),
-              ),
-              child: SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 30.0, bottom: 90),
-                  child: Row(
-                    spacing: 16.0,
-                    children: [
-                      IconButton(onPressed: () => context.pop(), icon: Icon(Icons.arrow_back), color: Theme.of(context).colorScheme.shadow),
-                      Text(
-                        AppLocalizations.of(context)!.tripsPageTitle,
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.shadow
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
+        body: Stack(
+            children: [
+              // Header container
+              Positioned(
+                  top: 0, left: 0, right: 0,
+                  child: Container(
+                      width: double.infinity,
+                      height: 240,
+                      decoration: BoxDecoration(
+                        color: Theme
+                            .of(context)
+                            .colorScheme
+                            .primaryContainer,
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(dimensions.borderRadius),
+                          bottomRight: Radius.circular(dimensions.borderRadius),
                         )
+                      ),
+                      child: SafeArea(
+                          child: Padding(
+                              padding: const EdgeInsets.only(left: 30.0, bottom: 90),
+                              child: Row(
+                                  spacing: 16.0,
+                                  children: [
+                                    IconButton(
+                                        onPressed: () => context.pop(), icon: Icon(Icons.arrow_back), color: Theme
+                                        .of(context)
+                                        .colorScheme
+                                        .shadow),
+                                    Text(
+                                        AppLocalizations.of(context)!.tripsPageTitle,
+                                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            color: Theme
+                                                .of(context)
+                                                .colorScheme
+                                                .shadow
+                                        )
+                                    )
+                                  ]
+                              )
+                          )
                       )
-                    ]
                   )
-                )
-              )
-            )
-          ),
-          // Trip cards starting from the header
-          Positioned(
-            top: 120,
-            left: 16,
-            right: 16,
-            bottom: 0,
-            child: Center(
-              child: ClipRRect(
-                borderRadius: BorderRadiusGeometry.circular(20.0),
-                child: FutureBuilder(
-                    future: _futureTravels,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                      else if(snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
-                        return Center(child: Text(AppLocalizations.of(context)!.noTravel));
-                      }
-                      else {
-                        final travels = snapshot.data!;
-                        final mockedTravels = List.generate(8, (_) => travels[0]);
-                        return RefreshIndicator(
-                          onRefresh: _refreshTravels,
-                          child: SingleChildScrollView(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            child: ExpansionPanelList.radio(
-                              elevation: 0,
-                              expandedHeaderPadding: EdgeInsets.zero,
-                              children: List.generate(mockedTravels.length, (index) {
-                                final travel = mockedTravels[index];
-                                return _buildTripCardItem(index, travel);
-                              }),
-                            ),
-                          ),
-                        );
-                      }
-                    }
-                ),
               ),
-            )
-          )
-        ]
-      )
+              // Trip cards
+              Positioned(
+                  top: 140, left: 20.0, right: 20.0, bottom: 0.0,
+                  child: ClipRRect(
+                      borderRadius: BorderRadiusGeometry.circular(dimensions.borderRadius),
+                      child: FutureBuilder(
+                          future: _futureTravels,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return const Center(child: CircularProgressIndicator());
+                            }
+                            else if (snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
+                              return Center(child: Text(AppLocalizations.of(context)!.noTravel));
+                            }
+                            else {
+                              return _buildTravelsList();
+                            }
+                          })
+                  )
+              )
+            ]
+        )
     );
   }
 
-  ExpansionPanelRadio _buildTripCardItem(int index, Travel travel) {
+  Widget _buildTravelsList() {
+    return RefreshIndicator(
+      onRefresh: _refreshTravels,
+      child: NotificationListener<ScrollNotification>(
+        onNotification: (scrollInfo) {
+          if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+            _loadMoreTravels();
+          }
+          return false;
+        },
+        child: ListView.builder(
+          padding: EdgeInsets.zero,
+          physics: const AlwaysScrollableScrollPhysics(),
+          itemCount: _allTravels.length + (_isLoadingMore ? 1 : 0),
+          itemBuilder: (context, index) {
+            if (index >= _allTravels.length) {
+              return const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Center(child: CircularProgressIndicator()),
+              );
+            }
+            final travel = _allTravels[index];
+            return _buildTripCard(index, travel);
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTripCard(int index, Travel travel) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final dimensions = Theme.of(context).extension<DimensionExtension>()!;
+    final textTheme = Theme.of(context).textTheme;
+    final localizations = AppLocalizations.of(context)!;
     final client = travel.client;
-    final driver = travel.driver!;
-    return ExpansionPanelRadio(
-      value: index,
-      headerBuilder: (context, isExpanded) {
-        return ListTile(
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 12.0,
-            children: [
-              Row(
-                spacing: 4.0,
+    final driver = travel.driver;
+    final isExpanded = _expandedTileIndex == index;
+
+    // Item Container
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 4.0),
+        decoration: BoxDecoration(
+          color: colorScheme.surface,
+          borderRadius: BorderRadius.circular(dimensions.borderRadius),
+          border: Border.all(color: colorScheme.outlineVariant),
+        ),
+        // Adjust ExpansionTile Theme
+        child: Theme(
+            data: Theme.of(context).copyWith(
+                expansionTileTheme: ExpansionTileThemeData(
+                    tilePadding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+                    childrenPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                    iconColor: Theme.of(context).iconTheme.color,
+                    collapsedIconColor: Theme.of(context).iconTheme.color,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(dimensions.borderRadius)),
+                    backgroundColor: Colors.transparent,
+                    collapsedBackgroundColor: Colors.transparent
+                )
+            ),
+            child: ExpansionTile(
+                key: ValueKey<bool>(_expandedTileIndex == index),
+                initiallyExpanded: isExpanded,
+                onExpansionChanged: (bool expanded) {
+                  setState(() {
+                    _expandedTileIndex = expanded ? index : null;
+                  });
+                },
+                title: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 4.0,
+                    children: [
+                      Row(
+                          children: [
+                            Icon(Icons.calendar_month_outlined, size: 20, color: colorScheme.outline),
+                            const SizedBox(width: 4),
+                            Text(
+                                travel.endDate != null 
+                                  ? DateFormat("yyyy-MM-dd hh:mm").format(travel.endDate!)
+                                  : localizations.notAvailable,
+                                style: textTheme.bodyLarge?.copyWith(color: colorScheme.outline, fontWeight: FontWeight.bold)
+                            ),
+                            const Spacer(),
+                            Icon(Icons.route_sharp, size: 20, color: colorScheme.outline),
+                            Text(
+                              travel.finalDistance != null 
+                                ? '${travel.finalDistance} ${localizations.kilometers}'
+                                : localizations.notAvailable,
+                              style: textTheme.bodyLarge?.copyWith(color: colorScheme.outline),
+                            )
+                          ]
+                      ),
+                      Row(
+                          children: [
+                            Icon(Icons.monetization_on_outlined, size: 20),
+                            const SizedBox(width: 4),
+                            Text(
+                              localizations.tripPrice,
+                              style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              travel.finalPrice != null 
+                                ? '${travel.finalPrice} ${localizations.currency}'
+                                : localizations.notAvailable,
+                              style: textTheme.bodyLarge
+                            )
+                          ]
+                      ),
+                      Row(
+                        children: [
+                          Icon(Icons.access_time, size: 20),
+                          const SizedBox(width: 4),
+                          Text(
+                              localizations.tripDuration, style: textTheme.bodyLarge?.copyWith(
+                              fontWeight: FontWeight.bold)
+                          ),
+                          Text(
+                            travel.finalDuration != null 
+                              ? '${travel.finalDuration} ${localizations.minutes}'
+                              : localizations.notAvailable,
+                            style: textTheme.bodyLarge
+                          )
+                        ]
+                      )
+                    ]
+                ),
                 children: [
-                  Icon(Icons.calendar_today_outlined, size: 16),
-                  Text(DateFormat("yyyy-MM-dd hh:mm").format(travel.endDate!)),
-                  const Spacer(),
-                  Icon(Icons.route_sharp, size: 16),
-                  Text('${travel.finalDistance!} km'),
-                ],
-              ),
-              Row(
-                spacing: 8.0,
-                children: [
-                  Icon(Icons.monetization_on_outlined, size: 16),
-                  Text('${AppLocalizations.of(context)!.tripPrice} ${travel.finalPrice} CUP'),
-                ],
-              ),
-              Row(
-                spacing: 8.0,
-                children: [
-                  Icon(Icons.access_time, size: 16),
-                  Text('${AppLocalizations.of(context)!.tripDuration} ${travel.finalDuration} min'),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 8.0,
+                    children: [
+                      // Dashed Divider
+                      DashedLine(height: 1, color: colorScheme.surfaceDim),
+                      // Client Info
+                      Column(
+                        spacing: 0.0,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                              localizations.clientSectionTitle,
+                              style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)
+                          ),
+                          _infoRow(localizations.clientName, client.name),
+                          _infoRow(localizations.clientPhone, client.phone),
+                        ],
+                      ),
+                      // Dashed Divider
+                      DashedLine(height: 1, color: colorScheme.surfaceDim),
+                      // Driver Info
+                      if (driver != null) ...[
+                        Column(
+                          spacing: 0.0,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                                localizations.driverSectionTitle,
+                                style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)
+                            ),
+                            _infoRow(localizations.driverName, driver.name),
+                            _infoRow(localizations.driverPhone, driver.phone),
+                            _infoRow(localizations.driverPlate, driver.taxi.plate),
+                          ],
+                        )
+                      ] else ...[
+                        Column(
+                          spacing: 0.0,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                                localizations.driverSectionTitle,
+                                style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)
+                            ),
+                            _infoRow(localizations.driverName, localizations.notAvailable),
+                            _infoRow(localizations.driverPhone, localizations.notAvailable),
+                            _infoRow(localizations.driverPlate, localizations.notAvailable),
+                          ],
+                        )
+                      ]
+                    ]
+                  )
                 ]
-              )
-            ]
-          )
-        );
-      },
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 8.0,
-          children: [
-            DashedLine(height: 1, color: Theme.of(context).colorScheme.surfaceDim),
-            Text(
-              AppLocalizations.of(context)!.clientSectionTitle,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            _infoRow(AppLocalizations.of(context)!.clientName, client.name),
-            _infoRow(AppLocalizations.of(context)!.clientPhone, client.phone),
-            DashedLine(height: 1, color: Theme.of(context).colorScheme.surfaceDim),
-            Text(
-              AppLocalizations.of(context)!.driverSectionTitle,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            _infoRow(AppLocalizations.of(context)!.driverName, driver.name),
-            _infoRow(AppLocalizations.of(context)!.driverPhone, driver.phone),
-            _infoRow(AppLocalizations.of(context)!.driverPlate, driver.taxi.plate),
-          ]
+            )
         )
-      )
     );
   }
 
   Widget _infoRow(String label, String? value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
+      padding: const EdgeInsets.only(left: 12.0),
       child: Row(
-        children: [
-          const SizedBox(width: 16),
-          SvgPicture.asset(
-            "assets/icons/list_icon.svg",
-            colorFilter: ColorFilter.mode(
-              Theme.of(context).colorScheme.onSecondaryContainer,
-              BlendMode.srcIn,
+          spacing: 4.0,
+          children: [
+            SvgPicture.asset(
+              "assets/icons/list_icon.svg",
+              colorFilter: ColorFilter.mode(
+                Theme.of(context).colorScheme.onSecondaryContainer,
+                BlendMode.srcIn,
+              ),
+              fit: BoxFit.contain,
             ),
-            fit: BoxFit.contain,
-          ),
-          const SizedBox(width: 4),
-          Text('$label: ', style: Theme.of(context).textTheme.bodyLarge,),
-          Expanded(
-            child: Text(value ?? '', overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodyLarge)
-          )
-        ]
-      )
+            Text('$label ', style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500)),
+            Expanded(
+                child: Text(
+                    value ?? '',
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodyLarge
+                )
+            )
+          ]
+      ),
     );
   }
 }

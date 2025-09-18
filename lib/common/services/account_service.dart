@@ -7,6 +7,7 @@ import 'package:mime/mime.dart';
 import 'package:quber_taxi/common/models/driver.dart';
 import 'package:quber_taxi/config/api_config.dart';
 import 'package:quber_taxi/enums/taxi_type.dart';
+import 'package:quber_taxi/storage/onboarding_prefs_manager.dart';
 import 'package:quber_taxi/utils/image/image_utils.dart';
 
 /// A service class that manages account-related operations such as
@@ -42,6 +43,18 @@ class AccountService {
     );
     if (profileImage != null) {
       request.files.add(await _getMultipartFileFromXFile(profileImage, "profileImage"));
+    }
+    // Check if any information was saved during onboarding.
+    final onboardingData = OnboardingPrefsManager.instance.getOnboardingData();
+    if(onboardingData != null) {
+      final referralCode = onboardingData["referralCode"];
+      if(referralCode != null && referralCode.isNotEmpty) {
+        request.fields['referralCode'] = referralCode;
+      }
+      final referralSource = onboardingData["referralSource"];
+      if(referralSource != null) {
+        request.fields['referralSource'] = referralSource;
+      }
     }
     final streamedResponse = await request.send();
     return await http.Response.fromStream(streamedResponse);
@@ -90,6 +103,14 @@ class AccountService {
     return await http.get(url);
   }
 
+  /// Fetches a [Client] object by its [id] from the backend.
+  ///
+  /// Performs a GET request and parses the response as JSON.
+  Future<http.Response> findClient(int id) async {
+    final url = Uri.parse("$_endpoint/client/$id");
+    return await http.get(url);
+  }
+
   Future<List<Driver>> findAllDrivers() async {
     final url = Uri.parse('$_endpoint/driver/all');
     final response = await http.get(url);
@@ -125,6 +146,39 @@ class AccountService {
     final url = Uri.parse("$_endpoint/client/$clientId?password=$password");
     return await http.patch(url);
   }
+
+  Future<http.Response> updateDriver(
+      int driverId,
+      String name,
+      String phone,
+      int seats,
+      String plate,
+      XFile? taxiImage,
+      bool shouldUpdateImage
+      ) async {
+    final url = Uri.parse("$_endpoint/update/driver/$driverId");
+    final request = http.MultipartRequest("POST", url);
+    request.fields['name'] = name;
+    request.fields['phone'] = phone;
+    request.fields['seats'] = seats.toString();
+    request.fields['plate'] = plate;
+    request.fields['shouldUpdateImage'] = shouldUpdateImage.toString();
+
+    if (shouldUpdateImage) {
+      if (taxiImage != null) {
+        request.files.add(await _getMultipartFileFromXFile(taxiImage, "taxiImage"));
+      }
+    }
+    final streamedResponse = await request.send();
+    return await http.Response.fromStream(streamedResponse);
+  }
+
+  Future<http.Response> updateDriverPassword(int driverId, String password)
+  async {
+    final url = Uri.parse("$_endpoint/driver/$driverId?password=$password");
+    return await http.patch(url);
+  }
+
 
   /// Converts a [Uint8List] (e.g. raw image bytes) into a [http.MultipartFile].
   ///

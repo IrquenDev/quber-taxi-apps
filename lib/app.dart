@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:network_checker/network_checker.dart';
+import 'package:device_preview/device_preview.dart';
 import 'package:quber_taxi/theme/theme.dart';
 import 'config/api_config.dart';
 import 'l10n/app_localizations.dart';
@@ -20,17 +21,18 @@ class App extends StatelessWidget {
       supportedLocales: AppLocalizations.supportedLocales,
       debugShowCheckedModeBanner: false,
       theme: theme.light(),
-      darkTheme: theme.dark(),
       routerConfig: appRouter,
-      builder: (context, child) =>
-          NetworkChecker(
-            config: ConnectionConfig(
-              pingUrl: '${ApiConfig().baseUrl}/network-checker',
-              timeLimit: const Duration(seconds: 3),
-            ),
-            alertBuilder: null,
-            child: child!,
+      builder: (context, child) => DevicePreview.appBuilder(
+        context,
+        NetworkChecker(
+          config: ConnectionConfig(
+            pingUrl: '${ApiConfig().baseUrl}/network-checker',
+            timeLimit: const Duration(seconds: 3),
           ),
+          alertBuilder: null,
+          child: child!,
+        ),
+      ),
     );
   }
 }

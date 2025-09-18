@@ -7,7 +7,6 @@ import 'package:stomp_dart_client/stomp_dart_client.dart';
 /// and send messages. All topic subscriptions are tracked internally to allow
 /// clean teardown and reconnection logic.
 class WebSocketService {
-
   /// Singleton instance
   static final WebSocketService instance = WebSocketService._internal();
 
@@ -16,7 +15,7 @@ class WebSocketService {
 
   late StompClient _client;
   final Map<String, StompUnsubscribe> _subscriptions = {};
-  final Map<String, void Function(String)> _pendingSubscriptions = {};
+  final Map<String, void Function(String)> _handlers = {};
   bool _isConnected = false;
 
   /// Returns whether the WebSocket client is connected.
@@ -44,12 +43,8 @@ class WebSocketService {
           _isConnected = false;
           print('Disconnected from WebSocket.');
         },
-        stompConnectHeaders: authToken != null
-            ? {'Authorization': 'Bearer $authToken'}
-            : {},
-        webSocketConnectHeaders: authToken != null
-            ? {'Authorization': 'Bearer $authToken'}
-            : {},
+        stompConnectHeaders: authToken != null ? {'Authorization': 'Bearer $authToken'} : {},
+        webSocketConnectHeaders: authToken != null ? {'Authorization': 'Bearer $authToken'} : {},
         onWebSocketDone: () {
           // Fires when socket is closed (gracefully or by error)
           _isConnected = false;
@@ -71,7 +66,7 @@ class WebSocketService {
     if (_isConnected) {
       _client.deactivate();
       _subscriptions.clear();
-      _pendingSubscriptions.clear();
+      _handlers.clear();
       _isConnected = false;
     }
   }
@@ -80,17 +75,21 @@ class WebSocketService {
   ///
   /// If already subscribed to the topic, it will be replaced.
   void subscribe(String topic, void Function(String message) onMessage) {
-    if (!_isConnected) {
-      print('Attempted to subscribe while WebSocket is not connected.');
-      _pendingSubscriptions[topic] = onMessage;
-      return;
+    // Always save a handler reference.
+    _handlers[topic] = onMessage;
+    // If already connected, then subscribe immediately.
+    if (_isConnected) {
+      _subscribe(topic, onMessage);
     }
+  }
 
+  // Subscribe operation. Assumes _isConnected is true.
+  void _subscribe(String topic, void Function(String message) onMessage) {
     // If already subscribed, unsubscribe first
     if (_subscriptions.containsKey(topic)) {
       _subscriptions[topic]!();
     }
-
+    // Subscribes topic
     final sub = _client.subscribe(
       destination: topic,
       callback: (frame) {
@@ -100,6 +99,9 @@ class WebSocketService {
       },
     );
     _subscriptions[topic] = sub;
+    // Trigger sync for this topic right after subscribing. This ensures that each topic always asks: "Hey API, did I
+    // miss any messages ?".
+    send('/app/ws-sync-pending', topic);
   }
 
   /// Unsubscribes from a specific topic.
@@ -107,6 +109,7 @@ class WebSocketService {
     if (_subscriptions.containsKey(topic)) {
       _subscriptions[topic]!(); // Call the unsubscribe function
       _subscriptions.remove(topic);
+      _handlers.remove(topic);
     }
   }
 
@@ -118,20 +121,17 @@ class WebSocketService {
       print('Attempted to send while WebSocket is not connected.');
       return;
     }
-    final encoded = jsonEncode(body);
+    final encoded = body is String ? body : jsonEncode(body);
     _client.send(destination: destination, body: encoded);
   }
 
   /// Callback for when the STOMP client successfully connects.
   void _onConnect(StompFrame frame) {
     _isConnected = true;
-    _handlePendingSubscriptions();
+    // Re-subscribe all handlers
+    _handlers.forEach((topic, onMessage) {
+      _subscribe(topic, onMessage);
+    });
     print('WebSocket connected.');
-    // Optionally re-subscribe to previous topics here (if needed in future)
-  }
-
-  void _handlePendingSubscriptions() {
-    _pendingSubscriptions.forEach((topic,onMessage) => subscribe(topic, onMessage));
-    _pendingSubscriptions.clear();
   }
 }

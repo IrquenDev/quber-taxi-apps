@@ -4,13 +4,13 @@ import 'package:quber_taxi/common/models/admin.dart';
 import 'package:quber_taxi/common/models/client.dart';
 import 'package:quber_taxi/common/models/driver.dart';
 import 'package:quber_taxi/config/api_config.dart';
-import 'package:quber_taxi/storage/session_manger.dart';
+import 'package:quber_taxi/storage/session_prefs_manger.dart';
 import 'package:quber_taxi/utils/runtime.dart' as runtime;
 
 /// A service responsible for handling user authentication for clients, drivers, and admins.
 ///
 /// Performs login operations using HTTP requests and persists user sessions
-/// via the [SessionManager] after successful authentication.
+/// via the [SessionPrefsManager] after successful authentication.
 ///
 /// Each login method returns the full HTTP response, allowing
 /// the caller to handle status codes or errors.
@@ -39,14 +39,14 @@ class AuthService {
   /// Attempts to log in a client using [phone] and [password].
   ///
   /// On success (HTTP 200), parses the response into a [Client]
-  /// and saves the session via [SessionManager].
+  /// and saves the session via [SessionPrefsManager].
   Future<http.Response> loginClient(String phone, String password) async {
     final url = Uri.parse("$_endpoint/login/client?phone=$phone&password=$password");
     final response = await http.post(url);
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
       final client = Client.fromJson(json);
-      SessionManager.instance.save(client);
+      await SessionPrefsManager.instance.save(client);
     }
     return response;
   }
@@ -54,14 +54,14 @@ class AuthService {
   /// Attempts to log in a driver using [phone] and [password].
   ///
   /// On success (HTTP 200), parses the response into a [Driver]
-  /// and saves the session via [SessionManager].
+  /// and saves the session via [SessionPrefsManager].
   Future<http.Response> loginDriver(String phone, String password) async {
     final url = Uri.parse("$_endpoint/login/driver?phone=$phone&password=$password");
     final response = await http.post(url);
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
       final driver = Driver.fromJson(json);
-      SessionManager.instance.save(driver);
+      await SessionPrefsManager.instance.save(driver);
     }
     return response;
   }
@@ -69,14 +69,14 @@ class AuthService {
   /// Attempts to log in an admin using [phone] and [password].
   ///
   /// On success (HTTP 200), parses the response into an [Admin]
-  /// and saves the session via [SessionManager].
+  /// and saves the session via [SessionPrefsManager].
   Future<http.Response> loginAdmin(String phone, String password) async {
     final url = Uri.parse("$_endpoint/login/admin?phone=$phone&password=$password");
     final response = await http.post(url);
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
       final admin = Admin.fromJson(json);
-      SessionManager.instance.save(admin);
+      SessionPrefsManager.instance.save(admin);
     }
     return response;
   }
@@ -110,5 +110,36 @@ class AuthService {
     return response;
   }
 
+  /// Requests a phone verification code to be sent via SMS.
+  ///
+  /// Returns the HTTP response. Success is indicated by HTTP 200.
+  Future<http.Response> requestPhoneVerificationCode(String phone) async {
+    final url = Uri.parse("$_endpoint/phone-verification/request?phone=$phone");
+    final response = await http.post(url);
+    return response;
+  }
+
+  /// Verifies a phone number using the provided verification code.
+  ///
+  /// Returns the HTTP response. Success is indicated by HTTP 200.
+  /// Possible responses:
+  /// - 200: Phone number verified successfully
+  /// - 400: Invalid verification code or code expired
+  /// - 500: Internal server error
+  Future<http.Response> verifyPhoneNumber(String phone, String code) async {
+    final url = Uri.parse("$_endpoint/phone-verification/verify");
+    final body = jsonEncode({
+      "phone": phone,
+      "code": code,
+    });
+    final response = await http.post(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: body,
+    );
+    return response;
+  }
 
 }

@@ -10,12 +10,15 @@ import 'package:quber_taxi/common/services/account_service.dart';
 import 'package:quber_taxi/config/api_config.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/common_routes.dart';
-import 'package:quber_taxi/storage/session_manger.dart';
+import 'package:quber_taxi/storage/session_prefs_manger.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
+import 'package:quber_taxi/utils/app_version_utils.dart';
 import 'package:quber_taxi/utils/image/image_utils.dart';
 import 'package:quber_taxi/utils/runtime.dart';
 import 'package:quber_taxi/utils/workflow/core/workflow.dart';
 import 'package:quber_taxi/utils/workflow/impl/form_validations.dart';
+import 'package:quber_taxi/common/widgets/cached_profile_image.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class ClientSettingsPage extends StatefulWidget {
   const ClientSettingsPage({super.key});
@@ -25,340 +28,648 @@ class ClientSettingsPage extends StatefulWidget {
 }
 
 class _ClientSettingsPageState extends State<ClientSettingsPage> {
-
-  bool passwordVisible = false;
-  bool confirmPasswordVisible = false;
-
+  final _personalInfoFormKey = GlobalKey<FormState>();
+  final _passwordFormKey = GlobalKey<FormState>();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   final _accountService = AccountService();
   final _client = Client.fromJson(loggedInUser);
-
-  final _formKey = GlobalKey<FormState>();
-  final _passFormKey = GlobalKey<FormState>();
   late TextEditingController _nameTFController;
   late TextEditingController _phoneTFController;
-  final  _passwordTFController = TextEditingController();
-  final _confirmPasswordTFController = TextEditingController();
+  bool passwordVisible = false;
+  bool confirmPasswordVisible = false;
+  String _appVersion = '';
 
   XFile? _profileImage;
-  bool get _shouldUpdateImage => _profileImage != null || (_profileImage == null && _client.profileImageUrl != null);
+  String? _initialProfileImageUrl;
+
+  bool get _shouldUpdateImage =>
+      _profileImage != null ||
+      (_profileImage == null && _initialProfileImageUrl == null && _client.profileImageUrl != null);
   bool _isProcessingImage = false;
+  bool _isSubmittingPersonalInfo = false;
+  bool _isSubmittingPasswords = false;
+
+  final ScrollController _scrollController = ScrollController();
+  final GlobalKey _imageKey = GlobalKey();
+  final GlobalKey _personalInfoKey = GlobalKey();
+  final GlobalKey _passwordKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
     _nameTFController = TextEditingController(text: _client.name);
     _phoneTFController = TextEditingController(text: _client.phone);
+    _initialProfileImageUrl = _client.profileImageUrl;
+    _loadAppVersion();
+  }
+
+  Future<void> _loadAppVersion() async {
+    final version = await AppVersionUtils.getCurrentVersion();
+    if (mounted) {
+      setState(() {
+        _appVersion = 'v$version';
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _validateAndSavePersonalInfo() {
+    setState(() {});
+    if (_personalInfoFormKey.currentState!.validate()) {
+      _savePersonalInfo();
+    }
+  }
+
+  void _validateAndSavePasswords() {
+    setState(() {});
+    if (_passwordFormKey.currentState!.validate()) {
+      _savePasswords();
+    }
+  }
+
+  Future<void> _savePersonalInfo() async {
+    final localization = AppLocalizations.of(context)!;
+    if (!hasConnection(context)) {
+      showToast(context: context, message: localization.checkConnection);
+      return;
+    }
+    setState(() {
+      _isSubmittingPersonalInfo = true;
+    });
+    try {
+      final shouldUpdateImage = _shouldUpdateImage;
+      final response = await _accountService.updateClient(
+        _client.id,
+        _nameTFController.text,
+        _phoneTFController.text,
+        _profileImage,
+        shouldUpdateImage,
+      );
+      if (!context.mounted) return;
+      if (response.statusCode == 200) {
+        final client = Client.fromJson(jsonDecode(response.body));
+        await SessionPrefsManager.instance.save(client);
+        setState(() {
+          _profileImage = null;
+          _initialProfileImageUrl = client.profileImageUrl;
+        });
+        showToast(context: context, message: localization.profileUpdatedSuccessfully);
+      } else if (response.statusCode == 409) {
+        showToast(context: context, message: localization.phoneAlreadyRegistered);
+      } else {
+        showToast(context: context, message: localization.somethingWentWrong);
+      }
+    } catch (e) {
+      if (context.mounted) {
+        showToast(context: context, message: localization.somethingWentWrong);
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSubmittingPersonalInfo = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _savePasswords() async {
+    final localization = AppLocalizations.of(context)!;
+    if (!hasConnection(context)) {
+      showToast(context: context, message: localization.checkConnection);
+      return;
+    }
+    setState(() {
+      _isSubmittingPasswords = true;
+    });
+    try {
+      final response = await _accountService.updateClientPassword(
+        _client.id,
+        _passwordController.text,
+      );
+      if (!context.mounted) return;
+      if (response.statusCode == 200) {
+        setState(() {
+          _passwordController.clear();
+          _confirmPasswordController.clear();
+        });
+        showToast(context: context, message: localization.updatePasswordSuccess);
+      } else {
+        showToast(context: context, message: localization.somethingWentWrong);
+      }
+    } catch (e) {
+      if (context.mounted) {
+        showToast(context: context, message: localization.somethingWentWrong);
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSubmittingPasswords = false;
+        });
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final radius = Theme.of(context).extension<DimensionExtension>()!.borderRadius;
+    final textTheme = Theme.of(context).textTheme;
+    final dimensions = Theme.of(context).extension<DimensionExtension>()!;
+    final localization = AppLocalizations.of(context)!;
     return Scaffold(
-      backgroundColor: colorScheme.surfaceContainer,
       body: Stack(
         children: [
-          // Yellow App Bar as Header
+          // Curved Yellow Header
           Positioned(
-            top: 0, right: 0.0, left: 0.0,
-            child: Container(
-              height: 200,
-              decoration: BoxDecoration(
-                color: colorScheme.primaryContainer,
-                borderRadius: BorderRadius.vertical(bottom: Radius.circular(radius)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 6,
-                    offset: Offset(0, 2),
-                  )
-                ]
+              top: 0.0,
+              left: 0,
+              right: 0,
+              child: Container(
+                  height: 240.0,
+                  decoration: BoxDecoration(
+                      color: colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(dimensions.borderRadius),
+                        bottomRight: Radius.circular(dimensions.borderRadius),
+                      )),
+                  child: SafeArea(
+                      child: Align(
+                          alignment: Alignment.topCenter,
+                          child: Padding(
+                              padding: EdgeInsets.only(top: 30),
+                              child: Text(localization.myAccount,
+                                  style: textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ))))))),
+          // Content
+          Positioned(
+            right: 20.0,
+            left: 20.0,
+            bottom: 0.0,
+            top: 120,
+            child: ClipRRect(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(dimensions.borderRadius),
+                topRight: Radius.circular(dimensions.borderRadius),
               ),
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: Row(
-                      children: [
-                        IconButton(
-                          icon: Icon(Icons.arrow_back), onPressed: () => context.pop(),
-                        ),
-                        const SizedBox(width: 8),
-                        Text('Ajustes',
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: colorScheme.secondary,
-                            )
-                        )
-                      ]
-                    )
-                  )
-                )
-              )
-            )
-          ),
-          // Scrollable Content
-          Positioned(
-            top: 100.0, left: 20.0, right: 20.0, bottom: 0.0,
-            child: SingleChildScrollView(
-              child: Column(
-                spacing: 16.0,
-                children: [
-                  //  Edit Profile Info Card
-                  Container(
-                    padding: const EdgeInsets.all(20.0),
-                    decoration: BoxDecoration(
-                      color: colorScheme.surfaceContainerLowest,
-                      borderRadius: BorderRadius.circular(radius),
-                    ),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        spacing: 8.0,
-                        children: [
-                          // Circle Image
-                          _buildCircleImage(),
-                          _buildTextField('Nombre:', 'Introduzca su nombre', _nameTFController),
-                          _buildTextField('Num. teléfono:', 'Introduzca su numero de teléfono', _phoneTFController),
-                          Align(
-                              alignment: Alignment.centerLeft,
-                              child: OutlinedButton(
-                                  onPressed: () async {
-                                    FocusScope.of(context).unfocus();
-                                    if(hasConnection(context)) {
-                                      if (_formKey.currentState!.validate()) {
-                                        final response = await _accountService.updateClient(
-                                            _client.id,
-                                            _nameTFController.text,
-                                            _phoneTFController.text,
-                                            _profileImage,
-                                            _shouldUpdateImage
-                                        );
-                                        if(!context.mounted) return;
-                                        if(response.statusCode == 200) {
-                                          final client = Client.fromJson(jsonDecode(response.body));
-                                          // Update session's data
-                                          SessionManager.instance.save(client);
-                                          _profileImage = null;
-                                          showToast(context: context, message: "Hecho");
-                                        }
-                                        else if(response.statusCode == 409) {
-                                          showToast(
-                                              context: context,
-                                              message: "El número de teléfono ya se encuentra registrado"
-                                          );
-                                        }
-                                        else {
-                                          showToast(
-                                              context: context,
-                                              message: "Algo salió mal, por favor inténtelo más tarde"
-                                          );
-                                        }
-                                      }
-                                    } else {
-                                      showToast(context: context, message: "Revise su conexión a internet");
-                                    }
-                                  },
-                                  child: Text(AppLocalizations.of(context)!.saveButtonPanel)
-                              )
-                          )
-                        ]
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                  children: [
+                    // Card 1: Personal Information
+                    Container(
+                      key: _personalInfoKey,
+                      padding: const EdgeInsets.all(20.0),
+                      decoration: BoxDecoration(
+                        color: colorScheme.surfaceContainerLowest,
+                        borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusLarge),
                       ),
-                    )
-                  ),
-                  // Edit Password Card
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: colorScheme.surfaceContainerLowest,
-                      borderRadius: BorderRadius.circular(radius),
+                      child: Form(
+                        key: _personalInfoFormKey,
+                        child: Column(
+                          children: [
+                            Center(
+                              child: Column(
+                                key: _imageKey,
+                                children: [
+                                  _buildCircleImagePicker(),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            _buildTextField(
+                              controller: _nameTFController,
+                              label: localization.name,
+                              hint: localization.nameAndLastName,
+                              maxLength: 50,
+                            ),
+                            const SizedBox(height: 12),
+                            _buildTextField(
+                              controller: _phoneTFController,
+                              label: localization.phoneNumber,
+                              hint: localization.phoneNumber,
+                              inputType: TextInputType.phone,
+                              maxLength: 8,
+                              readOnly: true,
+                            ),
+                            const SizedBox(height: 24),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 48,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: colorScheme.primaryContainer,
+                                  foregroundColor: colorScheme.onPrimaryContainer,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+                                  ),
+                                ),
+                                onPressed: _isSubmittingPersonalInfo ? null : _validateAndSavePersonalInfo,
+                                child: _isSubmittingPersonalInfo
+                                    ? SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          valueColor: AlwaysStoppedAnimation<Color>(colorScheme.onPrimaryContainer),
+                                        ),
+                                      )
+                                    : Text(
+                                        localization.save,
+                                        style: textTheme.bodyLarge?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                    child: Form(
-                      key: _passFormKey,
-                      child: Column(
-                        spacing: 12.0,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildPasswordField(
-                              label: 'Contraseña',
+                    // Card 2: Passwords
+                    Container(
+                      key: _passwordKey,
+                      padding: const EdgeInsets.all(20.0),
+                      decoration: BoxDecoration(
+                        color: colorScheme.surfaceContainerLowest,
+                        borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusLarge),
+                      ),
+                      child: Form(
+                        key: _passwordFormKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildPasswordField(
+                              controller: _passwordController,
+                              label: localization.passwordLabel,
+                              hint: localization.passwordHint,
                               visible: passwordVisible,
                               onToggle: (v) => setState(() => passwordVisible = v),
-                              controller: _passwordTFController,
-                              validator: Workflow<String?>()
-                                  .step(RequiredStep(errorMessage: AppLocalizations.of(context)!.requiredField))
-                                  .step(MinLengthStep(min: 6, errorMessage: "Requiere al menos 6 caracteres"))
+                              validationWorkflow: Workflow<String?>()
+                                  .step(RequiredStep(errorMessage: localization.requiredField))
+                                  .step(MinLengthStep(min: 6, errorMessage: localization.passwordMinLengthError))
                                   .breakOnFirstApply(true)
-                                  .withDefault((_) => null)
-                                  .proceed
-                          ),
-                          _buildPasswordField(
-                              label: 'Confirme contraseña:',
+                                  .withDefault((_) => null),
+                            ),
+                            const SizedBox(height: 24),
+                            _buildPasswordField(
+                              controller: _confirmPasswordController,
+                              label: localization.confirmPasswordLabel,
+                              hint: localization.confirmPasswordHint,
                               visible: confirmPasswordVisible,
                               onToggle: (v) => setState(() => confirmPasswordVisible = v),
-                              controller: _confirmPasswordTFController,
-                              validator: Workflow<String?>()
-                                  .step(RequiredStep(errorMessage: AppLocalizations.of(context)!.requiredField))
+                              validationWorkflow: Workflow<String?>()
+                                  .step(RequiredStep(errorMessage: localization.requiredField))
                                   .step(MatchOtherStep(
-                                    other: _passwordTFController.text,
-                                    errorMessage: "Las contraseñas no coinciden"
+                                    other: _passwordController.text,
+                                    errorMessage: localization.passwordsDoNotMatch,
                                   ))
                                   .breakOnFirstApply(true)
-                                  .withDefault((_) => null)
-                                  .proceed
-                          ),
-                          OutlinedButton(
-                              onPressed: () async {
-                                FocusScope.of(context).unfocus();
-                                if(hasConnection(context)) {
-                                  if (_passFormKey.currentState!.validate()) {
-                                    final response = await _accountService.updateClientPassword(
-                                        _client.id, _passwordTFController.text
-                                    );
-                                    if(!context.mounted) return;
-                                    if(response.statusCode == 200) {
-                                      _passwordTFController.clear();
-                                      _confirmPasswordTFController.clear();
-                                      showToast(context: context, message: "Hecho");
-                                    }
-                                    else {
-                                      showToast(
-                                          context: context,
-                                          message: "Algo salió mal, por favor inténtelo más tarde"
-                                      );
-                                    }
-                                  }
-                                } else {
-                                  showToast(context: context, message: "Revise su conexión a internet");
-                                }
-                              },
-                              child: Text(AppLocalizations.of(context)!.saveButtonPanel))
-                        ]
-                      )
-                    )
-                  ),
-                  // Referral Code Card
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: colorScheme.surfaceContainerLowest,
-                      borderRadius: BorderRadius.circular(radius),
+                                  .withDefault((_) => null),
+                            ),
+                            const SizedBox(height: 24),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 48,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: colorScheme.primaryContainer,
+                                  foregroundColor: colorScheme.onPrimaryContainer,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+                                  ),
+                                ),
+                                onPressed: _isSubmittingPasswords ? null : _validateAndSavePasswords,
+                                child: _isSubmittingPasswords
+                                    ? SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          valueColor: AlwaysStoppedAnimation<Color>(colorScheme.onPrimaryContainer),
+                                        ),
+                                      )
+                                    : Text(
+                                        localization.saveButtonPanel,
+                                        style: textTheme.bodyLarge?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: 8.0,
-                      children: [
-                        Text('Mi código de descuento:',
-                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: colorScheme.secondary
-                            )
+                    // Referral Code Card
+                    Container(
+                        padding: const EdgeInsets.all(20.0),
+                        decoration: BoxDecoration(
+                          color: colorScheme.surfaceContainerLowest,
+                          borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusLarge),
                         ),
-                        Text(
-                          'Invita a un amigo a usar la app y pídele que ingrese tu código al registrarse o desde Ajustes. Así recibirá un 10% de descuento en su próximo viaje.',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colorScheme.secondary)
-                        ),
-                        Row(
-                          children: [
+                        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Text(AppLocalizations.of(context)!.myDiscountCode,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.secondary)),
+                          const SizedBox(height: 8),
+                          Text(AppLocalizations.of(context)!.inviteFriendDiscount,
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colorScheme.secondary)),
+                          const SizedBox(height: 8),
+                          Row(children: [
                             Expanded(
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.grey),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Text(_client.referralCode)
-                              ),
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: colorScheme.outline),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Text(_client.referralCode)),
                             ),
                             IconButton(
                               icon: const Icon(Icons.copy),
                               onPressed: () {
                                 Clipboard.setData(ClipboardData(text: _client.referralCode));
-                                showToast(context: context, message: "Copiado");
+                                showToast(context: context, message: AppLocalizations.of(context)!.copied);
                               },
                             )
-                          ]
-                        )
-                      ]
-                    )
-                  ),
-                  // About Us/Dev Card
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    decoration: BoxDecoration(
-                      color: colorScheme.surfaceContainerLowest,
-                      borderRadius: BorderRadius.circular(radius),
+                          ])
+                        ])),
+                    const SizedBox(height: 16),
+                    // Card 3: About Us/Dev
+                    Container(
+                      padding: const EdgeInsets.all(20.0),
+                      decoration: BoxDecoration(
+                        color: colorScheme.surfaceContainerLowest,
+                        borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusLarge),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _buildMenuItem(
+                            icon: Icons.local_taxi,
+                            text: localization.aboutUs,
+                            onTap: () => context.push(CommonRoutes.aboutUs),
+                          ),
+                          Divider(
+                            height: 1,
+                            color: colorScheme.outlineVariant,
+                            indent: 12,
+                            endIndent: 12,
+                          ),
+                          _buildMenuItem(
+                            icon: Icons.code,
+                            text: localization.aboutDeveloper,
+                            onTap: () => context.push(CommonRoutes.aboutDev),
+                          ),
+                        ],
+                      ),
                     ),
-                    child: Column(
-                      children: [
-                        ListTile(
-                          leading: const Icon(Icons.local_taxi),
-                          title: const Text('Sobre Nosotros'),
-                          onTap: () => context.push(CommonRoutes.aboutUs),
-                        ),
-                        const Divider(height: 1),
-                        ListTile(
-                          leading: const Icon(Icons.code),
-                          title: const Text('Sobre el desarrollador'),
-                          onTap: () => context.push(CommonRoutes.aboutDev),
-                        ),
-                      ],
+                    // Logout
+                    _buildLogoutItemWithVersion(
+                      text: localization.logout,
+                      icon: Icons.logout,
+                      textColor: colorScheme.error,
+                      iconColor: colorScheme.error,
+                      version: _appVersion,
+                      onTap: () async {
+                        await SessionPrefsManager.instance.clear();
+                        if (!context.mounted) return;
+                        context.go(CommonRoutes.login);
+                      },
                     ),
-                  ),
-                  SizedBox(
-                      height: 56,
-                      child: Align(
-                          alignment: Alignment.centerRight,
-                          child: Padding(
-                            padding: const EdgeInsets.only(right: 20.0),
-                            child: TextButton.icon(
-                                style: TextButton.styleFrom(
-                                  foregroundColor: colorScheme.errorContainer,
-                                  textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-                                ),
-                                icon: Icon(Icons.logout, color: colorScheme.errorContainer),
-                                label: const Text('Cerrar Sesión'),
-                                onPressed: () async {
-                                  await SessionManager.instance.clear();
-                                  if(!context.mounted) return;
-                                  context.go(CommonRoutes.login);
-                                }
-                            ),
-                          )
-                      )
-                  ),
-                  // Just for space, to don't hide the logout button, 'cause home's Scaffold is using extendedBody.
-                  SizedBox(height: 70),
-
-                ]
-              )
-            )
+                    const SizedBox(height: 80),
+                  ],
+                ),
+              ),
+            ),
           ),
-          if(_isProcessingImage)
-          Positioned.fill(child: Center(child: CircularProgressIndicator()))
-        ]
-      )
+          // Loading overlay for image processing
+          if (_isProcessingImage)
+            Positioned.fill(
+              child: Container(
+                color: colorScheme.scrim.withOpacity(0.6),
+                child: Center(child: CircularProgressIndicator()),
+              ),
+            ),
+        ],
+      ),
     );
   }
 
-  Widget _buildCircleImage() {
-    return Stack(
-        alignment: Alignment.bottomRight,
-        children: [
-          ClipOval(
-              child: SizedBox(
-                  height: 160, width: 160,
-                  child: _profileImage != null
-                      ? Image.file(File(_profileImage!.path), fit: BoxFit.cover)
-                      : _client.profileImageUrl != null
-                      ? Image.network("${ApiConfig().baseUrl}/${_client.profileImageUrl}", fit: BoxFit.cover)
-                      : ColoredBox(color: randomColor())
-              )
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    TextInputType? inputType,
+    int? maxLength,
+    bool readOnly = false,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final dimensions = Theme.of(context).extension<DimensionExtension>()!;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        RichText(
+          text: TextSpan(
+            text: label,
+            style: textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.normal,
+              color: colorScheme.onSurface,
+            ),
           ),
-          Positioned(
-              bottom: 8.0, right: 8.0,
-              child: GestureDetector(
-                onTap: () async {
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          keyboardType: inputType ?? TextInputType.text,
+          controller: controller,
+          maxLength: maxLength,
+          readOnly: readOnly,
+          buildCounter: (context, {required currentLength, required isFocused, maxLength}) => const SizedBox.shrink(),
+          validator: (value) => Workflow<String?>()
+              .step(RequiredStep(errorMessage: AppLocalizations.of(context)!.requiredField))
+              .withDefault((_) => null)
+              .proceed(value),
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
+            filled: true,
+            fillColor: colorScheme.surface,
+            contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+              borderSide: BorderSide(
+                color: colorScheme.outlineVariant,
+                width: 1,
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+              borderSide: BorderSide(
+                color: colorScheme.outlineVariant,
+                width: 1,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+              borderSide: BorderSide(
+                color: colorScheme.error,
+                width: 1,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPasswordField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    required bool visible,
+    required Function(bool) onToggle,
+    required Workflow<String?> validationWorkflow,
+    int? maxLength,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final dimensions = Theme.of(context).extension<DimensionExtension>()!;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        RichText(
+          text: TextSpan(
+            text: label,
+            style: textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: colorScheme.onSurface,
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: controller,
+          obscureText: !visible,
+          maxLength: maxLength,
+          buildCounter: (context, {required currentLength, required isFocused, maxLength}) => const SizedBox.shrink(),
+          validator: (value) => validationWorkflow.proceed(value),
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
+            filled: true,
+            fillColor: colorScheme.surface,
+            contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            suffixIcon: IconButton(
+              icon: Icon(
+                visible ? Icons.visibility : Icons.visibility_off,
+                color: colorScheme.onSurfaceVariant,
+              ),
+              onPressed: () => onToggle(!visible),
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+              borderSide: BorderSide(
+                color: colorScheme.outlineVariant,
+                width: 1,
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+              borderSide: BorderSide(
+                color: colorScheme.outlineVariant,
+                width: 1,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+              borderSide: BorderSide(
+                color: colorScheme.error,
+                width: 1,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCircleImagePicker() {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Stack(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: colorScheme.shadow.withOpacity(0.2),
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: _profileImage != null
+              ? CircleAvatar(
+                  radius: 80,
+                  backgroundColor: colorScheme.onSecondary,
+                  backgroundImage: FileImage(File(_profileImage!.path)),
+                )
+              : CachedProfileImage(
+                  radius: 80,
+                  imageUrl:
+                      _initialProfileImageUrl != null ? "${ApiConfig().baseUrl}/${_initialProfileImageUrl}" : null,
+                  backgroundColor: colorScheme.onSecondary,
+                  placeholderAsset: "assets/icons/user.svg",
+                  placeholderColor: colorScheme.onSecondaryContainer,
+                ),
+        ),
+        Positioned(
+          bottom: 0,
+          right: 0,
+          child: Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: colorScheme.surface,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: colorScheme.shadow.withOpacity(0.15),
+                  spreadRadius: 1,
+                  blurRadius: 3,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: IconButton(
+              padding: EdgeInsets.zero,
+              icon: SvgPicture.asset(
+                (_profileImage != null || _initialProfileImageUrl != null)
+                    ? "assets/icons/close.svg"
+                    : "assets/icons/camera.svg",
+                color: colorScheme.onSecondaryContainer,
+                fit: BoxFit.scaleDown,
+                width: 28, // Forces the SVG size
+                height: 28,
+              ),
+              onPressed: () async {
+                if (_profileImage != null || _client.profileImageUrl != null || _initialProfileImageUrl != null) {
+                  setState(() {
+                    _profileImage = null;
+                    _initialProfileImageUrl = null;
+                  });
+                } else {
                   final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
                   if (pickedImage != null) {
                     setState(() => _isProcessingImage = true);
@@ -370,68 +681,128 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                       });
                     }
                   }
-                },
-                child: CircleAvatar(
-                    radius: 20,
-                    backgroundColor: Theme.of(context).colorScheme.surface,
-                    child: Icon(Icons.add_a_photo)
-                ),
-              )
-          )
-        ]
+                }
+              },
+            ),
+          ),
+        ),
+      ],
     );
   }
 
-  Widget _buildTextField(String label, String hint, TextEditingController controller) {
-    return Column(
-        spacing: 8.0,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label),
-          TextFormField(
-              controller: controller,
-              decoration: InputDecoration(
-                  hintText: hint,
-                  fillColor: Theme.of(context).colorScheme.surfaceContainerLowest,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))
-              ),
-              validator: (value) => Workflow<String?>()
-                  .step(RequiredStep(errorMessage: AppLocalizations.of(context)!.requiredField))
-                  .withDefault((_) => null)
-                  .proceed(value)
-          )
-        ]
-    );
-  }
-
-  Widget _buildPasswordField({
-    required String label,
-    required bool visible,
-    required Function(bool) onToggle,
-    required TextEditingController controller,
-    required String? Function(String?) validator
+  Widget _buildMenuItem({
+    required String text,
+    required IconData icon,
+    required VoidCallback onTap,
+    Color? textColor,
+    Color? iconColor,
   }) {
-    return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 8.0,
-        children: [
-          Text(label),
-          TextFormField(
-            controller: controller,
-            obscureText: !visible,
-            decoration: InputDecoration(
-              hintText: 'Introduzca la contraseña deseada',
-              fillColor: Theme.of(context).colorScheme.surfaceContainerLowest,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              suffixIcon: IconButton(
-                icon: Icon(visible ? Icons.visibility : Icons.visibility_off),
-                onPressed: () => onToggle(!visible),
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(Theme.of(context).extension<DimensionExtension>()!.buttonBorderRadius),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              size: 20,
+              color: iconColor ?? Theme.of(context).colorScheme.onSurface,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                text,
+                style: TextStyle(
+                  fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                  color: textColor ?? Theme.of(context).colorScheme.onSurface,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-            validator: validator,
-          )
-        ]
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLogoutItemWithVersion({
+    required String text,
+    required IconData icon,
+    required VoidCallback onTap,
+    required String version,
+    Color? textColor,
+    Color? iconColor,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(Theme.of(context).extension<DimensionExtension>()!.buttonBorderRadius),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Text(
+              version,
+              style: TextStyle(
+                fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.normal,
+              ),
+            ),
+            const Spacer(),
+            Text(
+              text,
+              style: TextStyle(
+                fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize,
+                color: textColor ?? Theme.of(context).colorScheme.onSurface,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Icon(
+              icon,
+              size: 20,
+              color: iconColor ?? Theme.of(context).colorScheme.onSurface,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLogoutItem({
+    required String text,
+    required IconData icon,
+    required VoidCallback onTap,
+    Color? textColor,
+    Color? iconColor,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(Theme.of(context).extension<DimensionExtension>()!.buttonBorderRadius),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            const Spacer(),
+            Expanded(
+              child: Text(
+                text,
+                style: TextStyle(
+                  fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize,
+                  color: textColor ?? Theme.of(context).colorScheme.onSurface,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Icon(
+              icon,
+              size: 20,
+              color: iconColor ?? Theme.of(context).colorScheme.onSurface,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

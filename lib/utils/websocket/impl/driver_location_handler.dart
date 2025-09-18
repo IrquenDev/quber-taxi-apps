@@ -38,6 +38,9 @@ class DriverLocationHandler extends WebSocketHandler<Position> {
   @override
   String get topic => "/topic/drivers/$driverId/location";
 
+  @override
+  bool get ackRequired => false;
+
   /// Parses a raw JSON string into a [Position] object.
   ///
   /// Expected payload format:

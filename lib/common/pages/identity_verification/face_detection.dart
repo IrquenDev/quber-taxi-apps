@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:quber_taxi/enums/face_detector_state.dart';
+import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/common_routes.dart';
+import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/utils/image/image_utils.dart';
 
 class FaceDetectionPage extends StatefulWidget {
@@ -25,6 +28,7 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
   FaceDetectorState status = FaceDetectorState.waitingFace;
   bool _cameraInitialized = false;
   bool _isProcessing = false;
+  bool _hasValidImageForCurrentFace = false;
 
   int _faceDetectedCount = 0;
   int _noFaceCount = 0;
@@ -32,7 +36,98 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
 
   Uint8List? _capturedImageBytes;
 
-  Future<void> _init() async {
+  void _showCameraPermissionPermanentlyDeniedDialog() {
+    if (!mounted) return;
+    
+    final localization = AppLocalizations.of(context)!;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(localization.cameraPermissionPermanentlyDeniedTitle),
+          content: Text(localization.cameraPermissionPermanentlyDeniedMessage),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                context.go(CommonRoutes.login);
+              },
+              child: Text(localization.cancelButton),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                await openAppSettings();
+                if (mounted) {
+                  context.go(CommonRoutes.login);
+                }
+              },
+              child: Text(localization.goToSettingsButton),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showImageProcessingErrorDialog() {
+    if (!mounted) return;
+    
+    final localization = AppLocalizations.of(context)!;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(localization.imageProcessingErrorTitle),
+          content: Text(localization.imageProcessingErrorMessage),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                context.go(CommonRoutes.login);
+              },
+              child: Text(localization.acceptButton),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _checkCameraPermission() async {
+    final permission = await Permission.camera.status;
+    
+    if (permission.isPermanentlyDenied) {
+      _showCameraPermissionPermanentlyDeniedDialog();
+      return;
+    }
+    
+    if (permission.isDenied) {
+      final result = await Permission.camera.request();
+      if (result.isPermanentlyDenied) {
+        _showCameraPermissionPermanentlyDeniedDialog();
+        return;
+      } else if (result.isDenied) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.cameraPermissionDenied),
+              duration: const Duration(seconds: 3),
+            ),
+          );
+          context.go(CommonRoutes.login);
+        }
+        return;
+      }
+    }
+    
+    // Permission granted, proceed with camera initialization
+    await _initCamera();
+  }
+
+  Future<void> _initCamera() async {
     try {
       final cameras = await availableCameras();
       final frontCamera = cameras.firstWhere(
@@ -62,16 +157,13 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
       });
 
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Permiso de cámara denegado.'),
-            duration: Duration(seconds: 3),
-          ),
-        );
-        context.pop();
-      }
+      debugPrint('Error initializing camera: $e');
+      _showImageProcessingErrorDialog();
     }
+  }
+
+  Future<void> _init() async {
+    await _checkCameraPermission();
   }
 
 
@@ -121,25 +213,85 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
         final left = face.leftEyeOpenProbability ?? 1.0;
         final right = face.rightEyeOpenProbability ?? 1.0;
 
+        // SECURITY: Only proceed if face is detected AND valid blink
+        // Verify that we have real eye probabilities (not default values)
+        final hasValidEyeData = face.leftEyeOpenProbability != null && 
+                               face.rightEyeOpenProbability != null;
+        
+        // Verify face has reasonable minimum size (not noise)
+        final faceSize = face.boundingBox.width * face.boundingBox.height;
+        final imageSize = inputImage.metadata!.size.width * inputImage.metadata!.size.height;
+        final faceSizeRatio = faceSize / imageSize;
+        final hasValidFaceSize = faceSizeRatio > 0.02; // At least 2% of image
+        
+        // Verify face is centered
+        final imageWidth = inputImage.metadata!.size.width;
+        final imageHeight = inputImage.metadata!.size.height;
+        final faceCenterX = face.boundingBox.left + (face.boundingBox.width / 2);
+        final faceCenterY = face.boundingBox.top + (face.boundingBox.height / 2);
+        final imageCenterX = imageWidth / 2;
+        // Adjust center Y to be lower in the image (70% down instead of 50%)
+        final imageCenterY = imageHeight * 0.7;
+        
+        // Calculate distance from face center to adjusted image center
+        final distanceFromCenter = ((faceCenterX - imageCenterX).abs() / imageWidth) + 
+                                  ((faceCenterY - imageCenterY).abs() / imageHeight);
+        final isFaceCentered = distanceFromCenter < 0.3; // Allow up to 30% deviation from adjusted center
+        
+        // Debug: positioning information
+        if (kDebugMode && !isFaceCentered) {
+          debugPrint('Face not centered - Distance from center: ${(distanceFromCenter * 100).toStringAsFixed(1)}%');
+        }
+        
+        // Take photo when valid face is detected (only if we don't have one already)
+        if (status == FaceDetectorState.faceDetected && 
+            hasValidEyeData && 
+            hasValidFaceSize && 
+            isFaceCentered &&
+            !_hasValidImageForCurrentFace) {
+          try {
+            final XFile file = await _cameraController.takePicture();
+            _capturedImageBytes = await file.readAsBytes();
+            _hasValidImageForCurrentFace = true;
+            debugPrint('Image captured for centered and detected face');
+          } catch (e) {
+            debugPrint('Error capturing image: $e');
+            await _cameraController.stopImageStream();
+            _showImageProcessingErrorDialog();
+            return;
+          }
+        }
+
+        // Verify blink only if we already have a valid image
         if (status == FaceDetectorState.faceDetected &&
-            left < 0.3 && right < 0.3) {
+            hasValidEyeData &&
+            hasValidFaceSize &&
+            isFaceCentered &&
+            _hasValidImageForCurrentFace &&
+            (left < 0.7 || right < 0.7)) {
           setState(() {
             status = FaceDetectorState.blinkDetected;
             _isProcessing = true;
           });
-          try {
-            final XFile file = await _cameraController.takePicture();
-            _capturedImageBytes = await file.readAsBytes();
-            _progressController.forward();
-          } catch (e) {
-            debugPrint('Error al capturar imagen: $e');
-            setState(() => status = FaceDetectorState.notSupportedCamera);
-          }
+          _progressController.forward();
         } else if (_faceDetectedCount >= _requiredFrames &&
-            status == FaceDetectorState.waitingFace) {
+            status == FaceDetectorState.waitingFace &&
+            hasValidEyeData &&
+            hasValidFaceSize &&
+            isFaceCentered) {
           setState(() => status = FaceDetectorState.faceDetected);
+          // Reset image flag when entering detection mode
+          _hasValidImageForCurrentFace = false;
+          _capturedImageBytes = null;
         }
       } else {
+        // If no face, discard captured image and reset state
+        if (_hasValidImageForCurrentFace) {
+          _capturedImageBytes = null;
+          _hasValidImageForCurrentFace = false;
+          debugPrint('Face lost - image discarded');
+        }
+        
         _faceDetectedCount = 0;
         _noFaceCount++;
 
@@ -149,13 +301,16 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
         }
       }
     } catch (e) {
-      setState(() => status = FaceDetectorState.notSupportedCamera);
+      await _cameraController.stopImageStream();
+      _showImageProcessingErrorDialog();
+      return;
     }
 
     _isDetecting = false;
   }
 
   Widget _buildFaceDetectionSheet(BuildContext context) {
+    final dimensions = Theme.of(context).extension<DimensionExtension>()!;
     return SizedBox(
       height: status == FaceDetectorState.notSupportedCamera ? 220 : 160,
       child: Stack(
@@ -164,8 +319,8 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
             child: Container(
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.primaryContainer,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(20),
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(dimensions.cardBorderRadiusMedium),
                 ),
               ),
               child: Align(
@@ -189,8 +344,8 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
               child: Container(
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surfaceContainer,
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(20),
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(dimensions.cardBorderRadiusMedium),
                   ),
                 ),
                 child: Column(
@@ -214,7 +369,7 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
                                 padding: const EdgeInsets.only(top: 8),
                                 child: ElevatedButton(
                                   onPressed: () {
-                                    context.pop();
+                                    context.go(CommonRoutes.login);
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Theme.of(context).colorScheme.primary,
@@ -224,7 +379,7 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
                                       vertical: 12,
                                     ),
                                   ),
-                                  child: const Text("Regresar"),
+                                  child: Text(AppLocalizations.of(context)!.goBackButton),
                                 ),
                               ),
                             SizedBox(
@@ -245,28 +400,30 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
   }
 
   String _getTitle() {
+    final localization = AppLocalizations.of(context)!;
     switch (status) {
       case FaceDetectorState.waitingFace:
-        return "1. Detección de rostro";
+        return localization.faceDetectionStep;
       case FaceDetectorState.faceDetected:
-        return "2. Detección de vida";
+        return localization.livenessDetectionStep;
       case FaceDetectorState.blinkDetected:
-        return "3. Captura de selfie";
+        return localization.selfieCapturingStep;
       case FaceDetectorState.notSupportedCamera:
-        return "Error de compatibilidad";
-      }
+        return localization.compatibilityErrorTitle;
+    }
   }
 
   String _getDescription() {
+    final localization = AppLocalizations.of(context)!;
     switch (status) {
       case FaceDetectorState.waitingFace:
-        return "Le aconsejamos que coloque su rostro en la zona indicada.";
+        return localization.faceDetectionInstruction;
       case FaceDetectorState.faceDetected:
-        return "Le aconsejamos que no actúe de forma rígida, sin pestañear o respirar de manera natural, para asegurar una detección precisa del rostro.";
+        return localization.livenessDetectionInstruction;
       case FaceDetectorState.blinkDetected:
-        return "Nuestra inteligencia artificial está procesando la selfie. Por favor, manténgase conectado a internet y evite cerrar la aplicación.";
+        return localization.selfieProcessingInstruction;
       case FaceDetectorState.notSupportedCamera:
-        return "Su dispositivo no es compatible con la verificación facial. Por favor, contacte con soporte técnico o intente con otro dispositivo.";
+        return localization.deviceNotCompatibleMessage;
     }
   }
 
@@ -293,9 +450,20 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
       if (status == AnimationStatus.completed) {
         Future.microtask(() async {
           if (!mounted) return;
-          await _cameraController.stopImageStream();
-          if (!mounted) return;
-          context.push(CommonRoutes.faceIdConfirmed, extra: _capturedImageBytes);
+          
+          if (_capturedImageBytes == null) {
+            _showImageProcessingErrorDialog();
+            return;
+          }
+          
+          try {
+            await _cameraController.stopImageStream();
+            if (!mounted) return;
+            context.push(CommonRoutes.faceIdConfirmed, extra: _capturedImageBytes);
+          } catch (e) {
+            debugPrint('Error navigating to confirmation: $e');
+            _showImageProcessingErrorDialog();
+          }
         });
       }
     });
@@ -305,9 +473,13 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
 
   @override
   void dispose() {
-    _progressController.dispose();
-    _cameraController.dispose();
-    _faceDetector.close();
+    try {
+      _progressController.dispose();
+      _cameraController.dispose();
+      _faceDetector.close();
+    } catch (e) {
+      debugPrint('Error disposing resources: $e');
+    }
     super.dispose();
   }
 
@@ -331,6 +503,7 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
             child: Image.asset(
               'assets/images/image_scan.png',
               fit: BoxFit.contain,
+              width: MediaQuery.of(context).size.width
             ),
           ),
           if (status == FaceDetectorState.blinkDetected)

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/client_routes.dart';
 import 'package:quber_taxi/navigation/routes/driver_routes.dart';
+import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/utils/runtime.dart';
 
 class FaceIdConfirmed extends StatelessWidget {
@@ -16,6 +17,7 @@ class FaceIdConfirmed extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final dimensions = Theme.of(context).extension<DimensionExtension>()!;
     return Scaffold(
       backgroundColor: colorScheme.surface,
       body: Stack(
@@ -27,9 +29,9 @@ class FaceIdConfirmed extends StatelessWidget {
                 height: 200,
                 decoration: BoxDecoration(
                   color: colorScheme.primaryContainer,
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(20),
-                    bottomRight: Radius.circular(20),
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(dimensions.cardBorderRadiusMedium),
+                    bottomRight: Radius.circular(dimensions.cardBorderRadiusMedium),
                   ),
                   boxShadow: [
                     BoxShadow(
@@ -43,7 +45,7 @@ class FaceIdConfirmed extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.only(left: 40.0, top: 20.0),
                     child: Text(
-                      "Identidad Confirmada",
+                      AppLocalizations.of(context)!.thankYouForVerification,
                       style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)
                     )
                   )
@@ -68,7 +70,7 @@ class FaceIdConfirmed extends StatelessWidget {
                   AppLocalizations.of(context)!.successConfirm,
                   textAlign: TextAlign.left,
                   style: textTheme.bodyLarge?.copyWith(
-                      color: colorScheme.shadow, fontSize: 18
+                      color: colorScheme.shadow
                   ),
                 ),
               ),
@@ -79,7 +81,7 @@ class FaceIdConfirmed extends StatelessWidget {
                   AppLocalizations.of(context)!.passSecurity,
                   textAlign: TextAlign.left,
                   style: textTheme.bodyLarge?.copyWith(
-                      color: colorScheme.shadow, fontSize: 18
+                      color: colorScheme.shadow
                   ),
                 ),
               ),

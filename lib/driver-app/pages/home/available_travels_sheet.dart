@@ -22,33 +22,62 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
 
   final DraggableScrollableController _sheetController = DraggableScrollableController();
   final travelService = TravelService();
-  // Just for simplify alignment
-  final ghostContainer = Container(width: 40, color: Colors.transparent);
+  // Just for simplify alignment - using theme-based dimensions
+  late final Widget ghostContainer;
   double _currentSize = 0.15;
   bool _isActionPending = true;
 
   late Future<List<Travel>> futureTravels;
   late final Taxi taxi;
+  
+  // Pagination state
+  List<Travel> _allTravels = [];
+  int _currentPage = 0;
+  bool _hasMoreData = true;
+  bool _isLoadingMore = false;
+  bool _initialLoadComplete = false;
 
   Future<void> _refreshTravels() async {
-    final newTravels = await travelService.fetchAvailableTravels(taxi.seats, taxi.type);
+    _currentPage = 0;
+    _hasMoreData = true;
+    _initialLoadComplete = false;
+    final travelPage = await travelService.fetchAvailableTravels(taxi.seats, taxi.type, page: 0, size: 20);
+    final newTravels = travelPage.content;
+    
     if(newTravels.isEmpty) {
       if(_sheetController.isAttached){
         _sheetController.jumpTo(0.15);
       }
     }
+    
     setState(() {
-      futureTravels = Future.value(newTravels);
+      _allTravels = newTravels;
+      _hasMoreData = !travelPage.last;
       _isActionPending = false;
+      _initialLoadComplete = true;
     });
   }
 
   void _loadTravels() {
     setState(() {
       _isActionPending = true;
-      futureTravels = travelService.fetchAvailableTravels(taxi.seats, taxi.type).whenComplete(() {
+      _currentPage = 0;
+      _hasMoreData = true;
+      _allTravels.clear();
+      _initialLoadComplete = false;
+      
+      futureTravels = travelService.fetchAvailableTravels(taxi.seats, taxi.type, page: 0, size: 20).then((travelPage) {
+        final travels = travelPage.content;
+        
+        _allTravels = travels;
+        _hasMoreData = !travelPage.last;
+        return _allTravels;
+      }).whenComplete(() {
         if (mounted) {
-          setState(() => _isActionPending = false);
+          setState(() {
+            _isActionPending = false;
+            _initialLoadComplete = true;
+          });
         }
       });
     });
@@ -58,6 +87,13 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
   void initState() {
     super.initState();
     taxi = Driver.fromJson(loggedInUser).taxi;
+
+    // Initialize ghost container
+    ghostContainer = Container(
+      width: 24.0,
+      color: Colors.transparent
+    );
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _sheetController.addListener(() {
         setState(() {
@@ -65,12 +101,74 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
         });
       });
     });
-    _loadTravels();
+        _loadTravels();
+  }
+
+  Widget _buildTravelsList(ScrollController scrollController, ColorScheme colorScheme) {
+    return NotificationListener<ScrollNotification>(
+      onNotification: (ScrollNotification scrollInfo) {
+        if (scrollInfo is ScrollEndNotification && 
+            scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent &&
+            _hasMoreData && !_isLoadingMore) {
+          _loadMoreTravels();
+        }
+        return false;
+      },
+      child: ListView.builder(
+          padding: const EdgeInsets.only(left: 8.0, top: 8.0, right: 8.0),
+          itemCount: _allTravels.length + (_hasMoreData ? 1 : 0),
+          controller: scrollController,
+          itemBuilder: (context, index) {
+            if (index == _allTravels.length) {
+              // Loading indicator at the end (only when loading)
+              return _isLoadingMore ? Container(
+                padding: const EdgeInsets.all(16.0),
+                alignment: Alignment.center,
+                child: CircularProgressIndicator(color: colorScheme.primary),
+              ) : const SizedBox.shrink();
+            }
+            return TripCard(
+                travel: _allTravels[index],
+                onTravelSelected: widget.onTravelSelected
+            );
+          }
+      ),
+    );
+  }
+
+  Future<void> _loadMoreTravels() async {
+    if (_isLoadingMore || !_hasMoreData) return;
+    
+    setState(() {
+      _isLoadingMore = true;
+    });
+    
+    try {
+      _currentPage++;
+      final travelPage = await travelService.fetchAvailableTravels(taxi.seats, taxi.type, page: _currentPage, size: 20);
+      final newTravels = travelPage.content;
+      
+      setState(() {
+        _allTravels.addAll(newTravels);
+        _hasMoreData = !travelPage.last;
+        _isLoadingMore = false;
+      });
+    } catch (e) {
+      // Revert page increment on error
+      _currentPage--;
+      setState(() {
+        _isLoadingMore = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final dimensions = Theme.of(context).extension<DimensionExtension>()!;
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final localizations = AppLocalizations.of(context)!;
+
     return DraggableScrollableSheet(
       controller: _sheetController,
       initialChildSize: 0.15,
@@ -84,13 +182,12 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
               // Background Container With Header
               Positioned.fill(
                 child: Container(decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(dimensions.borderRadius))),
+                  color: colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(dimensions.cardBorderRadiusMedium))),
                   child: Align(
                     alignment: Alignment.topCenter,
                     child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        spacing: 8.0,
                         children: [
                           IconButton(
                               onPressed: () {
@@ -102,8 +199,8 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
                                   : Icons.keyboard_double_arrow_down
                               )
                           ),
-                          Text(AppLocalizations.of(context)!.selectTravel, style: Theme.of(context).textTheme
-                              .titleMedium)
+                          const SizedBox(width: 8.0),
+                          Text(localizations.selectTravel, style: textTheme.titleMedium)
                         ]
                     )
                   )
@@ -112,11 +209,11 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
               // Main Container with Content
               Positioned.fill(
                   child: Padding(
-                      padding: EdgeInsets.only(top: 48),
+                      padding: const EdgeInsets.only(top: 56.0),
                       child: Container(
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.surfaceContainer,
-                            borderRadius: BorderRadius.vertical(top: Radius.circular(dimensions.borderRadius)),
+                            color: colorScheme.surfaceContainer,
+                            borderRadius: BorderRadius.vertical(top: Radius.circular(dimensions.cardBorderRadiusLarge)),
                           ),
                           child: Column(
                               children: [
@@ -131,23 +228,23 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
                                       _sheetController.jumpTo(newSize);
                                     },
                                     child: SizedBox(
-                                      height: 40.0,
+                                                                                          height: 48.0,
                                       child: Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
                                             ghostContainer,
                                             Container(
-                                                width: 40,
+                                                width: 24.0,
                                                 height: 8.0,
                                                 decoration: BoxDecoration(
-                                                    color: Colors.grey.shade400,
-                                                    borderRadius: BorderRadius.circular(12)
+                                                    color: colorScheme.onSurfaceVariant.withOpacity(0.4),
+                                                    borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusSmall)
                                                 )
                                             ),
                                             !_isActionPending ?
                                             IconButton(
                                                 icon: const Icon(Icons.refresh),
-                                                tooltip: AppLocalizations.of(context)!.updateTravel,
+                                                tooltip: localizations.updateTravel,
                                                 onPressed: hasConnection(context) ? _refreshTravels : null
                                             ) : ghostContainer
                                           ]
@@ -155,30 +252,41 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
                                     )
                                 ),
                                 // Scrollable Mocked List
-                                FutureBuilder(
-                                    future: futureTravels,
-                                    builder: (context, snapshot) {
-                                      if (snapshot.connectionState == ConnectionState.waiting) {
-                                        return const Center(child: CircularProgressIndicator());
-                                      }
-                                      else if(snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
-                                        return Center(child: Text(AppLocalizations.of(context)!.noTravel),);
-                                      }
-                                      else {
-                                        final travels = snapshot.data!;
-                                        return Expanded(
-                                            child: ListView.builder(
-                                                padding: EdgeInsets.symmetric(horizontal: 4.0),
-                                                itemCount: travels.length,
-                                                controller: scrollController,
-                                                itemBuilder: (context, index) => TripCard(
-                                                    travel: travels[index],
-                                                    onTravelSelected: widget.onTravelSelected
-                                                )
-                                            )
-                                        );
-                                      }
-                                    }
+                                Expanded(
+                                  child: !_initialLoadComplete 
+                                    ? FutureBuilder(
+                                        future: futureTravels,
+                                        builder: (context, snapshot) {
+                                          if (snapshot.connectionState == ConnectionState.waiting) {
+                                            return Center(
+                                              child: CircularProgressIndicator(
+                                                color: colorScheme.primary,
+                                              )
+                                            );
+                                          }
+                                          else if(snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
+                                            return Center(
+                                              child: Text(
+                                                localizations.noTravel,
+                                                style: textTheme.bodyMedium?.copyWith(
+                                                  color: colorScheme.onSurfaceVariant,
+                                                ),
+                                              ),
+                                            );
+                                          }
+                                          return _buildTravelsList(scrollController, colorScheme);
+                                        }
+                                      )
+                                    : _allTravels.isEmpty
+                                      ? Center(
+                                          child: Text(
+                                            localizations.noTravel,
+                                            style: textTheme.bodyMedium?.copyWith(
+                                              color: colorScheme.onSurfaceVariant,
+                                            ),
+                                          ),
+                                        )
+                                      : _buildTravelsList(scrollController, colorScheme),
                                 )
                               ]
                           )
