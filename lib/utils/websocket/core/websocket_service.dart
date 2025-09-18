@@ -89,6 +89,7 @@ class WebSocketService {
     if (_subscriptions.containsKey(topic)) {
       _subscriptions[topic]!();
     }
+    // Subscribes topic
     final sub = _client.subscribe(
       destination: topic,
       callback: (frame) {
@@ -98,6 +99,9 @@ class WebSocketService {
       },
     );
     _subscriptions[topic] = sub;
+    // Trigger sync for this topic right after subscribing. This ensures that each topic always asks: "Hey API, did I
+    // miss any messages ?".
+    send('/app/ws-sync-pending', topic);
   }
 
   /// Unsubscribes from a specific topic.
@@ -127,8 +131,6 @@ class WebSocketService {
     // Re-subscribe all handlers
     _handlers.forEach((topic, onMessage) {
       _subscribe(topic, onMessage);
-      // Sync pending messages
-      send('/app/ws-sync-pending', topic);
     });
     print('WebSocket connected.');
   }
