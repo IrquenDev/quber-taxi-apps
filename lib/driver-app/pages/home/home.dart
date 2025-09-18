@@ -484,7 +484,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
       showToast(context: context, message: "Crédito Insuficiente");
     }
     else {
-      
       showToast(context: context, message: AppLocalizations.of(context)!.noAssignedTrip);
     }
   }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:quber_taxi/utils/websocket/core/websocket_service.dart';
 
 /// A base class for WebSocket handlers that manage the lifecycle of a single topic subscription
@@ -8,7 +9,6 @@ import 'package:quber_taxi/utils/websocket/core/websocket_service.dart';
 /// - `parseMessage`: to convert the raw message to a concrete type
 /// - `handleMessage`: to act upon the parsed message
 abstract class WebSocketHandler<T> {
-
   /// Internal reference to the singleton WebSocket service.
   final websocketService = WebSocketService.instance;
 
@@ -20,6 +20,9 @@ abstract class WebSocketHandler<T> {
   /// The topic (destination) to which this handler subscribes.
   String get topic;
 
+  /// Whether this handler requires delivery acknowledgement.
+  bool get ackRequired => true;
+
   /// Called when a message has been successfully parsed.
   void handleMessage(T parsed);
 
@@ -28,8 +31,20 @@ abstract class WebSocketHandler<T> {
 
   // Internal method triggered when a message is received
   void _onMessage(String raw) {
-    final parsed = parseMessage(raw);
+    final T parsed;
+    try {
+      parsed = parseMessage(raw);
+    } catch (e) {
+      if (kDebugMode) {
+        print("Error parsing message ${e.toString()}");
+      }
+      return;
+    }
     handleMessage(parsed);
+    // Notify delivery only if required
+    if (ackRequired) {
+      websocketService.send("/app/ws-ack", topic);
+    }
   }
 
   /// Activates the handler by subscribing to the topic and wiring up the internal message pipeline.
