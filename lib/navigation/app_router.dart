@@ -1,9 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quber_taxi/admin-app/pages/driver_info/driver_info.dart';
+import 'package:quber_taxi/admin-app/pages/drivers_list/driver_list_page.dart';
+import 'package:quber_taxi/admin-app/pages/request_taxi/request_taxi_screen.dart';
 import 'package:quber_taxi/admin-app/pages/settings/admin_settings.dart';
 import 'package:quber_taxi/admin-app/pages/trips_list/trip_list.dart';
-import 'package:quber_taxi/admin-app/pages/request_taxi/request_taxi_screen.dart';
 import 'package:quber_taxi/client-app/pages/create_account/create_account.dart';
 import 'package:quber_taxi/client-app/pages/home/home.dart';
 import 'package:quber_taxi/client-app/pages/home/search_destination.dart';
@@ -27,52 +28,41 @@ import 'package:quber_taxi/common/pages/login/login.dart';
 import 'package:quber_taxi/common/pages/onboarding/onboarding.dart';
 import 'package:quber_taxi/config/app_profile.dart';
 import 'package:quber_taxi/config/build_config.dart';
-import 'package:quber_taxi/admin-app/pages/drivers_list/driver_list_page.dart';
 import 'package:quber_taxi/driver-app/pages/create_account/create_account.dart';
 import 'package:quber_taxi/driver-app/pages/home/home.dart';
 import 'package:quber_taxi/driver-app/pages/navigation/driver_navigation.dart';
 import 'package:quber_taxi/driver-app/pages/settings/settings.dart';
+import 'package:quber_taxi/navigation/backup_navigation_manager.dart';
 import 'package:quber_taxi/navigation/routes/admin_routes.dart';
 import 'package:quber_taxi/navigation/routes/client_routes.dart';
 import 'package:quber_taxi/navigation/routes/driver_routes.dart';
 import 'package:quber_taxi/utils/runtime.dart' as runtime;
+
 import 'routes/common_routes.dart';
-import 'package:quber_taxi/navigation/backup_navigation_manager.dart';
 
 final GoRouter appRouter = GoRouter(
+  // App entrypoint
   initialLocation: _resolveInitialLocation(),
   routes: [
     // COMMONS
-    GoRoute(
-        path: CommonRoutes.onboarding,
-        builder: (context, state) => const OnboardingPage()),
-    GoRoute(
-        path: CommonRoutes.login,
-        builder: (context, state) => const LoginPage()),
-    GoRoute(
-        path: CommonRoutes.aboutDev,
-        builder: (context, state) => const AboutDevPage()),
-    GoRoute(
-        path: CommonRoutes.aboutUs,
-        builder: (context, state) => const AboutUsPage()),
+    GoRoute(path: CommonRoutes.onboarding, builder: (context, state) => const OnboardingPage()),
+    GoRoute(path: CommonRoutes.login, builder: (context, state) => const LoginPage()),
+    GoRoute(path: CommonRoutes.aboutDev, builder: (context, state) => const AboutDevPage()),
+    GoRoute(path: CommonRoutes.aboutUs, builder: (context, state) => const AboutUsPage()),
     GoRoute(
         path: CommonRoutes.locationPicker,
         builder: (context, state) {
           final isOrigin = state.extra as bool? ?? true;
           return LocationPicker(isOrigin: isOrigin);
         }),
-    GoRoute(
-        path: CommonRoutes.requestFaceId,
-        builder: (context, state) => const VerificationIdentityPage()),
+    GoRoute(path: CommonRoutes.requestFaceId, builder: (context, state) => const VerificationIdentityPage()),
     GoRoute(
         path: CommonRoutes.faceIdConfirmed,
         builder: (context, state) {
           final imageBytes = state.extra as Uint8List;
           return FaceIdConfirmed(imageBytes: imageBytes);
         }),
-    GoRoute(
-        path: CommonRoutes.faceDetection,
-        builder: (context, state) => const FaceDetectionPage()),
+    GoRoute(path: CommonRoutes.faceDetection, builder: (context, state) => const FaceDetectionPage()),
     // CLIENT
     GoRoute(
         path: ClientRoutes.createAccount,
@@ -80,46 +70,36 @@ final GoRouter appRouter = GoRouter(
           final faceIdImage = state.extra as Uint8List;
           return CreateClientAccountPage(faceIdImage: faceIdImage);
         }),
-    GoRoute(
-        path: ClientRoutes.settings,
-        builder: (context, state) => const ClientSettingsPage()),
-    GoRoute(
-        path: ClientRoutes.home, builder: (context, state) => ClientHomePage()),
-    GoRoute(
-        path: ClientRoutes.searchOrigin,
-        builder: (context, state) => const SearchOriginPage()),
-    GoRoute(
-        path: ClientRoutes.searchDestination,
-        builder: (context, state) => const SearchDestinationPage()),
+    GoRoute(path: ClientRoutes.settings, builder: (context, state) => const ClientSettingsPage()),
+    GoRoute(path: ClientRoutes.home, builder: (context, state) => ClientHomePage()),
+    GoRoute(path: ClientRoutes.searchOrigin, builder: (context, state) => const SearchOriginPage()),
+    GoRoute(path: ClientRoutes.searchDestination, builder: (context, state) => const SearchDestinationPage()),
     GoRoute(
         path: ClientRoutes.searchDriver,
+        name: ClientRoutes.searchDriver,
         builder: (context, state) {
-          if (runtime.shouldRestorePage) {
-            final travel = BackupNavigationManager.instance.getSavedTravel();
-            return SearchDriverPage(
-                travelId: travel.id,
-                wasRestored: true,
-                restoredTravel: travel);
-          }
-          return SearchDriverPage(travelId: state.extra as int);
-        }),
+          final params = state.extra as Map<String, dynamic>;
+          final travelId = params["travelId"] as int;
+          final wasPageRestored = params["wasPageRestored"] as bool;
+          final travelRequestedDate = params['travelRequestedDate'] as DateTime;
+          return SearchDriverPage(
+            travelId: travelId,
+            wasPageRestored: wasPageRestored,
+            travelRequestedDate: travelRequestedDate,
+          );
+        },
+    ),
     GoRoute(
-        path: ClientRoutes.trackDriver,
-        builder: (context, state) {
-          if (runtime.shouldRestorePage) {
-            final travel = BackupNavigationManager.instance.getSavedTravel();
-            return TrackDriverPage(travel: travel, wasRestored: true);
-          }
-          return TrackDriverPage(travel: state.extra as Travel);
-        }),
+      path: ClientRoutes.trackDriver,
+      builder: (context, state) => TrackDriverPage(travel: state.extra as Travel),
+    ),
     GoRoute(
         path: ClientRoutes.navigation,
         builder: (context, state) {
-          if (runtime.shouldRestorePage) {
-            final travel = BackupNavigationManager.instance.getSavedTravel();
-            return ClientNavigation(travel: travel, wasRestored: true);
-          }
-          return ClientNavigation(travel: state.extra as Travel);
+          final params = state.extra as Map<String, dynamic>;
+          final travel = params["travel"] as Travel;
+          final wasPageRestored = params["wasPageRestored"] as bool;
+          return ClientNavigation(travel: travel, wasPageRestored: wasPageRestored);
         }),
     GoRoute(
         path: ClientRoutes.quberReviews,
@@ -134,9 +114,7 @@ final GoRouter appRouter = GoRouter(
           final faceIdImage = state.extra as Uint8List;
           return CreateDriverAccountPage(faceIdImage: faceIdImage);
         }),
-    GoRoute(
-        path: DriverRoutes.settings,
-        builder: (context, state) => const DriverSettingsPage()),
+    GoRoute(path: DriverRoutes.settings, builder: (context, state) => const DriverSettingsPage()),
     GoRoute(
         path: DriverRoutes.home,
         builder: (context, state) {
@@ -156,19 +134,10 @@ final GoRouter appRouter = GoRouter(
           return DriverNavigationPage(travel: state.extra as Travel);
         }),
     // ADMIN
-    GoRoute(
-        path: AdminRoutes.settings,
-        builder: (context, state) => const AdminSettingsPage()
-    ),
-    GoRoute(path: AdminRoutes.tripsList,
-        builder: (context, state) => const CompletedTripsPage()
-    ),
-    GoRoute(path: AdminRoutes.driversList,
-        builder: (context, state) => const DriversListPage()
-    ),
-    GoRoute(path: AdminRoutes.requestTaxi,
-        builder: (context, state) => const RequestTaxiScreenAdmin()
-    ),
+    GoRoute(path: AdminRoutes.settings, builder: (context, state) => const AdminSettingsPage()),
+    GoRoute(path: AdminRoutes.tripsList, builder: (context, state) => const CompletedTripsPage()),
+    GoRoute(path: AdminRoutes.driversList, builder: (context, state) => const DriversListPage()),
+    GoRoute(path: AdminRoutes.requestTaxi, builder: (context, state) => const RequestTaxiScreenAdmin()),
     GoRoute(
         path: AdminRoutes.driverInfo,
         builder: (context, state) {
@@ -184,21 +153,24 @@ final GoRouter appRouter = GoRouter(
   ],
 );
 
+/// Resolve initial location based on [BuildConfig.appProfile].
 String _resolveInitialLocation() {
-  // Check if we need to redirect on app launch
+  // Onboarding (client profile only)
   if (runtime.isClientMode && !runtime.isOnboardingDone) {
     return CommonRoutes.onboarding;
   }
+  // Session
   if (!runtime.isSessionOk) {
     return CommonRoutes.login;
   }
-  if (runtime.shouldRestorePage) {
+  // Travel state (driver profile only). Compatibility only. It will also be aligned for online restoration.
+  if (runtime.isDriverMode && runtime.shouldRestorePage) {
     final route = BackupNavigationManager.instance.getSavedRoute();
     if (route != null) {
       return route;
     }
   }
-  // If any
+  // If any apply, then resolve initial location based on app profile.
   return switch (BuildConfig.appProfile) {
     AppProfile.client => ClientRoutes.home,
     AppProfile.driver => DriverRoutes.home,

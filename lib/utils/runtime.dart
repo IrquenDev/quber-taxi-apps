@@ -25,8 +25,7 @@ bool get isSessionOk => SessionPrefsManager.instance.isSessionOk();
 dynamic get loggedInUser => SessionPrefsManager.instance.getLoggedInUserAsRawType();
 
 bool hasConnection(BuildContext context) {
-  NetworkScope.of(context).forceRetry;
-  var status = NetworkScope.statusOf(context);
+  final status = NetworkScope.statusOf(context);
   return status == ConnectionStatus.online;
 }
 

@@ -479,13 +479,19 @@ class _RequestTravelAdminSheetState extends State<RequestTravelAdminSheet> {
                                 maxDistance: _maxDistance,
                                 fixedPrice: _fixedPrice,
                                 minPrice: _minPrice,
-                                maxPrice: _maxPrice);
+                                maxPrice: _maxPrice,
+                            );
                             if (!context.mounted) return;
                             if (response.statusCode == 200) {
                               final travel = Travel.fromJson(jsonDecode(response.body));
                               // Radar animation while waiting for acceptation.
                               final updatedTravel = await context.push<Travel?>(
-                                  ClientRoutes.searchDriver, extra: travel.id,
+                                ClientRoutes.searchDriver,
+                                extra: {
+                                  'travelId': travel.id,
+                                  'travelRequestedDate': travel.requestedDate,
+                                  'wasPageRestored': false,
+                                },
                               );
                               if (!context.mounted) return;
                               if (updatedTravel != null) {

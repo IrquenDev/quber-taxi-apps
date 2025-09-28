@@ -70,7 +70,6 @@ class _MapViewState extends State<MapView> {
   }
 
   void _onMapCreated(MapboxMap controller) async {
-    debugPrint('Map created, initializing...');
     // Init class's field references
     _mapController = controller;
     _mapBearing = await controller.getCameraState().then((c) => c.bearing);
@@ -83,8 +82,6 @@ class _MapViewState extends State<MapView> {
     ));
     // Create PAM
     _pointAnnotationManager = await controller.annotations.createPointAnnotationManager();
-    debugPrint('PointAnnotationManager created: ${_pointAnnotationManager != null}');
-    
     // Load Taxi Marker
     final assetBytesA = await rootBundle.load('assets/markers/taxi/taxi_pin_x172.png');
     final assetBytesB = await rootBundle.load('assets/markers/taxi/pin_mototaxix172.png');
@@ -119,52 +116,33 @@ class _MapViewState extends State<MapView> {
     }
   }
 
-  void _onTapListener(MapContentGestureContext mapContext) async {
-    debugPrint('=== TAP LISTENER CALLED ===');
-    debugPrint('Tap detected at: ${mapContext.point.coordinates.lng}, ${mapContext.point.coordinates.lat}');
-  }
-
   void _onLongTapListener(MapContentGestureContext mapContext) async {
-    debugPrint('=== LONG TAP LISTENER CALLED ===');
-    debugPrint('Long tap detected at: ${mapContext.point.coordinates.lng}, ${mapContext.point.coordinates.lat}');
-    debugPrint('Touch position: ${mapContext.touchPosition}');
-    
     try {
       // Check if point annotation manager is available
       if (_pointAnnotationManager == null) {
-        debugPrint('PointAnnotationManager is null, creating it...');
         _pointAnnotationManager = await _mapController?.annotations.createPointAnnotationManager();
         if (_pointAnnotationManager == null) {
-          debugPrint('Failed to create PointAnnotationManager');
           return;
         }
       }
-
       // Remove previous marker if exists
       if (_currentMarker != null) {
         await _pointAnnotationManager?.delete(_currentMarker!);
         _currentMarker = null;
       }
-
       // Load marker image
       final bytes = await rootBundle.load('assets/markers/route/x60/origin.png');
       final imageData = bytes.buffer.asUint8List();
-
       // Create marker options
       final options = PointAnnotationOptions(
           geometry: mapContext.point,
           image: imageData,
           iconAnchor: IconAnchor.BOTTOM);
-
       // Add new marker
       _currentMarker = await _pointAnnotationManager?.create(options);
-      debugPrint('Marker created successfully');
-
       // Show selection menu as popup
       if (mounted) {
-        final RenderBox overlay =
-            Overlay.of(context).context.findRenderObject() as RenderBox;
-
+        final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
         final result = await showMenu<String>(
           context: context,
           position: RelativeRect.fromRect(
@@ -219,7 +197,6 @@ class _MapViewState extends State<MapView> {
           setState(() {
             _selectedOption = result;
           });
-          debugPrint('Selected option: $result');
           if (result == 'markers') {
             final place = await _mapboxService.getMapboxPlace(
               longitude: mapContext.point.coordinates.lng,
@@ -365,8 +342,6 @@ class _MapViewState extends State<MapView> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('Building MapView widget...');
-
     final cameraOptions = CameraOptions(
       center: Point(coordinates: Position(-82.3598, 23.1380)),
       pitch: 45,
@@ -379,7 +354,6 @@ class _MapViewState extends State<MapView> {
             styleUri: MapboxStyles.STANDARD,
             cameraOptions: cameraOptions,
             onMapCreated: _onMapCreated,
-            onTapListener: _onTapListener,
             onLongTapListener: _onLongTapListener,
             onCameraChangeListener: (cameraData) {
               // Always update bearing 'cause fake drivers animation depends on it
