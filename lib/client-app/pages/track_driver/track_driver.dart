@@ -19,9 +19,8 @@ import 'package:quber_taxi/utils/websocket/impl/pickup_confirmation_handler.dart
 
 class TrackDriverPage extends StatefulWidget {
   final Travel travel;
-  final bool wasRestored;
 
-  const TrackDriverPage({super.key, required this.travel, this.wasRestored = false});
+  const TrackDriverPage({super.key, required this.travel});
 
   @override
   State<TrackDriverPage> createState() => _TrackDriverPageState();
@@ -163,7 +162,10 @@ class _TrackDriverPageState extends State<TrackDriverPage> {
               await BackupNavigationManager.instance.clear();
               if(!mounted) return;
               // Navigate to ClientNavigation passing the corresponding travel
-              context.go(ClientRoutes.navigation, extra: widget.travel);
+              context.go(ClientRoutes.navigation, extra: {
+                "travel": widget.travel,
+                "wasPageRestored": false
+              });
             }
           }
         }

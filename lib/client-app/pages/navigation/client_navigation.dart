@@ -26,9 +26,9 @@ import 'package:turf/turf.dart' as turf;
 class ClientNavigation extends StatefulWidget {
 
   final Travel travel;
-  final bool wasRestored;
+  final bool wasPageRestored;
 
-  const ClientNavigation({super.key, required this.travel, this.wasRestored = false});
+  const ClientNavigation({super.key, required this.travel, this.wasPageRestored = false});
 
   @override
   State<ClientNavigation> createState() => _ClientNavigationState();
@@ -47,13 +47,13 @@ class _ClientNavigationState extends State<ClientNavigation> {
   final List<turf.Position> _realTimeRoute = [];
   StreamSubscription<g.Position>? _locationStream;
   num _distanceInKm = 0;
-  double? get _finalPrice => (widget.wasRestored || _travelPriceByTaxiType == null) ? null : _distanceInKm * _travelPriceByTaxiType!;
+  double? get _finalPrice => (widget.wasPageRestored || _travelPriceByTaxiType == null) ? null : _distanceInKm * _travelPriceByTaxiType!;
   Stopwatch? _stopwatch;
   late final FinishConfirmationHandler _confirmationHandler;
   final _travelService = TravelService();
   double? _travelPriceByTaxiType;
 
-  int? get _finalDuration => widget.wasRestored ? null : _stopwatch?.elapsed.inMinutes;
+  int? get _finalDuration => widget.wasPageRestored ? null : _stopwatch?.elapsed.inMinutes;
   bool _isTravelCompleted = false;
   late ScaffoldMessengerState _scaffoldMessenger;
 
@@ -94,14 +94,14 @@ class _ClientNavigationState extends State<ClientNavigation> {
   }
 
   void _startTrackingDistance() {
-    if (!widget.wasRestored) {
+    if (!widget.wasPageRestored) {
       _locationStream =
           g.Geolocator.getPositionStream(locationSettings: g.LocationSettings(distanceFilter: 5)).listen(_onMove);
     }
   }
 
   void _onMove(g.Position newPosition) {
-    if (widget.wasRestored) return; // Skip tracking if restored
+    if (widget.wasPageRestored) return; // Skip tracking if restored
     _stopwatch ??= Stopwatch()..start();
     _calcRealTimeDistance(newPosition);
     _updateTaxiMarker(newPosition);
@@ -109,7 +109,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
   }
 
   void _calcRealTimeDistance(g.Position newPosition) {
-    if (widget.wasRestored || _realTimeRoute.isEmpty) return;
+    if (widget.wasPageRestored || _realTimeRoute.isEmpty) return;
     final point1 = turf.Point(coordinates: _realTimeRoute.last);
     final point2 = turf.Point(coordinates: turf.Position(newPosition.longitude, newPosition.latitude));
     final segmentDistance = td.distance(point1, point2, Unit.kilometers);
@@ -117,7 +117,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
   }
 
   void _updateTaxiMarker(g.Position newPosition) async {
-    if (widget.wasRestored || _pointAnnotationManager == null) return;
+    if (widget.wasPageRestored || _pointAnnotationManager == null) return;
     final point = Point(coordinates: Position(newPosition.longitude, newPosition.latitude));
     if (_taxiMarker == null) {
       // Display marker
@@ -256,7 +256,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if(widget.wasRestored) {
+      if(widget.wasPageRestored) {
         _showRestoredBanner();
       } else {
         await BackupNavigationManager.instance.save(route: ClientRoutes.navigation, travel: widget.travel);
@@ -401,10 +401,10 @@ class _ClientNavigationState extends State<ClientNavigation> {
                 ? ClientTripCompleted(
                     travel: widget.travel,
                     duration: _finalDuration,
-                    distance: widget.wasRestored ? null : _distanceInKm.toInt(),
+                    distance: widget.wasPageRestored ? null : _distanceInKm.toInt(),
                     price: _finalPrice)
                 : ClientTripInfo(
-                    distance: widget.wasRestored ? null : _distanceInKm.toInt(),
+                    distance: widget.wasPageRestored ? null : _distanceInKm.toInt(),
                     travelPriceByTaxiType: _travelPriceByTaxiType,
                     originName: widget.travel.originName,
                     destinationName: widget.travel.destinationName,

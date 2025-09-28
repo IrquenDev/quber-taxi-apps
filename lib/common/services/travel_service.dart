@@ -212,4 +212,9 @@ class TravelService {
     final headers = {'Content-Type': 'application/json'};
     return await http.post(url, headers: headers);
   }
+
+  Future<http.Response> getActiveTravelState(int clientId) async {
+    final url = Uri.parse('${_apiConfig.baseUrl}/$_endpoint/active/$clientId');
+    return await http.get(url);
+  }
 }
