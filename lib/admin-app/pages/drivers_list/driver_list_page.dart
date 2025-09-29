@@ -402,7 +402,8 @@ class _DriversListPageState extends State<DriversListPage> {
                               DriverAccountState.canPay => localizations.confirmPayment,
                               DriverAccountState.paymentRequired => localizations.confirmPayment,
                               DriverAccountState.enabled => localizations.blockAccount,
-                              DriverAccountState.disabled => localizations.enableAccount
+                              DriverAccountState.disabled => localizations.enableAccount,
+                              DriverAccountState.suspended => localizations.enableAccount,
                             },
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                 fontWeight: FontWeight.w500,
@@ -665,32 +666,26 @@ class _DriversListPageState extends State<DriversListPage> {
                       showToast(context: context, message: localizations.invalidAmount);
                       return;
                     }
-                    
                     final amount = double.tryParse(amountText);
                     if (amount == null || amount <= 0) {
                       showToast(context: context, message: localizations.invalidAmount);
                       return;
                     }
-                    
                     setState(() {
                       isLoading = true;
                     });
-                    
                     if (!hasConnection(context)) {
                       setState(() {
                         isLoading = false;
                       });
                       return;
                     }
-                    
                     try {
                       final response = await DriverService().rechargeCredit(
                         driverId: int.parse(driverId),
                         amount: amount,
                       );
-                      
-                      if (!mounted) return;
-                      
+                      if (!context.mounted) return;
                       if (response.statusCode == 200) {
                         showToast(context: context, message: localizations.rechargeSuccess);
                         await _refreshDrivers(); // Refresh the list to show updated credit
@@ -698,10 +693,10 @@ class _DriversListPageState extends State<DriversListPage> {
                         showToast(context: context, message: localizations.rechargeError);
                       }
                     } catch (e) {
-                      if (!mounted) return;
+                      if (!context.mounted) return;
                       showToast(context: context, message: localizations.rechargeError);
                     } finally {
-                      if (mounted) {
+                      if (context.mounted) {
                         setState(() {
                           isLoading = false;
                         });
