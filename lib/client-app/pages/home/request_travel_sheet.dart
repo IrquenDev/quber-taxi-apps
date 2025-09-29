@@ -434,7 +434,15 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                             "BLOQUEADO: Puesto que ha sido reportado por mal comportamiento ya no se le permite solicitar nuevos viajes.",
                         durationInSeconds: 4,
                       );
-                    } else {
+                    }
+                    else if(response.statusCode == 409) {
+                      showToast(
+                        context: context,
+                        message: "Ya se encuentra en un viaje activo, solo puede solicitar uno a la vez.",
+                        durationInSeconds: 4,
+                      );
+                    }
+                    else {
                       showToast(context: context, message: "Ocurrió algo mal, por favor inténtelo más tarde");
                     }
                   }

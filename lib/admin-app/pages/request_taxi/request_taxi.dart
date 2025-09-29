@@ -527,6 +527,13 @@ class _RequestTravelAdminSheetState extends State<RequestTravelAdminSheet> {
                                 durationInSeconds: 4,
                               );
                             }
+                            else if(response.statusCode == 409) {
+                              showToast(
+                                context: context,
+                                message: "Este cliente ya se encuentra en un viaje activo",
+                                durationInSeconds: 4,
+                              );
+                            }
                             else {
                               showToast(
                                 context: context,
