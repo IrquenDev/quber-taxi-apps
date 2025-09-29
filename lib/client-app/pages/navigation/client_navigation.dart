@@ -1,15 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/client-app/pages/navigation/trip_completed.dart';
 import 'package:quber_taxi/common/services/admin_service.dart';
 import 'package:quber_taxi/common/services/travel_service.dart';
-import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
 import 'package:quber_taxi/common/widgets/dialogs/confirm_dialog.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
-import 'package:quber_taxi/navigation/backup_navigation_manager.dart';
-import 'package:quber_taxi/navigation/routes/client_routes.dart';
 import 'package:quber_taxi/utils/map/mapbox.dart' as mb_util;
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart' as g;
@@ -242,7 +238,6 @@ class _ClientNavigationState extends State<ClientNavigation> {
   void _markTravelAsCompleted() async {
     final response = await _travelService.changeState(travelId: widget.travel.id, state: TravelState.completed);
     if(response.statusCode == 200) {
-      BackupNavigationManager.instance.clear();
       setState(() {
         _isTravelCompleted = true; // show completed travel metrics (bottom sheet)
       });
@@ -259,7 +254,6 @@ class _ClientNavigationState extends State<ClientNavigation> {
       if(widget.wasPageRestored) {
         _showRestoredBanner();
       } else {
-        await BackupNavigationManager.instance.save(route: ClientRoutes.navigation, travel: widget.travel);
         final quberConfig = await AdminService().getQuberConfig();
         _travelPriceByTaxiType = quberConfig!.travelPrice[widget.travel.taxiType]!;
       }
@@ -302,112 +296,107 @@ class _ClientNavigationState extends State<ClientNavigation> {
       bearing: 0,
       zoom: 17,
     );
-    return NetworkAlertTemplate(
-        alertBuilder: (_, status) => CustomNetworkAlert(status: status, useTopSafeArea: true),
-        alertPosition: Alignment.topCenter,
-        child: Scaffold(
-            resizeToAvoidBottomInset: true,
-            extendBody: true,
-            body: Stack(
-              children: [
-                MapWidget(
-                  styleUri: MapboxStyles.STANDARD,
-                  cameraOptions: cameraOptions,
-                  onMapCreated: (controller) => _onMapCreated(controller, colorScheme),
-                  onCameraChangeListener: _onCameraChangeListener,
-                ),
-                Positioned(
-                  top: MediaQuery.of(context).padding.top + 16,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withAlpha(25),
-                                blurRadius: 4,
-                                offset: Offset(0, 2),
-                              ),
-                            ],
+    return Scaffold(
+        resizeToAvoidBottomInset: true,
+        extendBody: true,
+        body: Stack(
+          children: [
+            MapWidget(
+              styleUri: MapboxStyles.STANDARD,
+              cameraOptions: cameraOptions,
+              onMapCreated: (controller) => _onMapCreated(controller, colorScheme),
+              onCameraChangeListener: _onCameraChangeListener,
+            ),
+            Positioned(
+              top: MediaQuery.of(context).padding.top + 16,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withAlpha(25),
+                            blurRadius: 4,
+                            offset: Offset(0, 2),
                           ),
-                          child: IconButton(
-                            onPressed: () async {
-                              final position = await g.Geolocator.getCurrentPosition();
-                              _mapController.easeTo(
-                                CameraOptions(
-                                  center: Point(
-                                    coordinates: Position(position.longitude, position.latitude),
-                                  ),
-                                  zoom: 17,
-                                ),
-                                MapAnimationOptions(duration: 1000),
-                              );
-                            },
-                            icon: Icon(Icons.my_location, color: Theme.of(context).colorScheme.primary),
-                            tooltip: 'Ver mi ubicación',
+                        ],
+                      ),
+                      child: IconButton(
+                        onPressed: () async {
+                          final position = await g.Geolocator.getCurrentPosition();
+                          _mapController.easeTo(
+                            CameraOptions(
+                              center: Point(
+                                coordinates: Position(position.longitude, position.latitude),
+                              ),
+                              zoom: 17,
+                            ),
+                            MapAnimationOptions(duration: 1000),
+                          );
+                        },
+                        icon: Icon(Icons.my_location, color: Theme.of(context).colorScheme.primary),
+                        tooltip: 'Ver mi ubicación',
+                      ),
+                    ),
+                    SizedBox(width: 12),
+                    if (!_isTravelCompleted)
+                      ElevatedButton.icon(
+                        onPressed: hasConnection(context)
+                            ? () async {
+                                // Confirmation dialog
+                                final result = await showDialog<bool>(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (context) => const ConfirmDialog(
+                                        title: 'Confirmación de finalización',
+                                        message:
+                                            "Se le notificará inmediatamente al conductor que desea terminar el viaje. Acepte solo "
+                                            "si esto es correcto."));
+                                if (result == true) {
+                                  _markTravelAsCompleted();
+                                }
+                              }
+                            : null,
+                        icon: Icon(Icons.done_outline, color: Colors.white),
+                        label: Text(
+                          'Finalizar viaje',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
-                        SizedBox(width: 12),
-                        if (!_isTravelCompleted)
-                          ElevatedButton.icon(
-                            onPressed: hasConnection(context)
-                                ? () async {
-                                    // Confirmation dialog
-                                    final result = await showDialog<bool>(
-                                        context: context,
-                                        barrierDismissible: false,
-                                        builder: (context) => const ConfirmDialog(
-                                            title: 'Confirmación de finalización',
-                                            message:
-                                                "Se le notificará inmediatamente al conductor que desea terminar el viaje. Acepte solo "
-                                                "si esto es correcto."));
-                                    if (result == true) {
-                                      _markTravelAsCompleted();
-                                    }
-                                  }
-                                : null,
-                            icon: Icon(Icons.done_outline, color: Colors.white),
-                            label: Text(
-                              'Finalizar viaje',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Theme.of(context).colorScheme.primary,
-                              foregroundColor: Colors.white,
-                              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              elevation: 4,
-                            ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).colorScheme.primary,
+                          foregroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                      ],
-                    ),
-                  ),
+                          elevation: 4,
+                        ),
+                      ),
+                  ],
                 ),
-
-              ],
+              ),
             ),
-            bottomSheet: _isTravelCompleted
-                ? ClientTripCompleted(
-                    travel: widget.travel,
-                    duration: _finalDuration,
-                    distance: widget.wasPageRestored ? null : _distanceInKm.toInt(),
-                    price: _finalPrice)
-                : ClientTripInfo(
-                    distance: widget.wasPageRestored ? null : _distanceInKm.toInt(),
-                    travelPriceByTaxiType: _travelPriceByTaxiType,
-                    originName: widget.travel.originName,
-                    destinationName: widget.travel.destinationName,
-                    taxiType: widget.travel.taxiType)));
+
+          ],
+        ),
+        bottomSheet: _isTravelCompleted
+            ? ClientTripCompleted(
+                travel: widget.travel,
+                duration: _finalDuration,
+                distance: widget.wasPageRestored ? null : _distanceInKm.toInt(),
+                price: _finalPrice)
+            : ClientTripInfo(
+                distance: widget.wasPageRestored ? null : _distanceInKm.toInt(),
+                travelPriceByTaxiType: _travelPriceByTaxiType,
+                travel: widget.travel));
   }
 }

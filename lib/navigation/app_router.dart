@@ -32,7 +32,6 @@ import 'package:quber_taxi/driver-app/pages/create_account/create_account.dart';
 import 'package:quber_taxi/driver-app/pages/home/home.dart';
 import 'package:quber_taxi/driver-app/pages/navigation/driver_navigation.dart';
 import 'package:quber_taxi/driver-app/pages/settings/settings.dart';
-import 'package:quber_taxi/navigation/backup_navigation_manager.dart';
 import 'package:quber_taxi/navigation/routes/admin_routes.dart';
 import 'package:quber_taxi/navigation/routes/client_routes.dart';
 import 'package:quber_taxi/navigation/routes/driver_routes.dart';
@@ -115,23 +114,14 @@ final GoRouter appRouter = GoRouter(
           return CreateDriverAccountPage(faceIdImage: faceIdImage);
         }),
     GoRoute(path: DriverRoutes.settings, builder: (context, state) => const DriverSettingsPage()),
-    GoRoute(
-        path: DriverRoutes.home,
-        builder: (context, state) {
-          if (runtime.shouldRestorePage) {
-            final travel = BackupNavigationManager.instance.getSavedTravel();
-            return DriverHomePage(selectedTravel: travel, wasRestored: true);
-          }
-          return DriverHomePage();
-        }),
+    GoRoute(path: DriverRoutes.home, builder: (context, state) => DriverHomePage()),
     GoRoute(
         path: DriverRoutes.navigation,
         builder: (context, state) {
-          if (runtime.shouldRestorePage) {
-            final travel = BackupNavigationManager.instance.getSavedTravel();
-            return DriverNavigationPage(travel: travel, wasRestored: true);
-          }
-          return DriverNavigationPage(travel: state.extra as Travel);
+          final params = state.extra as Map<String, dynamic>;
+          final travel = params["travel"] as Travel;
+          final wasPageRestored = params["wasPageRestored"] as bool;
+          return DriverNavigationPage(travel: travel, wasPageRestored: wasPageRestored);
         }),
     // ADMIN
     GoRoute(path: AdminRoutes.settings, builder: (context, state) => const AdminSettingsPage()),
@@ -162,13 +152,6 @@ String _resolveInitialLocation() {
   // Session
   if (!runtime.isSessionOk) {
     return CommonRoutes.login;
-  }
-  // Travel state (driver profile only). Compatibility only. It will also be aligned for online restoration.
-  if (runtime.isDriverMode && runtime.shouldRestorePage) {
-    final route = BackupNavigationManager.instance.getSavedRoute();
-    if (route != null) {
-      return route;
-    }
   }
   // If any apply, then resolve initial location based on app profile.
   return switch (BuildConfig.appProfile) {

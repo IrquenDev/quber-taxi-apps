@@ -7,7 +7,8 @@ enum DriverAccountState {
   canPay(apiValue: "CAN_PAY"),
   paymentRequired(apiValue: "PAYMENT_REQUIRED"),
   enabled(apiValue: "ENABLED"),
-  disabled(apiValue: "DISABLED");
+  disabled(apiValue: "DISABLED"),
+  suspended(apiValue: "SUSPENDED");
 
   final String apiValue;
 
@@ -17,7 +18,8 @@ enum DriverAccountState {
       DriverAccountState.canPay => "assets/icons/ready.png",
       DriverAccountState.paymentRequired => "assets/icons/locked.png",
       DriverAccountState.enabled =>  "assets/icons/ready.png",
-      DriverAccountState.disabled => "assets/icons/locked.png"
+      DriverAccountState.disabled => "assets/icons/locked.png",
+      DriverAccountState.suspended => "assets/icons/locked.png"
     };
   }
 
@@ -27,7 +29,8 @@ enum DriverAccountState {
       DriverAccountState.canPay => localizations.driverStateCanPay,
       DriverAccountState.paymentRequired => localizations.driverStatePaymentRequired,
       DriverAccountState.enabled => localizations.driverStateEnabled,
-      DriverAccountState.disabled => localizations.driverStateDisabled
+      DriverAccountState.disabled => localizations.driverStateDisabled,
+      DriverAccountState.suspended => localizations.driverStateSuspended
     };
   }
 

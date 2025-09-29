@@ -1,29 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/pages/sos/emergency_dialog.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/enums/asset_dpi.dart';
-import 'package:quber_taxi/enums/taxi_type.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 
 class DriverTripInfo extends StatefulWidget {
 
   final num? distance;
-  final String originName;
-  final String destinationName;
-  final TaxiType taxiType;
   final double? travelPriceByTaxiType;
   final void Function(bool isEnabled) onGuidedRouteSwitched;
   final bool isFixedDestination;
+  final Travel travel;
 
   const DriverTripInfo({
     super.key,
-    required this.originName,
-    required this.destinationName,
     required this.distance,
-    required this.taxiType,
     required this.travelPriceByTaxiType,
     required this.onGuidedRouteSwitched,
     required this.isFixedDestination,
+    required this.travel,
   });
 
   @override
@@ -124,14 +120,14 @@ class _DriverTripInfoState extends State<DriverTripInfo> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   spacing: 12.0,
                                   children: [
-                                    Text.rich(
+                              Text.rich(
                                       TextSpan(
                                         children: [
                                            TextSpan(
                                              text: loc.from,
                                              style: textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.bold)
                                            ),
-                                          TextSpan(text: widget.originName),
+                                          TextSpan(text: widget.travel.originName),
                                         ]
                                       )
                                     ),
@@ -143,7 +139,7 @@ class _DriverTripInfoState extends State<DriverTripInfo> {
                                              style: textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.bold)
                                            ),
                                           TextSpan(
-                                              text: widget.destinationName,
+                                              text: widget.travel.destinationName,
                                                style: textTheme.bodyMedium?.copyWith(
                                                   overflow: TextOverflow.ellipsis
                                               )
@@ -191,7 +187,7 @@ class _DriverTripInfoState extends State<DriverTripInfo> {
                           context: context,
                           barrierDismissible: false,
                           barrierColor: colorScheme.errorContainer.withAlpha(200),
-                          builder: (context) => const EmergencyDialog()
+                          builder: (context) => EmergencyDialog(travel: widget.travel)
                         ),
                         child: Text(
                           loc.emergencySOS,
@@ -212,7 +208,7 @@ class _DriverTripInfoState extends State<DriverTripInfo> {
                 child: Transform(
                   alignment: Alignment.center,
                   transform: Matrix4.identity()..scale(-1.0, 1.0),
-                  child: Image.asset(widget.taxiType.assetRef(AssetDpi.xhdpi))
+                  child: Image.asset(widget.travel.taxiType.assetRef(AssetDpi.xhdpi))
                 )
               )
             )

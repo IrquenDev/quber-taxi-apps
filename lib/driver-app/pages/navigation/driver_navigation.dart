@@ -9,8 +9,6 @@ import 'package:quber_taxi/driver-app/pages/navigation/trip_completed.dart';
 import 'package:quber_taxi/enums/municipalities.dart';
 import 'package:quber_taxi/enums/travel_request_type.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
-import 'package:quber_taxi/navigation/backup_navigation_manager.dart';
-import 'package:quber_taxi/navigation/routes/driver_routes.dart';
 import 'package:quber_taxi/storage/session_prefs_manger.dart';
 import 'package:quber_taxi/utils/map/mapbox.dart' as mb_util;
 import 'package:flutter/material.dart';
@@ -33,9 +31,9 @@ import 'package:turf/turf.dart' as turf;
 
 class DriverNavigationPage extends StatefulWidget {
   final Travel travel;
-  final bool wasRestored;
+  final bool wasPageRestored;
 
-  const DriverNavigationPage({super.key, required this.travel, this.wasRestored = false});
+  const DriverNavigationPage({super.key, required this.travel, this.wasPageRestored = false});
 
   @override
   State<DriverNavigationPage> createState() => _DriverNavigationPageState();
@@ -67,7 +65,7 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
   num _distanceInKm = 0;
   Stopwatch? _stopwatch;
   int get _duration => _stopwatch?.elapsed.inMinutes ?? 0;
-  int? get _finalDuration => widget.wasRestored ? null : _duration;
+  int? get _finalDuration => widget.wasPageRestored ? null : _duration;
   // Ignore points outside of selected municipality (when applicable)
   turf.Polygon? _municipalityPolygon;
   // Websocket for travel state changed (Here we must wait for the client to accept the finish confirmation or
@@ -130,7 +128,7 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
   }
 
   void _onMove(g.Position newPosition) {
-    if(widget.wasRestored) {
+    if(widget.wasPageRestored) {
       _updateTaxiMarker(newPosition);
     } else {
       _stopwatch ??= Stopwatch()..start();
@@ -380,7 +378,7 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
     _stopwatch?.stop();
     // Mark this travel as completed (or with issues) in the api
     late http.Response response;
-    if(widget.wasRestored) {
+    if(widget.wasPageRestored) {
       response = await _travelService.markAsCompletedWithIssue(travelId: widget.travel.id);
     } else {
       response = await _travelService.markAsCompleted(
@@ -392,9 +390,6 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
       );
     }
     if (response.statusCode == 200) {
-      // In any case (was page restored) the API has already applied discounts, penalties, etc. It's safe to
-      // clear the redirect backup right here.
-      await BackupNavigationManager.instance.clear();
       // Get the updated driver data and save it locally
       final driverResponse = await AccountService().findDriver(_driver.id);
       if (!mounted) return;
@@ -441,11 +436,9 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
           .getPositionStream(locationSettings: g.LocationSettings(distanceFilter: 5))
           .listen(_onMove);
       // DEPENDS ON WAS PAGE RESTORED
-      if(widget.wasRestored) {
+      if(widget.wasPageRestored) {
         _showRestoredBanner();
       } else {
-        // Set redirection fallback to this page.
-        await BackupNavigationManager.instance.save(route: DriverRoutes.navigation, travel: widget.travel);
         // Get travel price (base on driver's taxi) and percentage of credit to discount from REST API.
         final quberConfig = await AdminService().getQuberConfig();
         _travelPriceByTaxiType = quberConfig!.travelPrice[widget.travel.taxiType]!;
@@ -563,19 +556,17 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
                 travel: widget.travel,
                 driver: _driver,
                 duration: _finalDuration,
-                distance: widget.wasRestored ? null : _distanceInKm.toInt(),
-                finalPrice: widget.wasRestored
+                distance: widget.wasPageRestored ? null : _distanceInKm.toInt(),
+                finalPrice: widget.wasPageRestored
                     ? _isFixedDestination ? widget.travel.fixedPrice! : widget.travel.maxPrice!
                     : _finalPrice
               )
             : DriverTripInfo(
-                originName: widget.travel.originName,
-                destinationName: widget.travel.destinationName,
-                distance: widget.wasRestored ? null : _distanceInKm.toInt(),
-                taxiType: widget.travel.taxiType,
+                distance: widget.wasPageRestored ? null : _distanceInKm.toInt(),
                 travelPriceByTaxiType: _travelPriceByTaxiType,
-                isFixedDestination: _isFixedDestination,
                 onGuidedRouteSwitched: _onGuidedRouteSwitched,
+                isFixedDestination: _isFixedDestination,
+                travel: widget.travel,
               ));
   }
 }

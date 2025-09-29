@@ -1,25 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/pages/sos/emergency_dialog.dart';
 import 'package:quber_taxi/enums/asset_dpi.dart';
-import 'package:quber_taxi/enums/taxi_type.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 
 class ClientTripInfo extends StatelessWidget {
-
   final int? distance;
-  final String originName;
-  final String destinationName;
-  final TaxiType taxiType;
   final double? travelPriceByTaxiType;
+  final Travel travel;
 
-  const ClientTripInfo({
-    super.key,
-    this.distance,
-    required this.originName,
-    required this.destinationName,
-    required this.taxiType,
-    this.travelPriceByTaxiType,
-  });
+  const ClientTripInfo({super.key, this.distance, this.travelPriceByTaxiType, required this.travel});
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +93,7 @@ class ClientTripInfo extends StatelessWidget {
                                                 fontWeight: FontWeight.bold
                                             )
                                         ),
-                                        TextSpan(text: originName)
+                                        TextSpan(text: travel.originName)
                                       ]
                                   )
                               ),
@@ -116,7 +106,7 @@ class ClientTripInfo extends StatelessWidget {
                                                 fontWeight: FontWeight.bold
                                             )
                                         ),
-                                        TextSpan(text: destinationName)
+                                        TextSpan(text: travel.destinationName)
                                       ]
                                   )
                               )
@@ -138,7 +128,7 @@ class ClientTripInfo extends StatelessWidget {
                           context: context,
                           barrierDismissible: false,
                           barrierColor:Theme.of(context).colorScheme.errorContainer.withAlpha(200),
-                          builder: (context) => const EmergencyDialog()
+                          builder: (context) => EmergencyDialog(travel: travel)
                         ),
                         child: Text(
                             'Emergencia (SOS)',
@@ -161,7 +151,7 @@ class ClientTripInfo extends StatelessWidget {
                 child: Transform(
                     alignment: Alignment.center,
                     transform: Matrix4.identity()..scale(-1.0, 1.0),
-                    child: Image.asset(taxiType.assetRef(AssetDpi.xhdpi))
+                    child: Image.asset(travel.taxiType.assetRef(AssetDpi.xhdpi))
                 )
               )
             )

@@ -57,7 +57,7 @@ class ClientHomePageState extends State<ClientHomePage> {
   static bool didSyncTravelState = false;
 
   // Logged in user
-  late Client _client;
+  final _client = Client.fromJson(loggedInUser);
 
   void _handleNetworkScopeAndListeners() {
     _scope = NetworkScope.of(context);
@@ -139,7 +139,6 @@ class ClientHomePageState extends State<ClientHomePage> {
       else {
         context.go(ClientRoutes.navigation, extra: {
           'travel': activeTravel,
-          'travelRequestedDate': activeTravel.requestedDate,
           'wasPageRestored': true,
         });
       }
@@ -223,8 +222,6 @@ class ClientHomePageState extends State<ClientHomePage> {
   @override
   void initState() {
     super.initState();
-    // Initialize client from logged in user
-    _client = Client.fromJson(loggedInUser);
     // Initialize single MapView instance
     _mapViewInstance = MapView(key: MapView.globalKey, usingExtendedScaffold: true);
     // Register post frame callback

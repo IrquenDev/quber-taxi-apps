@@ -15,6 +15,7 @@ import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/services/account_service.dart';
 import 'package:quber_taxi/common/services/app_announcement_service.dart';
 import 'package:quber_taxi/common/services/driver_service.dart';
+import 'package:quber_taxi/common/services/travel_service.dart';
 import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
 import 'package:quber_taxi/common/widgets/dialogs/circular_info_dialog.dart';
 import 'package:quber_taxi/common/widgets/dialogs/info_dialog.dart';
@@ -29,7 +30,6 @@ import 'package:quber_taxi/enums/municipalities.dart';
 import 'package:quber_taxi/enums/travel_request_type.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
-import 'package:quber_taxi/navigation/backup_navigation_manager.dart';
 import 'package:quber_taxi/navigation/routes/common_routes.dart';
 import 'package:quber_taxi/navigation/routes/driver_routes.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
@@ -100,7 +100,11 @@ class _DriverHomePageState extends State<DriverHomePage> {
 
   // Selected travel. If not null, we should hide the available travel sheet.
   Travel? _selectedTravel;
+
+  // Http Services
   final _driverService = DriverService();
+  final _announcementService = AppAnnouncementService();
+  final _travelService = TravelService();
 
   // Handling new travel requests
   TravelRequestHandler? _newTravelRequestHandler;
@@ -110,20 +114,20 @@ class _DriverHomePageState extends State<DriverHomePage> {
   // Websocket for travel state changed (Here we must wait for the client to accept the pickup confirmation).
   TravelStateHandler? _travelStateHandler;
 
-  // LoggedIn Driver
+  // Logged in driver
   Driver _driver = Driver.fromJson(loggedInUser);
-  bool _didCheckAccount = false;
   bool _isAccountEnabled = false;
   bool _showNeedsApprovalSheet = false;
   bool _showDriverBlockedSheet = false;
 
-  // Announcement service
-  final _announcementService = AppAnnouncementService();
-  bool _didCheckAnnouncements = false;
-
   // Network Checker
-  late void Function() _listener;
   late final NetworkScope _scope;
+  late void Function() _checkDriverAccountStateListenerRef;
+  late void Function() _checkNewsListenerRef;
+  late void Function() _syncTravelStateListenerRef;
+  bool _didCheckAccount = false;
+  bool _didCheckNews = false;
+  bool _didSyncTravelState = false;
   
   // Travel info sheet controller
   final DraggableScrollableController _travelInfoSheetController = DraggableScrollableController();
@@ -154,15 +158,23 @@ class _DriverHomePageState extends State<DriverHomePage> {
   }
 
   Future<void> _handleNetworkScopeAndListener() async {
-    _scope = NetworkScope.of(context); // save the scope (depends on context) to safely access on dispose.
+    _scope = NetworkScope.of(context);
+    final connStatus = NetworkScope.statusOf(context);
+    final isAlreadyOnline = connStatus == ConnectionStatus.online;
     // We need to register a connection status listener, as it depends on ConnectionStatus being online to execute
-    // _checkDriverAccountState. If the driver is offline (any status other than checking or online), they won't be
+    // _checkClientAccountState. If the client is offline (any status other than checking or online), they won't be
     // able to continue.
-    _listener = _scope.registerListener(_checkDriverAccountStateListener);
-    // Since execution times are not always the same, it's possible that when the listener is registered, the current
-    // status is already online, so the listener won't be notified. This is why we must make an initial manual call.
-    // In any case, calls will not be duplicated since they are being protected with the _didCheckAccount flag.
-    _checkDriverAccountStateListener(NetworkScope.statusOf(context));
+    _checkDriverAccountStateListenerRef = _scope.registerListener(_checkDriverAccountStateListener);
+    _checkNewsListenerRef = _scope.registerListener(_checkNewsListener);
+    _syncTravelStateListenerRef = _scope.registerListener(_syncTravelStateListener);
+    // Since execution times are not always the same, it's possible that when the listeners are registered, the current
+    // status is already online, so the listeners won't be notified. This is why we must make an initial manual call.
+    // In any case, calls will not be duplicated since they are being protected with an inner flag.
+    if(isAlreadyOnline) {
+      _checkDriverAccountStateListener(connStatus);
+      _checkNewsListener(connStatus);
+      _syncTravelStateListener(connStatus);
+    }
   }
 
   Future<void> _checkDriverAccountStateListener(ConnectionStatus status) async {
@@ -172,11 +184,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
       if(isConnected) {
         await _checkDriverAccountState();
         _didCheckAccount = true;
-        // Check announcements after account state is verified
-        await _checkAnnouncements();
-      }
-      else {
-        await _showNoConnectionDialog();
       }
     }
   }
@@ -187,6 +194,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
     // Avoid context's gaps
     if (!mounted) return;
     // Handle OK
+    print("API response status code: ${response.statusCode}");
+    print("API response body: ${response.body}");
     if (response.statusCode == 200) {
       _driver = Driver.fromJson(jsonDecode(response.body));
       // Always update session
@@ -215,28 +224,99 @@ class _DriverHomePageState extends State<DriverHomePage> {
           _hideApprovalSheet();
           _showBlockedSheet();
           break;
+        case DriverAccountState.suspended:
+          _hideApprovalSheet();
+          _showBlockedSheet();
+          break;
       }
     }
   }
 
-  Future<void> _showNoConnectionDialog() async {
-    final localizations = AppLocalizations.of(context)!;
-    return await showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => InfoDialog(
-          title: localizations.noConnection,
-          bodyMessage: localizations.noConnectionMessage,
-          onAccept: ()=> SystemNavigator.pop(),
-        ),
-    );
+  Future<void> _checkNewsListener(ConnectionStatus status) async {
+    if (!_didCheckNews) {
+      if(status == ConnectionStatus.checking) return;
+      final isConnected =  status == ConnectionStatus.online;
+      if(isConnected) {
+        await _checkNews();
+        _didCheckNews = true;
+      }
+    }
+  }
+
+  Future<void> _checkNews() async {
+    if (_didCheckNews) return;
+
+    try {
+      final announcements = await _announcementService.getActiveAnnouncements();
+
+      if (announcements.isNotEmpty && mounted) {
+        // Navigate to the first announcement, passing the announcement data
+        context.push(CommonRoutes.announcement, extra: announcements.first);
+        _didCheckNews = true;
+      }
+    } catch (e) {
+      // Handle error silently - announcements are not critical for app functionality
+      if (kDebugMode) {
+        print('Error checking announcements: $e');
+      }
+    }
+  }
+
+  Future<void> _syncTravelStateListener(ConnectionStatus status) async {
+    if(status == ConnectionStatus.checking) return;
+    final isConnected = status == ConnectionStatus.online;
+    if(isConnected) {
+      await _syncTravelState();
+    }
+  }
+
+  Future<void> _syncTravelState() async {
+    if (_didSyncTravelState) {
+      return;
+    }
+    final response = await _travelService.getActiveTravelStateForDriver(_driver.id);
+    if(!mounted) return;
+    //Ignoring 404 (means no active travel) and unexpected status codes.
+    if (response.statusCode == 200) {
+      final activeTravel = Travel.fromJson(jsonDecode(response.body));
+      // A trip is considered active if its status is ACCEPTED or IN_PROGRESS. So we are only going to handle
+      // those states.
+      final travelState = activeTravel.state;
+      if (travelState == TravelState.accepted) {
+        await _startSelectedTravelMode(activeTravel);
+      }
+      // TravelState.inProgress
+      else {
+        context.go(DriverRoutes.navigation, extra: {
+          'travel': activeTravel,
+          'wasPageRestored': true,
+        });
+      }
+    }
+    _didSyncTravelState = true;
+  }
+
+  // Future<void> _showNoConnectionDialog() async {
+  //   final localizations = AppLocalizations.of(context)!;
+  //   return await showDialog(
+  //       context: context,
+  //       barrierDismissible: false,
+  //       builder: (_) => InfoDialog(
+  //         title: localizations.noConnection,
+  //         bodyMessage: localizations.noConnectionMessage,
+  //         onAccept: ()=> SystemNavigator.pop(),
+  //       ),
+  //   );
+  // }
+
+  void _disableNewTravelNotifications() {
+    _newTravelRequestHandler?.deactivate();
+    _clearAllNotifications();
   }
 
   void _showApprovalSheet() {
     // Deactivate travel request handler and clear notifications when not approved
-    _newTravelRequestHandler?.deactivate();
-    _newTravelRequestHandler = null;
-    _clearAllNotifications();
+    _disableNewTravelNotifications();
     setState(() {
       _showNeedsApprovalSheet = true;
     });
@@ -257,9 +337,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
 
   void _showBlockedSheet() {
     // Deactivate travel request handler and clear notifications when blocked
-    _newTravelRequestHandler?.deactivate();
-    _newTravelRequestHandler = null;
-    _clearAllNotifications();
+    _disableNewTravelNotifications();
     setState(() {
       _showDriverBlockedSheet = true;
     });
@@ -357,24 +435,20 @@ class _DriverHomePageState extends State<DriverHomePage> {
     // Prevent concurrent starts that can create duplicate markers
     if (_isLocationStreaming || _isStartingLocationStream) return;
     _isStartingLocationStream = true;
-    
     try {
       // Clear any existing driver marker reference to prevent duplicates
       if (_driverAnnotation != null) {
         await _pointAnnotationManager?.delete(_driverAnnotation!);
         _driverAnnotation = null;
       }
-
       // Get current position
       final position = await g.Geolocator.getCurrentPosition();
       final coords = Position(position.longitude, position.latitude);
       // Update class's field coord references
       _coords = coords;
       _lastKnownCoords = coords;
-
       // Cancel existing subscription to avoid duplicates
       await _locationStreamSubscription?.cancel();
-
       // Only create marker if we don't have one yet
       if (_driverAnnotation == null) {
         // Add driver marker to map
@@ -390,7 +464,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
         _driverAnnotation!.geometry = Point(coordinates: coords);
         _pointAnnotationManager?.update(_driverAnnotation!);
       }
-
       // Listen for real location updates
       _locationStreamSubscription = _locationBroadcast.listen((position) async {
         // Update coords
@@ -407,7 +480,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
         _driverAnnotation!.geometry = Point(coordinates: coords);
         _pointAnnotationManager?.update(_driverAnnotation!);
       });
-
       _isLocationStreaming = true;
     } finally {
       _isStartingLocationStream = false;
@@ -422,6 +494,13 @@ class _DriverHomePageState extends State<DriverHomePage> {
       );
       if(!_isLocationStreaming) await _startStreamingLocation();
     });
+  }
+
+  Future<void> _startSelectedTravelMode(Travel travel) async {
+    await _updateMapUiWithSelectedTravel(travel);
+    _startSharingLocation();
+    _disableNewTravelNotifications();
+    setState(() => _selectedTravel = travel);
   }
 
   void _onTravelSelected(Travel travel) async {
@@ -473,9 +552,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
     final response = await _driverService.acceptTravel(driverId: _driver.id, travelId: travel.id);
     if(!mounted) return;
     if(response.statusCode == 200) {
-      await BackupNavigationManager.instance.save(route: DriverRoutes.home, travel: travel);
-      _updateMapUiWithSelectedTravel(travel);
-      _startSelectedTravelMode(travel);
+      await _startSelectedTravelMode(travel);
     }
     else if(response.statusCode == 403) {
       showToast(context: context, message: "Permiso denegado, su cuenta está deshabilitada.");
@@ -491,7 +568,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
     }
   }
 
-  void _updateMapUiWithSelectedTravel(Travel travel) async {
+  Future<void> _updateMapUiWithSelectedTravel(Travel travel) async {
     final colorScheme = Theme.of(context).colorScheme;
     // Load marker images
     final originAssetBytes = await rootBundle.load('assets/markers/route/x120/origin.png');
@@ -593,12 +670,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
     }
   }
 
-  void _startSelectedTravelMode(Travel travel) async {
-    _startSharingLocation();
-    _newTravelRequestHandler?.deactivate();
-    setState(() => _selectedTravel = travel);
-  }
-
   void _onTick(Duration elapsed) async {
     if (elapsed - _lastUpdate < _frameInterval) return;
     _lastUpdate = elapsed;
@@ -606,6 +677,32 @@ class _DriverHomePageState extends State<DriverHomePage> {
       taxi.updatePosition(elapsed, _mapBearing);
       _pointAnnotationManager?.update(taxi.annotation);
     }
+  }
+
+  void _onNewTravel(Travel travel) {
+    final travelNotification = TravelNotification(travel);
+
+    // Play notification sound
+    SystemSound.play(SystemSoundType.alert);
+
+    // Add new notification
+    _newTravels.add(travelNotification);
+
+    // Sort by requestedDate (most recent first)
+    _newTravels.sort((a, b) => b.travel.requestedDate.compareTo(a.travel.requestedDate));
+
+    // Keep maximum 2 notifications, remove the oldest ones
+    while(_newTravels.length > 2) {
+      final removedNotification = _newTravels.removeLast();
+      _notificationTimers[removedNotification.id]?.cancel();
+      _notificationTimers.remove(removedNotification.id);
+    }
+
+    _notificationTimers[travelNotification.id] = Timer(const Duration(seconds: 10), () {
+      _removeNotificationById(travelNotification.id);
+    });
+
+    setState(() {});
   }
 
   void _removeNotificationById(String notificationId) {
@@ -665,56 +762,32 @@ class _DriverHomePageState extends State<DriverHomePage> {
     );
   }
 
-  void _onNewTravel(Travel travel) {
-    final travelNotification = TravelNotification(travel);
-
-    // Play notification sound
-    SystemSound.play(SystemSoundType.alert);
-
-    // Add new notification
-    _newTravels.add(travelNotification);
-    
-    // Sort by requestedDate (most recent first)
-    _newTravels.sort((a, b) => b.travel.requestedDate.compareTo(a.travel.requestedDate));
-    
-    // Keep maximum 2 notifications, remove the oldest ones
-    while(_newTravels.length > 2) {
-      final removedNotification = _newTravels.removeLast();
-      _notificationTimers[removedNotification.id]?.cancel();
-      _notificationTimers.remove(removedNotification.id);
-    }
-
-    _notificationTimers[travelNotification.id] = Timer(const Duration(seconds: 10), () {
-      _removeNotificationById(travelNotification.id);
+  void _goToNavigationPage(Travel travel) async {
+    // Clear municipality polygon when starting the trip
+    await _clearMunicipalityPolygon();
+    if(!mounted) return;
+    context.go(DriverRoutes.navigation, extra: {
+      "travel": travel,
+      "wasPageRestored": false
     });
-    
-    setState(() {});
   }
 
-  @override
-  void initState() {
-    super.initState();
-    // ALWAYS RUNS ON START UP
-    // Init location streaming
-    _locationBroadcast = g.Geolocator.getPositionStream().asBroadcastStream();
-    // Ticker controller for fake driver animations
-    _ticker = Ticker(_onTick);
-    SchedulerBinding.instance.addPostFrameCallback((_) async {
-      // Handle driver account state
-      await _handleNetworkScopeAndListener();
-      // Request and subscribe to location streaming
-      await _autoRequestLocation();
-      // DEPENDS ON WAS PAGE RESTORED
-      if(widget.wasRestored) {
-        _startSelectedTravelMode(widget.selectedTravel!);
-      } else {
-        // Activate new travel request ws handler, in order to receive notification.
-        _newTravelRequestHandler = TravelRequestHandler(
-            driverId: _driver.id,
-            onNewTravel: _onNewTravel
-        )..activate();
-      }
-    });
+  void _showDriverCreditDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return CircularInfoDialog(
+          largeNumber: _driver.credit.toInt().toString(),
+          mediumText: AppLocalizations.of(context)!.driverCredit,
+          smallText: AppLocalizations.of(context)!.driverCreditDescription,
+          animateFrom: 0,
+          animateTo: _driver.credit.toInt(),
+          onTapToDismiss: () {
+            Navigator.of(context).pop();
+          },
+        );
+      },
+    );
   }
 
   /// Clears the municipality polygon from the map
@@ -754,51 +827,50 @@ class _DriverHomePageState extends State<DriverHomePage> {
     if (_travelInfoSheetController.isAttached) {
       _travelInfoSheetController.jumpTo(0.15);
     }
-    // Clear backup navigation
-    await BackupNavigationManager.instance.clear();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Init location streaming
+    _locationBroadcast = g.Geolocator.getPositionStream().asBroadcastStream();
+    // Ticker controller for fake driver animations
+    _ticker = Ticker(_onTick);
+    // Subscribe to new travel requests
+    _newTravelRequestHandler = TravelRequestHandler(
+        driverId: _driver.id,
+        onNewTravel: _onNewTravel
+    )..activate();
+    // Register context-based initializer
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      // Request and subscribe to location streaming
+      await _autoRequestLocation();
+      // Handle driver account state
+      await _handleNetworkScopeAndListener();
+    });
   }
 
   @override
   void dispose() {
-    _scope.removeListener(_listener);
+    _scope.removeListener(_checkDriverAccountStateListenerRef);
+    _scope.removeListener(_checkNewsListenerRef);
+    _scope.removeListener(_syncTravelStateListenerRef);
     _travelStateHandler?.deactivate();
-    _newTravelRequestHandler?.deactivate();
+    _disableNewTravelNotifications();
     _ticker.dispose();
     _locationShareSubscription?.cancel();
     _locationStreamSubscription?.cancel();
     _pointAnnotationManager?.deleteAll();
     _clearMunicipalityPolygon();
-    
     // Clear travel marker references
     _originMarker = null;
     _destinationMarker = null;
-    
     // Cancel all notification timers
     for (final timer in _notificationTimers.values) {
       timer.cancel();
     }
     _notificationTimers.clear();
-    
     super.dispose();
-  }
-
-  Future<void> _checkAnnouncements() async {
-    if (_didCheckAnnouncements) return;
-    
-    try {
-      final announcements = await _announcementService.getActiveAnnouncements();
-      
-      if (announcements.isNotEmpty && mounted) {
-        // Navigate to the first announcement, passing the announcement data
-        context.push(CommonRoutes.announcement, extra: announcements.first);
-        _didCheckAnnouncements = true;
-      }
-    } catch (e) {
-      // Handle error silently - announcements are not critical for app functionality
-      if (kDebugMode) {
-        print('Error checking announcements: $e');
-      }
-    }
   }
 
   @override
@@ -869,9 +941,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
                     ));
                   }
                   _ticker.start();
-                }
-                if(widget.wasRestored) {
-                  _updateMapUiWithSelectedTravel(widget.selectedTravel!);
                 }
               },
               onCameraChangeListener: (cameraData) async {
@@ -1241,33 +1310,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
           ]
         );
       }
-    );
-  }
-  
-  void _goToNavigationPage(Travel travel) async {
-    // Clear municipality polygon when starting the trip
-    await _clearMunicipalityPolygon();
-    // Clear backup once navigation starts
-    await BackupNavigationManager.instance.clear();
-    if(!mounted) return;
-    context.go(DriverRoutes.navigation, extra: travel);
-  }
-  
-  void _showDriverCreditDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return CircularInfoDialog(
-          largeNumber: _driver.credit.toInt().toString(),
-          mediumText: AppLocalizations.of(context)!.driverCredit,
-          smallText: AppLocalizations.of(context)!.driverCreditDescription,
-          animateFrom: 0,
-          animateTo: _driver.credit.toInt(),
-          onTapToDismiss: () {
-            Navigator.of(context).pop();
-          },
-        );
-      },
     );
   }
 }

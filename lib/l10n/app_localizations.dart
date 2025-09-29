@@ -1802,6 +1802,12 @@ abstract class AppLocalizations {
   /// **'Deshabilitado'**
   String get driverStateDisabled;
 
+  /// No description provided for @driverStateSuspended.
+  ///
+  /// In es, this message translates to:
+  /// **'Suspendido'**
+  String get driverStateSuspended;
+
   /// No description provided for @driverBlocked.
   ///
   /// In es, this message translates to:
