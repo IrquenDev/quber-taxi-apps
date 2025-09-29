@@ -478,10 +478,13 @@ class _DriverHomePageState extends State<DriverHomePage> {
       _startSelectedTravelMode(travel);
     }
     else if(response.statusCode == 403) {
-      showToast(context: context, message: "Permiso denegado");
+      showToast(context: context, message: "Permiso denegado, su cuenta está deshabilitada.");
     }
     else if(response.statusCode == 409) {
-      showToast(context: context, message: "Crédito Insuficiente");
+      showToast(context: context, message: "Viaje activo existente, solo puedes aceptar uno a la vez.");
+    }
+    else if(response.statusCode == 423) {
+      showToast(context: context, message: "Crédito insuficiente");
     }
     else {
       showToast(context: context, message: AppLocalizations.of(context)!.noAssignedTrip);
