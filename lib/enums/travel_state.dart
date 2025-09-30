@@ -4,7 +4,10 @@ enum TravelState {
   waiting("WAITING"),
   accepted("ACCEPTED"),
   inProgress("IN_PROGRESS"),
-  completed("COMPLETED");
+  completed("COMPLETED"),
+  completedWithIssues("COMPLETED_WITH_ISSUES"),
+  incompleted("INCOMPLETED"),
+  expired("EXPIRED");
 
   const TravelState(this.apiValue);
 

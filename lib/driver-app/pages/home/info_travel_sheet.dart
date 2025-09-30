@@ -288,7 +288,8 @@ class TravelInfoSheet extends StatelessWidget {
                   var reason = await _showReportClientDialog(context);
                   if (reason != null) {
                     final response = await DriverService().reportClient(
-                      driverId: loggedInUser['id'],
+                      travelId: travel.id,
+                      driverId: travel.driver!.id,
                       clientId: travel.client.id,
                       reason: reason
                     );
