@@ -73,7 +73,7 @@ class DriverService {
   /// Reports a client for not showing up or making contact.
   ///
   /// Performs a POST request to:
-  /// `/drivers/{driverId}/reports?clientId={clientId}`
+  /// `/reports?driverId={driverId}&clientId={clientId}&travelId={travelId}&reason={reason}`
   ///
   /// The backend is expected to create a client report.
   ///
@@ -81,7 +81,7 @@ class DriverService {
   ///
   /// Example:
   /// ```dart
-  /// final response = await driverService.reportClient(driverId: 42, clientId: 101);
+  /// final response = await driverService.reportClient(driverId: 42, clientId: 101, travelId: 555, reason: "No show");
   /// if (response.statusCode == 200) {
   ///   // Success
   /// }
@@ -89,11 +89,13 @@ class DriverService {
   Future<http.Response> reportClient({
     required int driverId,
     required int clientId,
+    required int travelId,
     required String reason,
   }) async {
     final url = Uri.parse("${_apiConfig.baseUrl}/reports"
         "?driverId=$driverId"
         "&clientId=$clientId"
+        "&travelId=$travelId"
         "&reason=$reason"
     );
     final headers = {'Content-Type': 'application/json'};
