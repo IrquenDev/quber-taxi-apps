@@ -932,6 +932,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get driverStateDisabled => 'Deshabilitado';
 
   @override
+  String get driverStateSuspended => 'Suspendido';
+
+  @override
   String get driverBlocked => 'Cuenta Bloqueada';
 
   @override

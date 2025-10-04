@@ -2,8 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quber_taxi/common/services/travel_service.dart';
-import 'package:quber_taxi/common/models/travel.dart';
-import 'package:quber_taxi/navigation/backup_navigation_manager.dart';
 import 'package:quber_taxi/navigation/routes/client_routes.dart';
 import 'package:quber_taxi/utils/runtime.dart' as runtime;
 import 'package:quber_taxi/enums/travel_state.dart';
@@ -12,11 +10,12 @@ import 'package:quber_taxi/utils/websocket/impl/travel_state_handler.dart';
 
 class SearchDriverPage extends StatefulWidget {
 
-  const SearchDriverPage({super.key, required this.travelId, this.wasRestored = false, this.restoredTravel});
+  const SearchDriverPage({super.key, required this.travelId, this.wasPageRestored = false, required this
+      .travelRequestedDate});
 
   final int travelId;
-  final bool wasRestored;
-  final Travel? restoredTravel;
+  final bool wasPageRestored;
+  final DateTime travelRequestedDate;
 
   @override
   State<SearchDriverPage> createState() => _SearchDriverPageState();
@@ -37,29 +36,34 @@ class _SearchDriverPageState extends State<SearchDriverPage> with SingleTickerPr
   @override
   void initState() {
     super.initState();
-    if (widget.wasRestored && widget.restoredTravel != null) {
-      _requestedAt = widget.restoredTravel!.requestedDate;
+    // if page was restored, use the original travel requested date
+    if (widget.wasPageRestored) {
+      _requestedAt = widget.travelRequestedDate;
     }
-    // record local start time for non-restored flows
+    // record local start time, useful for non-restored flows
     _startedAt = DateTime.now();
-    // connect to websocket in order to see if any driver took the trips_list
+    // connect to websocket in order to see if any driver took the trip
     _handler = TravelStateHandler(
         state: TravelState.accepted,
         travelId: widget.travelId,
         onMessage: (travel) async {
-          if (widget.wasRestored) {
-            await BackupNavigationManager.instance.clear();
-            if (!mounted) return;
+          if (widget.wasPageRestored) {
             context.go(ClientRoutes.trackDriver, extra: travel);
           } else {
             context.pop(travel);
           }
         }
     )..activate();
-    // handling radar animation
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat(); // infinity loop
+    _setupAnimation();
+    _setupTicker();
     _setupTimer();
-    // start debug ticker to display remaining time
+  }
+
+  void _setupAnimation() {
+    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat();
+  }
+
+  void _setupTicker() {
     _remaining = _computeRemainingDuration();
     _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
       final next = _computeRemainingDuration();
@@ -70,13 +74,9 @@ class _SearchDriverPageState extends State<SearchDriverPage> with SingleTickerPr
   }
 
   void _setupTimer() {
-    // schedule timeout using remaining time from requestedDate when restored
     final remaining = _computeRemainingDuration();
     _timeoutTimer = Timer(remaining, () async {
-      if (widget.wasRestored) {
-        // When restored, on timeout return to home
-        await BackupNavigationManager.instance.clear();
-        if (!mounted) return;
+      if (widget.wasPageRestored) {
         context.go(ClientRoutes.home);
       } else {
         context.pop(null);
@@ -190,15 +190,12 @@ class _SearchDriverPageState extends State<SearchDriverPage> with SingleTickerPr
               padding: const EdgeInsets.only(bottom: 40.0),
               child: GestureDetector(
                   onTap: () async {
-                    if (widget.wasRestored) {
+                    if (widget.wasPageRestored) {
                       // Attempt to cancel on backend when user cancels restored flow
-                      try {
-                        if (runtime.hasConnection(context)) {
-                          await _travelService.changeState(travelId: widget.travelId, state: TravelState.canceled);
-                        }
-                      } catch (_) {}
-                      await BackupNavigationManager.instance.clear();
-                      if (!context.mounted) return;
+                      if (runtime.hasConnection(context)) {
+                        await _travelService.changeState(travelId: widget.travelId, state: TravelState.canceled);
+                      }
+                      if(!context.mounted) return;
                       context.go(ClientRoutes.home);
                     } else {
                       context.pop(null);

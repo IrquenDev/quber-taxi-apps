@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_fusion/flutter_fusion.dart' show showToast;
 import 'package:go_router/go_router.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:network_checker/network_checker.dart';
@@ -8,10 +11,14 @@ import 'package:quber_taxi/client-app/pages/home/map.dart';
 import 'package:quber_taxi/client-app/pages/home/request_travel_sheet.dart';
 import 'package:quber_taxi/client-app/pages/settings/account_setting.dart';
 import 'package:quber_taxi/common/models/client.dart';
+import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/services/admin_service.dart';
 import 'package:quber_taxi/common/services/app_announcement_service.dart';
+import 'package:quber_taxi/common/services/travel_service.dart';
 import 'package:quber_taxi/common/widgets/dialogs/circular_info_dialog.dart';
+import 'package:quber_taxi/enums/travel_state.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
+import 'package:quber_taxi/navigation/routes/client_routes.dart';
 import 'package:quber_taxi/navigation/routes/common_routes.dart';
 import 'package:quber_taxi/storage/config_prefs_manager.dart';
 import 'package:quber_taxi/storage/favorites_prefs_manager.dart';
@@ -24,10 +31,10 @@ class ClientHomePage extends StatefulWidget {
   final Position? position;
 
   @override
-  State<ClientHomePage> createState() => _ClientHomePageState();
+  State<ClientHomePage> createState() => ClientHomePageState();
 }
 
-class _ClientHomePageState extends State<ClientHomePage> {
+class ClientHomePageState extends State<ClientHomePage> {
   int _currentIndex = 0;
   final _navKey = GlobalKey<CurvedNavigationBarState>();
 
@@ -38,27 +45,36 @@ class _ClientHomePageState extends State<ClientHomePage> {
   // Single MapView instance to avoid GlobalKey conflicts
   late final MapView _mapViewInstance;
 
-  // Announcement service
+  // Http Services
   final _announcementService = AppAnnouncementService();
-  bool _didCheckNews = false;
+  final _travelService = TravelService();
 
-  // Network Checker
-  late void Function() _listener;
+  // NetworkChecker
   late final NetworkScope _scope;
+  late void Function() _checkNewsListenerRef;
+  late void Function() _syncTravelStateListenerRef;
+  static bool _didCheckNews = false;
+  static bool didSyncTravelState = false;
 
-  // Client account state verification
-  late Client _client;
+  // Logged in user
+  final _client = Client.fromJson(loggedInUser);
 
-  void _handleNetworkScopeAndListener() {
+  void _handleNetworkScopeAndListeners() {
     _scope = NetworkScope.of(context);
+    final connStatus = NetworkScope.statusOf(context);
+    final isAlreadyOnline = connStatus == ConnectionStatus.online;
     // We need to register a connection status listener, as it depends on ConnectionStatus being online to execute
     // _checkClientAccountState. If the client is offline (any status other than checking or online), they won't be
     // able to continue.
-    _listener = _scope.registerListener(_checkNewsListener);
-    // Since execution times are not always the same, it's possible that when the listener is registered, the current
-    // status is already online, so the listener won't be notified. This is why we must make an initial manual call.
-    // In any case, calls will not be duplicated since they are being protected with the _didCheckAccount flag.
-    _checkNewsListener(NetworkScope.statusOf(context));
+    _checkNewsListenerRef = _scope.registerListener(_checkNewsListener);
+    _syncTravelStateListenerRef = _scope.registerListener(_syncTravelStateListener);
+    // Since execution times are not always the same, it's possible that when the listeners are registered, the current
+    // status is already online, so the listeners won't be notified. This is why we must make an initial manual call.
+    // In any case, calls will not be duplicated since they are being protected with an inner flag.
+    if(isAlreadyOnline) {
+      _checkNewsListener(connStatus);
+      _syncTravelStateListener(connStatus);
+    }
   }
 
   Future<void> _checkNewsListener(ConnectionStatus status) async {
@@ -67,6 +83,67 @@ class _ClientHomePageState extends State<ClientHomePage> {
     if(isConnected) {
       await _checkNews();
     }
+  }
+
+  Future<void> _checkNews() async {
+    if (_didCheckNews) return;
+    final quberConfig  = await AdminService().getQuberConfig();
+    if(quberConfig != null) {
+      await ConfigPrefsManager.instance.saveOperatorPhone(quberConfig.operatorPhone);
+    }
+    final announcements = await _announcementService.getActiveAnnouncements();
+    if (announcements.isNotEmpty && mounted) {
+      // Navigate to the first announcement, passing the announcement data
+      context.push(CommonRoutes.announcement, extra: announcements.first);
+      _didCheckNews = true;
+    }
+  }
+
+  Future<void> _syncTravelStateListener(ConnectionStatus status) async {
+    if(status == ConnectionStatus.checking) return;
+    final isConnected = status == ConnectionStatus.online;
+    if(isConnected) {
+      await _syncTravelState();
+    }
+  }
+
+  Future<void> _syncTravelState() async {
+    if (didSyncTravelState) {
+      return;
+    }
+    final response = await _travelService.getActiveTravelState(_client.id);
+    if(!mounted) return;
+    //Ignoring 404 (means no active travel) and unexpected status codes.
+    if (response.statusCode == 200) {
+      final activeTravel = Travel.fromJson(jsonDecode(response.body));
+      // A trip is considered active if its status is WAITING, ACCEPTED, or IN_PROGRESS. So we are only going to handle
+      // those states.
+      final travelState = activeTravel.state;
+      if (travelState == TravelState.waiting) {
+        final shouldMarkAsCanceled = DateTime.now().subtract(Duration(minutes: 3)).isAfter(activeTravel.requestedDate);
+        if(shouldMarkAsCanceled) {
+          await _cancelTravelRequest(activeTravel.id);
+        }
+        else {
+          context.go(ClientRoutes.searchDriver, extra: {
+            'travelId': activeTravel.id,
+            'travelRequestedDate': activeTravel.requestedDate,
+            'wasPageRestored': true,
+          });
+        }
+      }
+      else if(travelState == TravelState.accepted) {
+        context.go(ClientRoutes.trackDriver, extra: activeTravel);
+      }
+      // TravelState.inProgress
+      else {
+        context.go(ClientRoutes.navigation, extra: {
+          'travel': activeTravel,
+          'wasPageRestored': true,
+        });
+      }
+    }
+    didSyncTravelState = true;
   }
 
   /// Opens the system phone dialer with the given [phoneNumber].
@@ -132,37 +209,29 @@ class _ClientHomePageState extends State<ClientHomePage> {
     );
   }
 
-  Future<void> _checkNews() async {
-    if (_didCheckNews) return;
-    final quberConfig  = await AdminService().getQuberConfig();
-    if(quberConfig != null) {
-      await ConfigPrefsManager.instance.saveOperatorPhone(quberConfig.operatorPhone);
+  // It is responsible for canceling the previous trip request, either because the driver search was canceled by
+  // manual action of the user or because the time limit has passed.
+  Future<void> _cancelTravelRequest(int travelId) async {
+    final response = await _travelService.changeState(travelId: travelId, state: TravelState.canceled);
+    if (!mounted) return;
+    if (response.statusCode == 200) {
+      showToast(context: context, message: AppLocalizations.of(context)!.tripRequestCancelled);
     }
-    final announcements = await _announcementService.getActiveAnnouncements();
-    if (announcements.isNotEmpty && mounted) {
-        // Navigate to the first announcement, passing the announcement data
-        context.push(CommonRoutes.announcement, extra: announcements.first);
-        _didCheckNews = true;
-      }
   }
 
   @override
   void initState() {
     super.initState();
-    // Initialize client from logged in user
-    _client = Client.fromJson(loggedInUser);
     // Initialize single MapView instance
     _mapViewInstance = MapView(key: MapView.globalKey, usingExtendedScaffold: true);
-    SchedulerBinding.instance.addPostFrameCallback((_) async {
-      // Check operator phone' s change and cached it locally. If no connection at this moment, do nothing. (App will
-      // continue using de current one saved locally).
-      _handleNetworkScopeAndListener();
-    });
+    // Register post frame callback
+    SchedulerBinding.instance.addPostFrameCallback((_) async => _handleNetworkScopeAndListeners());
   }
 
   @override
   void dispose() {
-    _scope.removeListener(_listener);
+    _scope.removeListener(_checkNewsListenerRef);
+    _scope.removeListener(_syncTravelStateListenerRef);
     super.dispose();
   }
 

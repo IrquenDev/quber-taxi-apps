@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:quber_taxi/client-app/pages/home/home.dart';
 import 'package:quber_taxi/client-app/pages/home/map.dart';
 import 'package:quber_taxi/common/models/client.dart';
 import 'package:quber_taxi/common/models/mapbox_place.dart';
@@ -17,7 +18,6 @@ import 'package:quber_taxi/enums/taxi_type.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/client_routes.dart';
-import 'package:quber_taxi/navigation/backup_navigation_manager.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/utils/runtime.dart';
 import 'package:quber_taxi/utils/map/turf.dart';
@@ -376,7 +376,6 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                 ? () async {
                     // Check it's a valid distance (means correct selection of origin and destination)
                     final distance = _usingFixedDestination ? _fixedDistance! * 1000 : _minDistance! * 1000;
-                    print(distance);
                     final isValidDistance = distance > 100;
                     if (!isValidDistance) {
                       showToast(
@@ -401,21 +400,21 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                         maxDistance: _maxDistance,
                         fixedPrice: _fixedPrice,
                         minPrice: _minPrice,
-                        maxPrice: _maxPrice);
+                        maxPrice: _maxPrice,
+                    );
                     if (!context.mounted) return;
                     if (response.statusCode == 200) {
                       final travel = Travel.fromJson(jsonDecode(response.body));
-                      // Persist backup to restore search_driver in case of app closure
-                      await BackupNavigationManager.instance.save(
-                        route: ClientRoutes.searchDriver,
-                        travel: travel,
-                      );
-                      if (!context.mounted) return;
                       // Radar animation while waiting for acceptation.
-                      final updatedTravel = await context.push<Travel?>(ClientRoutes.searchDriver, extra: travel.id);
+                      final updatedTravel = await context.push<Travel?>(
+                          ClientRoutes.searchDriver,
+                          extra: {
+                            'travelId': travel.id,
+                            'travelRequestedDate': travel.requestedDate,
+                            'wasPageRestored': false,
+                          },
+                      );
                       if (updatedTravel != null) {
-                        // Clear backup as flow has advanced
-                        await BackupNavigationManager.instance.clear();
                         if (!context.mounted) return;
                         // Navigate to TrackDriver Screen.
                         context.go(ClientRoutes.trackDriver, extra: updatedTravel);
@@ -424,9 +423,9 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                         // Cancel this travel request
                         if (hasConnection(context)) {
                           await _cancelTravelRequest(travel.id);
+                        } else {
+                          ClientHomePageState.didSyncTravelState = false;
                         }
-                        // Clear backup on cancel or timeout
-                        await BackupNavigationManager.instance.clear();
                       }
                     } else if (response.statusCode == 403) {
                       showToast(
@@ -435,7 +434,15 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                             "BLOQUEADO: Puesto que ha sido reportado por mal comportamiento ya no se le permite solicitar nuevos viajes.",
                         durationInSeconds: 4,
                       );
-                    } else {
+                    }
+                    else if(response.statusCode == 409) {
+                      showToast(
+                        context: context,
+                        message: "Ya se encuentra en un viaje activo, solo puede solicitar uno a la vez.",
+                        durationInSeconds: 4,
+                      );
+                    }
+                    else {
                       showToast(context: context, message: "Ocurrió algo mal, por favor inténtelo más tarde");
                     }
                   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/services/sos_alert_service.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/utils/runtime.dart';
@@ -24,8 +25,10 @@ import 'package:url_launcher/url_launcher.dart';
 /// );
 /// ```
 class EmergencyDialog extends StatelessWidget {
+  /// The current travel to extract IDs from.
+  final Travel travel;
   /// Creates the SOS emergency confirmation dialog.
-  const EmergencyDialog({super.key});
+  const EmergencyDialog({super.key, required this.travel});
 
   /// Opens the system phone dialer with the given [phoneNumber] and registers the SOS alert.
   ///
@@ -108,7 +111,11 @@ class EmergencyDialog extends StatelessWidget {
               onPressed: () async {
                 _launchPhoneDialer('106');
                 if(hasConnection(context)) {
-                  await SosAlertService().createSosAlert();
+                  await SosAlertService().createSosAlert(
+                    travelId: travel.id,
+                    clientId: travel.client.id,
+                    driverId: travel.driver!.id,
+                  );
                 }
                 // send data to api
               },

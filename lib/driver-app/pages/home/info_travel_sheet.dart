@@ -6,10 +6,8 @@ import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/services/driver_service.dart';
 import 'package:quber_taxi/enums/taxi_type.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
-import 'package:quber_taxi/navigation/backup_navigation_manager.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/utils/runtime.dart';
-import 'package:quber_taxi/utils/websocket/core/websocket_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class TravelInfoSheet extends StatelessWidget {
@@ -30,32 +28,25 @@ class TravelInfoSheet extends StatelessWidget {
     try {
       // Clean the phone number - remove any non-digit characters except +
       String cleanPhone = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
-      print('Original phone number: $phoneNumber');
-      print('Clean phone number: $cleanPhone');
       final Uri url = Uri(scheme: 'tel', path: cleanPhone);
-      print('Attempting to launch phone dialer with URL: $url');
       // Try with external application mode
       final bool launched = await launchUrl(
         url,
         mode: LaunchMode.externalApplication,
       );
-      if (launched) {
-        print('Phone dialer launched successfully');
-      } else {
-        print('Failed to launch phone dialer');
-
+      if (!launched) {
         // Try alternative approach with canLaunchUrl
         if (await canLaunchUrl(url)) {
-          print('canLaunchUrl returned true, trying again...');
           await launchUrl(url);
-          print('Phone dialer launched successfully on second attempt');
-        } else {
-          print('canLaunchUrl also returned false');
+        }
+        else {
           throw 'Could not launch dialer with number $cleanPhone';
         }
       }
     } catch (e) {
-      print('Error launching phone dialer: $e');
+      if (kDebugMode) {
+        print('Error launching phone dialer: $e');
+      }
       rethrow;
     }
   }
@@ -297,14 +288,13 @@ class TravelInfoSheet extends StatelessWidget {
                   var reason = await _showReportClientDialog(context);
                   if (reason != null) {
                     final response = await DriverService().reportClient(
-                      driverId: loggedInUser['id'],
+                      travelId: travel.id,
+                      driverId: travel.driver!.id,
                       clientId: travel.client.id,
                       reason: reason
                     );
                     if(!context.mounted) return;
                     if(response.statusCode == 200) {
-                      // Clear backup restoration
-                      await BackupNavigationManager.instance.clear();
                       onReportClient();
                     } else {
                       showToast(context: context, message: "No se pudo llevar a acabo el reporte");

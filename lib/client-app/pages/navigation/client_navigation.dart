@@ -1,15 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/client-app/pages/navigation/trip_completed.dart';
 import 'package:quber_taxi/common/services/admin_service.dart';
 import 'package:quber_taxi/common/services/travel_service.dart';
-import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
 import 'package:quber_taxi/common/widgets/dialogs/confirm_dialog.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
-import 'package:quber_taxi/navigation/backup_navigation_manager.dart';
-import 'package:quber_taxi/navigation/routes/client_routes.dart';
 import 'package:quber_taxi/utils/map/mapbox.dart' as mb_util;
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart' as g;
@@ -26,9 +22,9 @@ import 'package:turf/turf.dart' as turf;
 class ClientNavigation extends StatefulWidget {
 
   final Travel travel;
-  final bool wasRestored;
+  final bool wasPageRestored;
 
-  const ClientNavigation({super.key, required this.travel, this.wasRestored = false});
+  const ClientNavigation({super.key, required this.travel, this.wasPageRestored = false});
 
   @override
   State<ClientNavigation> createState() => _ClientNavigationState();
@@ -47,13 +43,13 @@ class _ClientNavigationState extends State<ClientNavigation> {
   final List<turf.Position> _realTimeRoute = [];
   StreamSubscription<g.Position>? _locationStream;
   num _distanceInKm = 0;
-  double? get _finalPrice => (widget.wasRestored || _travelPriceByTaxiType == null) ? null : _distanceInKm * _travelPriceByTaxiType!;
+  double? get _finalPrice => (widget.wasPageRestored || _travelPriceByTaxiType == null) ? null : _distanceInKm * _travelPriceByTaxiType!;
   Stopwatch? _stopwatch;
   late final FinishConfirmationHandler _confirmationHandler;
   final _travelService = TravelService();
   double? _travelPriceByTaxiType;
 
-  int? get _finalDuration => widget.wasRestored ? null : _stopwatch?.elapsed.inMinutes;
+  int? get _finalDuration => widget.wasPageRestored ? null : _stopwatch?.elapsed.inMinutes;
   bool _isTravelCompleted = false;
   late ScaffoldMessengerState _scaffoldMessenger;
 
@@ -94,14 +90,14 @@ class _ClientNavigationState extends State<ClientNavigation> {
   }
 
   void _startTrackingDistance() {
-    if (!widget.wasRestored) {
+    if (!widget.wasPageRestored) {
       _locationStream =
           g.Geolocator.getPositionStream(locationSettings: g.LocationSettings(distanceFilter: 5)).listen(_onMove);
     }
   }
 
   void _onMove(g.Position newPosition) {
-    if (widget.wasRestored) return; // Skip tracking if restored
+    if (widget.wasPageRestored) return; // Skip tracking if restored
     _stopwatch ??= Stopwatch()..start();
     _calcRealTimeDistance(newPosition);
     _updateTaxiMarker(newPosition);
@@ -109,7 +105,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
   }
 
   void _calcRealTimeDistance(g.Position newPosition) {
-    if (widget.wasRestored || _realTimeRoute.isEmpty) return;
+    if (widget.wasPageRestored || _realTimeRoute.isEmpty) return;
     final point1 = turf.Point(coordinates: _realTimeRoute.last);
     final point2 = turf.Point(coordinates: turf.Position(newPosition.longitude, newPosition.latitude));
     final segmentDistance = td.distance(point1, point2, Unit.kilometers);
@@ -117,7 +113,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
   }
 
   void _updateTaxiMarker(g.Position newPosition) async {
-    if (widget.wasRestored || _pointAnnotationManager == null) return;
+    if (widget.wasPageRestored || _pointAnnotationManager == null) return;
     final point = Point(coordinates: Position(newPosition.longitude, newPosition.latitude));
     if (_taxiMarker == null) {
       // Display marker
@@ -242,7 +238,6 @@ class _ClientNavigationState extends State<ClientNavigation> {
   void _markTravelAsCompleted() async {
     final response = await _travelService.changeState(travelId: widget.travel.id, state: TravelState.completed);
     if(response.statusCode == 200) {
-      BackupNavigationManager.instance.clear();
       setState(() {
         _isTravelCompleted = true; // show completed travel metrics (bottom sheet)
       });
@@ -256,10 +251,9 @@ class _ClientNavigationState extends State<ClientNavigation> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if(widget.wasRestored) {
+      if(widget.wasPageRestored) {
         _showRestoredBanner();
       } else {
-        await BackupNavigationManager.instance.save(route: ClientRoutes.navigation, travel: widget.travel);
         final quberConfig = await AdminService().getQuberConfig();
         _travelPriceByTaxiType = quberConfig!.travelPrice[widget.travel.taxiType]!;
       }
@@ -302,112 +296,107 @@ class _ClientNavigationState extends State<ClientNavigation> {
       bearing: 0,
       zoom: 17,
     );
-    return NetworkAlertTemplate(
-        alertBuilder: (_, status) => CustomNetworkAlert(status: status, useTopSafeArea: true),
-        alertPosition: Alignment.topCenter,
-        child: Scaffold(
-            resizeToAvoidBottomInset: true,
-            extendBody: true,
-            body: Stack(
-              children: [
-                MapWidget(
-                  styleUri: MapboxStyles.STANDARD,
-                  cameraOptions: cameraOptions,
-                  onMapCreated: (controller) => _onMapCreated(controller, colorScheme),
-                  onCameraChangeListener: _onCameraChangeListener,
-                ),
-                Positioned(
-                  top: MediaQuery.of(context).padding.top + 16,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withAlpha(25),
-                                blurRadius: 4,
-                                offset: Offset(0, 2),
-                              ),
-                            ],
+    return Scaffold(
+        resizeToAvoidBottomInset: true,
+        extendBody: true,
+        body: Stack(
+          children: [
+            MapWidget(
+              styleUri: MapboxStyles.STANDARD,
+              cameraOptions: cameraOptions,
+              onMapCreated: (controller) => _onMapCreated(controller, colorScheme),
+              onCameraChangeListener: _onCameraChangeListener,
+            ),
+            Positioned(
+              top: MediaQuery.of(context).padding.top + 16,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withAlpha(25),
+                            blurRadius: 4,
+                            offset: Offset(0, 2),
                           ),
-                          child: IconButton(
-                            onPressed: () async {
-                              final position = await g.Geolocator.getCurrentPosition();
-                              _mapController.easeTo(
-                                CameraOptions(
-                                  center: Point(
-                                    coordinates: Position(position.longitude, position.latitude),
-                                  ),
-                                  zoom: 17,
-                                ),
-                                MapAnimationOptions(duration: 1000),
-                              );
-                            },
-                            icon: Icon(Icons.my_location, color: Theme.of(context).colorScheme.primary),
-                            tooltip: 'Ver mi ubicación',
+                        ],
+                      ),
+                      child: IconButton(
+                        onPressed: () async {
+                          final position = await g.Geolocator.getCurrentPosition();
+                          _mapController.easeTo(
+                            CameraOptions(
+                              center: Point(
+                                coordinates: Position(position.longitude, position.latitude),
+                              ),
+                              zoom: 17,
+                            ),
+                            MapAnimationOptions(duration: 1000),
+                          );
+                        },
+                        icon: Icon(Icons.my_location, color: Theme.of(context).colorScheme.primary),
+                        tooltip: 'Ver mi ubicación',
+                      ),
+                    ),
+                    SizedBox(width: 12),
+                    if (!_isTravelCompleted)
+                      ElevatedButton.icon(
+                        onPressed: hasConnection(context)
+                            ? () async {
+                                // Confirmation dialog
+                                final result = await showDialog<bool>(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (context) => const ConfirmDialog(
+                                        title: 'Confirmación de finalización',
+                                        message:
+                                            "Se le notificará inmediatamente al conductor que desea terminar el viaje. Acepte solo "
+                                            "si esto es correcto."));
+                                if (result == true) {
+                                  _markTravelAsCompleted();
+                                }
+                              }
+                            : null,
+                        icon: Icon(Icons.done_outline, color: Colors.white),
+                        label: Text(
+                          'Finalizar viaje',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
-                        SizedBox(width: 12),
-                        if (!_isTravelCompleted)
-                          ElevatedButton.icon(
-                            onPressed: hasConnection(context)
-                                ? () async {
-                                    // Confirmation dialog
-                                    final result = await showDialog<bool>(
-                                        context: context,
-                                        barrierDismissible: false,
-                                        builder: (context) => const ConfirmDialog(
-                                            title: 'Confirmación de finalización',
-                                            message:
-                                                "Se le notificará inmediatamente al conductor que desea terminar el viaje. Acepte solo "
-                                                "si esto es correcto."));
-                                    if (result == true) {
-                                      _markTravelAsCompleted();
-                                    }
-                                  }
-                                : null,
-                            icon: Icon(Icons.done_outline, color: Colors.white),
-                            label: Text(
-                              'Finalizar viaje',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Theme.of(context).colorScheme.primary,
-                              foregroundColor: Colors.white,
-                              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              elevation: 4,
-                            ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).colorScheme.primary,
+                          foregroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                      ],
-                    ),
-                  ),
+                          elevation: 4,
+                        ),
+                      ),
+                  ],
                 ),
-
-              ],
+              ),
             ),
-            bottomSheet: _isTravelCompleted
-                ? ClientTripCompleted(
-                    travel: widget.travel,
-                    duration: _finalDuration,
-                    distance: widget.wasRestored ? null : _distanceInKm.toInt(),
-                    price: _finalPrice)
-                : ClientTripInfo(
-                    distance: widget.wasRestored ? null : _distanceInKm.toInt(),
-                    travelPriceByTaxiType: _travelPriceByTaxiType,
-                    originName: widget.travel.originName,
-                    destinationName: widget.travel.destinationName,
-                    taxiType: widget.travel.taxiType)));
+
+          ],
+        ),
+        bottomSheet: _isTravelCompleted
+            ? ClientTripCompleted(
+                travel: widget.travel,
+                duration: _finalDuration,
+                distance: widget.wasPageRestored ? null : _distanceInKm.toInt(),
+                price: _finalPrice)
+            : ClientTripInfo(
+                distance: widget.wasPageRestored ? null : _distanceInKm.toInt(),
+                travelPriceByTaxiType: _travelPriceByTaxiType,
+                travel: widget.travel));
   }
 }

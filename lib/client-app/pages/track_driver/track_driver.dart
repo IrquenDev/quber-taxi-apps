@@ -12,16 +12,14 @@ import 'package:quber_taxi/common/widgets/dialogs/confirm_dialog.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/client_routes.dart';
-import 'package:quber_taxi/navigation/backup_navigation_manager.dart';
 import 'package:quber_taxi/utils/websocket/impl/driver_location_handler.dart';
 import 'package:quber_taxi/utils/map/mapbox.dart' as mb_util;
 import 'package:quber_taxi/utils/websocket/impl/pickup_confirmation_handler.dart';
 
 class TrackDriverPage extends StatefulWidget {
   final Travel travel;
-  final bool wasRestored;
 
-  const TrackDriverPage({super.key, required this.travel, this.wasRestored = false});
+  const TrackDriverPage({super.key, required this.travel});
 
   @override
   State<TrackDriverPage> createState() => _TrackDriverPageState();
@@ -128,8 +126,6 @@ class _TrackDriverPageState extends State<TrackDriverPage> {
   @override
   void initState() {
     super.initState();
-    // Save backup for track_driver to allow restoration
-    BackupNavigationManager.instance.save(route: ClientRoutes.trackDriver, travel: widget.travel);
     // Prepare driver marker and activate handlers
     _loadDriverMarkerImage().then((_) {
       // Activate websocket handlers after image is loaded
@@ -159,11 +155,11 @@ class _TrackDriverPageState extends State<TrackDriverPage> {
             );
             if(!mounted) return;
             if(response.statusCode == 200) {
-              // Clear backup once navigation starts
-              await BackupNavigationManager.instance.clear();
-              if(!mounted) return;
               // Navigate to ClientNavigation passing the corresponding travel
-              context.go(ClientRoutes.navigation, extra: widget.travel);
+              context.go(ClientRoutes.navigation, extra: {
+                "travel": widget.travel,
+                "wasPageRestored": false
+              });
             }
           }
         }

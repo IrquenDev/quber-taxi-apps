@@ -479,13 +479,19 @@ class _RequestTravelAdminSheetState extends State<RequestTravelAdminSheet> {
                                 maxDistance: _maxDistance,
                                 fixedPrice: _fixedPrice,
                                 minPrice: _minPrice,
-                                maxPrice: _maxPrice);
+                                maxPrice: _maxPrice,
+                            );
                             if (!context.mounted) return;
                             if (response.statusCode == 200) {
                               final travel = Travel.fromJson(jsonDecode(response.body));
                               // Radar animation while waiting for acceptation.
                               final updatedTravel = await context.push<Travel?>(
-                                  ClientRoutes.searchDriver, extra: travel.id,
+                                ClientRoutes.searchDriver,
+                                extra: {
+                                  'travelId': travel.id,
+                                  'travelRequestedDate': travel.requestedDate,
+                                  'wasPageRestored': false,
+                                },
                               );
                               if (!context.mounted) return;
                               if (updatedTravel != null) {
@@ -518,6 +524,13 @@ class _RequestTravelAdminSheetState extends State<RequestTravelAdminSheet> {
                               showToast(
                                 context: context,
                                 message: "No hay ningún cliente registrado con el teléfono proporcionado.",
+                                durationInSeconds: 4,
+                              );
+                            }
+                            else if(response.statusCode == 409) {
+                              showToast(
+                                context: context,
+                                message: "Este cliente ya se encuentra en un viaje activo",
                                 durationInSeconds: 4,
                               );
                             }
