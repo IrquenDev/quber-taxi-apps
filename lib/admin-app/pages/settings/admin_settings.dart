@@ -568,6 +568,26 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                                           height: 1.0, thickness: 3.0,
                                           color: Theme.of(context).colorScheme.surfaceContainer,
                                         ),
+                                        // Go to clients
+                                        Padding(
+                                          padding: EdgeInsets.symmetric(horizontal: 20.0),
+                                          child: InkWell(
+                                              onTap: () {
+                                                context.push(AdminRoutes.clientsList);
+                                              },
+                                              child: Row(
+                                                  spacing: 12.0,
+                                                  children: [
+                                                    Icon(Icons.people_outline, size: 22),
+                                                    Text(localizations.viewAllClients, style: theme.textTheme.bodyLarge)
+                                                  ]
+                                              )
+                                          ),
+                                        ),
+                                        Divider(
+                                          height: 1.0, thickness: 3.0,
+                                          color: Theme.of(context).colorScheme.surfaceContainer,
+                                        ),
                                         Padding(
                                           padding: EdgeInsets.symmetric(horizontal: 20.0),
                                           child: InkWell(
