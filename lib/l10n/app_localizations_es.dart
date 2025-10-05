@@ -422,6 +422,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get viewAllDrivers => 'Ver todos los conductores';
 
   @override
+  String get viewAllClients => 'Ver todos los clientes';
+
+  @override
   String get nameDriver => 'Nombre:';
 
   @override
@@ -935,6 +938,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get driverStateSuspended => 'Suspendido';
 
   @override
+  String get clientStateBlocked => 'Bloqueado';
+
+  @override
+  String get clientStateActive => 'Activo';
+
+  @override
   String get driverBlocked => 'Cuenta Bloqueada';
 
   @override
@@ -965,6 +974,16 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get noDriversFound =>
       'No se encontraron conductores con los filtros aplicados';
+
+  @override
+  String get clients => 'Clientes';
+
+  @override
+  String get noClientsYet => 'Aún no hay clientes';
+
+  @override
+  String get noClientsFound =>
+      'No se encontraron clientes con los filtros aplicados';
 
   @override
   String get confirmAccount => 'Confirmar Cuenta';

@@ -6,6 +6,8 @@ class AdminRoutes {
 
   static const String driversList = '/drivers-list';
 
+  static const String clientsList = '/clients-list';
+
   static const String driverInfo = '/driver-info';
 
   static const String requestTaxi = '/request-taxi';
