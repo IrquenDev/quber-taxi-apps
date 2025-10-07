@@ -139,8 +139,8 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
         path: CommonRoutes.announcement,
         builder: (context, state) {
-          final announcement = state.extra as AppAnnouncement?;
-          return AppAnnouncementPage(announcement: announcement);
+          final announcements = state.extra as List<AppAnnouncement>;
+          return AppAnnouncementPage(announcements: announcements);
         })
   ],
 );

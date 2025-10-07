@@ -18,8 +18,8 @@ class AppAnnouncementService {
   ///
   /// Returns a [Future<http.Response>] containing the raw HTTP response.
   /// On success (HTTP 200), the response body contains a JSON array of announcements.
-  Future<http.Response> getAllAnnouncements() async {
-    final endpoint = switch(BuildConfig.appProfile) {
+  Future<http.Response> _getAllAnnouncements() async {
+    final endpoint = switch (BuildConfig.appProfile) {
       AppProfile.driver => "$_baseEndpoint/driver",
       AppProfile.client => "$_baseEndpoint/client",
       AppProfile.admin => "$_baseEndpoint/admin",
@@ -33,16 +33,15 @@ class AppAnnouncementService {
   ///
   /// Returns a [Future<List<AppAnnouncement>>] containing the parsed announcements.
   /// Returns an empty list if the request fails or if there are no announcements.
-  Future<List<AppAnnouncement>> getAnnouncementsList() async {
+  Future<List<AppAnnouncement>> _getAnnouncementsList() async {
     try {
-      final response = await getAllAnnouncements();
+      final response = await _getAllAnnouncements();
       if (response.statusCode == 200) {
         final List<dynamic> jsonList = jsonDecode(response.body);
         return jsonList.map((json) => AppAnnouncement.fromJson(json)).toList();
       }
       return [];
     } catch (e) {
-      // Log error or handle it as needed
       return [];
     }
   }
@@ -52,12 +51,9 @@ class AppAnnouncementService {
   /// This method filters announcements based on conditional logic,
   /// including app version requirements and other criteria.
   Future<List<AppAnnouncement>> getActiveAnnouncements() async {
-    final announcements = await getAnnouncementsList();
-    
+    final announcements = await _getAnnouncementsList();
     // Filter announcements based on conditional logic
-    final filteredAnnouncements = await AnnouncementConditionService
-        .filterConditionalAnnouncements(announcements);
-    
+    final filteredAnnouncements = await AnnouncementConditionService.filterConditionalAnnouncements(announcements);
     return filteredAnnouncements;
   }
-} 
+}
