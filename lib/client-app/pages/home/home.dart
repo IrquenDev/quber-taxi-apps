@@ -12,14 +12,12 @@ import 'package:quber_taxi/client-app/pages/home/request_travel_sheet.dart';
 import 'package:quber_taxi/client-app/pages/settings/account_setting.dart';
 import 'package:quber_taxi/common/models/client.dart';
 import 'package:quber_taxi/common/models/travel.dart';
-import 'package:quber_taxi/common/services/admin_service.dart';
 import 'package:quber_taxi/common/services/app_announcement_service.dart';
 import 'package:quber_taxi/common/services/travel_service.dart';
 import 'package:quber_taxi/common/widgets/dialogs/circular_info_dialog.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/client_routes.dart';
-import 'package:quber_taxi/navigation/routes/common_routes.dart';
 import 'package:quber_taxi/storage/config_prefs_manager.dart';
 import 'package:quber_taxi/storage/favorites_prefs_manager.dart';
 import 'package:quber_taxi/utils/runtime.dart';
@@ -46,14 +44,12 @@ class ClientHomePageState extends State<ClientHomePage> {
   late final MapView _mapViewInstance;
 
   // Http Services
-  final _announcementService = AppAnnouncementService();
   final _travelService = TravelService();
 
   // NetworkChecker
   late final NetworkScope _scope;
   late void Function() _checkNewsListenerRef;
   late void Function() _syncTravelStateListenerRef;
-  static bool _didCheckNews = false;
   static bool didSyncTravelState = false;
 
   // Logged in user
@@ -66,36 +62,12 @@ class ClientHomePageState extends State<ClientHomePage> {
     // We need to register a connection status listener, as it depends on ConnectionStatus being online to execute
     // _checkClientAccountState. If the client is offline (any status other than checking or online), they won't be
     // able to continue.
-    _checkNewsListenerRef = _scope.registerListener(_checkNewsListener);
     _syncTravelStateListenerRef = _scope.registerListener(_syncTravelStateListener);
     // Since execution times are not always the same, it's possible that when the listeners are registered, the current
     // status is already online, so the listeners won't be notified. This is why we must make an initial manual call.
     // In any case, calls will not be duplicated since they are being protected with an inner flag.
     if(isAlreadyOnline) {
-      _checkNewsListener(connStatus);
       _syncTravelStateListener(connStatus);
-    }
-  }
-
-  Future<void> _checkNewsListener(ConnectionStatus status) async {
-    if(status == ConnectionStatus.checking) return;
-    final isConnected = status == ConnectionStatus.online;
-    if(isConnected) {
-      await _checkNews();
-    }
-  }
-
-  Future<void> _checkNews() async {
-    if (_didCheckNews) return;
-    final quberConfig  = await AdminService().getQuberConfig();
-    if(quberConfig != null) {
-      await ConfigPrefsManager.instance.saveOperatorPhone(quberConfig.operatorPhone);
-    }
-    final announcements = await _announcementService.getActiveAnnouncements();
-    if (announcements.isNotEmpty && mounted) {
-      // Navigate to the first announcement, passing the announcement data
-      context.push(CommonRoutes.announcement, extra: announcements.first);
-      _didCheckNews = true;
     }
   }
 

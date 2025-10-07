@@ -12,6 +12,8 @@ enum AppProfile {
   /// Refers to the Admin App.
   admin;
 
+  String get apiValue => name.toUpperCase();
+
   /// Resolves an [AppProfile] from a given string value (case-insensitive).
   static AppProfile resolve() {
     return AppProfile.values.firstWhere((e) => e.name == appFlavor);

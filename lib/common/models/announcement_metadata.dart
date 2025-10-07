@@ -14,7 +14,7 @@ class AnnouncementMetadata implements Encodable {
   @override
   Map<String, dynamic> toJson() => {
     "appVersion": appVersion,
-    "conditionalAnnouncement": conditional,
+    "conditional": conditional,
   };
 
   factory AnnouncementMetadata.fromJson(Map<String, dynamic> json) {

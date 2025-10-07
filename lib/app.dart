@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:network_checker/network_checker.dart';
 import 'package:device_preview/device_preview.dart';
+import 'package:quber_taxi/common/widgets/announcement_wrapper.dart';
 import 'package:quber_taxi/theme/theme.dart';
 import 'config/api_config.dart';
 import 'l10n/app_localizations.dart';
@@ -30,7 +31,7 @@ class App extends StatelessWidget {
             timeLimit: const Duration(seconds: 3),
           ),
           alertBuilder: null,
-          child: child!,
+          child: AnnouncementWrapper(child: child!),
         ),
       ),
     );

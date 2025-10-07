@@ -1,29 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:quber_taxi/common/models/app_announcement.dart';
 import 'package:quber_taxi/enums/linkable_type.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class AppAnnouncementPage extends StatelessWidget {
-  final AppAnnouncement? announcement;
+class AppAnnouncementPage extends StatefulWidget {
+  final List<AppAnnouncement> announcements;
+  final VoidCallback? onDone;
+  final Function(List<int>)? onCacheAnnouncements;
   
-  const AppAnnouncementPage({super.key, this.announcement});
+  const AppAnnouncementPage({
+    super.key, 
+    required this.announcements,
+    this.onDone,
+    this.onCacheAnnouncements,
+  });
+
+  @override
+  State<AppAnnouncementPage> createState() => _AppAnnouncementPageState();
+}
+
+class _AppAnnouncementPageState extends State<AppAnnouncementPage> {
+  int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
+    if (widget.announcements.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final announcement = widget.announcements[_currentIndex];
+    final isLastAnnouncement = _currentIndex == widget.announcements.length - 1;
     final strings = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final screenHeight = MediaQuery.of(context).size.height;
-
     // Use announcement data or fallback to placeholders
-    final title = announcement?.title ?? strings.titlePlaceholder;
-    final description = announcement?.description ?? strings.descriptionPlaceholder;
-    final imageUrl = announcement?.imageUrl;
-    final backgroundColor = announcement?.backgroundColor;
-    final isDismissible = announcement?.isDismissible ?? false;
-
+    final title = announcement.title;
+    final description = announcement.description ?? strings.descriptionPlaceholder;
+    final imageUrl = announcement.imageUrl;
+    final backgroundColor = announcement.backgroundColor;
     // Parse background color from hex string
     Color? parsedBackgroundColor;
     if (backgroundColor != null && backgroundColor.isNotEmpty) {
@@ -39,11 +55,32 @@ class AppAnnouncementPage extends StatelessWidget {
         parsedBackgroundColor = null;
       }
     }
-
-    return PopScope(
-      canPop: isDismissible,
-      child: Scaffold(
+    return Scaffold(
         backgroundColor: parsedBackgroundColor ?? colorScheme.surface,
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            // Only allow action if current announcement is dismissible
+            if (announcement.isDismissible) {
+              if (isLastAnnouncement) {
+                // Cache all announcement IDs and call done callback
+                final announcementIds = widget.announcements.map((a) => a.id).toList();
+                widget.onCacheAnnouncements?.call(announcementIds);
+                widget.onDone?.call();
+              } else {
+                // Move to next announcement
+                setState(() {
+                  _currentIndex++;
+                });
+              }
+            }
+            // If not dismissible, do nothing (locked)
+          },
+          child: Icon(
+            announcement.isDismissible
+              ? (isLastAnnouncement ? Icons.done : Icons.arrow_forward)
+              : Icons.lock
+          ),
+        ),
         body: Stack(
           children: [
             SafeArea(
@@ -87,10 +124,10 @@ class AppAnnouncementPage extends StatelessWidget {
                       ),
                     
                     // Linkable text - show as clickable link if available
-                    if (_shouldShowLinkable())
+                    if (_shouldShowLinkable(announcement))
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-                        child: _buildLinkableWidget(context, textTheme, colorScheme, parsedBackgroundColor),
+                        child: _buildLinkableWidget(context, textTheme, colorScheme, parsedBackgroundColor, announcement),
                       ),
                     
                     // Bottom spacing
@@ -99,24 +136,8 @@ class AppAnnouncementPage extends StatelessWidget {
                 ),
               ),
             ),
-            // Close button in top right corner - only show if dismissible
-            if (isDismissible)
-              Positioned(
-                top: 16,
-                right: 16,
-                child: SafeArea(
-                  child: IconButton(
-                    onPressed: () => context.pop(),
-                    icon: Icon(
-                      Icons.close,
-                      color: _getTextColor(parsedBackgroundColor, colorScheme),
-                    ),
-                  ),
-                ),
-              ),
           ],
         ),
-      ),
     );
   }
 
@@ -182,32 +203,32 @@ class AppAnnouncementPage extends StatelessWidget {
     return colorScheme.onSurfaceVariant;
   }
 
-  bool _shouldShowLinkable() {
-    if (announcement?.linkableType == LinkableType.NONE) return false;
+  bool _shouldShowLinkable(AppAnnouncement announcement) {
+    if (announcement.linkableType == LinkableType.none) return false;
     
     // Show if we have linkableText OR linkableUrl
-    return (announcement?.linkableText != null && announcement!.linkableText!.isNotEmpty) ||
-           (announcement?.linkableUrl != null && announcement!.linkableUrl!.isNotEmpty);
+    return (announcement.linkableText != null && announcement.linkableText!.isNotEmpty) ||
+           (announcement.linkableUrl != null && announcement.linkableUrl!.isNotEmpty);
   }
 
-  String _getLinkableDisplayText() {
+  String _getLinkableDisplayText(AppAnnouncement announcement) {
     // If linkableText exists, use it. Otherwise use linkableUrl
-    if (announcement?.linkableText != null && announcement!.linkableText!.isNotEmpty) {
-      return announcement!.linkableText!;
-    } else if (announcement?.linkableUrl != null && announcement!.linkableUrl!.isNotEmpty) {
-      return announcement!.linkableUrl!;
+    if (announcement.linkableText != null && announcement.linkableText!.isNotEmpty) {
+      return announcement.linkableText!;
+    } else if (announcement.linkableUrl != null && announcement.linkableUrl!.isNotEmpty) {
+      return announcement.linkableUrl!;
     }
     return '';
   }
 
-  Widget _buildLinkableWidget(BuildContext context, TextTheme textTheme, ColorScheme colorScheme, Color? parsedBackgroundColor) {
-    final displayText = _getLinkableDisplayText();
+  Widget _buildLinkableWidget(BuildContext context, TextTheme textTheme, ColorScheme colorScheme, Color? parsedBackgroundColor, AppAnnouncement announcement) {
+    final displayText = _getLinkableDisplayText(announcement);
     final textColor = _getSecondaryTextColor(parsedBackgroundColor, colorScheme);
     
-    if (announcement?.linkableType == LinkableType.BUTTON) {
+    if (announcement.linkableType == LinkableType.button) {
       // Show as outlined button for BUTTON type
       return OutlinedButton(
-        onPressed: () => _handleLinkableTap(context),
+        onPressed: () => _handleLinkableTap(context, announcement),
         style: OutlinedButton.styleFrom(
           foregroundColor: textColor,
           side: BorderSide(color: textColor),
@@ -218,7 +239,7 @@ class AppAnnouncementPage extends StatelessWidget {
     } else {
       // Show as underlined text for TEXT type (default)
       return GestureDetector(
-        onTap: () => _handleLinkableTap(context),
+        onTap: () => _handleLinkableTap(context, announcement),
         child: Text(
           displayText,
           style: textTheme.bodyLarge?.copyWith(
@@ -232,16 +253,16 @@ class AppAnnouncementPage extends StatelessWidget {
     }
   }
 
-  void _handleLinkableTap(BuildContext context) async {
-    if (announcement?.linkableUrl == null || announcement!.linkableUrl!.isEmpty) {
+  void _handleLinkableTap(BuildContext context, AppAnnouncement announcement) async {
+    if (announcement.linkableUrl == null || announcement.linkableUrl!.isEmpty) {
       return;
     }
     
-    final url = announcement!.linkableUrl!;
+    final url = announcement.linkableUrl!;
     
-    switch (announcement!.linkableType) {
-      case LinkableType.TEXT:
-      case LinkableType.BUTTON:
+    switch (announcement.linkableType) {
+      case LinkableType.text:
+      case LinkableType.button:
         try {
           final uri = Uri.parse(url);
           
@@ -260,10 +281,9 @@ class AppAnnouncementPage extends StatelessWidget {
           );
         }
         break;
-      
-      case LinkableType.NONE:
-      default:
-        // No action for NONE type
+
+      case LinkableType.none:
+      // No action for NONE type
         break;
     }
   }

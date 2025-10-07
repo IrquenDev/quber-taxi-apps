@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -13,16 +14,15 @@ import 'package:quber_taxi/client-app/pages/home/map.dart';
 import 'package:quber_taxi/common/models/driver.dart';
 import 'package:quber_taxi/common/models/travel.dart';
 import 'package:quber_taxi/common/services/account_service.dart';
-import 'package:quber_taxi/common/services/app_announcement_service.dart';
 import 'package:quber_taxi/common/services/driver_service.dart';
 import 'package:quber_taxi/common/services/travel_service.dart';
 import 'package:quber_taxi/common/widgets/custom_network_alert.dart';
 import 'package:quber_taxi/common/widgets/dialogs/circular_info_dialog.dart';
 import 'package:quber_taxi/common/widgets/dialogs/info_dialog.dart';
 import 'package:quber_taxi/driver-app/pages/home/available_travels_sheet.dart';
+import 'package:quber_taxi/driver-app/pages/home/blocked_sheet.dart';
 import 'package:quber_taxi/driver-app/pages/home/info_travel_sheet.dart';
 import 'package:quber_taxi/driver-app/pages/home/needs_approval_sheet.dart';
-import 'package:quber_taxi/driver-app/pages/home/blocked_sheet.dart';
 import 'package:quber_taxi/driver-app/pages/home/trip_card.dart';
 import 'package:quber_taxi/driver-app/pages/home/trip_notification.dart';
 import 'package:quber_taxi/enums/driver_account_state.dart';
@@ -30,10 +30,9 @@ import 'package:quber_taxi/enums/municipalities.dart';
 import 'package:quber_taxi/enums/travel_request_type.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
-import 'package:quber_taxi/navigation/routes/common_routes.dart';
 import 'package:quber_taxi/navigation/routes/driver_routes.dart';
-import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/storage/session_prefs_manger.dart';
+import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/utils/map/geolocator.dart' as g_util;
 import 'package:quber_taxi/utils/map/mapbox.dart' as mb_util;
 import 'package:quber_taxi/utils/map/turf.dart' as turf_util;
@@ -103,7 +102,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
 
   // Http Services
   final _driverService = DriverService();
-  final _announcementService = AppAnnouncementService();
   final _travelService = TravelService();
 
   // Handling new travel requests
@@ -126,7 +124,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
   late void Function() _checkNewsListenerRef;
   late void Function() _syncTravelStateListenerRef;
   bool _didCheckAccount = false;
-  bool _didCheckNews = false;
   bool _didSyncTravelState = false;
   
   // Travel info sheet controller
@@ -165,14 +162,12 @@ class _DriverHomePageState extends State<DriverHomePage> {
     // _checkClientAccountState. If the client is offline (any status other than checking or online), they won't be
     // able to continue.
     _checkDriverAccountStateListenerRef = _scope.registerListener(_checkDriverAccountStateListener);
-    _checkNewsListenerRef = _scope.registerListener(_checkNewsListener);
     _syncTravelStateListenerRef = _scope.registerListener(_syncTravelStateListener);
     // Since execution times are not always the same, it's possible that when the listeners are registered, the current
     // status is already online, so the listeners won't be notified. This is why we must make an initial manual call.
     // In any case, calls will not be duplicated since they are being protected with an inner flag.
     if(isAlreadyOnline) {
       _checkDriverAccountStateListener(connStatus);
-      _checkNewsListener(connStatus);
       _syncTravelStateListener(connStatus);
     }
   }
@@ -194,8 +189,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
     // Avoid context's gaps
     if (!mounted) return;
     // Handle OK
-    print("API response status code: ${response.statusCode}");
-    print("API response body: ${response.body}");
     if (response.statusCode == 200) {
       _driver = Driver.fromJson(jsonDecode(response.body));
       // Always update session
@@ -228,36 +221,6 @@ class _DriverHomePageState extends State<DriverHomePage> {
           _hideApprovalSheet();
           _showBlockedSheet();
           break;
-      }
-    }
-  }
-
-  Future<void> _checkNewsListener(ConnectionStatus status) async {
-    if (!_didCheckNews) {
-      if(status == ConnectionStatus.checking) return;
-      final isConnected =  status == ConnectionStatus.online;
-      if(isConnected) {
-        await _checkNews();
-        _didCheckNews = true;
-      }
-    }
-  }
-
-  Future<void> _checkNews() async {
-    if (_didCheckNews) return;
-
-    try {
-      final announcements = await _announcementService.getActiveAnnouncements();
-
-      if (announcements.isNotEmpty && mounted) {
-        // Navigate to the first announcement, passing the announcement data
-        context.push(CommonRoutes.announcement, extra: announcements.first);
-        _didCheckNews = true;
-      }
-    } catch (e) {
-      // Handle error silently - announcements are not critical for app functionality
-      if (kDebugMode) {
-        print('Error checking announcements: $e');
       }
     }
   }
