@@ -149,6 +149,7 @@
   "otherActionsTitle": "Otras acciones",
   "viewAllTrips": "Ver todos los viajes",
   "viewAllDrivers": "Ver todos los conductores",
+  "viewAllClients": "Ver todos los clientes",
 
 
   "nameDriver": "Nombre:",
@@ -323,6 +324,9 @@
       "driverStateEnabled": "Habilitado",
       "driverStateDisabled": "Deshabilitado",
       "driverStateSuspended": "Suspendido",
+
+      "clientStateBlocked": "Bloqueado",
+      "clientStateActive": "Activo",
       "driverBlocked": "Cuenta Bloqueada",
       "driverBlockedMessage": "Su cuenta de conductor ha sido bloqueada. Por favor, diríjase a nuestra oficina en Calle 4ta / Central y mercado, reparto Martín Pérez, San Miguel del Padrón",
 
@@ -335,6 +339,10 @@
       "drivers": "Conductores",
       "noDriversYet": "Aún no hay conductores",
       "noDriversFound": "No se encontraron conductores con los filtros aplicados",
+
+      "clients": "Clientes",
+      "noClientsYet": "Aún no hay clientes",
+      "noClientsFound": "No se encontraron clientes con los filtros aplicados",
       "confirmAccount": "Confirmar Cuenta",
       "confirmPayment": "Confirmar Pago",
       "actions": "Acciones",

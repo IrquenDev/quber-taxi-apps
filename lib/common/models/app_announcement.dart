@@ -24,7 +24,7 @@ class AppAnnouncement implements Encodable {
     this.backgroundColor,
     this.linkableText,
     this.linkableUrl,
-    this.linkableType = LinkableType.NONE,
+    this.linkableType = LinkableType.none,
     this.isDismissible = false,
     this.metadata,
   });
@@ -38,7 +38,7 @@ class AppAnnouncement implements Encodable {
     "backgroundColor": backgroundColor,
     "linkableText": linkableText,
     "linkableUrl": linkableUrl,
-    "linkableType": linkableType.value,
+    "linkableType": linkableType.apiValue,
     "dismissible": isDismissible,
     "metadata": metadata?.toJson(),
   };
@@ -52,7 +52,7 @@ class AppAnnouncement implements Encodable {
       backgroundColor: json["backgroundColor"],
       linkableText: json["linkableText"],
       linkableUrl: json["linkableUrl"],
-      linkableType: LinkableTypeExtension.fromString(json["linkableType"] ?? "NONE"),
+      linkableType: LinkableType.resolve(json["linkableType"]),
       isDismissible: json["dismissible"] ?? false,
       metadata: json["metadata"] != null 
           ? AnnouncementMetadata.fromJson(Map<String, dynamic>.from(json["metadata"]))

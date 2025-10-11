@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
+import 'package:quber_taxi/common/models/client.dart';
 import 'package:quber_taxi/common/models/driver.dart';
 import 'package:quber_taxi/config/api_config.dart';
 import 'package:quber_taxi/enums/taxi_type.dart';
@@ -119,6 +120,16 @@ class AccountService {
     }
     final List<dynamic> jsonList = jsonDecode(response.body);
     return jsonList.map((json) => Driver.fromJson(json)).toList();
+  }
+
+  Future<List<Client>> findAllClients() async {
+    final url = Uri.parse('$_endpoint/client/all');
+    final response = await http.get(url);
+    if (response.body.trim().isEmpty) {
+      return [];
+    }
+    final List<dynamic> jsonList = jsonDecode(response.body);
+    return jsonList.map((json) => Client.fromJson(json)).toList();
   }
 
   Future<http.Response> updateClient(

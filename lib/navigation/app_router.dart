@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
+import 'package:quber_taxi/admin-app/pages/clients_list/client_list_page.dart';
 import 'package:quber_taxi/admin-app/pages/driver_info/driver_info.dart';
 import 'package:quber_taxi/admin-app/pages/drivers_list/driver_list_page.dart';
 import 'package:quber_taxi/admin-app/pages/request_taxi/request_taxi_screen.dart';
@@ -127,6 +128,7 @@ final GoRouter appRouter = GoRouter(
     GoRoute(path: AdminRoutes.settings, builder: (context, state) => const AdminSettingsPage()),
     GoRoute(path: AdminRoutes.tripsList, builder: (context, state) => const CompletedTripsPage()),
     GoRoute(path: AdminRoutes.driversList, builder: (context, state) => const DriversListPage()),
+    GoRoute(path: AdminRoutes.clientsList, builder: (context, state) => const ClientsListPage()),
     GoRoute(path: AdminRoutes.requestTaxi, builder: (context, state) => const RequestTaxiScreenAdmin()),
     GoRoute(
         path: AdminRoutes.driverInfo,
@@ -137,8 +139,8 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
         path: CommonRoutes.announcement,
         builder: (context, state) {
-          final announcement = state.extra as AppAnnouncement?;
-          return AppAnnouncementPage(announcement: announcement);
+          final announcements = state.extra as List<AppAnnouncement>;
+          return AppAnnouncementPage(announcements: announcements);
         })
   ],
 );

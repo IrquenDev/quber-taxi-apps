@@ -884,6 +884,12 @@ abstract class AppLocalizations {
   /// **'Ver todos los conductores'**
   String get viewAllDrivers;
 
+  /// No description provided for @viewAllClients.
+  ///
+  /// In es, this message translates to:
+  /// **'Ver todos los clientes'**
+  String get viewAllClients;
+
   /// No description provided for @nameDriver.
   ///
   /// In es, this message translates to:
@@ -1808,6 +1814,18 @@ abstract class AppLocalizations {
   /// **'Suspendido'**
   String get driverStateSuspended;
 
+  /// No description provided for @clientStateBlocked.
+  ///
+  /// In es, this message translates to:
+  /// **'Bloqueado'**
+  String get clientStateBlocked;
+
+  /// No description provided for @clientStateActive.
+  ///
+  /// In es, this message translates to:
+  /// **'Activo'**
+  String get clientStateActive;
+
   /// No description provided for @driverBlocked.
   ///
   /// In es, this message translates to:
@@ -1867,6 +1885,24 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'No se encontraron conductores con los filtros aplicados'**
   String get noDriversFound;
+
+  /// No description provided for @clients.
+  ///
+  /// In es, this message translates to:
+  /// **'Clientes'**
+  String get clients;
+
+  /// No description provided for @noClientsYet.
+  ///
+  /// In es, this message translates to:
+  /// **'Aún no hay clientes'**
+  String get noClientsYet;
+
+  /// No description provided for @noClientsFound.
+  ///
+  /// In es, this message translates to:
+  /// **'No se encontraron clientes con los filtros aplicados'**
+  String get noClientsFound;
 
   /// No description provided for @confirmAccount.
   ///

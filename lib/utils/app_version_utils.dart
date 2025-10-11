@@ -24,8 +24,12 @@ class AppVersionUtils {
     // Ensure both lists have the same length by padding with zeros
     final maxLength = v1Parts.length > v2Parts.length ? v1Parts.length : v2Parts.length;
     
-    while (v1Parts.length < maxLength) v1Parts.add(0);
-    while (v2Parts.length < maxLength) v2Parts.add(0);
+    while (v1Parts.length < maxLength) {
+      v1Parts.add(0);
+    }
+    while (v2Parts.length < maxLength) {
+      v2Parts.add(0);
+    }
     
     for (int i = 0; i < maxLength; i++) {
       final comparison = v1Parts[i].compareTo(v2Parts[i]);

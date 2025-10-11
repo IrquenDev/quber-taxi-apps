@@ -1,0 +1,213 @@
+name: Android Build and Distribute
+
+#Modify to use your current project package
+env:
+  PACKAGE_NAME: [USE_YOUR_PROJECT_PACKAGE]
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  version:
+    name: Create version number
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.gitversion.outputs.nuGetVersion }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.10.2
+        with:
+          versionSpec: "5.x"
+
+      - name: Use GitVersion
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v0.10.2
+
+      - name: Create version.txt with nuGetVersion
+        run: echo "${{ steps.gitversion.outputs.nuGetVersion }}" > version.txt
+
+      - name: Verify version.txt
+        run: |
+          pwd && ls -l 
+          echo "Version: ${{ steps.gitversion.outputs.nuGetVersion }}"
+          cat version.txt
+      - name: Upload version.txt
+        uses: actions/upload-artifact@v4
+        with:
+          name: gitversion
+          path: ./version.txt
+          overwrite: true
+
+  build:
+    name: Create Android Build
+    needs: version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get version.txt
+        uses: actions/download-artifact@v4
+        with:
+          name: gitversion
+
+      - name: Read version from file
+        id: version
+        run: |
+          VERSION=$(tr -d '\n' < ./version.txt)
+          echo "content=$VERSION" >> $GITHUB_OUTPUT
+          echo "Version read: $VERSION"
+      - name: Update version in YAML
+        run: |
+          sed -i "s/^version:.*/version: ${{ steps.version.outputs.content }}+${{ github.run_number }}/" pubspec.yaml
+      - name: Download Android keystore
+        id: android_keystore
+        uses: timheuer/base64-to-file@v1.2
+        with:
+          fileName: 'upload-keystore.jks'
+          encodedString: '${{ secrets.RONNY_ANDROID_KEYSTORE_ALIAS }}'
+
+      - name: Create key.properties
+        run: |
+          echo "storeFile=${{ steps.android_keystore.outputs.filePath }}" > android/key.properties
+          echo "storePassword=${{ secrets.RONNY_ANDROID_KEYSTORE_PASSWORD }}" >> android/key.properties
+          echo "keyPassword=${{ secrets.RONNY_ANDROID_KEYSTORE_PASSWORD }}" >> android/key.properties
+          echo "keyAlias=${{ secrets.RONNY_ANDROID_KEYSTORE_ALIAS }}" >> android/key.properties
+          echo "Key properties created:"
+          pwd
+          ls -l ${{ steps.android_keystore.outputs.filePath }}
+          ls -l android/key.properties
+
+      #Modify to use your current project env variables
+      - name: Create env file
+        run: |
+          touch .env
+          echo "BASE_URL=${{ secrets.BASE_URL }}" >> .env
+          echo "MAPBOX_ACCESS_TOKEN=${{ secrets.MAPBOX_ACCESS_TOKEN }}" >> .env
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: "17"
+          cache: gradle
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.x"
+          channel: 'stable'
+          cache: true
+
+      - name: Accept Android SDK licenses
+        run: yes | flutter doctor --android-licenses
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Generate files
+        run: flutter pub run build_runner build --delete-conflicting-outputs
+
+      - name: Build Android App Bundle (AAB)
+        run: |
+          flutter build appbundle
+          echo "AAB Build completed. Checking output:"
+          pwd
+          ls -l build/app/outputs/bundle/release/app-release.aab
+
+      - name: Upload Android AAB Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-release-aab
+          path: build/app/outputs/bundle/release/app-release.aab
+          retention-days: 30
+
+      - name: Upload Debug Symbols
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-symbols
+          path: build/app/intermediates/merged_native_libs/release/mergeReleaseNativeLibs/out/lib
+          retention-days: 30
+
+      - name: Upload Mapping File
+        uses: actions/upload-artifact@v4
+        with:
+          name: mapping
+          path: build/app/outputs/mapping/release/mapping.txt
+          retention-days: 30
+
+  deploy_playstore:
+    name: Deploy to Google Play Store
+    needs: [ version, build ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Android AAB Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: android-release-aab
+          path: ./release
+
+      - name: Download Debug Symbols
+        uses: actions/download-artifact@v4
+        with:
+          name: debug-symbols
+          path: ./release/debug-symbols
+
+      - name: Download Mapping File
+        uses: actions/download-artifact@v4
+        with:
+          name: mapping
+          path: ./release
+
+      - name: Download Version Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: gitversion
+
+      - name: Read version for release notes
+        id: version
+        run: |
+          VERSION=$(tr -d '\n' < ./version.txt)
+          echo "content=$VERSION" >> $GITHUB_OUTPUT
+          echo "Version for Play Store: $VERSION"
+      - name: Verify downloaded files
+        run: |
+          echo "Current directory contents:"
+          ls -la
+          echo "Release directory contents:"
+          ls -la ./release/
+          echo "Checking AAB:"
+          ls -l ./release/app-release.aab
+          echo "Checking mapping file:"
+          ls -l ./release/mapping.txt
+          echo "Checking debug symbols:"
+          ls -la ./release/debug-symbols/
+      - name: Deploy to Google Play Store
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: ${{ env.PACKAGE_NAME }}
+          releaseFiles: ./release/app-release.aab
+          debugSymbols: ./release/debug-symbols
+          mappingFile: ./release/mapping.txt
+          track: production
+          status: completed
+
+      - name: Deployment Success Notification
+        run: |
+          echo "GOOGLE PLAY STORE DEPLOYMENT COMPLETED" >> $GITHUB_STEP_SUMMARY
+          echo "================================================" >> $GITHUB_STEP_SUMMARY
+          echo "Version: ${{ steps.version.outputs.content }}+${{ github.run_number }}" >> $GITHUB_STEP_SUMMARY
+          echo "Track: production" >> $GITHUB_STEP_SUMMARY
+          echo "Status: completed" >> $GITHUB_STEP_SUMMARY
+          echo "Build Date: $(date)" >> $GITHUB_STEP_SUMMARY
+          echo "Commit: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "Branch: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "================================================"
