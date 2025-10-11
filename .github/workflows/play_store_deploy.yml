@@ -2,7 +2,7 @@ name: Android Build and Distribute
 
 #Modify to use your current project package
 env:
-  PACKAGE_NAME: [USE_YOUR_PROJECT_PACKAGE]
+  PACKAGE_NAME: com.irquen.quber_taxi"
 
 on:
   workflow_dispatch:
