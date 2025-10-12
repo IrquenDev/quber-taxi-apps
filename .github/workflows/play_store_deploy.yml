@@ -2,7 +2,8 @@ name: Android Build and Distribute
 
 #Modify to use your current project package
 env:
-  PACKAGE_NAME: com.irquen.quber_taxi"
+  PACKAGE_NAME: com.irquen.quber_taxi
+  FLAVOR: client
 
 on:
   workflow_dispatch:
@@ -117,30 +118,30 @@ jobs:
 
       - name: Build Android App Bundle (AAB)
         run: |
-          flutter build appbundle
+          flutter build appbundle --flavor ${{ env.FLAVOR }} --release
           echo "AAB Build completed. Checking output:"
           pwd
-          ls -l build/app/outputs/bundle/release/app-release.aab
+          ls -l build/app/outputs/bundle/${{ env.FLAVOR }}Release/app-${{ env.FLAVOR }}-release.aab
 
       - name: Upload Android AAB Artifact
         uses: actions/upload-artifact@v4
         with:
           name: android-release-aab
-          path: build/app/outputs/bundle/release/app-release.aab
+          path: build/app/outputs/bundle/${{ env.FLAVOR }}Release/app-${{ env.FLAVOR }}-release.aab
           retention-days: 30
 
       - name: Upload Debug Symbols
         uses: actions/upload-artifact@v4
         with:
           name: debug-symbols
-          path: build/app/intermediates/merged_native_libs/release/mergeReleaseNativeLibs/out/lib
+          path: build/app/intermediates/merged_native_libs/${{ env.FLAVOR }}Release/merge${{ env.FLAVOR }}ReleaseNativeLibs/out/lib
           retention-days: 30
 
       - name: Upload Mapping File
         uses: actions/upload-artifact@v4
         with:
           name: mapping
-          path: build/app/outputs/mapping/release/mapping.txt
+          path: build/app/outputs/mapping/${{ env.FLAVOR }}Release/mapping.txt
           retention-days: 30
 
   deploy_playstore:
@@ -184,7 +185,7 @@ jobs:
           echo "Release directory contents:"
           ls -la ./release/
           echo "Checking AAB:"
-          ls -l ./release/app-release.aab
+          ls -l ./release/*.aab
           echo "Checking mapping file:"
           ls -l ./release/mapping.txt
           echo "Checking debug symbols:"
@@ -194,7 +195,7 @@ jobs:
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
           packageName: ${{ env.PACKAGE_NAME }}
-          releaseFiles: ./release/app-release.aab
+          releaseFiles: ./release/*.aab
           debugSymbols: ./release/debug-symbols
           mappingFile: ./release/mapping.txt
           track: production
