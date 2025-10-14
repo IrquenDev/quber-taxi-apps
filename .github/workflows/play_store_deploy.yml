@@ -130,11 +130,18 @@ jobs:
           path: build/app/outputs/bundle/${{ env.FLAVOR }}Release/app-${{ env.FLAVOR }}-release.aab
           retention-days: 30
 
+      - name: Prepare Flavor Name for Debug Symbols Path
+        id: flavor_cap
+        run: |
+          FLAVOR_CAP="$(echo ${{ env.FLAVOR }} | sed 's/^./\U&/')"
+          echo "capitalized=$FLAVOR_CAP" >> $GITHUB_OUTPUT
+          echo "Capitalized flavor: $FLAVOR_CAP"
+      
       - name: Upload Debug Symbols
         uses: actions/upload-artifact@v4
         with:
           name: debug-symbols
-          path: build/app/intermediates/merged_native_libs/${{ env.FLAVOR }}Release/merge${{ env.FLAVOR }}ReleaseNativeLibs/out/lib
+          path: build/app/intermediates/merged_native_libs/${{ env.FLAVOR }}Release/merge${{ steps.flavor_cap.outputs.capitalized }}ReleaseNativeLibs/out/lib
           retention-days: 30
 
       - name: Upload Mapping File
