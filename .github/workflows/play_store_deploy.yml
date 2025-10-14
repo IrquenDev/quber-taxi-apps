@@ -205,7 +205,12 @@ jobs:
           releaseFiles: ./release/*.aab
           debugSymbols: ./release/debug-symbols
           mappingFile: ./release/mapping.txt
-          track: production
+          # Available tracks: internal, alpha, beta, production
+          # - internal: Internal testing (up to 100 testers)
+          # - alpha: Closed testing alpha track
+          # - beta: Open/closed testing beta track
+          # - production: Production release for all users
+          track: internal
           status: completed
 
       - name: Deployment Success Notification
@@ -213,7 +218,7 @@ jobs:
           echo "GOOGLE PLAY STORE DEPLOYMENT COMPLETED" >> $GITHUB_STEP_SUMMARY
           echo "================================================" >> $GITHUB_STEP_SUMMARY
           echo "Version: ${{ steps.version.outputs.content }}+${{ github.run_number }}" >> $GITHUB_STEP_SUMMARY
-          echo "Track: production" >> $GITHUB_STEP_SUMMARY
+          echo "Track: internal (Internal Testing)" >> $GITHUB_STEP_SUMMARY
           echo "Status: completed" >> $GITHUB_STEP_SUMMARY
           echo "Build Date: $(date)" >> $GITHUB_STEP_SUMMARY
           echo "Commit: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
