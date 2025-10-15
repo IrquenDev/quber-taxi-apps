@@ -86,6 +86,11 @@ jobs:
           pwd
           ls -l ${{ steps.android_keystore.outputs.filePath }}
           ls -l android/key.properties
+          echo "Verifying key.properties content:"
+          cat android/key.properties
+          echo "Verifying keystore file exists and is readable:"
+          file ${{ steps.android_keystore.outputs.filePath }}
+          keytool -list -v -keystore ${{ steps.android_keystore.outputs.filePath }} -storepass ${{ secrets.RONNY_ANDROID_KEYSTORE_PASSWORD }} | head -20
 
       #Modify to use your current project env variables
       - name: Create env file
@@ -122,6 +127,16 @@ jobs:
           echo "AAB Build completed. Checking output:"
           pwd
           ls -l build/app/outputs/bundle/${{ env.FLAVOR }}Release/app-${{ env.FLAVOR }}-release.aab
+
+      - name: Verify AAB Signing
+        run: |
+          echo "Verifying AAB is signed with release keystore..."
+          bundletool_version="1.15.6"
+          wget -q https://github.com/google/bundletool/releases/download/${bundletool_version}/bundletool-all-${bundletool_version}.jar -O bundletool.jar
+          java -jar bundletool.jar validate --bundle=build/app/outputs/bundle/${{ env.FLAVOR }}Release/app-${{ env.FLAVOR }}-release.aab
+          echo "Checking signing certificate..."
+          unzip -p build/app/outputs/bundle/${{ env.FLAVOR }}Release/app-${{ env.FLAVOR }}-release.aab META-INF/MANIFEST.MF | head -20
+          echo "AAB validation completed successfully!"
 
       - name: Upload Android AAB Artifact
         uses: actions/upload-artifact@v4
