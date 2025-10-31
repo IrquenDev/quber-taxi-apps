@@ -28,7 +28,6 @@ class CachedProfileImage extends StatefulWidget {
 class _CachedProfileImageState extends State<CachedProfileImage> {
   File? _cachedImageFile;
   bool _isLoading = false;
-  bool _hasError = false;
 
   @override
   void initState() {
@@ -49,14 +48,12 @@ class _CachedProfileImageState extends State<CachedProfileImage> {
       setState(() {
         _cachedImageFile = null;
         _isLoading = false;
-        _hasError = false;
       });
       return;
     }
 
     setState(() {
       _isLoading = true;
-      _hasError = false;
     });
 
     try {
@@ -65,7 +62,6 @@ class _CachedProfileImageState extends State<CachedProfileImage> {
         setState(() {
           _cachedImageFile = cachedFile;
           _isLoading = false;
-          _hasError = cachedFile == null;
         });
       }
     } catch (e) {
@@ -73,7 +69,6 @@ class _CachedProfileImageState extends State<CachedProfileImage> {
         setState(() {
           _cachedImageFile = null;
           _isLoading = false;
-          _hasError = true;
         });
       }
     }
@@ -82,7 +77,7 @@ class _CachedProfileImageState extends State<CachedProfileImage> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    
+
     return CircleAvatar(
       radius: widget.radius,
       backgroundColor: widget.backgroundColor ?? colorScheme.onSecondary,
@@ -125,11 +120,11 @@ class _CachedProfileImageState extends State<CachedProfileImage> {
         ),
       );
     }
-    
+
     return Icon(
       Icons.person,
       size: widget.radius * 1.2,
       color: widget.placeholderColor ?? colorScheme.onSecondaryContainer,
     );
   }
-} 
+}

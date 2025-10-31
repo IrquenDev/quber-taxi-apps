@@ -18,7 +18,6 @@ class FaceDetectionPage extends StatefulWidget {
 }
 
 class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProviderStateMixin {
-
   late CameraController _cameraController;
   late FaceDetector _faceDetector;
   late AnimationController _progressController;
@@ -38,7 +37,7 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
 
   void _showCameraPermissionPermanentlyDeniedDialog() {
     if (!mounted) return;
-    
+
     final localization = AppLocalizations.of(context)!;
     showDialog(
       context: context,
@@ -59,7 +58,7 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
               onPressed: () async {
                 Navigator.of(context).pop();
                 await openAppSettings();
-                if (mounted) {
+                if (context.mounted) {
                   context.go(CommonRoutes.login);
                 }
               },
@@ -73,7 +72,7 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
 
   void _showImageProcessingErrorDialog() {
     if (!mounted) return;
-    
+
     final localization = AppLocalizations.of(context)!;
     showDialog(
       context: context,
@@ -98,12 +97,12 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
 
   Future<void> _checkCameraPermission() async {
     final permission = await Permission.camera.status;
-    
+
     if (permission.isPermanentlyDenied) {
       _showCameraPermissionPermanentlyDeniedDialog();
       return;
     }
-    
+
     if (permission.isDenied) {
       final result = await Permission.camera.request();
       if (result.isPermanentlyDenied) {
@@ -122,7 +121,7 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
         return;
       }
     }
-    
+
     // Permission granted, proceed with camera initialization
     await _initCamera();
   }
@@ -131,7 +130,7 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
     try {
       final cameras = await availableCameras();
       final frontCamera = cameras.firstWhere(
-            (camera) => camera.lensDirection == CameraLensDirection.front,
+        (camera) => camera.lensDirection == CameraLensDirection.front,
       );
 
       _cameraController = CameraController(
@@ -146,7 +145,6 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
         options: FaceDetectorOptions(
           enableClassification: true,
           enableTracking: true,
-          minFaceSize: 0.1,
         ),
       );
 
@@ -155,7 +153,6 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
       setState(() {
         _cameraInitialized = true;
       });
-
     } catch (e) {
       debugPrint('Error initializing camera: $e');
       _showImageProcessingErrorDialog();
@@ -165,7 +162,6 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
   Future<void> _init() async {
     await _checkCameraPermission();
   }
-
 
   void _processImage(CameraImage image) async {
     if (_isDetecting || _isProcessing) return;
@@ -195,8 +191,8 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
         metadata: InputImageMetadata(
           size: Size(image.width.toDouble(), image.height.toDouble()),
           rotation: InputImageRotationValue.fromRawValue(
-            _cameraController.description.sensorOrientation,
-          ) ??
+                _cameraController.description.sensorOrientation,
+              ) ??
               InputImageRotation.rotation0deg,
           format: InputImageFormat.nv21,
           bytesPerRow: image.planes[0].bytesPerRow,
@@ -215,15 +211,14 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
 
         // SECURITY: Only proceed if face is detected AND valid blink
         // Verify that we have real eye probabilities (not default values)
-        final hasValidEyeData = face.leftEyeOpenProbability != null && 
-                               face.rightEyeOpenProbability != null;
-        
+        final hasValidEyeData = face.leftEyeOpenProbability != null && face.rightEyeOpenProbability != null;
+
         // Verify face has reasonable minimum size (not noise)
         final faceSize = face.boundingBox.width * face.boundingBox.height;
         final imageSize = inputImage.metadata!.size.width * inputImage.metadata!.size.height;
         final faceSizeRatio = faceSize / imageSize;
         final hasValidFaceSize = faceSizeRatio > 0.02; // At least 2% of image
-        
+
         // Verify face is centered
         final imageWidth = inputImage.metadata!.size.width;
         final imageHeight = inputImage.metadata!.size.height;
@@ -232,21 +227,21 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
         final imageCenterX = imageWidth / 2;
         // Adjust center Y to be lower in the image (70% down instead of 50%)
         final imageCenterY = imageHeight * 0.7;
-        
+
         // Calculate distance from face center to adjusted image center
-        final distanceFromCenter = ((faceCenterX - imageCenterX).abs() / imageWidth) + 
-                                  ((faceCenterY - imageCenterY).abs() / imageHeight);
+        final distanceFromCenter =
+            ((faceCenterX - imageCenterX).abs() / imageWidth) + ((faceCenterY - imageCenterY).abs() / imageHeight);
         final isFaceCentered = distanceFromCenter < 0.3; // Allow up to 30% deviation from adjusted center
-        
+
         // Debug: positioning information
         if (kDebugMode && !isFaceCentered) {
           debugPrint('Face not centered - Distance from center: ${(distanceFromCenter * 100).toStringAsFixed(1)}%');
         }
-        
+
         // Take photo when valid face is detected (only if we don't have one already)
-        if (status == FaceDetectorState.faceDetected && 
-            hasValidEyeData && 
-            hasValidFaceSize && 
+        if (status == FaceDetectorState.faceDetected &&
+            hasValidEyeData &&
+            hasValidFaceSize &&
             isFaceCentered &&
             !_hasValidImageForCurrentFace) {
           try {
@@ -291,12 +286,11 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
           _hasValidImageForCurrentFace = false;
           debugPrint('Face lost - image discarded');
         }
-        
+
         _faceDetectedCount = 0;
         _noFaceCount++;
 
-        if (_noFaceCount >= _requiredFrames &&
-            status == FaceDetectorState.faceDetected) {
+        if (_noFaceCount >= _requiredFrames && status == FaceDetectorState.faceDetected) {
           setState(() => status = FaceDetectorState.waitingFace);
         }
       }
@@ -330,8 +324,8 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
                   child: Text(
                     _getTitle(),
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -358,9 +352,7 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
                           children: [
                             Text(
                               _getDescription(),
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                height: 1.4,
-                              ),
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(height: 1.4),
                               textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 16),
@@ -450,12 +442,12 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
       if (status == AnimationStatus.completed) {
         Future.microtask(() async {
           if (!mounted) return;
-          
+
           if (_capturedImageBytes == null) {
             _showImageProcessingErrorDialog();
             return;
           }
-          
+
           try {
             await _cameraController.stopImageStream();
             if (!mounted) return;
@@ -488,66 +480,63 @@ class FaceDetectionPageState extends State<FaceDetectionPage> with TickerProvide
     return Scaffold(
       body: _cameraInitialized
           ? Stack(
-        children: [
-          SizedBox.expand(
-            child: FittedBox(
-              fit: BoxFit.cover,
-              child: SizedBox(
-                width: _cameraController.value.previewSize!.height,
-                height: _cameraController.value.previewSize!.width,
-                child: CameraPreview(_cameraController),
-              ),
-            ),
-          ),
-          Center(
-            child: Image.asset(
-              'assets/images/image_scan.png',
-              fit: BoxFit.contain,
-              width: MediaQuery.of(context).size.width
-            ),
-          ),
-          if (status == FaceDetectorState.blinkDetected)
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: status == FaceDetectorState.notSupportedCamera ? 240 : 180,
-              child: Center(
-                child: Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withAlpha(225),
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withAlpha(50),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: CircularProgressIndicator(
-                      value: _progressAnimation.value,
-                      strokeWidth: 4,
-                      backgroundColor: Colors.grey[300],
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        Theme.of(context).colorScheme.primaryContainer,
-                      ),
+              children: [
+                SizedBox.expand(
+                  child: FittedBox(
+                    fit: BoxFit.cover,
+                    child: SizedBox(
+                      width: _cameraController.value.previewSize!.height,
+                      height: _cameraController.value.previewSize!.width,
+                      child: CameraPreview(_cameraController),
                     ),
                   ),
                 ),
-              ),
-            ),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: _buildFaceDetectionSheet(context),
-          ),
-        ],
-      )
+                Center(
+                  child: Image.asset('assets/images/image_scan.png',
+                      fit: BoxFit.contain, width: MediaQuery.of(context).size.width),
+                ),
+                if (status == FaceDetectorState.blinkDetected)
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: status == FaceDetectorState.notSupportedCamera ? 240 : 180,
+                    child: Center(
+                      child: Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withAlpha(225),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withAlpha(50),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: CircularProgressIndicator(
+                            value: _progressAnimation.value,
+                            strokeWidth: 4,
+                            backgroundColor: Colors.grey[300],
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Theme.of(context).colorScheme.primaryContainer,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: _buildFaceDetectionSheet(context),
+                ),
+              ],
+            )
           : const Center(child: CircularProgressIndicator()),
     );
   }

@@ -16,7 +16,6 @@ import 'package:quber_taxi/storage/favorites_prefs_manager.dart';
 import '../../../common/models/mapbox_place.dart';
 
 class MapView extends StatefulWidget {
-
   const MapView({super.key, this.usingExtendedScaffold = false});
 
   final bool usingExtendedScaffold;
@@ -33,7 +32,7 @@ class _MapViewState extends State<MapView> {
   PointAnnotationManager? _pointAnnotationManager;
   PointAnnotation? _currentMarker;
   String _selectedOption = ''; // No default selection
-  
+
   // Global map bearing. Initialized onMapCreated and updated onCameraChangeListener. Needed for calculate bearing
   // and updates driver (real or fakes) annotation markers.
   late double _mapBearing;
@@ -87,7 +86,7 @@ class _MapViewState extends State<MapView> {
     final assetBytesB = await rootBundle.load('assets/markers/taxi/pin_mototaxix172.png');
     final iconA = assetBytesA.buffer.asUint8List();
     final iconB = assetBytesB.buffer.asUint8List();
-    
+
     // Add Fake Drivers Animation
     String definedAllowFDA = const String.fromEnvironment("ALLOW_FDA", defaultValue: "TRUE");
     final fdaAllowed = definedAllowFDA == "TRUE";
@@ -109,8 +108,7 @@ class _MapViewState extends State<MapView> {
         _taxis.add(AnimatedFakeDriver(
             routeCoords: fakeRoute.coordinates,
             annotation: annotation!,
-            routeDuration: Duration(milliseconds: (fakeRoute.duration * 1000).round())
-        ));
+            routeDuration: Duration(milliseconds: (fakeRoute.duration * 1000).round())));
       }
       _ticker.start();
     }
@@ -134,10 +132,8 @@ class _MapViewState extends State<MapView> {
       final bytes = await rootBundle.load('assets/markers/route/x60/origin.png');
       final imageData = bytes.buffer.asUint8List();
       // Create marker options
-      final options = PointAnnotationOptions(
-          geometry: mapContext.point,
-          image: imageData,
-          iconAnchor: IconAnchor.BOTTOM);
+      final options =
+          PointAnnotationOptions(geometry: mapContext.point, image: imageData, iconAnchor: IconAnchor.BOTTOM);
       // Add new marker
       _currentMarker = await _pointAnnotationManager?.create(options);
       // Show selection menu as popup
@@ -202,10 +198,9 @@ class _MapViewState extends State<MapView> {
               longitude: mapContext.point.coordinates.lng,
               latitude: mapContext.point.coordinates.lat,
             );
-
+            if (!mounted) return;
             String defaultName = place?.text ?? AppLocalizations.of(context)!.defaultName;
             String customName = defaultName;
-
             if (!mounted) return;
             showDialog(
               context: context,
@@ -237,10 +232,9 @@ class _MapViewState extends State<MapView> {
                             latitude: mapContext.point.coordinates.lat.toDouble(),
                           ),
                         );
-                        if (mounted) {
+                        if (context.mounted) {
                           Navigator.pop(context);
-                          showToast(context: context, message:
-                          AppLocalizations.of(context)!.addedToFavorites);
+                          showToast(context: context, message: AppLocalizations.of(context)!.addedToFavorites);
                         }
                       },
                     ),
@@ -265,8 +259,7 @@ class _MapViewState extends State<MapView> {
             );
 
             if (!mounted) return;
-            showToast(context: context, message: AppLocalizations.of(context)
-            !.destinationSelected);
+            showToast(context: context, message: AppLocalizations.of(context)!.destinationSelected);
           }
         }
       }
@@ -279,8 +272,7 @@ class _MapViewState extends State<MapView> {
     if (_mapController == null) return;
 
     if (_pointAnnotationManager == null) {
-      _pointAnnotationManager =
-      await _mapController?.annotations.createPointAnnotationManager();
+      _pointAnnotationManager = await _mapController?.annotations.createPointAnnotationManager();
       if (_pointAnnotationManager == null) return;
     }
 
@@ -310,7 +302,6 @@ class _MapViewState extends State<MapView> {
     );
   }
 
-
   PopupMenuEntry<String> _buildMenuItem({
     required String title,
     required String value,
@@ -319,24 +310,18 @@ class _MapViewState extends State<MapView> {
     return PopupMenuItem<String>(
       height: 26,
       value: value,
-              child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              title,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface,
-                fontWeight: FontWeight.w400,
-              ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.w400,
             ),
-            if (isSelected)
-              SvgPicture.asset(
-                'assets/icons/yellow_check.svg',
-                width: 16,
-                height: 16,
-              ),
-          ],
-        ),
+          ),
+          if (isSelected) SvgPicture.asset('assets/icons/yellow_check.svg', width: 16, height: 16),
+        ],
+      ),
     );
   }
 
@@ -348,75 +333,66 @@ class _MapViewState extends State<MapView> {
       bearing: 0,
       zoom: 17,
     );
-    return Stack(
-        children: [
-          MapWidget(
-            styleUri: MapboxStyles.STANDARD,
-            cameraOptions: cameraOptions,
-            onMapCreated: _onMapCreated,
-            onLongTapListener: _onLongTapListener,
-            onCameraChangeListener: (cameraData) {
-              // Always update bearing 'cause fake drivers animation depends on it
-              _mapBearing = cameraData.cameraState.bearing;
-            },
-          ),
-          // Find my location
-          Positioned(
-              right: 20.0, bottom: widget.usingExtendedScaffold ? 100.0 : 20.0,
-              child: FloatingActionButton(
-                  heroTag: "fab2",
-                  backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                  onPressed: () async {
-                    await requestLocationPermission(
-                        context: context,
-                        onPermissionGranted: () async {
-                          final position = await g.Geolocator.getCurrentPosition();
-                          // Check if inside of Havana
-                          if (!kDebugMode) {
-                            final isInside = GeoBoundaries.isPointInHavana(position.longitude, position.latitude);
-                            if(!context.mounted) return;
-                            if(!isInside) {
-                              showToast(
-                                  context: context,
-                                  message: AppLocalizations.of(context)!.ubicationFailed
-                              );
-                              return;
-                            }
-                          }
-                          _mapController!.easeTo(
-                              CameraOptions(center: Point(coordinates: Position(position.longitude, position.latitude))),
-                              MapAnimationOptions(duration: 500)
-                          );
-                        },
-                        onPermissionDenied: () => showToast(context: context, message: AppLocalizations.of(context)!.permissionsDenied),
-                        onPermissionDeniedForever: () =>
-                            showToast(context: context, message: AppLocalizations.of(context)!.permissionDeniedPermanently)
-                    );
-                  },
-                  child: Icon(
-                      Icons.my_location_outlined,
-                      color: Theme.of(context).iconTheme.color,
-                      size: Theme.of(context).iconTheme.size
-                  )
-              )
-          )
-        ]
-    );
+    return Stack(children: [
+      MapWidget(
+        cameraOptions: cameraOptions,
+        onMapCreated: _onMapCreated,
+        onLongTapListener: _onLongTapListener,
+        onCameraChangeListener: (cameraData) {
+          // Always update bearing 'cause fake drivers animation depends on it
+          _mapBearing = cameraData.cameraState.bearing;
+        },
+      ),
+      // Find my location
+      Positioned(
+          right: 20.0,
+          bottom: widget.usingExtendedScaffold ? 100.0 : 20.0,
+          child: FloatingActionButton(
+              heroTag: "fab2",
+              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+              onPressed: () async {
+                await requestLocationPermission(
+                    context: context,
+                    onPermissionGranted: () async {
+                      final position = await g.Geolocator.getCurrentPosition();
+                      // Check if inside of Havana
+                      if (!kDebugMode) {
+                        final isInside = GeoBoundaries.isPointInHavana(position.longitude, position.latitude);
+                        if (!context.mounted) return;
+                        if (!isInside) {
+                          showToast(context: context, message: AppLocalizations.of(context)!.ubicationFailed);
+                          return;
+                        }
+                      }
+                      _mapController!.easeTo(
+                          CameraOptions(center: Point(coordinates: Position(position.longitude, position.latitude))),
+                          MapAnimationOptions(duration: 500));
+                    },
+                    onPermissionDenied: () =>
+                        showToast(context: context, message: AppLocalizations.of(context)!.permissionsDenied),
+                    onPermissionDeniedForever: () => showToast(
+                        context: context, message: AppLocalizations.of(context)!.permissionDeniedPermanently));
+              },
+              child: Icon(Icons.my_location_outlined,
+                  color: Theme.of(context).iconTheme.color, size: Theme.of(context).iconTheme.size)))
+    ]);
   }
 }
 
 /// Represent a fake driver.
 class AnimatedFakeDriver {
-
   /// Fake route coords.
   final List<List<num>> routeCoords;
+
   /// The corresponding annotation (marker) in the map.
   final PointAnnotation annotation;
+
   /// The route's duration in milliseconds estimated by Mapbox API.
   final Duration routeDuration;
 
   // Total segments to be covered.
   late final int _totalSegments;
+
   // Keep track of a specific animation.
   Duration startOffset = Duration.zero;
 
