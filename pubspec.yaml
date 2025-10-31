@@ -134,7 +134,7 @@ flutter:
 
   # List of asset directories and files to package inside the app.
   assets:
-    - .env
+    - env/
     - assets/geojson/polygon/
     - assets/geojson/line/
     - assets/geojson/suggestions.json
