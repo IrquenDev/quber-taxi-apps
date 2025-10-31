@@ -127,7 +127,8 @@ class _LoginPageState extends State<LoginPage> {
                           textAlign: TextAlign.center,
                           style: textTheme.displayLarge?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: colorScheme.onSecondary,
+                            fontSize: MediaQuery.of(context).size.width * 0.15
                           ),
                         ),
                       ),
