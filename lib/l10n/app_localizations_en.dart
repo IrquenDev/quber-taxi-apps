@@ -165,7 +165,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noTravel => 'No trips available';
 
   @override
-  String get noAssignedTrip => 'The trip could not be assigned';
+  String get noAssignedTrip =>
+      'The trip could not be started. Please make sure your account is active, you have enough credit, and you don’t have another trip in progress.';
 
   @override
   String get countPeople => 'Number of people traveling:';
