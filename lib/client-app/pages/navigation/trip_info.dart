@@ -26,38 +26,46 @@ class ClientTripInfo extends StatelessWidget {
             Positioned.fill(child: Container(color: Theme.of(context).colorScheme.primaryContainer)),
             // Distance & Price Info
             Positioned(
-              top: 0.0, right: 0.0, left: 0.0,
-                child: Padding(
-                  padding: EdgeInsets.only(top: 16.0, left: 16.0),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
+              top: 0.0,
+              right: 0.0,
+              left: 0.0,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 16.0, left: 16.0),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 16.0,
+                  children: [
+                    const Column(
+                      spacing: 4.0,
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: 16.0,
-                      children:  [
-                        Column(
-                          spacing: 4.0,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [Text('DISTANCIA:'), Text('PRECIO:')]
-                        ),
-                        DefaultTextStyle(
-                          style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold),
-                            child: Column(
-                                children: [
-                                  Text(distance != null ? '${distance!.toStringAsFixed(0)} Km' : '-'),
-                                  Text(travelPriceByTaxiType != null && distance != null
-                                      ? '${(distance! * travelPriceByTaxiType!).toStringAsFixed(0)} CUP'
-                                      : '-'
-                                  )
-                                ]
-                            )
-                        )
-                      ]
-                  )
-                )
+                      children: [
+                        Text('DISTANCIA:'),
+                        Text('PRECIO:'),
+                      ],
+                    ),
+                    DefaultTextStyle(
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold),
+                      child: Column(
+                        children: [
+                          Text(distance != null ? '${distance!.toStringAsFixed(0)} Km' : '-'),
+                          Text(
+                            travelPriceByTaxiType != null && distance != null
+                                ? '${(distance! * travelPriceByTaxiType!).toStringAsFixed(0)} CUP'
+                                : '-',
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
             // Origin & Destination + SOS Btn
             Positioned(
-              bottom: 0.0, right: 0.0, left: 0.0,
+              bottom: 0.0,
+              right: 0.0,
+              left: 0.0,
               child: ClipRRect(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(dimensions.borderRadius)),
                 child: Column(
@@ -66,18 +74,18 @@ class ClientTripInfo extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.primaryFixed,
                       ),
-                      padding: EdgeInsets.all(20.0),
+                      padding: const EdgeInsets.all(20.0),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         spacing: 12.0,
                         children: [
                           // Icons
-                          Column(
-                            children: const [
+                          const Column(
+                            children: [
                               Icon(Icons.my_location, size: 20, color: Colors.grey),
                               Icon(Icons.more_vert, size: 14, color: Colors.grey),
                               Icon(Icons.location_on_outlined, size: 20, color: Colors.grey)
-                            ]
+                            ],
                           ),
                           // Origin & Destination Info
                           Column(
@@ -85,35 +93,35 @@ class ClientTripInfo extends StatelessWidget {
                             spacing: 12.0,
                             children: [
                               Text.rich(
-                                  TextSpan(
-                                      children: [
-                                        TextSpan(
-                                            text: 'Desde: ',
-                                            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                                fontWeight: FontWeight.bold
-                                            )
-                                        ),
-                                        TextSpan(text: travel.originName)
-                                      ]
-                                  )
+                                TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: 'Desde: ',
+                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                    ),
+                                    TextSpan(text: travel.originName)
+                                  ],
+                                ),
                               ),
                               Text.rich(
-                                  TextSpan(
-                                      children: [
-                                        TextSpan(
-                                            text: 'Hasta: ',
-                                            style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                                fontWeight: FontWeight.bold
-                                            )
-                                        ),
-                                        TextSpan(text: travel.destinationName)
-                                      ]
-                                  )
+                                TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: 'Hasta: ',
+                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                    ),
+                                    TextSpan(text: travel.destinationName)
+                                  ],
+                                ),
                               )
-                            ]
+                            ],
                           )
-                        ]
-                      )
+                        ],
+                      ),
                     ),
                     SizedBox(
                       width: double.infinity,
@@ -122,42 +130,45 @@ class ClientTripInfo extends StatelessWidget {
                           backgroundColor: Theme.of(context).colorScheme.secondary,
                           padding: dimensions.contentPadding,
                           side: BorderSide.none,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+                          shape: const RoundedRectangleBorder(),
                         ),
                         onPressed: () => showDialog(
                           context: context,
                           barrierDismissible: false,
-                          barrierColor:Theme.of(context).colorScheme.errorContainer.withAlpha(200),
-                          builder: (context) => EmergencyDialog(travel: travel)
+                          barrierColor: Theme.of(context).colorScheme.errorContainer.withAlpha(200),
+                          builder: (context) => EmergencyDialog(travel: travel),
                         ),
                         child: Text(
-                            'Emergencia (SOS)',
-                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.onSecondary,
-                            )
-                        )
-                      )
-                    )
-                  ]
-                )
-              )
+                          'Emergencia (SOS)',
+                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.onSecondary,
+                              ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
             // Taxi Type Image
             Positioned(
-              right: 16, top: 20,
+              right: 16,
+              top: 20,
               child: SizedBox(
                 height: 80,
                 child: Transform(
-                    alignment: Alignment.center,
-                    transform: Matrix4.identity()..scale(-1.0, 1.0),
-                    child: Image.asset(travel.taxiType.assetRef(AssetDpi.xhdpi))
-                )
-              )
-            )
-          ]
-        )
-      )
+                  alignment: Alignment.center,
+                  transform: Matrix4.identity()..scale(-1.0, 1.0),
+                  child: Image.asset(
+                    travel.taxiType.assetRef(AssetDpi.xhdpi),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
