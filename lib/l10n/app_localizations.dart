@@ -395,7 +395,7 @@ abstract class AppLocalizations {
   /// No description provided for @noAssignedTrip.
   ///
   /// In es, this message translates to:
-  /// **'No se pudo asignar el viaje'**
+  /// **'No fue posible iniciar el viaje. Asegúrate de que tu cuenta esté activa, tengas crédito suficiente y no tengas otro viaje en curso.'**
   String get noAssignedTrip;
 
   /// No description provided for @countPeople.

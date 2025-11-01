@@ -512,7 +512,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
       showToast(context: context, message: "Viaje activo existente, solo puedes aceptar uno a la vez.");
     } else if (response.statusCode == 423) {
       showToast(context: context, message: "Crédito insuficiente");
-    } else {
+    }
+     else {
       showToast(context: context, message: AppLocalizations.of(context)!.noAssignedTrip);
     }
   }
