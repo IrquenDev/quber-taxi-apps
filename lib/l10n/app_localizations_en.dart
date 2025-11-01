@@ -432,7 +432,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get phoneNumberDriver => 'Phone Number:';
 
   @override
-  String get email => 'Email:';
+  String get email => 'irquensucursal1@gmail.com';
 
   @override
   String get numberOfSeats => 'Number of Seats:';

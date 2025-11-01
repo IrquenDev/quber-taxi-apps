@@ -47,13 +47,14 @@ class TravelNotification {
   final Travel travel;
   final DateTime createdAt;
   final String id;
-  TravelNotification(this.travel) 
-    : createdAt = travel.requestedDate, // Use requestedDate from backend
-      id = travel.requestedDate.millisecondsSinceEpoch.toString();
+
+  TravelNotification(this.travel)
+      : createdAt = travel.requestedDate,
+        // Use requestedDate from backend
+        id = travel.requestedDate.millisecondsSinceEpoch.toString();
 }
 
 class DriverHomePage extends StatefulWidget {
-
   final Position? coords;
   final bool wasRestored;
   final Travel? selectedTravel;
@@ -65,7 +66,6 @@ class DriverHomePage extends StatefulWidget {
 }
 
 class _DriverHomePageState extends State<DriverHomePage> {
-
   // Mapbox controller instance
   late MapboxMap _mapController;
 
@@ -83,7 +83,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
   PointAnnotationManager? _pointAnnotationManager;
   PointAnnotation? _driverAnnotation;
   late final Uint8List _driverMarkerImage;
-  
+
   // Travel markers references for cleanup
   PointAnnotation? _originMarker;
   PointAnnotation? _destinationMarker;
@@ -125,7 +125,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
   late void Function() _syncTravelStateListenerRef;
   bool _didCheckAccount = false;
   bool _didSyncTravelState = false;
-  
+
   // Travel info sheet controller
   final DraggableScrollableController _travelInfoSheetController = DraggableScrollableController();
 
@@ -134,24 +134,23 @@ class _DriverHomePageState extends State<DriverHomePage> {
   /// Automatically requests location permission and starts streaming on app startup
   Future<void> _autoRequestLocation() async {
     await g_util.requestLocationPermission(
-      context: context,
-      onPermissionGranted: () async {
-        // Start streaming location automatically
-        if (!_isLocationStreaming) await _startStreamingLocation();
-      },
-      onPermissionDenied: () {
-        // Permission denied, but don't show error - user can still use the button
-        if (kDebugMode) {
-          print('Location permission denied on startup');
-        }
-      },
-      onPermissionDeniedForever: () {
-        // Permission denied permanently, but don't show error - user can still use the button
-        if (kDebugMode) {
-          print('Location permission denied permanently on startup');
-        }
-      }
-    );
+        context: context,
+        onPermissionGranted: () async {
+          // Start streaming location automatically
+          if (!_isLocationStreaming) await _startStreamingLocation();
+        },
+        onPermissionDenied: () {
+          // Permission denied, but don't show error - user can still use the button
+          if (kDebugMode) {
+            print('Location permission denied on startup');
+          }
+        },
+        onPermissionDeniedForever: () {
+          // Permission denied permanently, but don't show error - user can still use the button
+          if (kDebugMode) {
+            print('Location permission denied permanently on startup');
+          }
+        });
   }
 
   Future<void> _handleNetworkScopeAndListener() async {
@@ -166,7 +165,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
     // Since execution times are not always the same, it's possible that when the listeners are registered, the current
     // status is already online, so the listeners won't be notified. This is why we must make an initial manual call.
     // In any case, calls will not be duplicated since they are being protected with an inner flag.
-    if(isAlreadyOnline) {
+    if (isAlreadyOnline) {
       _checkDriverAccountStateListener(connStatus);
       _syncTravelStateListener(connStatus);
     }
@@ -174,9 +173,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
 
   Future<void> _checkDriverAccountStateListener(ConnectionStatus status) async {
     if (!_didCheckAccount) {
-      if(status == ConnectionStatus.checking) return;
-      final isConnected =  status == ConnectionStatus.online;
-      if(isConnected) {
+      if (status == ConnectionStatus.checking) return;
+      final isConnected = status == ConnectionStatus.online;
+      if (isConnected) {
         await _checkDriverAccountState();
         _didCheckAccount = true;
       }
@@ -198,22 +197,22 @@ class _DriverHomePageState extends State<DriverHomePage> {
       //   await _showPaymentReminder();
       // }
       switch (_driver.accountState) {
-        case DriverAccountState.notConfirmed: 
+        case DriverAccountState.notConfirmed:
           _hideBlockedSheet();
           _showApprovalSheet();
-        case DriverAccountState.canPay: 
+        case DriverAccountState.canPay:
           _hideApprovalSheet();
           _hideBlockedSheet();
           setState(() => _isAccountEnabled = true);
-        case DriverAccountState.paymentRequired: 
+        case DriverAccountState.paymentRequired:
           _hideApprovalSheet();
           _hideBlockedSheet();
           break;
-        case DriverAccountState.enabled: 
+        case DriverAccountState.enabled:
           _hideApprovalSheet();
           _hideBlockedSheet();
           setState(() => _isAccountEnabled = true);
-        case DriverAccountState.disabled: 
+        case DriverAccountState.disabled:
           _hideApprovalSheet();
           _showBlockedSheet();
           break;
@@ -226,9 +225,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
   }
 
   Future<void> _syncTravelStateListener(ConnectionStatus status) async {
-    if(status == ConnectionStatus.checking) return;
+    if (status == ConnectionStatus.checking) return;
     final isConnected = status == ConnectionStatus.online;
-    if(isConnected) {
+    if (isConnected) {
       await _syncTravelState();
     }
   }
@@ -238,7 +237,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
       return;
     }
     final response = await _travelService.getActiveTravelStateForDriver(_driver.id);
-    if(!mounted) return;
+    if (!mounted) return;
     //Ignoring 404 (means no active travel) and unexpected status codes.
     if (response.statusCode == 200) {
       final activeTravel = Travel.fromJson(jsonDecode(response.body));
@@ -291,10 +290,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
     });
     // Reactivate travel request handler when account becomes enabled
     if (_isAccountEnabled && _selectedTravel == null) {
-      _newTravelRequestHandler = TravelRequestHandler(
-          driverId: _driver.id,
-          onNewTravel: _onNewTravel
-      )..activate();
+      _newTravelRequestHandler = TravelRequestHandler(driverId: _driver.id, onNewTravel: _onNewTravel)..activate();
     }
   }
 
@@ -312,10 +308,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
     });
     // Reactivate travel request handler when account becomes enabled
     if (_isAccountEnabled && _selectedTravel == null) {
-      _newTravelRequestHandler = TravelRequestHandler(
-          driverId: _driver.id,
-          onNewTravel: _onNewTravel
-      )..activate();
+      _newTravelRequestHandler = TravelRequestHandler(driverId: _driver.id, onNewTravel: _onNewTravel)..activate();
     }
   }
 
@@ -434,10 +427,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
         _lastKnownCoords = _coords;
         _coords = coords;
         // Adjust bearing
-        final bearing = mb_util.calculateBearing(
-            _lastKnownCoords.lat, _lastKnownCoords.lng,
-            coords.lat, coords.lng
-        );
+        final bearing = mb_util.calculateBearing(_lastKnownCoords.lat, _lastKnownCoords.lng, coords.lat, coords.lng);
         final adjustedBearing = (bearing - _mapBearing + 360) % 360;
         _driverAnnotation!.iconRotate = adjustedBearing;
         _driverAnnotation!.geometry = Point(coordinates: coords);
@@ -455,7 +445,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
         "/app/drivers/${_driver.id}/location",
         {"longitude": position.longitude, "latitude": position.latitude},
       );
-      if(!_isLocationStreaming) await _startStreamingLocation();
+      if (!_isLocationStreaming) await _startStreamingLocation();
     });
   }
 
@@ -513,21 +503,18 @@ class _DriverHomePageState extends State<DriverHomePage> {
       return;
     }
     final response = await _driverService.acceptTravel(driverId: _driver.id, travelId: travel.id);
-    if(!mounted) return;
-    if(response.statusCode == 200) {
+    if (!mounted) return;
+    if (response.statusCode == 200) {
       await _startSelectedTravelMode(travel);
-    }
-    else if(response.statusCode == 403) {
+    } else if (response.statusCode == 403) {
       showToast(context: context, message: "Permiso denegado, su cuenta está deshabilitada.");
-    }
-    else if(response.statusCode == 409) {
+    } else if (response.statusCode == 409) {
       showToast(context: context, message: "Viaje activo existente, solo puedes aceptar uno a la vez.");
-    }
-    else if(response.statusCode == 423) {
+    } else if (response.statusCode == 423) {
       showToast(context: context, message: "Crédito insuficiente");
     }
-    else {
-      showToast(context: context, message: AppLocalizations.of(context)!.noAssignedTrip );
+     else {
+      showToast(context: context, message: AppLocalizations.of(context)!.noAssignedTrip);
     }
   }
 
@@ -564,13 +551,13 @@ class _DriverHomePageState extends State<DriverHomePage> {
       final cameraOptions = await _mapController.cameraForCoordinateBounds(
         bounds,
         MbxEdgeInsets(top: 50, bottom: 50, left: 50, right: 50),
-        0, 0, null, null,
+        0,
+        0,
+        null,
+        null,
       );
       // Animate camera to show both points
-      _mapController.easeTo(
-          cameraOptions,
-          MapAnimationOptions(duration: 1000)
-      );
+      _mapController.easeTo(cameraOptions, MapAnimationOptions(duration: 1000));
     } else {
       // Destination is a municipality - add polygon
       final municipalityPath = Municipalities.resolveGeoJsonRef(travel.destinationName);
@@ -581,10 +568,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
           // Convert polygon to GeoJSON string
           final geoJsonString = jsonEncode(municipalityGeoJson.toJson());
           // Add polygon to map
-          await _mapController.style.addSource(GeoJsonSource(
-              id: "municipality-polygon",
-              data: geoJsonString
-          ));
+          await _mapController.style.addSource(GeoJsonSource(id: "municipality-polygon", data: geoJsonString));
           await _mapController.style.addLayer(FillLayer(
             id: "municipality-fill",
             sourceId: "municipality-polygon",
@@ -597,7 +581,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
           final List<Position> allCoords = [originCoords];
           // Add all polygon coordinates to the bounds calculation
           for (final coord in polygonCoords) {
-            if(coord[0] != null && coord[1] != null) {
+            if (coord[0] != null && coord[1] != null) {
               allCoords.add(Position(coord[0]!, coord[1]!));
             }
           }
@@ -606,29 +590,25 @@ class _DriverHomePageState extends State<DriverHomePage> {
           final cameraOptions = await _mapController.cameraForCoordinateBounds(
             bounds,
             MbxEdgeInsets(top: 50, bottom: 50, left: 50, right: 50),
-            0, 0, null, null,
+            0,
+            0,
+            null,
+            null,
           );
           // Animate camera to show origin and municipality
-          _mapController.easeTo(
-              cameraOptions,
-              MapAnimationOptions(duration: 1000)
-          );
+          _mapController.easeTo(cameraOptions, MapAnimationOptions(duration: 1000));
         } catch (e) {
           if (kDebugMode) {
             print('Error loading municipality polygon: $e');
           }
           // Fallback to just centering on origin
           _mapController.easeTo(
-              CameraOptions(center: Point(coordinates: originCoords)),
-              MapAnimationOptions(duration: 500)
-          );
+              CameraOptions(center: Point(coordinates: originCoords)), MapAnimationOptions(duration: 500));
         }
       } else {
         // Municipality not found, just center on origin
         _mapController.easeTo(
-            CameraOptions(center: Point(coordinates: originCoords)),
-            MapAnimationOptions(duration: 500)
-        );
+            CameraOptions(center: Point(coordinates: originCoords)), MapAnimationOptions(duration: 500));
       }
     }
   }
@@ -655,7 +635,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
     _newTravels.sort((a, b) => b.travel.requestedDate.compareTo(a.travel.requestedDate));
 
     // Keep maximum 2 notifications, remove the oldest ones
-    while(_newTravels.length > 2) {
+    while (_newTravels.length > 2) {
       final removedNotification = _newTravels.removeLast();
       _notificationTimers[removedNotification.id]?.cancel();
       _notificationTimers.remove(removedNotification.id);
@@ -697,12 +677,12 @@ class _DriverHomePageState extends State<DriverHomePage> {
                   Text(
                     localizations.tripDescription,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   IconButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    icon: Icon(Icons.close),
+                    icon: const Icon(Icons.close),
                     iconSize: 24.0,
                   ),
                 ],
@@ -728,11 +708,8 @@ class _DriverHomePageState extends State<DriverHomePage> {
   void _goToNavigationPage(Travel travel) async {
     // Clear municipality polygon when starting the trip
     await _clearMunicipalityPolygon();
-    if(!mounted) return;
-    context.go(DriverRoutes.navigation, extra: {
-      "travel": travel,
-      "wasPageRestored": false
-    });
+    if (!mounted) return;
+    context.go(DriverRoutes.navigation, extra: {"travel": travel, "wasPageRestored": false});
   }
 
   void _showDriverCreditDialog() {
@@ -800,10 +777,7 @@ class _DriverHomePageState extends State<DriverHomePage> {
     // Ticker controller for fake driver animations
     _ticker = Ticker(_onTick);
     // Subscribe to new travel requests
-    _newTravelRequestHandler = TravelRequestHandler(
-        driverId: _driver.id,
-        onNewTravel: _onNewTravel
-    )..activate();
+    _newTravelRequestHandler = TravelRequestHandler(driverId: _driver.id, onNewTravel: _onNewTravel)..activate();
     // Register context-based initializer
     SchedulerBinding.instance.addPostFrameCallback((_) async {
       // Request and subscribe to location streaming
@@ -852,81 +826,79 @@ class _DriverHomePageState extends State<DriverHomePage> {
           children: [
             // Map view
             MapWidget(
-              styleUri: MapboxStyles.STANDARD,
-              cameraOptions: cameraOptions,
-              onMapCreated: (controller) async {
-                // Init class's field references
-                _mapController = controller;
-                _mapBearing = await _mapController.getCameraState().then((c) => c.bearing);
-                // Update some mapbox component
-                await controller.location.updateSettings(LocationComponentSettings(enabled: false));
-                await controller.scaleBar.updateSettings(ScaleBarSettings(enabled: false));
-                // Disable pitch/tilt gestures to keep map flat
-                await controller.gestures.updateSettings(GesturesSettings(pitchEnabled: false));
-                // Create PAM
-                _pointAnnotationManager = await controller.annotations.createPointAnnotationManager();
-                // Load Taxi Marker
-                final assetBytesA = await rootBundle.load('assets/markers/taxi/taxi_pin_x172.png');
-                final assetBytesB = await rootBundle.load('assets/markers/taxi/pin_mototaxix172.png');
-                final iconA = assetBytesA.buffer.asUint8List();
-                final iconB = assetBytesB.buffer.asUint8List();
-                // Driver's own marker should use taxi_hdpi
-                final driverAssetBytes = await rootBundle.load('assets/markers/taxi/taxi_hdpi.png');
-                _driverMarkerImage = driverAssetBytes.buffer.asUint8List();
-                // Add Fake Drivers Animation.
-                // FDA is too heavy for the emulator.
-                // As it is a requirement of the app, it will be enabled by default.
-                // If you are working in this view or any other flow where you need to go through it, you can
-                // disable it if you want (you should).
-                // To do that set -dart-define=ALLOW_FDA=FALSE.
-                // Just care running "flutter build apk" including this flag as FALSE.
-                String definedAllowFDA = const String.fromEnvironment("ALLOW_FDA", defaultValue: "TRUE"); // Temporarily disabled to debug marker overlap
-                final fdaAllowed = definedAllowFDA == "TRUE";
-                if (fdaAllowed) {
-                  for (int i = 1; i <= 5; i++) {
-                    final fakeRoute = await GeoUtils.loadGeoJsonFakeRoute("assets/geojson/line/fake_route_$i.geojson");
-                    final origin = fakeRoute.coordinates.first;
+                cameraOptions: cameraOptions,
+                onMapCreated: (controller) async {
+                  // Init class's field references
+                  _mapController = controller;
+                  _mapBearing = await _mapController.getCameraState().then((c) => c.bearing);
+                  // Update some mapbox component
+                  await controller.location.updateSettings(LocationComponentSettings(enabled: false));
+                  await controller.scaleBar.updateSettings(ScaleBarSettings(enabled: false));
+                  // Disable pitch/tilt gestures to keep map flat
+                  await controller.gestures.updateSettings(GesturesSettings(pitchEnabled: false));
+                  // Create PAM
+                  _pointAnnotationManager = await controller.annotations.createPointAnnotationManager();
+                  // Load Taxi Marker
+                  final assetBytesA = await rootBundle.load('assets/markers/taxi/taxi_pin_x172.png');
+                  final assetBytesB = await rootBundle.load('assets/markers/taxi/pin_mototaxix172.png');
+                  final iconA = assetBytesA.buffer.asUint8List();
+                  final iconB = assetBytesB.buffer.asUint8List();
+                  // Driver's own marker should use taxi_hdpi
+                  final driverAssetBytes = await rootBundle.load('assets/markers/taxi/taxi_hdpi.png');
+                  _driverMarkerImage = driverAssetBytes.buffer.asUint8List();
+                  // Add Fake Drivers Animation.
+                  // FDA is too heavy for the emulator.
+                  // As it is a requirement of the app, it will be enabled by default.
+                  // If you are working in this view or any other flow where you need to go through it, you can
+                  // disable it if you want (you should).
+                  // To do that set -dart-define=ALLOW_FDA=FALSE.
+                  // Just care running "flutter build apk" including this flag as FALSE.
+                  String definedAllowFDA = const String.fromEnvironment("ALLOW_FDA",
+                      defaultValue: "TRUE"); // Temporarily disabled to debug marker overlap
+                  final fdaAllowed = definedAllowFDA == "TRUE";
+                  if (fdaAllowed) {
+                    for (int i = 1; i <= 5; i++) {
+                      final fakeRoute =
+                          await GeoUtils.loadGeoJsonFakeRoute("assets/geojson/line/fake_route_$i.geojson");
+                      final origin = fakeRoute.coordinates.first;
 
-                    final imageToUse = (i % 2 == 0) ? iconA : iconB;
+                      final imageToUse = (i % 2 == 0) ? iconA : iconB;
 
-                    final annotation = await _pointAnnotationManager?.create(
-                      PointAnnotationOptions(
-                        geometry: Point(coordinates: Position(origin[0], origin[1])),
-                        image: imageToUse,
-                        iconAnchor: IconAnchor.CENTER,
-                      ),
-                    );
+                      final annotation = await _pointAnnotationManager?.create(
+                        PointAnnotationOptions(
+                          geometry: Point(coordinates: Position(origin[0], origin[1])),
+                          image: imageToUse,
+                          iconAnchor: IconAnchor.CENTER,
+                        ),
+                      );
 
-                    _taxis.add(AnimatedFakeDriver(
-                        routeCoords: fakeRoute.coordinates,
-                        annotation: annotation!,
-                        routeDuration: Duration(milliseconds: (fakeRoute.duration * 1000).round())
-                    ));
+                      _taxis.add(AnimatedFakeDriver(
+                          routeCoords: fakeRoute.coordinates,
+                          annotation: annotation!,
+                          routeDuration: Duration(milliseconds: (fakeRoute.duration * 1000).round())));
+                    }
+                    _ticker.start();
                   }
-                  _ticker.start();
-                }
-              },
-              onCameraChangeListener: (cameraData) async {
-                // Always update bearing 'cause fake drivers animation depends on it
-                _mapBearing = cameraData.cameraState.bearing;
-                // Return if the driver location is not being streaming. Otherwise we need to re-calculate bearing for
-                // the real driver marker. It is possible for this metric to change without significantly changing the
-                // driver location.
-                if(!_isLocationStreaming) return;
-                final bearing = mb_util.calculateBearing(
-                    _lastKnownCoords.lat, _lastKnownCoords.lng,
-                    _coords.lat, _coords.lng
-                );
-                final adjusted = (bearing - _mapBearing + 360) % 360;
-                _driverAnnotation?.iconRotate = adjusted;
-                _pointAnnotationManager?.update(_driverAnnotation!);
-              }
-            ),
+                },
+                onCameraChangeListener: (cameraData) async {
+                  // Always update bearing 'cause fake drivers animation depends on it
+                  _mapBearing = cameraData.cameraState.bearing;
+                  // Return if the driver location is not being streaming. Otherwise we need to re-calculate bearing for
+                  // the real driver marker. It is possible for this metric to change without significantly changing the
+                  // driver location.
+                  if (!_isLocationStreaming) return;
+                  final bearing =
+                      mb_util.calculateBearing(_lastKnownCoords.lat, _lastKnownCoords.lng, _coords.lat, _coords.lng);
+                  final adjusted = (bearing - _mapBearing + 360) % 360;
+                  _driverAnnotation?.iconRotate = adjusted;
+                  _pointAnnotationManager?.update(_driverAnnotation!);
+                }),
             // FAB group - different behavior based on travel selection
-            if(_selectedTravel == null) ...[
+            if (_selectedTravel == null) ...[
               // Show all buttons when no travel is selected
               Positioned(
-                right: 20.0, bottom: _shouldShowAvailableTravels ? 150.0 : 20.0,
+                right: 20.0,
+                bottom: _shouldShowAvailableTravels ? 150.0 : 20.0,
                 child: Column(
                   spacing: 8.0,
                   children: [
@@ -940,9 +912,9 @@ class _DriverHomePageState extends State<DriverHomePage> {
                       child: Text(
                         _driver.credit.toInt().toString(),
                         style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.onPrimaryContainer,
-                        ),
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.onPrimaryContainer,
+                            ),
                       ),
                     ),
                     // Find my location
@@ -955,31 +927,28 @@ class _DriverHomePageState extends State<DriverHomePage> {
                             context: context,
                             onPermissionGranted: () async {
                               // Start streaming location
-                              if(!_isLocationStreaming) await _startStreamingLocation();
+                              if (!_isLocationStreaming) await _startStreamingLocation();
                               // If still not streaming (e.g., error getting position), do nothing
-                              if(!_isLocationStreaming) return;
+                              if (!_isLocationStreaming) return;
                               // Ease to current position (Whether the location is being streaming)
-                              _mapController.easeTo(
-                                  CameraOptions(center: Point(coordinates: _coords)),
-                                  MapAnimationOptions(duration: 500)
-                              );
+                              _mapController.easeTo(CameraOptions(center: Point(coordinates: _coords)),
+                                  MapAnimationOptions(duration: 500));
                             },
                             onPermissionDenied: () {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                 SnackBar(content: Text(AppLocalizations.of(context)!.permissionsDenied)),
+                                SnackBar(content: Text(AppLocalizations.of(context)!.permissionsDenied)),
                               );
                             },
                             onPermissionDeniedForever: () {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(content: Text(AppLocalizations.of(context)!.permissionDeniedPermanently)),
                               );
-                            }
-                        );
+                            });
                       },
                       child: Icon(
-                          Icons.my_location_outlined,
-                          color: Theme.of(context).iconTheme.color,
-                          size: Theme.of(context).iconTheme.size
+                        Icons.my_location_outlined,
+                        color: Theme.of(context).iconTheme.color,
+                        size: Theme.of(context).iconTheme.size,
                       ),
                     ),
                     // Settings button
@@ -990,18 +959,19 @@ class _DriverHomePageState extends State<DriverHomePage> {
                         context.push(DriverRoutes.settings);
                       },
                       child: Icon(
-                          Icons.settings_outlined,
-                          color: Theme.of(context).iconTheme.color,
-                          size: Theme.of(context).iconTheme.size
+                        Icons.settings_outlined,
+                        color: Theme.of(context).iconTheme.color,
+                        size: Theme.of(context).iconTheme.size,
                       ),
                     ),
-                  ]
-                )
-              )
+                  ],
+                ),
+              ),
             ] else ...[
               // Show only location button when travel is selected
               Positioned(
-                right: 20.0, bottom: 150.0,
+                right: 20.0,
+                bottom: 150.0,
                 child: FloatingActionButton(
                   heroTag: "find-my-location-selected",
                   backgroundColor: Theme.of(context).colorScheme.primaryContainer,
@@ -1011,119 +981,108 @@ class _DriverHomePageState extends State<DriverHomePage> {
                         context: context,
                         onPermissionGranted: () async {
                           // Start streaming location
-                          if(!_isLocationStreaming) await _startStreamingLocation();
+                          if (!_isLocationStreaming) await _startStreamingLocation();
                           // If still not streaming (e.g., error getting position), do nothing
-                          if(!_isLocationStreaming) return;
+                          if (!_isLocationStreaming) return;
                           // Ease to current position (Whether the location is being streaming)
                           _mapController.easeTo(
-                              CameraOptions(center: Point(coordinates: _coords)),
-                              MapAnimationOptions(duration: 500)
-                          );
+                              CameraOptions(center: Point(coordinates: _coords)), MapAnimationOptions(duration: 500));
                         },
                         onPermissionDenied: () {
                           ScaffoldMessenger.of(context).showSnackBar(
-                             SnackBar(content: Text(AppLocalizations.of(context)!.permissionsDenied)),
+                            SnackBar(content: Text(AppLocalizations.of(context)!.permissionsDenied)),
                           );
                         },
                         onPermissionDeniedForever: () {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text(AppLocalizations.of(context)!.permissionDeniedPermanently)),
                           );
-                        }
-                    );
+                        });
                   },
                   child: Icon(
-                      Icons.my_location_outlined,
-                      color: Theme.of(context).iconTheme.color,
-                      size: Theme.of(context).iconTheme.size
+                    Icons.my_location_outlined,
+                    color: Theme.of(context).iconTheme.color,
+                    size: Theme.of(context).iconTheme.size,
                   ),
-                )
-              )
+                ),
+              ),
             ],
             // Notification area - only show when account is enabled
-            if(_isAccountEnabled)
+            if (_isAccountEnabled)
               Positioned(
-                  top: 32,
-                  right: 0.0,
-                  left: 0.0,
-                  child: Container(
-                      margin: EdgeInsets.all(12.0),
-                      child: Column(
-                          children: List.generate(
-                            _newTravels.length > 2 ? 2 : _newTravels.length, 
-                            (index) {
-                            final isSecondary = index == 1;
-                            
-                            return AnimatedContainer(
-                              duration: const Duration(milliseconds: 300),
-                              margin: EdgeInsets.only(
-                                left: isSecondary ? 8.0 : 0.0,
-                                right: isSecondary ? 8.0 : 0.0,
-                                top: index == 0 ? 0.0 : 4.0,
-                              ),
-                              child: AnimatedOpacity(
-                                duration: const Duration(milliseconds: 300),
-                                opacity: isSecondary ? 0.9 : 1.0,
-                                child: AnimatedScale(
-                                  duration: const Duration(milliseconds: 300),
-                                  scale: isSecondary ? 0.9 : 1.0,
-                                  child: AnimatedSwitcher(
+                top: 32,
+                right: 0.0,
+                left: 0.0,
+                child: Container(
+                  margin: const EdgeInsets.all(12.0),
+                  child: Column(
+                    children: List.generate(_newTravels.length > 2 ? 2 : _newTravels.length, (index) {
+                      final isSecondary = index == 1;
+
+                      return AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        margin: EdgeInsets.only(
+                          left: isSecondary ? 8.0 : 0.0,
+                          right: isSecondary ? 8.0 : 0.0,
+                          top: index == 0 ? 0.0 : 4.0,
+                        ),
+                        child: AnimatedOpacity(
+                          duration: const Duration(milliseconds: 300),
+                          opacity: isSecondary ? 0.9 : 1.0,
+                          child: AnimatedScale(
+                            duration: const Duration(milliseconds: 300),
+                            scale: isSecondary ? 0.9 : 1.0,
+                            child: AnimatedSwitcher(
                               duration: const Duration(milliseconds: 400),
                               switchInCurve: Curves.easeInOut,
                               transitionBuilder: (child, animation) {
                                 return SlideTransition(
-                                    position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero).animate(animation),
-                                    child: FadeTransition(opacity: animation, child: child)
+                                  position:
+                                      Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero).animate(animation),
+                                  child: FadeTransition(opacity: animation, child: child),
                                 );
                               },
                               child: TripNotification(
-                                      key: ValueKey(_newTravels[index].travel.id),
-                                      travel: _newTravels[index].travel,
+                                key: ValueKey(_newTravels[index].travel.id),
+                                travel: _newTravels[index].travel,
                                 index: index,
-                                      createdAt: _newTravels[index].createdAt,
-                                      onDismissed: () => _removeNotificationById(_newTravels[index].id),
-                                      onTap: () => _showTripDetailsDialog(_newTravels[index].travel)
-                              )
-                                  ),
-                                ),
+                                createdAt: _newTravels[index].createdAt,
+                                onDismissed: () => _removeNotificationById(_newTravels[index].id),
+                                onTap: () => _showTripDetailsDialog(_newTravels[index].travel),
                               ),
-                          );
-                          }
+                            ),
+                          ),
                         ),
-                    )
-                )
-            ),
+                      );
+                    }),
+                  ),
+                ),
+              ),
             // Available travels sheet
-            if(_shouldShowAvailableTravels)
+            if (_shouldShowAvailableTravels)
               Align(
-                  alignment: Alignment.bottomCenter,
-                  child: AvailableTravelsSheet(onTravelSelected: _onTravelSelected)
-              ),
+                  alignment: Alignment.bottomCenter, child: AvailableTravelsSheet(onTravelSelected: _onTravelSelected)),
             // Travel info sheet when travel is selected
-            if(_selectedTravel != null)
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: _buildTravelInfoSheet()
-              ),
+            if (_selectedTravel != null) Align(alignment: Alignment.bottomCenter, child: _buildTravelInfoSheet()),
             // Needs approval sheet
-            if(_showNeedsApprovalSheet)
-              Positioned(
+            if (_showNeedsApprovalSheet)
+              const Positioned(
                 left: 0,
                 right: 0,
                 bottom: 0,
                 child: NeedsApprovalSheet(),
               ),
             // Blocked sheet
-            if(_showDriverBlockedSheet)
-              Positioned(
+            if (_showDriverBlockedSheet)
+              const Positioned(
                 left: 0,
                 right: 0,
                 bottom: 0,
                 child: BlockedSheet(),
-              )
-          ]
-        )
-      )
+              ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -1134,21 +1093,23 @@ class _DriverHomePageState extends State<DriverHomePage> {
     final localizations = AppLocalizations.of(context)!;
 
     return DraggableScrollableSheet(
-        controller: _travelInfoSheetController,
-        initialChildSize: 0.15,
-        minChildSize: 0.15,
-        maxChildSize: 0.7,
-        expand: false,
-        shouldCloseOnMinExtent: false,
-        builder: (context, scrollController) {
-          return Stack(
+      controller: _travelInfoSheetController,
+      initialChildSize: 0.15,
+      minChildSize: 0.15,
+      maxChildSize: 0.7,
+      expand: false,
+      shouldCloseOnMinExtent: false,
+      builder: (context, scrollController) {
+        return Stack(
           children: [
             // Background Container With Header
             Positioned.fill(
               child: Container(
                 decoration: BoxDecoration(
                   color: colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(dimensions.cardBorderRadiusMedium))
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(dimensions.cardBorderRadiusMedium),
+                  ),
                 ),
                 child: Align(
                   alignment: Alignment.topCenter,
@@ -1156,18 +1117,17 @@ class _DriverHomePageState extends State<DriverHomePage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       IconButton(
-                        onPressed: () {
-                          if (!_travelInfoSheetController.isAttached) return;
-                          _travelInfoSheetController.jumpTo(0.9);
-                        },
-                        icon: Icon(Icons.keyboard_double_arrow_up)
-                      ),
+                          onPressed: () {
+                            if (!_travelInfoSheetController.isAttached) return;
+                            _travelInfoSheetController.jumpTo(0.9);
+                          },
+                          icon: const Icon(Icons.keyboard_double_arrow_up)),
                       const SizedBox(width: 8.0),
                       Text(localizations.tripDescription, style: textTheme.titleMedium)
-                    ]
-                  )
-                )
-              )
+                    ],
+                  ),
+                ),
+              ),
             ),
             // Main Container with Content
             Positioned.fill(
@@ -1201,12 +1161,12 @@ class _DriverHomePageState extends State<DriverHomePage> {
                                 height: 8.0,
                                 decoration: BoxDecoration(
                                   color: colorScheme.onSurfaceVariant.withAlpha(100),
-                                  borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusSmall)
-                                )
+                                  borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusSmall),
+                                ),
                               ),
-                            ]
+                            ],
                           ),
-                        )
+                        ),
                       ),
                       // Travel Info Sheet Content
                       Expanded(
@@ -1217,62 +1177,62 @@ class _DriverHomePageState extends State<DriverHomePage> {
                               // Restore app to initial state - clean up all travel-related UI and state
                               await _restoreToInitialState();
                               // Re-activate new travel request ws handler, in order to receive notification.
-                              _newTravelRequestHandler = TravelRequestHandler(
-                                  driverId: _driver.id,
-                                  onNewTravel: _onNewTravel
-                              )..activate();
-                              if(!context.mounted) return;
+                              _newTravelRequestHandler =
+                                  TravelRequestHandler(driverId: _driver.id, onNewTravel: _onNewTravel)..activate();
+                              if (!context.mounted) return;
                               showToast(context: context, message: "Reporte enviado correctamente");
-                              setState(() {_selectedTravel = null;});
+                              setState(() {
+                                _selectedTravel = null;
+                              });
                             },
                             travel: _selectedTravel!,
-                              onPickUpConfirmationRequest: () async {
-                                // Behavior for travel requested normally, needs pick up confirmation through ws
-                                if(_selectedTravel!.requestType == TravelRequestType.online) {
-                                  // Check connection (web socket depends on it)
-                                  if(hasConnection(context)) {
-                                    // Notify driver about pickup confirmation flow
-                                    showDialog(
-                                      context: context,
-                                      barrierDismissible: false,
-                                      builder: (_) => InfoDialog(
-                                        title: AppLocalizations.of(context)!.pickupConfirmationSentTitle,
-                                        bodyMessage: AppLocalizations.of(context)!.pickupConfirmationInfo,
-                                        onAccept: () {
-                                          // Send pick up confirmation
-                                          WebSocketService.instance.send(
-                                              "/app/travels/${_selectedTravel!.id}/pick-up-confirmation", null // no body needed
-                                          );
-                                          // Only subscribes once
-                                          _travelStateHandler = TravelStateHandler(
-                                              state: TravelState.inProgress,
-                                              travelId: _selectedTravel!.id,
-                                              onMessage: _goToNavigationPage
-                                          )..activate();
-                                        },
-                                      ),
-                                    );
-                                  }
-                                  else {
-                                    showToast(context: context, message: "Revise su conexión a internet");
-                                  }
-                                }
-                                // If client if offline, we don't wait for pick up confirmation
-                                else {
-                                  _goToNavigationPage(_selectedTravel!);
+                            onPickUpConfirmationRequest: () async {
+                              // Behavior for travel requested normally, needs pick up confirmation through ws
+                              if (_selectedTravel!.requestType == TravelRequestType.online) {
+                                // Check connection (web socket depends on it)
+                                if (hasConnection(context)) {
+                                  // Notify driver about pickup confirmation flow
+                                  showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (_) => InfoDialog(
+                                      title: AppLocalizations.of(context)!.pickupConfirmationSentTitle,
+                                      bodyMessage: AppLocalizations.of(context)!.pickupConfirmationInfo,
+                                      onAccept: () {
+                                        // Send pick up confirmation
+                                        WebSocketService.instance.send(
+                                            "/app/travels/${_selectedTravel!.id}/pick-up-confirmation",
+                                            null // no body needed
+                                            );
+                                        // Only subscribes once
+                                        _travelStateHandler = TravelStateHandler(
+                                            state: TravelState.inProgress,
+                                            travelId: _selectedTravel!.id,
+                                            onMessage: _goToNavigationPage)
+                                          ..activate();
+                                      },
+                                    ),
+                                  );
+                                } else {
+                                  showToast(context: context, message: "Revise su conexión a internet");
                                 }
                               }
+                              // If client if offline, we don't wait for pick up confirmation
+                              else {
+                                _goToNavigationPage(_selectedTravel!);
+                              }
+                            },
                           ),
                         ),
                       ),
-                    ]
-                  )
-                )
-              )
-            )
-          ]
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         );
-      }
+      },
     );
   }
 }

@@ -21,37 +21,28 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
   String _normalizePhoneNumber(String phone) {
     // Remove all spaces and trim
     String cleanPhone = phone.trim().replaceAll(' ', '');
-
     // Remove + if present
     if (cleanPhone.startsWith('+')) {
       cleanPhone = cleanPhone.substring(1);
     }
-
     // Remove country code (53) if present
     if (cleanPhone.startsWith('53') && cleanPhone.length > 8) {
       cleanPhone = cleanPhone.substring(2);
     }
-
     return cleanPhone;
   }
 
   void _submitPhoneNumber() async {
     // Validate form first
     if (!_formKey.currentState!.validate()) return;
-
     // Set loading state to prevent multiple submissions
     setState(() => _isLoading = true);
-
     final normalizedPhone = _normalizePhoneNumber(_phoneController.text);
     final localization = AppLocalizations.of(context)!;
-
     final response = await _authService.requestPasswordReset(normalizedPhone);
-
     // Reset loading state
     setState(() => _isLoading = false);
-
-    if (!context.mounted) return;
-
+    if (!mounted) return;
     if (response.statusCode == 200) {
       Navigator.of(context).pop();
       showDialog(
@@ -134,10 +125,12 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
                 width: double.infinity,
                 height: 44,
                 child: ElevatedButton(
-                  onPressed: _isLoading ? null : () {
-                    FocusScope.of(context).unfocus();
-                    _submitPhoneNumber();
-                  },
+                  onPressed: _isLoading
+                      ? null
+                      : () {
+                          FocusScope.of(context).unfocus();
+                          _submitPhoneNumber();
+                        },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: theme.colorScheme.primary,
                     foregroundColor: theme.colorScheme.secondary,

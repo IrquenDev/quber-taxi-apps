@@ -58,7 +58,7 @@ class _DriverInfoPageState extends State<DriverInfoPage> {
                 } else if (snapshot.hasError || !snapshot.hasData) {
                   return SizedBox(
                     height: MediaQuery.of(context).size.height * 0.37,
-                    child: Center(child: Text('Error al cargar datos del conductor')),
+                    child: const Center(child: Text('Error al cargar datos del conductor')),
                   );
                 }
 
@@ -79,7 +79,7 @@ class _DriverInfoPageState extends State<DriverInfoPage> {
                       children: [
                         Row(
                           children: [
-                            IconButton(onPressed: () => context.pop(), icon: Icon(Icons.arrow_back), color: Theme.of(context).colorScheme.shadow),
+                            IconButton(onPressed: () => context.pop(), icon: const Icon(Icons.arrow_back), color: Theme.of(context).colorScheme.shadow),
                             const SizedBox(width: 15),
                             Text(
                               localizations.driverInfoTitle,
@@ -147,7 +147,7 @@ class _DriverInfoPageState extends State<DriverInfoPage> {
                               width: cardWidth,
                               child: Card(
                                 shape: const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.vertical(top: Radius.circular(10), bottom: Radius.zero),
+                                  borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
                                 ),
                                 child: Padding(
                                   padding: const EdgeInsets.all(10),
@@ -188,7 +188,7 @@ class _DriverInfoPageState extends State<DriverInfoPage> {
                               width: cardWidth,
                               child: Card(
                                 shape: const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.vertical(top: Radius.circular(10), bottom: Radius.zero),
+                                  borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
                                 ),
                                 child: Padding(
                                   padding: const EdgeInsets.all(10),
@@ -223,7 +223,7 @@ class _DriverInfoPageState extends State<DriverInfoPage> {
                               width: cardWidth,
                               child: Card(
                                 shape: const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.vertical(top: Radius.circular(10), bottom: Radius.zero),
+                                  borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
                                 ),
                                 child: Padding(
                                   padding: const EdgeInsets.all(16),
@@ -258,7 +258,7 @@ class _DriverInfoPageState extends State<DriverInfoPage> {
                               width: cardWidth,
                               child: Card(
                                 shape: const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.vertical(top: Radius.zero, bottom: Radius.circular(10)),
+                                  borderRadius: BorderRadius.vertical(bottom: Radius.circular(10)),
                                 ),
                                 child: Padding(
                                   padding: const EdgeInsets.all(16),
@@ -344,7 +344,7 @@ class _DriverInfoPageState extends State<DriverInfoPage> {
           padding: const EdgeInsets.symmetric(horizontal: 2),
           child: SvgPicture.asset(
             index < rating.floor()
-                ? 'assets/icons/yelow_star.svg'
+                ? 'assets/icons/yellow_star.svg'
                 : 'assets/icons/gray_star.svg',
             height: 28,
           ),

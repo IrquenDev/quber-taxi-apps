@@ -1,28 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
+import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../../theme/dimensions.dart';
 
 class AboutDevPage extends StatelessWidget {
   const AboutDevPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme
-        .of(context)
-        .colorScheme;
-    final textTheme = Theme
-        .of(context)
-        .textTheme;
-    final screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final screenWidth = MediaQuery.of(context).size.width;
     final cardWidth = screenWidth * 0.9;
     final dimensions = Theme.of(context).extension<DimensionExtension>()!;
     final localizations = AppLocalizations.of(context)!;
@@ -58,8 +50,7 @@ class AboutDevPage extends StatelessWidget {
                     Row(
                       children: [
                         IconButton(
-                          icon: Icon(Icons.arrow_back, color: colorScheme
-                              .onPrimary),
+                          icon: Icon(Icons.arrow_back, color: colorScheme.onPrimary),
                           onPressed: () => context.pop(),
                         ),
                         const SizedBox(width: 15),
@@ -77,7 +68,6 @@ class AboutDevPage extends StatelessWidget {
                       context,
                       imagePath: 'assets/icons/isotipo_irquen.png',
                     ),
-
                     Text(
                       localizations.nameAboutDev,
                       style: textTheme.titleLarge?.copyWith(
@@ -113,8 +103,7 @@ class AboutDevPage extends StatelessWidget {
                           width: cardWidth,
                           child: Card(
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                  dimensions.borderRadius),
+                              borderRadius: BorderRadius.circular(dimensions.borderRadius),
                             ),
                             child: Padding(
                               padding: dimensions.contentPadding,
@@ -148,8 +137,7 @@ class AboutDevPage extends StatelessWidget {
                           width: cardWidth,
                           child: Card(
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                  dimensions.borderRadius),
+                              borderRadius: BorderRadius.circular(dimensions.borderRadius),
                             ),
                             child: Padding(
                               padding: dimensions.contentPadding,
@@ -159,9 +147,7 @@ class AboutDevPage extends StatelessWidget {
                                   const SizedBox(height: 5),
                                   Text(
                                     AppLocalizations.of(context)!.aboutText,
-                                    style: textTheme.bodyMedium?.copyWith(
-                                        color: colorScheme.onSurface
-                                    ),
+                                    style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
                                     textAlign: TextAlign.justify,
                                   ),
                                 ],
@@ -181,16 +167,13 @@ class AboutDevPage extends StatelessWidget {
     );
   }
 
-  Widget _buildContactRow(BuildContext context, {
+  Widget _buildContactRow(
+    BuildContext context, {
     required String imagePath,
     required String text,
   }) {
-    final colorScheme = Theme
-        .of(context)
-        .colorScheme;
-    final textTheme = Theme
-        .of(context)
-        .textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final localizations = AppLocalizations.of(context)!;
 
     return InkWell(
@@ -209,22 +192,18 @@ class AboutDevPage extends StatelessWidget {
               imagePath,
               width: 20,
               height: 20,
-              fit: BoxFit.contain,
             ),
           ),
           Expanded(
             child: Text(
               text,
-              style: textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurface
-              ),
+              style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
             ),
           ),
         ],
       ),
     );
   }
-
 
   Widget _buildCLogo(BuildContext context, {required String imagePath}) {
     return Center(
@@ -256,7 +235,6 @@ class AboutDevPage extends StatelessWidget {
       if (canLaunch) {
         final launched = await launchUrl(
           uri,
-          mode: LaunchMode.platformDefault,
         );
         if (!launched) {
           debugPrint('No se pudo abrir $uri');

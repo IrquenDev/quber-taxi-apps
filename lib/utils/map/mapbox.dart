@@ -1,8 +1,5 @@
-import 'dart:convert';
 import 'dart:math';
-import 'package:flutter/services.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
-import 'package:quber_taxi/common/models/mapbox_route.dart';
 
 /// Calculates the compass bearing between two geographic coordinates (lat/lon).
 ///
@@ -38,17 +35,17 @@ CoordinateBounds calculateBounds(List<Position> positions) {
   if (positions.isEmpty) {
     throw ArgumentError('Positions list cannot be empty');
   }
-  
+
   // Extract longitude and latitude lists separately
   final lngs = positions.map((pos) => pos.lng);
   final lats = positions.map((pos) => pos.lat);
-  
+
   // Determine the coordinate bounds
   final minLat = lats.reduce((a, b) => a < b ? a : b);
   final maxLat = lats.reduce((a, b) => a > b ? a : b);
   final minLng = lngs.reduce((a, b) => a < b ? a : b);
   final maxLng = lngs.reduce((a, b) => a > b ? a : b);
-  
+
   // Create and return the bounding box
   return CoordinateBounds(
     southwest: Point(coordinates: Position(minLng, minLat)),
@@ -90,7 +87,10 @@ Future<void> zoomToFitRoute(MapboxMap controller, List<List<num>> coords) async 
       infiniteBounds: true,
     ),
     MbxEdgeInsets(top: 50, bottom: 50, left: 30, right: 30),
-    0, 0, null, null,
+    0,
+    0,
+    null,
+    null,
   );
   // Animate the map camera to the computed bounds
   controller.easeTo(

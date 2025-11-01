@@ -30,7 +30,6 @@ class App extends StatelessWidget {
             pingUrl: '${ApiConfig().baseUrl}/network-checker',
             timeLimit: const Duration(seconds: 3),
           ),
-          alertBuilder: null,
           child: AnnouncementWrapper(child: child!),
         ),
       ),
