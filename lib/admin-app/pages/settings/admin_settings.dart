@@ -306,8 +306,8 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                                                     child: OutlinedButton(
                                                         onPressed: () async {
                                                           FocusScope.of(context).unfocus();
-                                                          if (!_passwordFormKey.currentState!.validate()) return;
-                                                          if (!runtime.hasConnection(context) || !canSubmitNewPassword) return;
+                                                          if (!_formKey.currentState!.validate()) return;
+                                                          if (!runtime.hasConnection(context) || !canSubmitNewConfigs) return;
                                                           final vehiclePrices = <TaxiType, double>{};
                                                           for (final entry in _vehiclePriceControllers.entries) {
                                                             vehiclePrices[entry.key] = double.parse(entry.value.text);
