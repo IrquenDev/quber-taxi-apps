@@ -306,8 +306,8 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                                                     child: OutlinedButton(
                                                         onPressed: () async {
                                                           FocusScope.of(context).unfocus();
-                                                          if(!_formKey.currentState!.validate()) return;
-                                                          if(!runtime.hasConnection(context) || !canSubmitNewConfigs) return;
+                                                          if (!_passwordFormKey.currentState!.validate()) return;
+                                                          if (!runtime.hasConnection(context) || !canSubmitNewPassword) return;
                                                           final vehiclePrices = <TaxiType, double>{};
                                                           for (final entry in _vehiclePriceControllers.entries) {
                                                             vehiclePrices[entry.key] = double.parse(entry.value.text);
@@ -373,6 +373,7 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                                                 child: TextFormField(
                                                   controller: _newPasswordController,
                                                   obscureText: !_isNewPasswordVisible,
+                                                  autofillHints: const <String>[],
                                                   decoration: InputDecoration(
                                                     errorMaxLines: 3,
                                                     border: OutlineInputBorder(
@@ -425,6 +426,7 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                                               child: TextFormField(
                                                 controller: _confirmPasswordController,
                                                 obscureText: !_isConfirmPasswordVisible,
+                                                autofillHints: const <String>[],
                                                 decoration: InputDecoration(
                                                   errorMaxLines: 3,
                                                   border: OutlineInputBorder(
@@ -478,6 +480,12 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                                                       );
                                                       if(!context.mounted) return;
                                                       if(response.statusCode == 200) {
+                                                        setState(() {
+                                                          // _newPasswordController.text = '';
+                                                          // _confirmPasswordController.text = '';
+                                                          _newPasswordController.clear();
+                                                          _confirmPasswordController.clear();
+                                                        });
                                                         showToast(context: context, message: localizations.operationSuccessful);
                                                       } else {
                                                         showToast(context: context, message: localizations.errorChangingPassword);
