@@ -9,7 +9,6 @@ import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/utils/runtime.dart';
 
 class AvailableTravelsSheet extends StatefulWidget {
-
   final void Function(Travel) onTravelSelected;
 
   const AvailableTravelsSheet({super.key, required this.onTravelSelected});
@@ -19,9 +18,9 @@ class AvailableTravelsSheet extends StatefulWidget {
 }
 
 class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
-
   final DraggableScrollableController _sheetController = DraggableScrollableController();
   final travelService = TravelService();
+
   // Just for simplify alignment - using theme-based dimensions
   late final Widget ghostContainer;
   double _currentSize = 0.15;
@@ -29,7 +28,7 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
 
   late Future<List<Travel>> futureTravels;
   late final Taxi taxi;
-  
+
   // Pagination state
   List<Travel> _allTravels = [];
   int _currentPage = 0;
@@ -41,15 +40,15 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
     _currentPage = 0;
     _hasMoreData = true;
     _initialLoadComplete = false;
-    final travelPage = await travelService.fetchAvailableTravels(taxi.seats, taxi.type, page: 0, size: 20);
+    final travelPage = await travelService.fetchAvailableTravels(taxi.seats, taxi.type);
     final newTravels = travelPage.content;
-    
-    if(newTravels.isEmpty) {
-      if(_sheetController.isAttached){
+
+    if (newTravels.isEmpty) {
+      if (_sheetController.isAttached) {
         _sheetController.jumpTo(0.15);
       }
     }
-    
+
     setState(() {
       _allTravels = newTravels;
       _hasMoreData = !travelPage.last;
@@ -65,10 +64,10 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
       _hasMoreData = true;
       _allTravels.clear();
       _initialLoadComplete = false;
-      
-      futureTravels = travelService.fetchAvailableTravels(taxi.seats, taxi.type, page: 0, size: 20).then((travelPage) {
+
+      futureTravels = travelService.fetchAvailableTravels(taxi.seats, taxi.type).then((travelPage) {
         final travels = travelPage.content;
-        
+
         _allTravels = travels;
         _hasMoreData = !travelPage.last;
         return _allTravels;
@@ -89,10 +88,7 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
     taxi = Driver.fromJson(loggedInUser).taxi;
 
     // Initialize ghost container
-    ghostContainer = Container(
-      width: 24.0,
-      color: Colors.transparent
-    );
+    ghostContainer = Container(width: 24.0, color: Colors.transparent);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _sheetController.addListener(() {
@@ -101,15 +97,16 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
         });
       });
     });
-        _loadTravels();
+    _loadTravels();
   }
 
   Widget _buildTravelsList(ScrollController scrollController, ColorScheme colorScheme) {
     return NotificationListener<ScrollNotification>(
       onNotification: (ScrollNotification scrollInfo) {
-        if (scrollInfo is ScrollEndNotification && 
+        if (scrollInfo is ScrollEndNotification &&
             scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent &&
-            _hasMoreData && !_isLoadingMore) {
+            _hasMoreData &&
+            !_isLoadingMore) {
           _loadMoreTravels();
         }
         return false;
@@ -121,33 +118,31 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
           itemBuilder: (context, index) {
             if (index == _allTravels.length) {
               // Loading indicator at the end (only when loading)
-              return _isLoadingMore ? Container(
-                padding: const EdgeInsets.all(16.0),
-                alignment: Alignment.center,
-                child: CircularProgressIndicator(color: colorScheme.primary),
-              ) : const SizedBox.shrink();
+              return _isLoadingMore
+                  ? Container(
+                      padding: const EdgeInsets.all(16.0),
+                      alignment: Alignment.center,
+                      child: CircularProgressIndicator(color: colorScheme.primary),
+                    )
+                  : const SizedBox.shrink();
             }
-            return TripCard(
-                travel: _allTravels[index],
-                onTravelSelected: widget.onTravelSelected
-            );
-          }
-      ),
+            return TripCard(travel: _allTravels[index], onTravelSelected: widget.onTravelSelected);
+          }),
     );
   }
 
   Future<void> _loadMoreTravels() async {
     if (_isLoadingMore || !_hasMoreData) return;
-    
+
     setState(() {
       _isLoadingMore = true;
     });
-    
+
     try {
       _currentPage++;
-      final travelPage = await travelService.fetchAvailableTravels(taxi.seats, taxi.type, page: _currentPage, size: 20);
+      final travelPage = await travelService.fetchAvailableTravels(taxi.seats, taxi.type, page: _currentPage);
       final newTravels = travelPage.content;
-      
+
       setState(() {
         _allTravels.addAll(newTravels);
         _hasMoreData = !travelPage.last;
@@ -170,25 +165,23 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
     final localizations = AppLocalizations.of(context)!;
 
     return DraggableScrollableSheet(
-      controller: _sheetController,
-      initialChildSize: 0.15,
-      minChildSize: 0.15,
-      maxChildSize: 0.9,
-      expand: false,
-      shouldCloseOnMinExtent: false,
-      builder: (context, scrollController) {
-        return Stack(
-            children: [
-              // Background Container With Header
-              Positioned.fill(
-                child: Container(decoration: BoxDecoration(
-                  color: colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(dimensions.cardBorderRadiusMedium))),
-                  child: Align(
-                    alignment: Alignment.topCenter,
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
+        controller: _sheetController,
+        initialChildSize: 0.15,
+        minChildSize: 0.15,
+        maxChildSize: 0.9,
+        expand: false,
+        shouldCloseOnMinExtent: false,
+        builder: (context, scrollController) {
+          return Stack(children: [
+            // Background Container With Header
+            Positioned.fill(
+                child: Container(
+                    decoration: BoxDecoration(
+                        color: colorScheme.primaryContainer,
+                        borderRadius: BorderRadius.vertical(top: Radius.circular(dimensions.cardBorderRadiusMedium))),
+                    child: Align(
+                        alignment: Alignment.topCenter,
+                        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                           IconButton(
                               onPressed: () {
                                 if (!_sheetController.isAttached) return;
@@ -196,106 +189,91 @@ class _AvailableTravelsSheetState extends State<AvailableTravelsSheet> {
                               },
                               icon: Icon(_currentSize >= 0.15 && _currentSize <= 0.45
                                   ? Icons.keyboard_double_arrow_up
-                                  : Icons.keyboard_double_arrow_down
-                              )
-                          ),
+                                  : Icons.keyboard_double_arrow_down)),
                           const SizedBox(width: 8.0),
                           Text(localizations.selectTravel, style: textTheme.titleMedium)
-                        ]
-                    )
-                  )
-                )
-              ),
-              // Main Container with Content
-              Positioned.fill(
-                  child: Padding(
-                      padding: const EdgeInsets.only(top: 56.0),
-                      child: Container(
-                          decoration: BoxDecoration(
-                            color: colorScheme.surfaceContainer,
-                            borderRadius: BorderRadius.vertical(top: Radius.circular(dimensions.cardBorderRadiusLarge)),
+                        ])))),
+            // Main Container with Content
+            Positioned.fill(
+                child: Padding(
+                    padding: const EdgeInsets.only(top: 56.0),
+                    child: Container(
+                        decoration: BoxDecoration(
+                          color: colorScheme.surfaceContainer,
+                          borderRadius: BorderRadius.vertical(top: Radius.circular(dimensions.cardBorderRadiusLarge)),
+                        ),
+                        child: Column(children: [
+                          // Drag Handler + Refresh Button
+                          GestureDetector(
+                            behavior: HitTestBehavior.translucent,
+                            onVerticalDragUpdate: (details) {
+                              if (!_sheetController.isAttached) return;
+                              final screenHeight = MediaQuery.of(context).size.height;
+                              final dragAmount = -details.primaryDelta! / screenHeight;
+                              final newSize = (_currentSize + dragAmount).clamp(0.1, 0.9);
+                              _sheetController.jumpTo(newSize);
+                            },
+                            child: SizedBox(
+                              height: 48.0,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  ghostContainer,
+                                  Container(
+                                    width: 24.0,
+                                    height: 8.0,
+                                    decoration: BoxDecoration(
+                                      color: colorScheme.onSurfaceVariant.withAlpha(100),
+                                      borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusSmall),
+                                    ),
+                                  ),
+                                  !_isActionPending
+                                      ? IconButton(
+                                          icon: const Icon(Icons.refresh),
+                                          tooltip: localizations.updateTravel,
+                                          onPressed: hasConnection(context) ? _refreshTravels : null,
+                                        )
+                                      : ghostContainer
+                                ],
+                              ),
+                            ),
                           ),
-                          child: Column(
-                              children: [
-                                // Drag Handler + Refresh Button
-                                GestureDetector(
-                                    behavior: HitTestBehavior.translucent,
-                                    onVerticalDragUpdate: (details) {
-                                      if (!_sheetController.isAttached) return;
-                                      final screenHeight = MediaQuery.of(context).size.height;
-                                      final dragAmount = -details.primaryDelta! / screenHeight;
-                                      final newSize = (_currentSize + dragAmount).clamp(0.1, 0.9);
-                                      _sheetController.jumpTo(newSize);
-                                    },
-                                    child: SizedBox(
-                                                                                          height: 48.0,
-                                      child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            ghostContainer,
-                                            Container(
-                                                width: 24.0,
-                                                height: 8.0,
-                                                decoration: BoxDecoration(
-                                                    color: colorScheme.onSurfaceVariant.withOpacity(0.4),
-                                                    borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusSmall)
-                                                )
-                                            ),
-                                            !_isActionPending ?
-                                            IconButton(
-                                                icon: const Icon(Icons.refresh),
-                                                tooltip: localizations.updateTravel,
-                                                onPressed: hasConnection(context) ? _refreshTravels : null
-                                            ) : ghostContainer
-                                          ]
-                                      ),
-                                    )
-                                ),
-                                // Scrollable Mocked List
-                                Expanded(
-                                  child: !_initialLoadComplete 
-                                    ? FutureBuilder(
-                                        future: futureTravels,
-                                        builder: (context, snapshot) {
-                                          if (snapshot.connectionState == ConnectionState.waiting) {
-                                            return Center(
-                                              child: CircularProgressIndicator(
-                                                color: colorScheme.primary,
-                                              )
-                                            );
-                                          }
-                                          else if(snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
-                                            return Center(
-                                              child: Text(
-                                                localizations.noTravel,
-                                                style: textTheme.bodyMedium?.copyWith(
-                                                  color: colorScheme.onSurfaceVariant,
-                                                ),
-                                              ),
-                                            );
-                                          }
-                                          return _buildTravelsList(scrollController, colorScheme);
-                                        }
-                                      )
-                                    : _allTravels.isEmpty
-                                      ? Center(
+                          // Scrollable Mocked List
+                          Expanded(
+                            child: !_initialLoadComplete
+                                ? FutureBuilder(
+                                    future: futureTravels,
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState == ConnectionState.waiting) {
+                                        return Center(
+                                            child: CircularProgressIndicator(
+                                          color: colorScheme.primary,
+                                        ));
+                                      } else if (snapshot.hasError || !snapshot.hasData || snapshot.data!.isEmpty) {
+                                        return Center(
                                           child: Text(
                                             localizations.noTravel,
                                             style: textTheme.bodyMedium?.copyWith(
                                               color: colorScheme.onSurfaceVariant,
                                             ),
                                           ),
-                                        )
-                                      : _buildTravelsList(scrollController, colorScheme),
-                                )
-                              ]
+                                        );
+                                      }
+                                      return _buildTravelsList(scrollController, colorScheme);
+                                    })
+                                : _allTravels.isEmpty
+                                    ? Center(
+                                        child: Text(
+                                          localizations.noTravel,
+                                          style: textTheme.bodyMedium?.copyWith(
+                                            color: colorScheme.onSurfaceVariant,
+                                          ),
+                                        ),
+                                      )
+                                    : _buildTravelsList(scrollController, colorScheme),
                           )
-                      )
-                  )
-              )
-            ]
-        );
-      }
-    );
+                        ]))))
+          ]);
+        });
   }
 }

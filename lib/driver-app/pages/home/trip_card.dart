@@ -9,7 +9,6 @@ import 'package:quber_taxi/utils/map/geolocator.dart' as g_util;
 import 'package:quber_taxi/utils/runtime.dart';
 
 class TripCard extends StatefulWidget {
-
   final Travel travel;
   final void Function(Travel) onTravelSelected;
 
@@ -27,14 +26,13 @@ class _TripCardState extends State<TripCard> {
     final dimensions = Theme.of(context).extension<DimensionExtension>()!;
     final colorScheme = Theme.of(context).colorScheme;
     final localizations = AppLocalizations.of(context)!;
-    
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       elevation: dimensions.elevation,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusMedium)),
-      color: _isExpanded 
-        ? Theme.of(context).colorScheme.primaryFixed 
-        : Theme.of(context).colorScheme.surfaceContainerHigh,
+      color:
+          _isExpanded ? Theme.of(context).colorScheme.primaryFixed : Theme.of(context).colorScheme.surfaceContainerHigh,
       child: InkWell(
         borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusMedium),
         onTap: () {
@@ -60,125 +58,98 @@ class _TripCardState extends State<TripCard> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // Origin - Large icon
-                          _buildIconTextRow(
-                              context,
-                              'assets/icons/radio_button_checked_line.svg',
+                          _buildIconTextRow(context, 'assets/icons/radio_button_checked_line.svg',
                               localizations.fromLocation(widget.travel.originName),
-                              iconSize: 40
-                          ),
-                          // Destination - Large icon  
-                          _buildIconTextRow(
-                              context,
-                              'assets/icons/location_line.svg',
+                              iconSize: 40),
+                          // Destination - Large icon
+                          _buildIconTextRow(context, 'assets/icons/location_line.svg',
                               localizations.toLocation(widget.travel.destinationName),
-                              iconSize: 40
-                          ),
+                              iconSize: 40),
                         ],
                       ),
                     ),
                     // Expandable content
                     if (_isExpanded) ...[
                       // Distance Fixed - Standard icon
-                      if(widget.travel.fixedDistance != null)
-                        _buildIconTextRow(
-                            context,
-                            'assets/icons/t_guiones.svg',
+                      if (widget.travel.fixedDistance != null)
+                        _buildIconTextRow(context, 'assets/icons/t_guiones.svg',
                             localizations.distanceFixed(widget.travel.fixedDistance!.toStringAsFixed(1)),
-                            startPadding: 8
-                        ),
+                            startPadding: 8),
                       // Distance Min - Standard icon
-                      if(widget.travel.minDistance != null)
-                      _buildIconTextRow(
-                          context,
-                          'assets/icons/t_guiones.svg',
-                          localizations.distanceMinimum(widget.travel.minDistance!.toStringAsFixed(1)),
-                          startPadding: 8
-                      ),
+                      if (widget.travel.minDistance != null)
+                        _buildIconTextRow(context, 'assets/icons/t_guiones.svg',
+                            localizations.distanceMinimum(widget.travel.minDistance!.toStringAsFixed(1)),
+                            startPadding: 8),
                       // Distance Max - Standard icon
-                      if(widget.travel.maxDistance != null)
-                      _buildIconTextRow(
-                          context,
-                          'assets/icons/t_guiones.svg',
-                          localizations.distanceMaximum(widget.travel.maxDistance!.toStringAsFixed(1)),
-                          startPadding: 8
-                      ),
+                      if (widget.travel.maxDistance != null)
+                        _buildIconTextRow(context, 'assets/icons/t_guiones.svg',
+                            localizations.distanceMaximum(widget.travel.maxDistance!.toStringAsFixed(1)),
+                            startPadding: 8),
                       // Price Fixed - Standard icon
-                      if(widget.travel.fixedPrice != null)
-                        _buildIconTextRow(
-                            context,
-                            'assets/icons/t_guiones.svg',
+                      if (widget.travel.fixedPrice != null)
+                        _buildIconTextRow(context, 'assets/icons/t_guiones.svg',
                             localizations.priceFixedCost(widget.travel.fixedPrice!.toStringAsFixed(0)),
-                            startPadding: 8
-                        ),
+                            startPadding: 8),
                       // Price Min - Standard icon
-                      if(widget.travel.minPrice != null)
-                      _buildIconTextRow(
-                          context,
-                          'assets/icons/t_guiones.svg',
-                          localizations.priceMinimumCost(widget.travel.minPrice!.toStringAsFixed(0)),
-                          startPadding: 8
-                      ),
+                      if (widget.travel.minPrice != null)
+                        _buildIconTextRow(context, 'assets/icons/t_guiones.svg',
+                            localizations.priceMinimumCost(widget.travel.minPrice!.toStringAsFixed(0)),
+                            startPadding: 8),
                       // Price Max - Standard icon
-                      if(widget.travel.maxPrice != null)
-                      _buildIconTextRow(
-                          context,
-                          'assets/icons/t_guiones.svg',
-                          localizations.priceMaximumCost(widget.travel.maxPrice!.toStringAsFixed(0)),
-                          startPadding: 8
-                      ),
+                      if (widget.travel.maxPrice != null)
+                        _buildIconTextRow(context, 'assets/icons/t_guiones.svg',
+                            localizations.priceMaximumCost(widget.travel.maxPrice!.toStringAsFixed(0)),
+                            startPadding: 8),
                       // People - Standard icon row
                       _buildStandardIconRow(
-                          context, Icons.people,
-                          localizations.peopleCount(widget.travel.requiredSeats.toString())
-                      ),
+                          context, Icons.people, localizations.peopleCount(widget.travel.requiredSeats.toString())),
                       // Pets - Standard icon row
-                      _buildStandardIconRow(
-                          context, Icons.pets,
-                          widget.travel.hasPets ? localizations.withPet : localizations.withoutPet
-                      ),
+                      _buildStandardIconRow(context, Icons.pets,
+                          widget.travel.hasPets ? localizations.withPet : localizations.withoutPet),
                       const SizedBox(height: 12.0),
                       // Accept button
                       Align(
-                        alignment: Alignment.centerRight,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
-                            ),
-                          ),
-                          onPressed: hasConnection(context) ? () async {
-                            // ConfirmDialog
-                            final result = await showDialog<bool>(
-                              context: context,
-                              builder: (context) => ConfirmDialog(
-                                title: localizations.acceptTrip,
-                                message: localizations.acceptTripConfirmMessage,
-                              )
-                            );
+                          alignment: Alignment.centerRight,
+                          child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+                                ),
+                              ),
+                              onPressed: hasConnection(context)
+                                  ? () async {
+                                      // ConfirmDialog
+                                      final result = await showDialog<bool>(
+                                          context: context,
+                                          builder: (context) => ConfirmDialog(
+                                                title: localizations.acceptTrip,
+                                                message: localizations.acceptTripConfirmMessage,
+                                              ));
 
-                            if (result == true) {
-                              if(!context.mounted) return;
-                              // Ask for location permission
-                              await g_util.requestLocationPermission(
-                                  context: context,
-                                  onPermissionGranted: () async => widget.onTravelSelected.call(widget.travel),
-                                  onPermissionDenied: () => showToast(context: context, message: localizations.locationPermissionRequired),
-                                  onPermissionDeniedForever: () => showToast(context: context, message: localizations.locationPermissionBlocked)
-                              );
-                            }
-                          } : null,
-                          child: Text(localizations.accept)
-                        )
-                      ),
+                                      if (result == true) {
+                                        if (!context.mounted) return;
+                                        // Ask for location permission
+                                        await g_util.requestLocationPermission(
+                                            context: context,
+                                            onPermissionGranted: () async =>
+                                                widget.onTravelSelected.call(widget.travel),
+                                            onPermissionDenied: () => showToast(
+                                                context: context, message: localizations.locationPermissionRequired),
+                                            onPermissionDeniedForever: () => showToast(
+                                                context: context, message: localizations.locationPermissionBlocked));
+                                      }
+                                    }
+                                  : null,
+                              child: Text(localizations.accept))),
                     ],
                   ],
                 ),
               ),
-              
+
               // Expansion indicator - Always positioned at top right
               Positioned(
-                          top: 8.0,
-          right: 8.0,
+                top: 8.0,
+                right: 8.0,
                 child: AnimatedRotation(
                   turns: _isExpanded ? 0.5 : 0,
                   duration: const Duration(milliseconds: 300),
@@ -195,11 +166,11 @@ class _TripCardState extends State<TripCard> {
     );
   }
 
-  Widget _buildIconTextRow(BuildContext context, String svgAsset, String text, {double iconSize = 24, double startPadding = 0}) {
+  Widget _buildIconTextRow(BuildContext context, String svgAsset, String text,
+      {double iconSize = 24, double startPadding = 0}) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         SizedBox(width: startPadding),
         // Fixed width container to align all icons
@@ -208,19 +179,11 @@ class _TripCardState extends State<TripCard> {
             svgAsset,
             width: iconSize,
             height: iconSize,
-            colorFilter: ColorFilter.mode(
-              colorScheme.onSurface,
-              BlendMode.srcIn,
-            ),
+            colorFilter: ColorFilter.mode(colorScheme.onSurface, BlendMode.srcIn),
           ),
         ),
         const SizedBox(width: 12.0),
-        Expanded(
-          child: Text(
-            text,
-            style: textTheme.bodyMedium,
-          ),
-        ),
+        Expanded(child: Text(text, style: textTheme.bodyMedium)),
       ],
     );
   }
@@ -228,29 +191,17 @@ class _TripCardState extends State<TripCard> {
   Widget _buildStandardIconRow(BuildContext context, IconData icon, String text) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    
+
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         // Fixed width container to align with SVG icons
         SizedBox(
           width: 24.0,
           height: 24.0,
-          child: Center(
-            child: Icon(
-              icon,
-              size: 19.2,
-              color: colorScheme.onSurface,
-            ),
-          ),
+          child: Center(child: Icon(icon, size: 19.2, color: colorScheme.onSurface)),
         ),
         const SizedBox(width: 12.0),
-        Expanded(
-          child: Text(
-            text,
-            style: textTheme.bodyMedium,
-          ),
-        ),
+        Expanded(child: Text(text, style: textTheme.bodyMedium)),
       ],
     );
   }

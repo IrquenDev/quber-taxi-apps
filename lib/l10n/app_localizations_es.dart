@@ -166,7 +166,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get noTravel => 'Sin viajes disponibles';
 
   @override
-  String get noAssignedTrip => 'No se pudo asignar el viaje';
+  String get noAssignedTrip =>
+      'No fue posible iniciar el viaje. Asegúrate de que tu cuenta esté activa, tengas crédito suficiente y no tengas otro viaje en curso.';
 
   @override
   String get countPeople => 'Cantidad de personas que viajan:';
@@ -434,7 +435,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get phoneNumberDriver => 'Num. teléfono:';
 
   @override
-  String get email => 'Correo electrónico:';
+  String get email => 'irquensucursal1@gmail.com';
 
   @override
   String get numberOfSeats => 'Número de asientos:';

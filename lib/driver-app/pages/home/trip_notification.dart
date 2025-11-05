@@ -5,7 +5,6 @@ import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 
 class TripNotification extends StatelessWidget {
-
   final Travel travel;
   final VoidCallback onDismissed;
   final VoidCallback? onTap;
@@ -32,101 +31,97 @@ class TripNotification extends StatelessWidget {
 
     return Dismissible(
       key: ValueKey(travel.id),
-      direction: DismissDirection.horizontal,
       onDismissed: (direction) => onDismissed(),
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusSmall),
-          child: Container(
-              padding: const EdgeInsets.all(16.0),
-              decoration: BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                      color: colorScheme.onSurface.withOpacity(0.1),
-                      blurRadius: dimensions.elevation,
-                      offset: Offset(1, dimensions.elevation),
-                    ),
-                  ],
-                  color: surface.withAlpha(opacity),
-                  borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusSmall)
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusSmall),
+        child: Container(
+          padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: colorScheme.onSurface.withAlpha(25),
+                blurRadius: dimensions.elevation,
+                offset: Offset(1, dimensions.elevation),
               ),
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            ],
+            color: surface.withAlpha(opacity),
+            borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusSmall),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(localizations.newTrip, style: textTheme.titleMedium),
-                            Row(
-                                children: [
-                                  Icon(
-                                      Icons.my_location_outlined,
-                                      color: colorScheme.onSurfaceVariant,
-                                      size: (textTheme.bodyMedium?.fontSize ?? 14) * 1.2
-                                  ),
-                                  const SizedBox(width: 4.0),
-                                  Flexible(
-                                    child: RichText(
-                                        text: TextSpan(
-                                            style: textTheme.bodySmall,
-                                            children: [
-                                              TextSpan(
-                                                text: localizations.from, 
-                                                style: TextStyle(fontWeight: FontWeight.bold)
-                                              ),
-                                              TextSpan(text: travel.originName)
-                                            ]
-                                        )
-                                    )
-                                  )
-                                ]
+                    Text(localizations.newTrip, style: textTheme.titleMedium),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.my_location_outlined,
+                          color: colorScheme.onSurfaceVariant,
+                          size: (textTheme.bodyMedium?.fontSize ?? 14) * 1.2,
+                        ),
+                        const SizedBox(width: 4.0),
+                        Flexible(
+                          child: RichText(
+                            text: TextSpan(
+                              style: textTheme.bodySmall,
+                              children: [
+                                TextSpan(text: localizations.from, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                TextSpan(text: travel.originName)
+                              ],
                             ),
-                            Row(
-                                children: [
-                                  Icon(
-                                      Icons.location_on_outlined,
-                                      color: colorScheme.onSurfaceVariant,
-                                      size: (textTheme.bodyMedium?.fontSize ?? 14) * 1.2
-                                  ),
-                                  const SizedBox(width: 4.0),
-                                  Flexible(
-                                    child: RichText(
-                                        text: TextSpan(
-                                            style: textTheme.bodySmall,
-                                            children: [
-                                              TextSpan(
-                                                text: localizations.until, 
-                                                style: TextStyle(fontWeight: FontWeight.bold)
-                                              ),
-                                              TextSpan(text: travel.destinationName)
-                                            ]
-                                        )
-                                    ),
-                                  )
-                                ]
-                            )
-                          ]
-                      ),
-                    ),
-                    Column(
-                        children: [
-                          Icon(
-                            Icons.notifications_outlined,
                           ),
-                          Text(
-                            DateFormat('h:mm a').format(createdAt),
-                            style: textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.location_on_outlined,
+                          color: colorScheme.onSurfaceVariant,
+                          size: (textTheme.bodyMedium?.fontSize ?? 14) * 1.2,
+                        ),
+                        const SizedBox(width: 4.0),
+                        Flexible(
+                          child: RichText(
+                            text: TextSpan(
+                              style: textTheme.bodySmall,
+                              children: [
+                                TextSpan(
+                                  text: localizations.until,
+                                  style: const TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                TextSpan(text: travel.destinationName)
+                              ],
                             ),
-                          )
-                        ]
+                          ),
+                        )
+                      ],
                     )
-                  ]
-              )
-            )
-        )
+                  ],
+                ),
+              ),
+              Column(
+                children: [
+                  const Icon(
+                    Icons.notifications_outlined,
+                  ),
+                  Text(
+                    DateFormat('h:mm a').format(createdAt),
+                    style: textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  )
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

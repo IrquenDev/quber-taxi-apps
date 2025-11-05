@@ -26,18 +26,20 @@ class TrackDriverPage extends StatefulWidget {
 }
 
 class _TrackDriverPageState extends State<TrackDriverPage> {
-
   // Map
   late final MapboxMap _mapController;
   late double _mapBearing;
   bool _mapReady = false;
+
   // Markers
   PointAnnotationManager? _pointAnnotationManager;
   PointAnnotation? _driverAnnotation;
   Uint8List _driverMarkerImage = Uint8List(0);
+
   // Driver location streaming
   late Position _coords;
   late Position _lastKnownCoords;
+
   // Websocket Handlers
   late final DriverLocationHandler _locationHandler;
   late final PickUpConfirmationHandler _confirmationHandler;
@@ -78,10 +80,7 @@ class _TrackDriverPageState extends State<TrackDriverPage> {
       _lastKnownCoords = _coords;
       _coords = coords;
       // Adjust bearing
-      final bearing = mb_util.calculateBearing(
-          _lastKnownCoords.lat, _lastKnownCoords.lng,
-          coords.lat, coords.lng
-      );
+      final bearing = mb_util.calculateBearing(_lastKnownCoords.lat, _lastKnownCoords.lng, coords.lat, coords.lng);
       final adjustedBearing = (bearing - _mapBearing + 360) % 360;
       // Update the marker
       _driverAnnotation!.iconRotate = adjustedBearing;
@@ -106,17 +105,13 @@ class _TrackDriverPageState extends State<TrackDriverPage> {
     await _pointAnnotationManager?.create(PointAnnotationOptions(
         geometry: Point(coordinates: Position(originCoords[0], originCoords[1])),
         image: originMarkerBytes.buffer.asUint8List(),
-        iconAnchor: IconAnchor.BOTTOM
-    ));
+        iconAnchor: IconAnchor.BOTTOM));
   }
 
   void _onCameraChangeListener(CameraChangedEventData cameraData) async {
     _mapBearing = cameraData.cameraState.bearing;
-    if(_driverAnnotation != null) {
-      final bearing = mb_util.calculateBearing(
-          _lastKnownCoords.lat, _lastKnownCoords.lng,
-          _coords.lat, _coords.lng
-      );
+    if (_driverAnnotation != null) {
+      final bearing = mb_util.calculateBearing(_lastKnownCoords.lat, _lastKnownCoords.lng, _coords.lat, _coords.lng);
       final adjustedBearing = (bearing - _mapBearing + 360) % 360;
       _driverAnnotation!.iconRotate = adjustedBearing;
       _pointAnnotationManager?.update(_driverAnnotation!);
@@ -129,12 +124,10 @@ class _TrackDriverPageState extends State<TrackDriverPage> {
     // Prepare driver marker and activate handlers
     _loadDriverMarkerImage().then((_) {
       // Activate websocket handlers after image is loaded
-      _locationHandler = DriverLocationHandler(
-          driverId: widget.travel.driver!.id,
-          onLocation: _onDriverLocationUpdate
-      )..activate();
+      _locationHandler = DriverLocationHandler(driverId: widget.travel.driver!.id, onLocation: _onDriverLocationUpdate)
+        ..activate();
     });
-    
+
     _confirmationHandler = PickUpConfirmationHandler(
         travelId: widget.travel.id,
         onConfirmationRequested: () async {
@@ -142,28 +135,22 @@ class _TrackDriverPageState extends State<TrackDriverPage> {
           final result = await showDialog<bool>(
               context: context,
               barrierDismissible: false,
-              builder: (context) =>
-              ConfirmDialog(
-                title: AppLocalizations.of(context)!.pickupConfirmationTitle,
-                message: AppLocalizations.of(context)!.pickupConfirmationMessage,
-              )
-          );
+              builder: (context) => ConfirmDialog(
+                    title: AppLocalizations.of(context)!.pickupConfirmationTitle,
+                    message: AppLocalizations.of(context)!.pickupConfirmationMessage,
+                  ));
           // Handle result
-          if(result == true) {
-            final response = await _travelService.changeState(
-                travelId: widget.travel.id, state: TravelState.inProgress
-            );
-            if(!mounted) return;
-            if(response.statusCode == 200) {
+          if (result == true) {
+            final response =
+                await _travelService.changeState(travelId: widget.travel.id, state: TravelState.inProgress);
+            if (!mounted) return;
+            if (response.statusCode == 200) {
               // Navigate to ClientNavigation passing the corresponding travel
-              context.go(ClientRoutes.navigation, extra: {
-                "travel": widget.travel,
-                "wasPageRestored": false
-              });
+              context.go(ClientRoutes.navigation, extra: {"travel": widget.travel, "wasPageRestored": false});
             }
           }
-        }
-    )..activate();
+        })
+      ..activate();
   }
 
   @override
@@ -186,7 +173,6 @@ class _TrackDriverPageState extends State<TrackDriverPage> {
       alertPosition: Alignment.topCenter,
       child: Scaffold(
         body: MapWidget(
-          styleUri: MapboxStyles.STANDARD,
           cameraOptions: CameraOptions(
             center: center,
             pitch: 45,
@@ -194,7 +180,7 @@ class _TrackDriverPageState extends State<TrackDriverPage> {
             zoom: 17,
           ),
           onMapCreated: _onMapCreated,
-          onCameraChangeListener: _onCameraChangeListener
+          onCameraChangeListener: _onCameraChangeListener,
         ),
         bottomSheet: DraggableScrollableSheet(
           controller: _draggableController,
@@ -243,7 +229,8 @@ class _TrackDriverPageState extends State<TrackDriverPage> {
                                   const SizedBox(width: 8),
                                   Text(
                                     localizations.tripAccepted,
-                                    style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                                    style:
+                                        Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                                   ),
                                 ],
                               ),
@@ -258,7 +245,8 @@ class _TrackDriverPageState extends State<TrackDriverPage> {
                                 child: FilledButton.icon(
                                   onPressed: () {
                                     if (!_mapReady || _driverAnnotation == null) {
-                                      showToast(context: context, message: AppLocalizations.of(context)!.noDriverLocation);
+                                      showToast(
+                                          context: context, message: AppLocalizations.of(context)!.noDriverLocation);
                                       return;
                                     }
                                     _mapController.easeTo(

@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
@@ -10,7 +10,9 @@ import 'dart:convert';
 /// Only downloads images if the URL has changed
 class ImageCacheService {
   static final ImageCacheService _instance = ImageCacheService._internal();
+
   factory ImageCacheService() => _instance;
+
   ImageCacheService._internal();
 
   static const String _cacheFolder = 'image_cache';
@@ -40,17 +42,19 @@ class ImageCacheService {
       final response = await http.get(Uri.parse(imageUrl));
       if (response.statusCode == 200) {
         await imageFile.writeAsBytes(response.bodyBytes);
-        
+
         // Update metadata
         metadata[urlHash] = imageUrl;
         await metadataFile.writeAsString(jsonEncode(metadata));
-        
+
         return imageFile;
       }
     } catch (e) {
-      print('Error caching image: $e');
+      if (kDebugMode) {
+        print('Error caching image: $e');
+      }
     }
-    
+
     return null;
   }
 
@@ -62,7 +66,9 @@ class ImageCacheService {
         await cacheDir.delete(recursive: true);
       }
     } catch (e) {
-      print('Error clearing image cache: $e');
+      if (kDebugMode) {
+        print('Error clearing image cache: $e');
+      }
     }
   }
 
@@ -87,18 +93,20 @@ class ImageCacheService {
         await metadataFile.writeAsString(jsonEncode(metadata));
       }
     } catch (e) {
-      print('Error removing image from cache: $e');
+      if (kDebugMode) {
+        print('Error removing image from cache: $e');
+      }
     }
   }
 
   Future<Directory> _getCacheDirectory() async {
     final appDir = await getApplicationDocumentsDirectory();
     final cacheDir = Directory(path.join(appDir.path, _cacheFolder));
-    
+
     if (!await cacheDir.exists()) {
       await cacheDir.create(recursive: true);
     }
-    
+
     return cacheDir;
   }
 
@@ -107,4 +115,4 @@ class ImageCacheService {
     final digest = sha256.convert(bytes);
     return digest.toString();
   }
-} 
+}

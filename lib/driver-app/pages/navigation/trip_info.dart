@@ -6,7 +6,6 @@ import 'package:quber_taxi/enums/asset_dpi.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 
 class DriverTripInfo extends StatefulWidget {
-
   final num? distance;
   final double? travelPriceByTaxiType;
   final void Function(bool isEnabled) onGuidedRouteSwitched;
@@ -27,7 +26,6 @@ class DriverTripInfo extends StatefulWidget {
 }
 
 class _DriverTripInfoState extends State<DriverTripInfo> {
-
   bool _showGuidedRoute = false;
   final _tfController = TextEditingController();
 
@@ -38,9 +36,8 @@ class _DriverTripInfoState extends State<DriverTripInfo> {
     final textTheme = Theme.of(context).textTheme;
     final loc = AppLocalizations.of(context)!;
     final mediaHeight = MediaQuery.of(context).size.height;
-    final overlayHeight = _showGuidedRoute
-        ? (widget.isFixedDestination ? mediaHeight * 0.30 : mediaHeight * 0.40)
-        : mediaHeight * 0.30;
+    final overlayHeight =
+        _showGuidedRoute ? (widget.isFixedDestination ? mediaHeight * 0.30 : mediaHeight * 0.40) : mediaHeight * 0.30;
 
     return ClipRRect(
       borderRadius: BorderRadius.vertical(top: Radius.circular(dims.borderRadius)),
@@ -48,9 +45,9 @@ class _DriverTripInfoState extends State<DriverTripInfo> {
         height: overlayHeight,
         child: Stack(
           children: [
-             // Background Layer
+            // Background Layer
             Positioned.fill(
-               child: Container(color: colorScheme.primaryContainer),
+              child: Container(color: colorScheme.primaryContainer),
             ),
             // Distance & Price Info
             Positioned(
@@ -58,48 +55,52 @@ class _DriverTripInfoState extends State<DriverTripInfo> {
               right: 0.0,
               left: 0.0,
               child: Padding(
-                padding: EdgeInsets.only(top: 16.0, left: 16.0),
+                padding: const EdgeInsets.only(top: 16.0, left: 16.0),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   spacing: 16.0,
                   children: [
-                    Column(
+                    const Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       spacing: 4.0,
-                      children: [Text('DISTANCIA:'), Text('PRECIO:')],
+                      children: [
+                        Text('DISTANCIA:'),
+                        Text('PRECIO:'),
+                      ],
                     ),
                     DefaultTextStyle(
-                        style: textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold),
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(widget.distance != null ? '${widget.distance!.toStringAsFixed(0)} Km' : '-'),
-                              Text(widget.travelPriceByTaxiType != null && widget.distance != null
-                                  ? '${(widget.distance! * widget.travelPriceByTaxiType!).toStringAsFixed(0)} CUP'
-                                  : '-'
-                              )
-                            ]
-                        )
-                    )
-                  ]
-                )
-              )
+                      style: textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(widget.distance != null ? '${widget.distance!.toStringAsFixed(0)} Km' : '-'),
+                          Text(
+                            widget.travelPriceByTaxiType != null && widget.distance != null
+                                ? '${(widget.distance! * widget.travelPriceByTaxiType!).toStringAsFixed(0)} CUP'
+                                : '-',
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            // Top layer (Origin & Destination + Guided Route Section + SOS Button) 
+            // Top layer (Origin & Destination + Guided Route Section + SOS Button)
             Positioned(
               bottom: 0.0,
               right: 0.0,
               left: 0.0,
               child: ClipRRect(
-                 borderRadius: BorderRadius.vertical(top: Radius.circular(dims.borderRadius)),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(dims.borderRadius)),
                 child: Column(
                   children: [
                     Container(
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.primaryFixed,
                       ),
-                       padding: EdgeInsets.all(20.0),
+                      padding: const EdgeInsets.all(20.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -107,97 +108,94 @@ class _DriverTripInfoState extends State<DriverTripInfo> {
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Column(
-                                children: const [
+                              const Column(
+                                children: [
                                   Icon(Icons.my_location, size: 20, color: Colors.grey),
                                   Icon(Icons.more_vert, size: 14, color: Colors.grey),
                                   Icon(Icons.location_on_outlined, size: 20, color: Colors.grey),
                                 ],
                               ),
-                              SizedBox(width: 12.0),
+                              const SizedBox(width: 12.0),
                               Flexible(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   spacing: 12.0,
                                   children: [
-                              Text.rich(
+                                    Text.rich(
                                       TextSpan(
                                         children: [
-                                           TextSpan(
-                                             text: loc.from,
-                                             style: textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.bold)
-                                           ),
+                                          TextSpan(
+                                              text: loc.from,
+                                              style: textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.bold)),
                                           TextSpan(text: widget.travel.originName),
-                                        ]
-                                      )
+                                        ],
+                                      ),
                                     ),
                                     Text.rich(
                                       TextSpan(
                                         children: [
-                                           TextSpan(
-                                             text: loc.until,
-                                             style: textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.bold)
-                                           ),
+                                          TextSpan(
+                                              text: loc.until,
+                                              style: textTheme.bodyMedium!.copyWith(fontWeight: FontWeight.bold)),
                                           TextSpan(
                                               text: widget.travel.destinationName,
-                                               style: textTheme.bodyMedium?.copyWith(
-                                                  overflow: TextOverflow.ellipsis
-                                              )
-                                          )
-                                        ]
-                                      )
-                                    )
-                                  ]
+                                              style: textTheme.bodyMedium?.copyWith(overflow: TextOverflow.ellipsis))
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              )
-                            ]
+                              ),
+                            ],
                           ),
                           // Guided Route Section
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(loc.guidedRoute, style: textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold)),
+                              Text(
+                                loc.guidedRoute,
+                                style: textTheme.bodyLarge!.copyWith(fontWeight: FontWeight.bold),
+                              ),
                               Switch(
                                 value: _showGuidedRoute,
-                                 activeColor: colorScheme.primaryFixedDim,
+                                activeColor: colorScheme.primaryFixedDim,
                                 onChanged: (value) {
                                   _tfController.clear();
                                   setState(() => _showGuidedRoute = value);
                                   widget.onGuidedRouteSwitched(value);
-                                }
+                                },
                               )
-                            ]
+                            ],
                           ),
                           if (_showGuidedRoute && !widget.isFixedDestination)
-                            Text("Mantén pulsado en el mapa para escoger un destino")
-                        ]
-                      )
+                            const Text("Mantén pulsado en el mapa para escoger un destino")
+                        ],
+                      ),
                     ),
                     // SOS Button
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton(
                         style: OutlinedButton.styleFrom(
-                          backgroundColor: colorScheme.secondary,
-                          padding: dims.contentPadding,
-                          side: BorderSide.none,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero)
-                        ),
+                            backgroundColor: colorScheme.secondary,
+                            padding: dims.contentPadding,
+                            side: BorderSide.none,
+                            shape: const RoundedRectangleBorder()),
                         onPressed: () => showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          barrierColor: colorScheme.errorContainer.withAlpha(200),
-                          builder: (context) => EmergencyDialog(travel: widget.travel)
-                        ),
+                            context: context,
+                            barrierDismissible: false,
+                            barrierColor: colorScheme.errorContainer.withAlpha(200),
+                            builder: (context) => EmergencyDialog(travel: widget.travel)),
                         child: Text(
                           loc.emergencySOS,
-                          style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.onSecondary)
-                        )
-                      )
-                    )
-                  ]
-                )
-              )
+                          style: textTheme.bodyLarge
+                              ?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.onSecondary),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
             // Taxi Type Image
             Positioned(
@@ -208,13 +206,15 @@ class _DriverTripInfoState extends State<DriverTripInfo> {
                 child: Transform(
                   alignment: Alignment.center,
                   transform: Matrix4.identity()..scale(-1.0, 1.0),
-                  child: Image.asset(widget.travel.taxiType.assetRef(AssetDpi.xhdpi))
-                )
-              )
-            )
-          ]
-        )
-      )
+                  child: Image.asset(
+                    widget.travel.taxiType.assetRef(AssetDpi.xhdpi),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -23,48 +23,51 @@ class VerificationIdentityPage extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 80),
                   child: Column(
                     children: [
-                      SizedBox(height: 150),
+                      const SizedBox(height: 150),
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 24.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 24.0),
                         child: Text(
                           AppLocalizations.of(context)!.confirmIdentityHeader,
-                          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.secondary
-                          ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineMedium
+                              ?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.secondary),
                           textAlign: TextAlign.center,
                         ),
                       ),
-                      SizedBox(height: 24),
+                      const SizedBox(height: 24),
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 24.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 24.0),
                         child: Text(
                           AppLocalizations.of(context)!.takeSelfieInstruction,
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: Theme.of(context).colorScheme.secondary
-                          ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyLarge
+                              ?.copyWith(color: Theme.of(context).colorScheme.secondary),
                           textAlign: TextAlign.left,
                         ),
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 24.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 24.0),
                         child: Text(
                           AppLocalizations.of(context)!.selfieUsageNote,
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: Theme.of(context).colorScheme.secondary
-                          ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyLarge
+                              ?.copyWith(color: Theme.of(context).colorScheme.secondary),
                           textAlign: TextAlign.left,
                         ),
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 24.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 24.0),
                         child: Text(
                           AppLocalizations.of(context)!.verificationPurpose,
-                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: Theme.of(context).colorScheme.secondary
-                          ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyLarge
+                              ?.copyWith(color: Theme.of(context).colorScheme.secondary),
                           textAlign: TextAlign.left,
                         ),
                       ),
@@ -79,13 +82,12 @@ class VerificationIdentityPage extends StatelessWidget {
             alignment: Alignment.topCenter,
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.primaryContainer,
-              borderRadius: BorderRadius.vertical(bottom: Radius.circular
-                (dimensions.borderRadius)),
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(dimensions.borderRadius)),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withAlpha(50),
                   blurRadius: 8,
-                  offset: Offset(0, 2),
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),
@@ -101,18 +103,17 @@ class VerificationIdentityPage extends StatelessWidget {
                     color: Theme.of(context).colorScheme.secondary,
                   ),
                 ),
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
                 Text(
                   AppLocalizations.of(context)!.identityVerificationTitle,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
                 ),
               ],
             ),
           ),
-
           Positioned(
             top: 120,
             left: 0,
@@ -129,7 +130,6 @@ class VerificationIdentityPage extends StatelessWidget {
               ),
             ),
           ),
-
           Positioned(
             left: 0,
             right: 0,
@@ -140,9 +140,7 @@ class VerificationIdentityPage extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                   foregroundColor: Theme.of(context).colorScheme.secondary,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.zero,
-                  ),
+                  shape: const RoundedRectangleBorder(),
                   elevation: 0,
                 ),
                 onPressed: () {
@@ -150,10 +148,10 @@ class VerificationIdentityPage extends StatelessWidget {
                 },
                 child: Text(
                   AppLocalizations.of(context)!.takeSelfieButton,
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.secondary
-                  ),
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyLarge
+                      ?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.secondary),
                 ),
               ),
             ),

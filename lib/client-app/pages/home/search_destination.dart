@@ -18,7 +18,6 @@ import 'package:quber_taxi/utils/map/turf.dart';
 import 'package:quber_taxi/utils/runtime.dart';
 
 class SearchDestinationPage extends StatefulWidget {
-
   const SearchDestinationPage({super.key});
 
   @override
@@ -26,7 +25,6 @@ class SearchDestinationPage extends StatefulWidget {
 }
 
 class _SearchDestinationPageState extends State<SearchDestinationPage> {
-
   final _controller = TextEditingController();
   final _mapboxService = MapboxService();
 
@@ -41,7 +39,7 @@ class _SearchDestinationPageState extends State<SearchDestinationPage> {
     _debounce = Timer(const Duration(milliseconds: 500), () {
       // The case where the query is empty is already being handled. Leaving it here would be a double call with an
       // empty query, for which Mapbox would not return any suggestions.
-      if(query.isNotEmpty) {
+      if (query.isNotEmpty) {
         _fetchSuggestions(query);
       }
     });
@@ -55,9 +53,8 @@ class _SearchDestinationPageState extends State<SearchDestinationPage> {
     final places = await _mapboxService.fetchSuggestions(query);
     if (!mounted) return;
     // Filter places to only show those within Havana boundaries
-    final filteredPlaces = places
-        .where((place) => GeoBoundaries.isPointInHavana(place.coordinates[0], place.coordinates[1]))
-        .toList();
+    final filteredPlaces =
+        places.where((place) => GeoBoundaries.isPointInHavana(place.coordinates[0], place.coordinates[1])).toList();
     // Update UI
     setState(() {
       _places = filteredPlaces;
@@ -71,9 +68,7 @@ class _SearchDestinationPageState extends State<SearchDestinationPage> {
     final data = await rootBundle.loadString('assets/geojson/suggestions.json');
     final geoJsonList = json.decode(data) as List<dynamic>;
     // Convert to List<MapboxPlace>
-    final suggestions = geoJsonList
-        .map((json) => MapboxPlace.fromJson(json as Map<String, dynamic>))
-        .toList();
+    final suggestions = geoJsonList.map((json) => MapboxPlace.fromJson(json as Map<String, dynamic>)).toList();
     if (!mounted) return;
     // Update UI with the loaded suggestions
     setState(() {
@@ -145,187 +140,166 @@ class _SearchDestinationPageState extends State<SearchDestinationPage> {
     final textTheme = Theme.of(context).textTheme;
     final localizations = AppLocalizations.of(context)!;
     return NetworkAlertTemplate(
-        alertBuilder: (_, status) => CustomNetworkAlert(status: status),
-        child: Scaffold(
-            resizeToAvoidBottomInset: false,
-            appBar: AppBar(
-              forceMaterialTransparency: true,
-              backgroundColor: colorScheme.surface,
-              title: TextField(
-                  controller: _controller,
-                  onChanged: hasConnection(context) ? _onTextChanged : null,
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    fillColor: colorScheme.surface,
-                    hintText: AppLocalizations.of(context)!.writeUbication,
-                    suffixIcon: _controller.text.isNotEmpty ? IconButton(
-                        icon: const Icon(Icons.clear_outlined),
-                        onPressed: () {
-                          _controller.clear();
-                          setState(() => _places = []);
-                        }
-                    ) : null,
-                  )
-              ),
-              titleSpacing: 0.0,
+      alertBuilder: (_, status) => CustomNetworkAlert(status: status),
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: AppBar(
+          forceMaterialTransparency: true,
+          backgroundColor: colorScheme.surface,
+          title: TextField(
+            controller: _controller,
+            onChanged: hasConnection(context) ? _onTextChanged : null,
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              fillColor: colorScheme.surface,
+              hintText: AppLocalizations.of(context)!.writeUbication,
+              suffixIcon: _controller.text.isNotEmpty
+                  ? IconButton(
+                      icon: const Icon(Icons.clear_outlined),
+                      onPressed: () {
+                        _controller.clear();
+                        setState(() => _places = []);
+                      },
+                    )
+                  : null,
             ),
-            body: Column(
+          ),
+          titleSpacing: 0.0,
+        ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 2.0,
+          children: [
+            // Other Options
+            Card(
+              margin: EdgeInsets.zero,
+              shape: const RoundedRectangleBorder(),
+              color: colorScheme.surface,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 2.0,
                 children: [
-                  // Other Options
-                  Card(
-                      margin: EdgeInsets.zero,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-                      color: colorScheme.surface,
-                      child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          spacing: 0.0,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Divider
-                            Divider(height: 1),
-                            // Select location from map
-                            ListTile(
-                                minTileHeight: 48.0,
-                                onTap: () async {
-                                  final place = await context.push<MapboxPlace>(CommonRoutes.locationPicker, extra: false);
-                                  if (place != null && context.mounted) {
-                                    context.pop({"usingFixedDestination": true, "destination": place});
-                                  }
-                                },
-                                contentPadding: EdgeInsets.only(left: 12.0),
-                                minVerticalPadding: 0.0,
-                                leading: Icon(Icons.map_outlined),
-                                title: Text(
-                                    AppLocalizations.of(context)!.selectUbication,
-                                    style: textTheme.bodyLarge
-                                )
-                            ),
-                            // Use Current Location
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                              child: Divider(),
-                            ),
-                            ListTile(
-                                minTileHeight: 48.0,
-                                onTap: _isLoadingCurrentLocation ? null : _handleCurrentLocationTap,
-                                contentPadding: EdgeInsets.only(left: 12.0),
-                                minVerticalPadding: 0.0,
-                                leading: _isLoadingCurrentLocation
-                                    ? CircularProgressIndicator()
-                                    : Icon(Icons.location_on_outlined),
-                                title: Text(
-                                    AppLocalizations.of(context)!.actualUbication,
-                                    style: textTheme.bodyLarge
-                                )
-                            ),
-                            // Choose By Municipality
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                              child: Divider(),
-                            ),
-                            ListTile(
-                                minTileHeight: 48.0,
-                                contentPadding: EdgeInsets.only(left: 12.0),
-                                minVerticalPadding: 0.0,
-                                leading: Icon(Icons.location_city_outlined, color: colorScheme.primary,),
-                                title: DropdownButtonFormField(
-                                    icon: SizedBox.shrink(),
-                                    decoration: InputDecoration(
-                                        filled: true,
-                                        fillColor: Colors.transparent,
-                                        contentPadding: EdgeInsets.zero
-                                    ),
-                                    hint: Text(
-                                        "Seleccionar un municipio como destino",
-                                        style: textTheme.bodyLarge?.copyWith(color: colorScheme.primary, fontWeight: FontWeight.bold),
-                                    ),
-                                    style: textTheme.bodyLarge,
-                                    // style of selected value (not hint)
-                                    items: Municipalities.values.map((Municipalities municipality) {
-                                      return DropdownMenuItem<Municipalities>(
-                                          value: municipality,
-                                          child: Text(municipality.name)
-                                      );
-                                    }).toList(),
-                                    onChanged: (Municipalities? mun) {
-                                      if(mun != null) {
-                                        context.pop({"usingFixedDestination": false, "destination": mun.name});
-                                      }
-                                    }
-                                )
-                            )
-                          ]
-                      )
+                  // Divider
+                  const Divider(height: 1),
+                  // Select location from map
+                  ListTile(
+                      minTileHeight: 48.0,
+                      onTap: () async {
+                        final place = await context.push<MapboxPlace>(CommonRoutes.locationPicker, extra: false);
+                        if (place != null && context.mounted) {
+                          context.pop({"usingFixedDestination": true, "destination": place});
+                        }
+                      },
+                      contentPadding: const EdgeInsets.only(left: 12.0),
+                      minVerticalPadding: 0.0,
+                      leading: const Icon(Icons.map_outlined),
+                      title: Text(AppLocalizations.of(context)!.selectUbication, style: textTheme.bodyLarge)),
+                  // Use Current Location
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Divider(),
                   ),
-                  // Suggestions Section
-                  Expanded(
-                      child: Stack(
-                        children: [
-                          // Background Image
-                          Positioned.fill(child: Image.asset("assets/images/background_map.jpg", fit: BoxFit.fill)),
-                          // Opacity Shader
-                          Positioned.fill(child: ColoredBox(color: Colors.white.withAlpha(200))),
-                          // Dynamic Context
-                          if (_isLoading)
-                            Positioned.fill(child: Center(child: CircularProgressIndicator()))
-                          // Show Suggestions
-                          else if (_places.isNotEmpty)
-                            Positioned.fill(
-                              child: Padding(
-                                padding: EdgeInsets.only(top: 4.0),
-                                child: ListView.builder(
-                                    padding: EdgeInsets.zero,
-                                    itemCount: _places.length,
-                                    itemBuilder: (context, index) {
-                                      final place = _places[index];
-                                      return ListTile(
-                                        titleTextStyle: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-                                        title: Text(place.text),
-                                        subtitle: Text(place.placeName),
-                                        onTap: () => context.pop({"usingFixedDestination": true, "destination": place})
-                                      );
-                                    }
-                                ),
-                              ),
-                            )
-                          // No Results
-                          else if (_controller.text.isNotEmpty)
-                            Positioned.fill(
-                              child: Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                                    child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        spacing: 8.0,
-                                        children: [
-                                          Text(
-                                              localizations.noResultsTitle,
-                                              textAlign: TextAlign.center,
-                                              style: textTheme.bodyLarge
-                                          ),
-                                          Text(
-                                              localizations.noResultsMessage,
-                                              textAlign: TextAlign.center,
-                                              style: textTheme.bodyLarge
-                                          ),
-                                          Text(
-                                              localizations.noResultsHint,
-                                              textAlign: TextAlign.center,
-                                              style: textTheme.bodyLarge
-                                          )
-                                        ]
-                                    ),
-                                  )
-                              ),
-                            )
-                        ]
-                      )
-                  )
-                ]
-            )
-        )
+                  ListTile(
+                      minTileHeight: 48.0,
+                      onTap: _isLoadingCurrentLocation ? null : _handleCurrentLocationTap,
+                      contentPadding: const EdgeInsets.only(left: 12.0),
+                      minVerticalPadding: 0.0,
+                      leading: _isLoadingCurrentLocation
+                          ? const CircularProgressIndicator()
+                          : const Icon(Icons.location_on_outlined),
+                      title: Text(AppLocalizations.of(context)!.actualUbication, style: textTheme.bodyLarge)),
+                  // Choose By Municipality
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Divider(),
+                  ),
+                  ListTile(
+                    minTileHeight: 48.0,
+                    contentPadding: const EdgeInsets.only(left: 12.0),
+                    minVerticalPadding: 0.0,
+                    leading: Icon(
+                      Icons.location_city_outlined,
+                      color: colorScheme.primary,
+                    ),
+                    title: DropdownButtonFormField(
+                      icon: const SizedBox.shrink(),
+                      decoration: const InputDecoration(
+                          filled: true, fillColor: Colors.transparent, contentPadding: EdgeInsets.zero),
+                      hint: Text(
+                        "Seleccionar un municipio como destino",
+                        style: textTheme.bodyLarge?.copyWith(color: colorScheme.primary, fontWeight: FontWeight.bold),
+                      ),
+                      style: textTheme.bodyLarge,
+                      // style of selected value (not hint)
+                      items: Municipalities.values.map((Municipalities municipality) {
+                        return DropdownMenuItem<Municipalities>(value: municipality, child: Text(municipality.name));
+                      }).toList(),
+                      onChanged: (Municipalities? mun) {
+                        if (mun != null) {
+                          context.pop({"usingFixedDestination": false, "destination": mun.name});
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Suggestions Section
+            Expanded(
+              child: Stack(
+                children: [
+                  // Background Image
+                  Positioned.fill(child: Image.asset("assets/images/background_map.jpg", fit: BoxFit.fill)),
+                  // Opacity Shader
+                  Positioned.fill(child: ColoredBox(color: Colors.white.withAlpha(200))),
+                  // Dynamic Context
+                  if (_isLoading)
+                    const Positioned.fill(child: Center(child: CircularProgressIndicator()))
+                  // Show Suggestions
+                  else if (_places.isNotEmpty)
+                    Positioned.fill(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 4.0),
+                        child: ListView.builder(
+                            padding: EdgeInsets.zero,
+                            itemCount: _places.length,
+                            itemBuilder: (context, index) {
+                              final place = _places[index];
+                              return ListTile(
+                                titleTextStyle: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+                                title: Text(place.text),
+                                subtitle: Text(place.placeName),
+                                onTap: () => context.pop({"usingFixedDestination": true, "destination": place}),
+                              );
+                            }),
+                      ),
+                    )
+                  // No Results
+                  else if (_controller.text.isNotEmpty)
+                    Positioned.fill(
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            spacing: 8.0,
+                            children: [
+                              Text(localizations.noResultsTitle,
+                                  textAlign: TextAlign.center, style: textTheme.bodyLarge),
+                              Text(localizations.noResultsMessage,
+                                  textAlign: TextAlign.center, style: textTheme.bodyLarge),
+                              Text(localizations.noResultsHint, textAlign: TextAlign.center, style: textTheme.bodyLarge)
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
