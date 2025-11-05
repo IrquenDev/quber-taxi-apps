@@ -9,6 +9,6 @@ class BorderedBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(decoration: BoxDecoration(border: Border.all(color: Colors.black)), child: child);
+    return Container(decoration: BoxDecoration(border: Border.all()), child: child);
   }
 }

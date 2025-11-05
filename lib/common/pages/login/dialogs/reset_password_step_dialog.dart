@@ -26,24 +26,20 @@ class _PasswordResetStepDialogState extends State<PasswordResetStepDialog> {
     final password = _passwordController.text.trim();
     final confirm = _confirmController.text.trim();
     final localization = AppLocalizations.of(context)!;
-
     if (code.isEmpty || password.isEmpty || confirm.isEmpty) {
       showToast(context: context, message: localization.allFieldsRequiredMessage);
       return;
     }
-
     if (password != confirm) {
       showToast(context: context, message: localization.passwordsDoNotMatchMessage);
       return;
     }
-
     final response = await _authService.resetPassword(
       phone: widget.phone,
       code: code,
       newPassword: password,
     );
-
-    if (!context.mounted) return;
+    if (!mounted) return;
     if (response.statusCode == 200) {
       Navigator.of(context).pop();
       showToast(context: context, message: localization.resetSuccessMessage, durationInSeconds: 3);
@@ -83,8 +79,8 @@ class _PasswordResetStepDialogState extends State<PasswordResetStepDialog> {
                   hintText: localization.verificationCodeHint,
                   fillColor: theme.colorScheme.onSecondary,
                   filled: true,
-                  border: OutlineInputBorder(borderSide: BorderSide.none),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  border: const OutlineInputBorder(borderSide: BorderSide.none),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
               ),
               const SizedBox(height: 12),
@@ -115,8 +111,8 @@ class _PasswordResetStepDialogState extends State<PasswordResetStepDialog> {
                     onPressed: () => setState(() => _obscure1 = !_obscure1),
                   ),
                   filled: true,
-                  border: OutlineInputBorder(borderSide: BorderSide.none),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  border: const OutlineInputBorder(borderSide: BorderSide.none),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
               ),
               const SizedBox(height: 16),

@@ -1,29 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
+import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../../theme/dimensions.dart';
-
 
 class AboutUsPage extends StatelessWidget {
   const AboutUsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme
-        .of(context)
-        .colorScheme;
-    final textTheme = Theme
-        .of(context)
-        .textTheme;
-    final screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final screenWidth = MediaQuery.of(context).size.width;
     final cardWidth = screenWidth * 0.9;
     final dimensions = Theme.of(context).extension<DimensionExtension>()!;
     final localizations = AppLocalizations.of(context)!;
@@ -50,8 +41,7 @@ class AboutUsPage extends StatelessWidget {
                       blurRadius: 5,
                       offset: const Offset(0, 3),
                     ),
-                  ]
-              ),
+                  ]),
               child: Padding(
                 padding: dimensions.contentPadding,
                 child: Column(
@@ -59,8 +49,7 @@ class AboutUsPage extends StatelessWidget {
                     Row(
                       children: [
                         IconButton(
-                          icon: Icon(Icons.arrow_back, color: colorScheme
-                              .onPrimary),
+                          icon: Icon(Icons.arrow_back, color: colorScheme.onPrimary),
                           onPressed: () => context.pop(),
                         ),
                         const SizedBox(width: 15),
@@ -78,7 +67,6 @@ class AboutUsPage extends StatelessWidget {
                       context,
                       imagePath: 'assets/icons/isotipo_quber.png',
                     ),
-
                     Text(
                       localizations.nameAboutUs,
                       style: textTheme.titleLarge?.copyWith(
@@ -114,8 +102,7 @@ class AboutUsPage extends StatelessWidget {
                           width: cardWidth,
                           child: Card(
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                  dimensions.borderRadius),
+                              borderRadius: BorderRadius.circular(dimensions.borderRadius),
                             ),
                             child: Padding(
                               padding: dimensions.contentPadding,
@@ -124,8 +111,7 @@ class AboutUsPage extends StatelessWidget {
                                   _buildContactRow(
                                     context,
                                     imagePath: 'assets/icons/location_on.svg',
-                                    text: AppLocalizations.of(context)!
-                                        .companyAdress,
+                                    text: AppLocalizations.of(context)!.companyAdress,
                                   ),
                                   const SizedBox(height: 6),
                                   _buildContactRow(
@@ -134,7 +120,6 @@ class AboutUsPage extends StatelessWidget {
                                     text: localizations.phoneAboutUs,
                                   ),
                                   const SizedBox(height: 6),
-
                                 ],
                               ),
                             ),
@@ -146,8 +131,7 @@ class AboutUsPage extends StatelessWidget {
                           width: cardWidth,
                           child: Card(
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                  dimensions.borderRadius),
+                              borderRadius: BorderRadius.circular(dimensions.borderRadius),
                             ),
                             child: Padding(
                               padding: dimensions.contentPadding,
@@ -156,11 +140,8 @@ class AboutUsPage extends StatelessWidget {
                                 children: [
                                   const SizedBox(height: 5),
                                   Text(
-                                    AppLocalizations.of(context)!
-                                        .companyAboutText,
-                                    style: textTheme.bodyMedium?.copyWith(
-                                        color: colorScheme.onSurface
-                                    ),
+                                    AppLocalizations.of(context)!.companyAboutText,
+                                    style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
                                     textAlign: TextAlign.justify,
                                   ),
                                 ],
@@ -180,16 +161,13 @@ class AboutUsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildContactRow(BuildContext context, {
+  Widget _buildContactRow(
+    BuildContext context, {
     required String imagePath,
     required String text,
   }) {
-    final colorScheme = Theme
-        .of(context)
-        .colorScheme;
-    final textTheme = Theme
-        .of(context)
-        .textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final localizations = AppLocalizations.of(context)!;
 
     return InkWell(
@@ -208,16 +186,13 @@ class AboutUsPage extends StatelessWidget {
               imagePath,
               width: 20,
               height: 20,
-              fit: BoxFit.contain,
-              color: colorScheme.onSurface,
+              colorFilter: ColorFilter.mode(colorScheme.onSurface, BlendMode.srcIn),
             ),
           ),
           Expanded(
             child: Text(
               text,
-              style: textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurface
-              ),
+              style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
             ),
           ),
         ],

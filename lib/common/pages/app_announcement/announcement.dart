@@ -8,9 +8,9 @@ class AppAnnouncementPage extends StatefulWidget {
   final List<AppAnnouncement> announcements;
   final VoidCallback? onDone;
   final Function(List<int>)? onCacheAnnouncements;
-  
+
   const AppAnnouncementPage({
-    super.key, 
+    super.key,
     required this.announcements,
     this.onDone,
     this.onCacheAnnouncements,
@@ -56,94 +56,90 @@ class _AppAnnouncementPageState extends State<AppAnnouncementPage> {
       }
     }
     return Scaffold(
-        backgroundColor: parsedBackgroundColor ?? colorScheme.surface,
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            // Only allow action if current announcement is dismissible
-            if (announcement.isDismissible) {
-              if (isLastAnnouncement) {
-                // Cache all announcement IDs and call done callback
-                final announcementIds = widget.announcements.map((a) => a.id).toList();
-                widget.onCacheAnnouncements?.call(announcementIds);
-                widget.onDone?.call();
-              } else {
-                // Move to next announcement
-                setState(() {
-                  _currentIndex++;
-                });
-              }
+      backgroundColor: parsedBackgroundColor ?? colorScheme.surface,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Only allow action if current announcement is dismissible
+          if (announcement.isDismissible) {
+            if (isLastAnnouncement) {
+              // Cache all announcement IDs and call done callback
+              final announcementIds = widget.announcements.map((a) => a.id).toList();
+              widget.onCacheAnnouncements?.call(announcementIds);
+              widget.onDone?.call();
+            } else {
+              // Move to next announcement
+              setState(() {
+                _currentIndex++;
+              });
             }
-            // If not dismissible, do nothing (locked)
-          },
-          child: Icon(
-            announcement.isDismissible
-              ? (isLastAnnouncement ? Icons.done : Icons.arrow_forward)
-              : Icons.lock
-          ),
-        ),
-        body: Stack(
-          children: [
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 40.0),
-                child: Column(
-                  children: [
-                    // Top spacing
-                    SizedBox(height: screenHeight * 0.15),
-                    
-                    // Image - use network image if available, fallback to asset
-                    _buildImage(imageUrl),
-                    
-                    // Spacing between image and title
-                    SizedBox(height: 60),
-                    
-                    // Title
-                    Text(
-                      title,
-                      style: textTheme.headlineMedium?.copyWith(
-                        color: _getTextColor(parsedBackgroundColor, colorScheme),
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
+          }
+          // If not dismissible, do nothing (locked)
+        },
+        child: Icon(announcement.isDismissible ? (isLastAnnouncement ? Icons.done : Icons.arrow_forward) : Icons.lock),
+      ),
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 40.0),
+              child: Column(
+                children: [
+                  // Top spacing
+                  SizedBox(height: screenHeight * 0.15),
+
+                  // Image - use network image if available, fallback to asset
+                  _buildImage(imageUrl),
+
+                  // Spacing between image and title
+                  const SizedBox(height: 60),
+
+                  // Title
+                  Text(
+                    title,
+                    style: textTheme.headlineMedium?.copyWith(
+                      color: _getTextColor(parsedBackgroundColor, colorScheme),
+                      fontWeight: FontWeight.bold,
                     ),
-                    
-                    // Spacing between title and description
-                    SizedBox(height: 24),
-                    
-                    // Description
-                    if (description.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Text(
-                          description,
-                          style: textTheme.bodyLarge?.copyWith(
-                            color: _getSecondaryTextColor(parsedBackgroundColor, colorScheme),
-                          ),
-                          textAlign: TextAlign.center,
+                    textAlign: TextAlign.center,
+                  ),
+
+                  // Spacing between title and description
+                  const SizedBox(height: 24),
+
+                  // Description
+                  if (description.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Text(
+                        description,
+                        style: textTheme.bodyLarge?.copyWith(
+                          color: _getSecondaryTextColor(parsedBackgroundColor, colorScheme),
                         ),
+                        textAlign: TextAlign.center,
                       ),
-                    
-                    // Linkable text - show as clickable link if available
-                    if (_shouldShowLinkable(announcement))
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-                        child: _buildLinkableWidget(context, textTheme, colorScheme, parsedBackgroundColor, announcement),
-                      ),
-                    
-                    // Bottom spacing
-                    Spacer(),
-                  ],
-                ),
+                    ),
+
+                  // Linkable text - show as clickable link if available
+                  if (_shouldShowLinkable(announcement))
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+                      child: _buildLinkableWidget(context, textTheme, colorScheme, parsedBackgroundColor, announcement),
+                    ),
+
+                  // Bottom spacing
+                  const Spacer(),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildImage(String? imageUrl) {
     const double imageSize = 200;
-    
+
     if (imageUrl != null && imageUrl.isNotEmpty) {
       return Image.network(
         imageUrl,
@@ -167,8 +163,7 @@ class _AppAnnouncementPageState extends State<AppAnnouncementPage> {
             child: Center(
               child: CircularProgressIndicator(
                 value: loadingProgress.expectedTotalBytes != null
-                    ? loadingProgress.cumulativeBytesLoaded / 
-                      loadingProgress.expectedTotalBytes!
+                    ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
                     : null,
               ),
             ),
@@ -205,10 +200,10 @@ class _AppAnnouncementPageState extends State<AppAnnouncementPage> {
 
   bool _shouldShowLinkable(AppAnnouncement announcement) {
     if (announcement.linkableType == LinkableType.none) return false;
-    
+
     // Show if we have linkableText OR linkableUrl
     return (announcement.linkableText != null && announcement.linkableText!.isNotEmpty) ||
-           (announcement.linkableUrl != null && announcement.linkableUrl!.isNotEmpty);
+        (announcement.linkableUrl != null && announcement.linkableUrl!.isNotEmpty);
   }
 
   String _getLinkableDisplayText(AppAnnouncement announcement) {
@@ -221,10 +216,11 @@ class _AppAnnouncementPageState extends State<AppAnnouncementPage> {
     return '';
   }
 
-  Widget _buildLinkableWidget(BuildContext context, TextTheme textTheme, ColorScheme colorScheme, Color? parsedBackgroundColor, AppAnnouncement announcement) {
+  Widget _buildLinkableWidget(BuildContext context, TextTheme textTheme, ColorScheme colorScheme,
+      Color? parsedBackgroundColor, AppAnnouncement announcement) {
     final displayText = _getLinkableDisplayText(announcement);
     final textColor = _getSecondaryTextColor(parsedBackgroundColor, colorScheme);
-    
+
     if (announcement.linkableType == LinkableType.button) {
       // Show as outlined button for BUTTON type
       return OutlinedButton(
@@ -257,17 +253,14 @@ class _AppAnnouncementPageState extends State<AppAnnouncementPage> {
     if (announcement.linkableUrl == null || announcement.linkableUrl!.isEmpty) {
       return;
     }
-    
     final url = announcement.linkableUrl!;
-    
     switch (announcement.linkableType) {
       case LinkableType.text:
       case LinkableType.button:
         try {
           final uri = Uri.parse(url);
-          
           final canLaunch = await canLaunchUrl(uri);
-          
+          if (!context.mounted) return;
           if (canLaunch) {
             await launchUrl(uri, mode: LaunchMode.externalApplication);
           } else {
@@ -276,14 +269,14 @@ class _AppAnnouncementPageState extends State<AppAnnouncementPage> {
             );
           }
         } catch (e) {
+          if (!context.mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Error al abrir el enlace: $e')),
           );
         }
         break;
-
       case LinkableType.none:
-      // No action for NONE type
+        // No action for NONE type
         break;
     }
   }

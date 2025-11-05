@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 
 /// A singleton service for managing WebSocket (STOMP over SockJS) connections.
@@ -33,26 +34,36 @@ class WebSocketService {
         onConnect: _onConnect,
         onWebSocketError: (error) {
           // Handles WebSocket connection errors
-          print('WebSocket error: $error');
+          if (kDebugMode) {
+            print('WebSocket error: $error');
+          }
         },
         onStompError: (frame) {
           // Handles STOMP protocol-level errors
-          print('STOMP error: ${frame.body}');
+          if (kDebugMode) {
+            print('STOMP error: ${frame.body}');
+          }
         },
         onDisconnect: (frame) {
           _isConnected = false;
-          print('Disconnected from WebSocket.');
+          if (kDebugMode) {
+            print('Disconnected from WebSocket.');
+          }
         },
         stompConnectHeaders: authToken != null ? {'Authorization': 'Bearer $authToken'} : {},
         webSocketConnectHeaders: authToken != null ? {'Authorization': 'Bearer $authToken'} : {},
         onWebSocketDone: () {
           // Fires when socket is closed (gracefully or by error)
           _isConnected = false;
-          print('WebSocket connection closed.');
+          if (kDebugMode) {
+            print('WebSocket connection closed.');
+          }
         },
         onDebugMessage: (msg) {
           // Useful during development to see protocol activity
-          print('WS DEBUG: $msg');
+          if (kDebugMode) {
+            print('WS DEBUG: $msg');
+          }
         },
         heartbeatOutgoing: const Duration(seconds: 10),
         heartbeatIncoming: const Duration(seconds: 10),
@@ -118,7 +129,9 @@ class WebSocketService {
   /// endpoint (@MessageMapper) in the WebsocketDestinationMapperController.
   void send(String destination, dynamic body) {
     if (!_isConnected) {
-      print('Attempted to send while WebSocket is not connected.');
+      if (kDebugMode) {
+        print('Attempted to send while WebSocket is not connected.');
+      }
       return;
     }
     final encoded = body is String ? body : jsonEncode(body);
@@ -132,6 +145,8 @@ class WebSocketService {
     _handlers.forEach((topic, onMessage) {
       _subscribe(topic, onMessage);
     });
-    print('WebSocket connected.');
+    if (kDebugMode) {
+      print('WebSocket connected.');
+    }
   }
 }

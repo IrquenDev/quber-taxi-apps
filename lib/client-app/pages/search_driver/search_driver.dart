@@ -9,9 +9,8 @@ import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/utils/websocket/impl/travel_state_handler.dart';
 
 class SearchDriverPage extends StatefulWidget {
-
-  const SearchDriverPage({super.key, required this.travelId, this.wasPageRestored = false, required this
-      .travelRequestedDate});
+  const SearchDriverPage(
+      {super.key, required this.travelId, this.wasPageRestored = false, required this.travelRequestedDate});
 
   final int travelId;
   final bool wasPageRestored;
@@ -22,7 +21,6 @@ class SearchDriverPage extends StatefulWidget {
 }
 
 class _SearchDriverPageState extends State<SearchDriverPage> with SingleTickerProviderStateMixin {
-
   late AnimationController _controller;
   late final Timer _timeoutTimer;
   Timer? _ticker;
@@ -52,8 +50,8 @@ class _SearchDriverPageState extends State<SearchDriverPage> with SingleTickerPr
           } else {
             context.pop(travel);
           }
-        }
-    )..activate();
+        })
+      ..activate();
     _setupAnimation();
     _setupTicker();
     _setupTimer();
@@ -79,7 +77,7 @@ class _SearchDriverPageState extends State<SearchDriverPage> with SingleTickerPr
       if (widget.wasPageRestored) {
         context.go(ClientRoutes.home);
       } else {
-        context.pop(null);
+        context.pop();
       }
     });
   }
@@ -109,10 +107,7 @@ class _SearchDriverPageState extends State<SearchDriverPage> with SingleTickerPr
         child: Container(
           width: 200,
           height: 200,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: const Color(0xFFD48E1E),
-          ),
+          decoration: const BoxDecoration(shape: BoxShape.circle, color: Color(0xFFD48E1E)),
         ),
       ),
     );
@@ -120,20 +115,18 @@ class _SearchDriverPageState extends State<SearchDriverPage> with SingleTickerPr
 
   @override
   Widget build(BuildContext context) {
-
-    final centeredCircleSize = MediaQuery.of(context).size.width /2;
+    final centeredCircleSize = MediaQuery.of(context).size.width / 2;
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primaryContainer,
       body: SafeArea(
         child: Column(
           children: [
-            const SizedBox(height: 30,),
-            Text(AppLocalizations.of(context)!.searchDrivers, style: TextStyle(
-              color: Theme.of(context).colorScheme.shadow,
-              fontSize: 20,
-              fontWeight: FontWeight.bold
-            )),
+            const SizedBox(height: 30),
+            Text(
+              AppLocalizations.of(context)!.searchDrivers,
+              style: TextStyle(color: Theme.of(context).colorScheme.shadow, fontSize: 20, fontWeight: FontWeight.bold),
+            ),
             Card(
               elevation: 4,
               child: Padding(
@@ -168,51 +161,51 @@ class _SearchDriverPageState extends State<SearchDriverPage> with SingleTickerPr
                     height: centeredCircleSize,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Theme.of(context).colorScheme.primaryFixed
+                      color: Theme.of(context).colorScheme.primaryFixed,
                     ),
                     child: Center(
                       child: CircleAvatar(
                         radius: centeredCircleSize * 0.20,
                         backgroundColor: Theme.of(context).colorScheme.onPrimaryFixed,
                         child: Icon(
-                            Icons.directions_car_outlined,
-                            color: Theme.of(context).colorScheme.primaryFixedDim,
-                            size: Theme.of(context).iconTheme.size! * 2
-                        )
-                      )
-                    )
-                  )
-                ]
-              )
+                          Icons.directions_car_outlined,
+                          color: Theme.of(context).colorScheme.primaryFixedDim,
+                          size: Theme.of(context).iconTheme.size! * 2,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
             const Spacer(),
             Padding(
               padding: const EdgeInsets.only(bottom: 40.0),
               child: GestureDetector(
-                  onTap: () async {
-                    if (widget.wasPageRestored) {
-                      // Attempt to cancel on backend when user cancels restored flow
-                      if (runtime.hasConnection(context)) {
-                        await _travelService.changeState(travelId: widget.travelId, state: TravelState.canceled);
-                      }
-                      if(!context.mounted) return;
-                      context.go(ClientRoutes.home);
-                    } else {
-                      context.pop(null);
+                onTap: () async {
+                  if (widget.wasPageRestored) {
+                    // Attempt to cancel on backend when user cancels restored flow
+                    if (runtime.hasConnection(context)) {
+                      await _travelService.changeState(travelId: widget.travelId, state: TravelState.canceled);
                     }
-                  },
-                  // TODO("yapmDev": @Reminder)
-                  // - Replace the custom circle for cancel with the one provided in the assets.
-                  child: CircleAvatar(
-                    radius: 20,
-                    backgroundColor: Theme.of(context).colorScheme.onPrimaryContainer.withAlpha(80),
-                    child: Icon(Icons.close, color: Theme.of(context).colorScheme.onPrimaryContainer),
-                  )
-              )
-            )
-          ]
-        )
-      )
+                    if (!context.mounted) return;
+                    context.go(ClientRoutes.home);
+                  } else {
+                    context.pop();
+                  }
+                },
+                // TODO("yapmDev": @Reminder)
+                // - Replace the custom circle for cancel with the one provided in the assets.
+                child: CircleAvatar(
+                  radius: 20,
+                  backgroundColor: Theme.of(context).colorScheme.onPrimaryContainer.withAlpha(80),
+                  child: Icon(Icons.close, color: Theme.of(context).colorScheme.onPrimaryContainer),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
