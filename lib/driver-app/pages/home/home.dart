@@ -912,9 +912,15 @@ class _DriverHomePageState extends State<DriverHomePage> {
                       child: Text(
                         _driver.credit.toInt().toString(),
                         style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onPrimaryContainer, fontSize: MediaQuery.of(context).size.width * 0.045
+                        ),
+
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).colorScheme.onPrimaryContainer,
                             ),
+
                       ),
                     ),
                     // Find my location
