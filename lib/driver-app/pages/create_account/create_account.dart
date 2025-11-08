@@ -544,7 +544,10 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
       }
       // CONFLICT
       else if (response.statusCode == 409) {
-        showToast(context: context, message: localizations.phoneAlreadyRegistered);
+        if(mounted) {
+          showToast(context: context, message: localizations.phoneAlreadyRegistered);
+          // showToast(context: context, message: localizations.phoneAlreadyRegistered);
+        }
       }
       // ANY OTHER STATUS CODE
       else {
