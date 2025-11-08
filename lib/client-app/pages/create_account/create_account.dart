@@ -143,12 +143,6 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
           isSendingCode = false;
           if (response.statusCode == 200) {
             errorMessage = null;
-          }
-          else if (response.body.contains("phone not found") ||
-              response.body.contains("already registered") ||
-              response.statusCode == 409) {
-
-            errorMessage = "Este número ya está registrado.";
           } else {
             errorMessage = localizations.sendCodeError;
           }
