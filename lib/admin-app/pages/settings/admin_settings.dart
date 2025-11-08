@@ -482,6 +482,8 @@ class _AdminSettingsPageState extends State<AdminSettingsPage> {
                                   );
                                   if (!context.mounted) return;
                                   if (response.statusCode == 200) {
+                                    _newPasswordController.clear();
+                                    _confirmPasswordController.clear();
                                     showToast(context: context, message: localizations.operationSuccessful);
                                   } else {
                                     showToast(context: context, message: localizations.errorChangingPassword);
