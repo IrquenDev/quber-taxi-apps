@@ -442,6 +442,7 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
       // CONFLICT
       else if (response.statusCode == 409) {
         if (mounted) {
+          Navigator.of(context).pop();
           showToast(context: context, message: localizations.phoneAlreadyRegistered);
         }
       }
