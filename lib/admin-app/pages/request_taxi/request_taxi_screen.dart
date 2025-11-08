@@ -26,14 +26,12 @@ class RequestTaxiScreenAdmin extends StatelessWidget {
             initialChildSize: 0.3,
             minChildSize: 0.3,
             maxChildSize: 0.95,
-            expand: true,
             builder: (context, scrollController) {
               return Container(
                 decoration: BoxDecoration(
                   color: Theme.of(context).scaffoldBackgroundColor,
-                  borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(16)),
-                  boxShadow: [BoxShadow(blurRadius: 8, color: Colors.black26)],
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                  boxShadow: const [BoxShadow(blurRadius: 8, color: Colors.black26)],
                 ),
                 child: SingleChildScrollView(
                   controller: scrollController,
@@ -51,21 +49,20 @@ class RequestTaxiScreenAdmin extends StatelessWidget {
                           ),
                         ),
                       ),
-                      RequestTravelAdminSheet(),
+                      const RequestTravelAdminSheet(),
                     ],
                   ),
                 ),
               );
             },
           ),
-          // Header tipo AppBar
+          // Header AppBar
           Positioned(
             top: 30,
             left: 0,
             right: 0,
             child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
               child: Row(
                 children: [
                   IconButton(

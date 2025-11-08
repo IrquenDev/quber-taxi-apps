@@ -58,7 +58,7 @@
   "updateTravel": "Actualizar viajes",
   "noTravel": "Sin viajes disponibles",
 
-  "noAssignedTrip": "No se pudo asignar el viaje",
+  "noAssignedTrip": "No fue posible iniciar el viaje. Asegúrate de que tu cuenta esté activa, tengas crédito suficiente y no tengas otro viaje en curso.",
 
   "countPeople": "Cantidad de personas que viajan:",
   "pet": "Mascota:",
@@ -155,7 +155,7 @@
   "nameDriver": "Nombre:",
   "carRegistration": "Chapa:",
   "phoneNumberDriver": "Num. teléfono:",
-  "email": "Correo electrónico:",
+  "email": "irquensucursal1@gmail.com",
   "numberOfSeats": "Número de asientos:",
   "saveInformation": "Guardar",
   "myAccount": "Ajustes",

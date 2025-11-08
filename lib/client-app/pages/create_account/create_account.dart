@@ -51,16 +51,16 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
     // Hide keyboard
     FocusScope.of(context).unfocus();
     // Validate form
-    if(!_formKey.currentState!.validate()) return;
-    
+    if (!_formKey.currentState!.validate()) return;
+
     // Send verification code first, then show dialog
     await _sendVerificationCodeAndShowDialog();
   }
 
   Future<void> _sendVerificationCodeAndShowDialog() async {
     final localizations = AppLocalizations.of(context)!;
-    
-    if(!hasConnection(context)) {
+
+    if (!hasConnection(context)) {
       showToast(context: context, message: localizations.checkConnection);
       return;
     }
@@ -72,13 +72,13 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
 
     try {
       final response = await _authService.requestPhoneVerificationCode(_phoneController.text);
-      
+
       if (!mounted) return;
-      
+
       setState(() {
         _isSubmitting = false;
       });
-      
+
       if (response.statusCode == 200) {
         // Success - show verification dialog
         _showVerificationDialog();
@@ -104,12 +104,12 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
     bool canResendCode = false;
     int resendTimeoutSeconds = 240; // 4 minutes fixed
     Timer? resendTimer;
-    
+
     // SMS states
     bool isSendingCode = false;
     bool isVerifying = false;
     String? errorMessage;
-    
+
     // Function to format time as mm:ss
     String formatTime(int seconds) {
       final minutes = seconds ~/ 60;
@@ -121,8 +121,8 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
     Future<void> sendVerificationCode(Function setDialogState) async {
       // Prevent multiple simultaneous calls
       if (isSendingCode) return;
-      
-      if(!hasConnection(context)) {
+
+      if (!hasConnection(context)) {
         setDialogState(() {
           errorMessage = localizations.checkConnection;
         });
@@ -136,9 +136,9 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
 
       try {
         final response = await _authService.requestPhoneVerificationCode(_phoneController.text);
-        
+
         if (!mounted) return;
-        
+
         setDialogState(() {
           isSendingCode = false;
           if (response.statusCode == 200) {
@@ -159,7 +159,7 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
 
     // Function to verify code
     Future<void> verifyCode(String code, Function setDialogState) async {
-      if(!hasConnection(context)) {
+      if (!hasConnection(context)) {
         setDialogState(() {
           errorMessage = localizations.checkConnection;
         });
@@ -205,198 +205,194 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
         context: context,
         barrierDismissible: false,
         builder: (dialogContext) => PopScope(
-          canPop: false, // Prevent back button from closing dialog
-          child: StatefulBuilder(
-            builder: (context, setDialogState) {
-              // Start countdown timer
-              resendTimer ??= Timer.periodic(const Duration(seconds: 1), (timer) {
-                  if (mounted) {
-                    setDialogState(() {
-                      if (resendTimeoutSeconds > 0) {
-                        resendTimeoutSeconds--;
-                      } else {
-                        canResendCode = true;
-                        timer.cancel();
-                      }
-                    });
-                  } else {
-                    timer.cancel();
-                  }
-                });
-
-              return AlertDialog(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusMedium),
-                ),
-                title: Text(
-                  localizations.accountVerification,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      localizations.verificationCodeMessage,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: 16.0),
-                    
-                    // Loading indicator for sending code
-                    if (isSendingCode) ...[
-                      Row(
-                        children: [
-                          SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          ),
-                          const SizedBox(width: 8.0),
-                          Text(
-                            localizations.sendingCode,
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16.0),
-                    ],
-                    
-                    // Error message
-                    if (errorMessage != null) ...[
-                      Container(
-                        padding: const EdgeInsets.all(8.0),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.errorContainer,
-                          borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusSmall),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.error_outline,
-                              color: Theme.of(context).colorScheme.error,
-                              size: 16,
-                            ),
-                            const SizedBox(width: 8.0),
-                            Expanded(
-                              child: Text(
-                                errorMessage!,
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Theme.of(context).colorScheme.error,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 16.0),
-                    ],
-                    
-                    TextField(
-                      controller: codeController,
-                      keyboardType: TextInputType.number,
-                      enabled: !isSendingCode && !isVerifying,
-                      decoration: InputDecoration(
-                        labelText: localizations.verificationCodeLabel,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusSmall),
-                        ),
-                        hintText: localizations.verificationCodeHint,
-                      ),
-                      maxLength: 6,
-                    ),
-                    const SizedBox(height: 8.0),
-                    Row(
-                      children: [
-                        TextButton(
-                          onPressed: (canResendCode && !isSendingCode && !isVerifying) ? () {
-                            setDialogState(() {
-                              canResendCode = false;
-                              // Reset timeout to 4 minutes
-                              resendTimeoutSeconds = 240;
-                              resendTimer?.cancel();
-                              resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-                                if (mounted) {
-                                  setDialogState(() {
-                                    if (resendTimeoutSeconds > 0) {
-                                      resendTimeoutSeconds--;
-                                    } else {
-                                      canResendCode = true;
-                                      timer.cancel();
-                                    }
-                                  });
-                                } else {
-                                  timer.cancel();
-                                }
-                              });
-                            });
-                            // Send verification code again
-                            sendVerificationCode(setDialogState);
-                          } : null,
-                          child: Text(
-                            localizations.resendCode,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: (canResendCode && !isSendingCode && !isVerifying)
-                                ? Theme.of(context).colorScheme.primary
-                                : Theme.of(context).textTheme.bodyMedium?.color,
-                            ),
-                          ),
-                        ),
-                        if (!canResendCode) ...[
-                          const SizedBox(width: 8.0),
-                          Text(
-                            formatTime(resendTimeoutSeconds),
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        ],
-                      ],
-                    ),
-                  ],
-                ),
-                actions: [
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
-                        ),
-                      ),
-                      onPressed: (!isSendingCode && !isVerifying) ? () {
-                        final code = codeController.text.trim();
-                        if (code.isNotEmpty) {
-                          verifyCode(code, setDialogState);
+              canPop: false, // Prevent back button from closing dialog
+              child: StatefulBuilder(
+                builder: (context, setDialogState) {
+                  // Start countdown timer
+                  resendTimer ??= Timer.periodic(const Duration(seconds: 1), (timer) {
+                    if (mounted) {
+                      setDialogState(() {
+                        if (resendTimeoutSeconds > 0) {
+                          resendTimeoutSeconds--;
+                        } else {
+                          canResendCode = true;
+                          timer.cancel();
                         }
-                      } : null,
-                      child: isVerifying
-                        ? Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                      });
+                    } else {
+                      timer.cancel();
+                    }
+                  });
+
+                  return AlertDialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusMedium),
+                    ),
+                    title: Text(
+                      localizations.accountVerification,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(localizations.verificationCodeMessage, style: Theme.of(context).textTheme.bodyMedium),
+                        const SizedBox(height: 16.0),
+                        // Loading indicator for sending code
+                        if (isSendingCode) ...[
+                          Row(
                             children: [
-                              SizedBox(
-                                width: 16,
-                                height: 16,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    Theme.of(context).colorScheme.onPrimary,
+                              const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
+                              const SizedBox(width: 8.0),
+                              Text(localizations.sendingCode, style: Theme.of(context).textTheme.bodySmall),
+                            ],
+                          ),
+                          const SizedBox(height: 16.0),
+                        ],
+                        // Error message
+                        if (errorMessage != null) ...[
+                          Container(
+                            padding: const EdgeInsets.all(8.0),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.errorContainer,
+                              borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusSmall),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.error_outline,
+                                  color: Theme.of(context).colorScheme.error,
+                                  size: 16,
+                                ),
+                                const SizedBox(width: 8.0),
+                                Expanded(
+                                  child: Text(
+                                    errorMessage!,
+                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                          color: Theme.of(context).colorScheme.error,
+                                        ),
                                   ),
                                 ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 16.0),
+                        ],
+
+                        TextField(
+                          controller: codeController,
+                          keyboardType: TextInputType.number,
+                          enabled: !isSendingCode && !isVerifying,
+                          decoration: InputDecoration(
+                            labelText: localizations.verificationCodeLabel,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusSmall),
+                            ),
+                            hintText: localizations.verificationCodeHint,
+                          ),
+                          maxLength: 6,
+                        ),
+                        const SizedBox(height: 8.0),
+                        Row(
+                          children: [
+                            TextButton(
+                              onPressed: (canResendCode && !isSendingCode && !isVerifying)
+                                  ? () {
+                                      setDialogState(
+                                        () {
+                                          canResendCode = false;
+                                          // Reset timeout to 4 minutes
+                                          resendTimeoutSeconds = 240;
+                                          resendTimer?.cancel();
+                                          resendTimer = Timer.periodic(
+                                            const Duration(seconds: 1),
+                                            (timer) {
+                                              if (mounted) {
+                                                setDialogState(() {
+                                                  if (resendTimeoutSeconds > 0) {
+                                                    resendTimeoutSeconds--;
+                                                  } else {
+                                                    canResendCode = true;
+                                                    timer.cancel();
+                                                  }
+                                                });
+                                              } else {
+                                                timer.cancel();
+                                              }
+                                            },
+                                          );
+                                        },
+                                      );
+                                      // Send verification code again
+                                      sendVerificationCode(setDialogState);
+                                    }
+                                  : null,
+                              child: Text(
+                                localizations.resendCode,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: (canResendCode && !isSendingCode && !isVerifying)
+                                      ? Theme.of(context).colorScheme.primary
+                                      : Theme.of(context).textTheme.bodyMedium?.color,
+                                ),
                               ),
+                            ),
+                            if (!canResendCode) ...[
                               const SizedBox(width: 8.0),
-                              Text(localizations.verifying),
+                              Text(
+                                formatTime(resendTimeoutSeconds),
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
                             ],
-                          )
-                        : Text(localizations.sendCode),
+                          ],
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              );
-            },
-          ),
-        )
-    ).then((_) {
+                    actions: [
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+                            ),
+                          ),
+                          onPressed: (!isSendingCode && !isVerifying)
+                              ? () {
+                                  final code = codeController.text.trim();
+                                  if (code.isNotEmpty) {
+                                    verifyCode(code, setDialogState);
+                                  }
+                                }
+                              : null,
+                          child: isVerifying
+                              ? Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    SizedBox(
+                                      width: 16,
+                                      height: 16,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor: AlwaysStoppedAnimation<Color>(
+                                          Theme.of(context).colorScheme.onPrimary,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8.0),
+                                    Text(localizations.verifying),
+                                  ],
+                                )
+                              : Text(localizations.sendCode),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            )).then((_) {
       // Clean up timer if dialog is closed by any other means
       resendTimer?.cancel();
       resendTimer = null;
@@ -405,8 +401,8 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
 
   Future<void> _submitForm() async {
     final localizations = AppLocalizations.of(context)!;
-    
-    if(!hasConnection(context)) {
+
+    if (!hasConnection(context)) {
       showToast(context: context, message: localizations.checkConnection);
       return;
     }
@@ -422,26 +418,25 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
           phone: _phoneController.text,
           password: _passwordController.text,
           profileImage: _profileImage,
-          faceIdImage: widget.faceIdImage
-      );
-      
+          faceIdImage: widget.faceIdImage);
+
       // Avoid context's gaps
-      if(!mounted) return;
-      
+      if (!mounted) return;
+
       // Handle responses (depends on status code)
       // OK
-      if(response.statusCode == 200) {
+      if (response.statusCode == 200) {
         final json = jsonDecode(response.body);
         final client = Client.fromJson(json);
         // Save the user's session
         final success = await SessionPrefsManager.instance.save(client);
-        if(success) {
+        if (success) {
           // Avoid context's gaps
-          if(!mounted) return;
+          if (!mounted) return;
           // Navigate to home safely
           context.go(ClientRoutes.home);
         } else {
-          if(mounted) {
+          if (mounted) {
             showToast(context: context, message: localizations.registrationError);
           }
         }
@@ -456,20 +451,17 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
       }
       // ANY OTHER STATUS CODE
       else {
-        if(mounted) {
-          showToast(
-              context: context,
-              message: localizations.registrationError
-          );
+        if (mounted) {
+          showToast(context: context, message: localizations.registrationError);
         }
       }
     } catch (e) {
       // Handle any network or parsing errors
-      if(mounted) {
+      if (mounted) {
         showToast(context: context, message: localizations.registrationError);
       }
     } finally {
-      if(mounted) {
+      if (mounted) {
         setState(() {
           _isSubmitting = false;
         });
@@ -490,14 +482,13 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
 
   void _onFieldChanged() {
     final nameValid = _nameController.text.trim().isNotEmpty;
-    final phoneValid = _phoneController.text.trim().length == 8 &&
-        RegExp(r'^\d{8}$').hasMatch(_phoneController.text.trim());
+    final phoneValid =
+        _phoneController.text.trim().length == 8 && RegExp(r'^\d{8}$').hasMatch(_phoneController.text.trim());
     final passwordValid = _passwordController.text.length >= 6;
-    final confirmPasswordValid = _confirmPasswordController.text.isNotEmpty &&
-        _passwordController.text == _confirmPasswordController.text;
+    final confirmPasswordValid =
+        _confirmPasswordController.text.isNotEmpty && _passwordController.text == _confirmPasswordController.text;
 
-    final allValid =
-        nameValid && phoneValid && passwordValid && confirmPasswordValid;
+    final allValid = nameValid && phoneValid && passwordValid && confirmPasswordValid;
 
     if (_areFieldsValid != allValid) {
       setState(() {
@@ -513,303 +504,287 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
     late final localizations = AppLocalizations.of(context)!;
     late final iconTheme = Theme.of(context).iconTheme;
     return Scaffold(
-        body: Stack(children: [
-      Column(
-        spacing: 20.0,
+      body: Stack(
         children: [
-          // App Bar as Header
-          Container(
-            width: double.infinity,
-            height: 200,
-            decoration: BoxDecoration(
-                color: colorScheme.primaryContainer,
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(20),
-                  bottomRight: Radius.circular(20),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: colorScheme.shadow.withValues(alpha: 0.2),
-                    spreadRadius: 2,
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
+          Column(
+            spacing: 20.0,
+            children: [
+              // App Bar as Header
+              Container(
+                width: double.infinity,
+                height: 200,
+                decoration: BoxDecoration(
+                  color: colorScheme.primaryContainer,
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(20),
+                    bottomRight: Radius.circular(20),
                   ),
-                ],
-            ),
-            child: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 30.0, bottom: 90, top: 20),
-                child: Row(
-                  children: [
-                    // Icon(Icons.arrow_back, color: colorScheme.shadow),
-                    const SizedBox(width: 38),
-                    Text(
-                      AppLocalizations.of(context)!.createAccount,
-                      style: textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: colorScheme.shadow,
-                      ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: colorScheme.shadow.withValues(alpha: 0.2),
+                      spreadRadius: 2,
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
                     ),
                   ],
                 ),
-              ),
-            ),
-          ),
-          // Form
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(40.0),
-              child: Form(
-                key: _formKey,
-                child: ListView(
-                  children: [
-                    Text(AppLocalizations.of(context)!.name,
-                      style: textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.normal,
-                        color: colorScheme.onSurface,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    TextFormField(
-                        controller: _nameController,
-                        decoration: InputDecoration(
-                          hintText: AppLocalizations.of(context)!.nameAndLastName,
-                          hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
-                          filled: true,
-                          fillColor: colorScheme.surface,
-                          contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                              color: colorScheme.outlineVariant,
-                              width: 1,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                              color: colorScheme.outlineVariant,
-                              width: 1,
-                            ),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                              color: colorScheme.error,
-                              width: 1,
-                            ),
+                child: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 30.0, bottom: 90, top: 20),
+                    child: Row(
+                      children: [
+                        // Icon(Icons.arrow_back, color: colorScheme.shadow),
+                        const SizedBox(width: 38),
+                        Text(
+                          AppLocalizations.of(context)!.createAccount,
+                          style: textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: colorScheme.shadow,
                           ),
                         ),
-                        validator: (value) => Workflow<String?>()
-                            .step(RequiredStep(errorMessage: localizations.requiredField))
-                            .withDefault((_) => null)
-                            .proceed(value)
+                      ],
                     ),
-                    const SizedBox(height: 20),
-                    Text(AppLocalizations.of(context)!.phoneNumber,
-                      style: textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.normal,
-                        color: colorScheme.onSurface,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    TextFormField(
-                        controller: _phoneController,
-                        keyboardType: TextInputType.phone,
-                        decoration: InputDecoration(
-                          hintText: localizations.phoneHint,
-                          hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
-                          filled: true,
-                          fillColor: colorScheme.surface,
-                          contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                              color: colorScheme.outlineVariant,
-                              width: 1,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                              color: colorScheme.outlineVariant,
-                              width: 1,
-                            ),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                              color: colorScheme.error,
-                              width: 1,
-                            ),
-                          ),
-                        ),
-                        validator: (value) => Workflow<String?>()
-                            .step(RequiredStep(errorMessage: localizations.requiredField))
-                            .withDefault((_) => null)
-                            .proceed(value)
-                    ),
-                    const SizedBox(height: 20),
-                    Text(AppLocalizations.of(context)!.password,
-                      style: textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.normal,
-                        color: colorScheme.onSurface,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    TextFormField(
-                        controller: _passwordController,
-                        obscureText: !_isPasswordVisible,
-                        decoration: InputDecoration(
-                          hintText: localizations.passwordHint,
-                          hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
-                          filled: true,
-                          fillColor: colorScheme.surface,
-                          contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                          suffixIcon: IconButton(
-                            onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
-                            icon: Icon(
-                              _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                              color: colorScheme.outlineVariant,
-                              width: 1,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                              color: colorScheme.outlineVariant,
-                              width: 1,
-                            ),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                              color: colorScheme.error,
-                              width: 1,
-                            ),
-                          ),
-                        ),
-                        validator: (value) => Workflow<String?>()
-                            .step(RequiredStep(errorMessage: localizations.requiredField))
-                            .step(MinLengthStep(min: 6, errorMessage: localizations.passwordMinLength))
-                            .breakOnFirstApply(true)
-                            .withDefault((_) => null)
-                            .proceed(value)
-                    ),
-                    const SizedBox(height: 20),
-                    Text(AppLocalizations.of(context)!.passwordConfirm,
-                      style: textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.normal,
-                        color: colorScheme.onSurface,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    TextFormField(
-                        controller: _confirmPasswordController,
-                        obscureText: !_isConfirmPasswordVisible,
-                        decoration: InputDecoration(
-                          hintText: localizations.passwordConfirm,
-                          hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
-                          filled: true,
-                          fillColor: colorScheme.surface,
-                          contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                          suffixIcon: IconButton(
-                            onPressed: () => setState(() => _isConfirmPasswordVisible = !_isConfirmPasswordVisible),
-                            icon: Icon(
-                              _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                              color: colorScheme.outlineVariant,
-                              width: 1,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                              color: colorScheme.outlineVariant,
-                              width: 1,
-                            ),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                              color: colorScheme.error,
-                              width: 1,
-                            ),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return localizations.requiredField;
-                          }
-                          if (value != _passwordController.text) {
-                            return localizations.passwordsDoNotMatch;
-                          }
-                          return null;
-                        }
-                    ),
-                    const SizedBox(height: 30),
-                  ],
+                  ),
                 ),
               ),
-            ),
+              // Form
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(40.0),
+                  child: Form(
+                    key: _formKey,
+                    child: ListView(
+                      children: [
+                        Text(
+                          AppLocalizations.of(context)!.name,
+                          style: textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.normal,
+                            color: colorScheme.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        TextFormField(
+                          controller: _nameController,
+                          decoration: InputDecoration(
+                            hintText: AppLocalizations.of(context)!.nameAndLastName,
+                            hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
+                            filled: true,
+                            fillColor: colorScheme.surface,
+                            contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: colorScheme.outlineVariant,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: colorScheme.outlineVariant,
+                              ),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: colorScheme.error,
+                              ),
+                            ),
+                          ),
+                          validator: (value) => Workflow<String?>()
+                              .step(RequiredStep(errorMessage: localizations.requiredField))
+                              .withDefault((_) => null)
+                              .proceed(value),
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          AppLocalizations.of(context)!.phoneNumber,
+                          style: textTheme.bodyLarge
+                              ?.copyWith(fontWeight: FontWeight.normal, color: colorScheme.onSurface),
+                        ),
+                        const SizedBox(height: 6),
+                        TextFormField(
+                            controller: _phoneController,
+                            keyboardType: TextInputType.phone,
+                            decoration: InputDecoration(
+                              hintText: localizations.phoneHint,
+                              hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
+                              filled: true,
+                              fillColor: colorScheme.surface,
+                              contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: colorScheme.outlineVariant,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: colorScheme.outlineVariant,
+                                ),
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: colorScheme.error,
+                                ),
+                              ),
+                            ),
+                            validator: (value) => Workflow<String?>()
+                                .step(RequiredStep(errorMessage: localizations.requiredField))
+                                .withDefault((_) => null)
+                                .proceed(value)),
+                        const SizedBox(height: 20),
+                        Text(
+                          AppLocalizations.of(context)!.password,
+                          style: textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.normal,
+                            color: colorScheme.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        TextFormField(
+                          controller: _passwordController,
+                          obscureText: !_isPasswordVisible,
+                          decoration: InputDecoration(
+                            hintText: localizations.passwordHint,
+                            hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
+                            filled: true,
+                            fillColor: colorScheme.surface,
+                            contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                            suffixIcon: IconButton(
+                              onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
+                              icon: Icon(
+                                _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: colorScheme.outlineVariant,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: colorScheme.outlineVariant,
+                              ),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: colorScheme.error,
+                              ),
+                            ),
+                          ),
+                          validator: (value) => Workflow<String?>()
+                              .step(RequiredStep(errorMessage: localizations.requiredField))
+                              .step(MinLengthStep(min: 6, errorMessage: localizations.passwordMinLength))
+                              .breakOnFirstApply(true)
+                              .withDefault((_) => null)
+                              .proceed(value),
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          AppLocalizations.of(context)!.passwordConfirm,
+                          style: textTheme.bodyLarge
+                              ?.copyWith(fontWeight: FontWeight.normal, color: colorScheme.onSurface),
+                        ),
+                        const SizedBox(height: 6),
+                        TextFormField(
+                            controller: _confirmPasswordController,
+                            obscureText: !_isConfirmPasswordVisible,
+                            decoration: InputDecoration(
+                              hintText: localizations.passwordConfirm,
+                              hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
+                              filled: true,
+                              fillColor: colorScheme.surface,
+                              contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                              suffixIcon: IconButton(
+                                onPressed: () => setState(() => _isConfirmPasswordVisible = !_isConfirmPasswordVisible),
+                                icon: Icon(
+                                  _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: colorScheme.outlineVariant,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: colorScheme.outlineVariant,
+                                ),
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: colorScheme.error,
+                                ),
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return localizations.requiredField;
+                              }
+                              if (value != _passwordController.text) {
+                                return localizations.passwordsDoNotMatch;
+                              }
+                              return null;
+                            }),
+                        const SizedBox(height: 30),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-      // Camera Button
-      Positioned(
-          top: 120,
-          left: 0,
-          right: 0,
-          child: Center(
+          // Camera Button
+          Positioned(
+            top: 120,
+            left: 0,
+            right: 0,
+            child: Center(
               child: GestureDetector(
-            onTap: () async {
-              final pickedImage =
-                  await ImagePicker().pickImage(source: ImageSource.gallery);
-              if (pickedImage != null) {
-                setState(() => _isProcessingImage = true);
-                final compressedImage =
-                    await compressXFileToTargetSize(pickedImage, 5);
-                setState(() => _isProcessingImage = false);
-                if (compressedImage != null) {
-                  setState(() {
-                    _profileImage = compressedImage;
-                  });
-                }
-              }
-            },
-            child: _buildCircleImagePicker(colorScheme, iconTheme),
-          ))),
-      // Submit Form Button
-      Positioned(
-          left: 0,
-          right: 0,
-          bottom: 0,
-          child: SizedBox(
+                onTap: () async {
+                  final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
+                  if (pickedImage != null) {
+                    setState(() => _isProcessingImage = true);
+                    final compressedImage = await compressXFileToTargetSize(pickedImage, 5);
+                    setState(() => _isProcessingImage = false);
+                    if (compressedImage != null) {
+                      setState(() {
+                        _profileImage = compressedImage;
+                      });
+                    }
+                  }
+                },
+                child: _buildCircleImagePicker(colorScheme, iconTheme),
+              ),
+            ),
+          ),
+          // Submit Form Button
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: SizedBox(
               width: double.infinity,
               height: 56,
               child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        Theme.of(context).colorScheme.primaryContainer,
-                    foregroundColor: Theme.of(context).colorScheme.secondary,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.zero,
-                    ),
-                    elevation: 0,
-                  ),
-                  onPressed: _isSubmitting ? null : _validateAndSubmit,
-                  child: _isSubmitting
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                  foregroundColor: Theme.of(context).colorScheme.secondary,
+                  shape: const RoundedRectangleBorder(),
+                  elevation: 0,
+                ),
+                onPressed: _isSubmitting ? null : _validateAndSubmit,
+                child: _isSubmitting
                     ? Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -826,33 +801,33 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
                           const SizedBox(width: 8.0),
                           Text(
                             AppLocalizations.of(context)!.sendingCode,
-                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.secondary
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyLarge
+                                ?.copyWith(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.secondary),
                           ),
                         ],
                       )
                     : Text(
                         AppLocalizations.of(context)!.endRegistration,
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.secondary
-                        )
-                      )
-                )
-              )
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
+                      ),
+              ),
             ),
-            if(_isProcessingImage)
-            Positioned.fill(child: Center(child: CircularProgressIndicator()))
-          ]
-        )
-      );
-    }
+          ),
+          if (_isProcessingImage) const Positioned.fill(child: Center(child: CircularProgressIndicator())),
+        ],
+      ),
+    );
+  }
 
-    Widget _buildCircleImagePicker(
-        ColorScheme colorScheme, IconThemeData iconTheme) {
-      return Stack(alignment: Alignment.center, children: [
+  Widget _buildCircleImagePicker(ColorScheme colorScheme, IconThemeData iconTheme) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
         // Main Circle
         Container(
           decoration: BoxDecoration(
@@ -869,12 +844,10 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
           child: CircleAvatar(
             radius: 80,
             backgroundColor: colorScheme.surfaceContainerLowest,
-            foregroundImage:
-                _profileImage != null ? FileImage(File(_profileImage!.path)) : null,
+            foregroundImage: _profileImage != null ? FileImage(File(_profileImage!.path)) : null,
             child: _profileImage == null
                 ? SvgPicture.asset("assets/icons/camera.svg",
-                    width: iconTheme.size! * 3,
-                    colorFilter: ColorFilter.mode(colorScheme.onSurface, BlendMode.srcIn))
+                    width: iconTheme.size! * 3, colorFilter: ColorFilter.mode(colorScheme.onSurface, BlendMode.srcIn))
                 : null,
           ),
         ),
@@ -890,7 +863,8 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
                 child: Icon(Icons.close, color: colorScheme.onError, size: 16),
               ),
             ),
-          )
-      ]);
-    }
+          ),
+      ],
+    );
   }
+}
