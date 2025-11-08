@@ -576,6 +576,7 @@ class _CreateDriverAccountPageState extends State<CreateDriverAccountPage> {
       // CONFLICT
       else if(response.statusCode == 409) {
         print('Conflict: Phone already registered');
+        Navigator.of(context).pop();
         showToast(context: context, message: localizations.phoneAlreadyRegistered);
       }
       // ANY OTHER STATUS CODE

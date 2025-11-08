@@ -143,6 +143,12 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
           isSendingCode = false;
           if (response.statusCode == 200) {
             errorMessage = null;
+          }
+          else if (response.body.contains("phone not found") ||
+              response.body.contains("already registered") ||
+              response.statusCode == 409) {
+
+            errorMessage = "Este número ya está registrado.";
           } else {
             errorMessage = localizations.sendCodeError;
           }
@@ -173,6 +179,8 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
 
       try {
         final response = await _authService.verifyPhoneNumber(_phoneController.text, code);
+
+
         if(response.statusCode == 200) {
           // Success - proceed with registration
           resendTimer?.cancel();
@@ -184,7 +192,7 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
           } else if (responseBody.contains("Verification code expired")) {
             errorMessage = localizations.verificationCodeExpired;
           } else {
-            errorMessage = localizations.invalidVerificationCode;
+              errorMessage = localizations.invalidVerificationCode;
           }
         } else {
           errorMessage = localizations.verifyCodeError;
@@ -447,7 +455,9 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
       // CONFLICT
       else if(response.statusCode == 409) {
         if(mounted) {
-          showToast(context: context, message: localizations.phoneAlreadyRegistered);
+            Navigator.of(context).pop();
+            showToast(context: context, message: localizations.phoneAlreadyRegistered);
+          // showToast(context: context, message: localizations.phoneAlreadyRegistered);
         }
       }
       // ANY OTHER STATUS CODE
