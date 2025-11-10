@@ -122,14 +122,21 @@ class _LoginPageState extends State<LoginPage> {
                     Expanded(
                       flex: 4,
                       child: Center(
-                        child: Text(
-                          localization.welcomeTitle,
-                          textAlign: TextAlign.center,
-                          style: textTheme.displayLarge?.copyWith(
+                        child: LayoutBuilder(
+                          builder: (context, constraints){
+                            double fontsize = constraints.maxWidth * 0.2;
+                            return Text(
+                              localization.welcomeTitle,
+                              textAlign: TextAlign.center,
+                              style: textTheme.displayLarge?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: colorScheme.onSecondary,
-                              fontSize: MediaQuery.of(context).size.width * 0.15),
+                              fontSize: fontsize,
+                            ),
+                            );
+                          },
                         ),
+
                       ),
                     ),
                     // Form
