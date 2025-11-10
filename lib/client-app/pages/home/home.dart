@@ -9,10 +9,9 @@ import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:network_checker/network_checker.dart';
 import 'package:quber_taxi/client-app/pages/home/map.dart';
 import 'package:quber_taxi/client-app/pages/home/request_travel_sheet.dart';
-import 'package:quber_taxi/client-app/pages/settings/account_setting.dart';
+import 'package:quber_taxi/client-app/pages/settings/setting.dart';
 import 'package:quber_taxi/common/models/client.dart';
 import 'package:quber_taxi/common/models/travel.dart';
-import 'package:quber_taxi/common/services/app_announcement_service.dart';
 import 'package:quber_taxi/common/services/travel_service.dart';
 import 'package:quber_taxi/common/widgets/dialogs/circular_info_dialog.dart';
 import 'package:quber_taxi/enums/travel_state.dart';
@@ -39,7 +38,7 @@ class ClientHomePageState extends State<ClientHomePage> {
   bool _showRequestSheet = false;
   bool _showFavoriteDialog = false;
   bool _showQuberPointsDialog = false;
-  
+
   // Single MapView instance to avoid GlobalKey conflicts
   late final MapView _mapViewInstance;
 
@@ -66,15 +65,15 @@ class ClientHomePageState extends State<ClientHomePage> {
     // Since execution times are not always the same, it's possible that when the listeners are registered, the current
     // status is already online, so the listeners won't be notified. This is why we must make an initial manual call.
     // In any case, calls will not be duplicated since they are being protected with an inner flag.
-    if(isAlreadyOnline) {
+    if (isAlreadyOnline) {
       _syncTravelStateListener(connStatus);
     }
   }
 
   Future<void> _syncTravelStateListener(ConnectionStatus status) async {
-    if(status == ConnectionStatus.checking) return;
+    if (status == ConnectionStatus.checking) return;
     final isConnected = status == ConnectionStatus.online;
-    if(isConnected) {
+    if (isConnected) {
       await _syncTravelState();
     }
   }
@@ -84,7 +83,7 @@ class ClientHomePageState extends State<ClientHomePage> {
       return;
     }
     final response = await _travelService.getActiveTravelState(_client.id);
-    if(!mounted) return;
+    if (!mounted) return;
     //Ignoring 404 (means no active travel) and unexpected status codes.
     if (response.statusCode == 200) {
       final activeTravel = Travel.fromJson(jsonDecode(response.body));
@@ -92,19 +91,18 @@ class ClientHomePageState extends State<ClientHomePage> {
       // those states.
       final travelState = activeTravel.state;
       if (travelState == TravelState.waiting) {
-        final shouldMarkAsCanceled = DateTime.now().subtract(Duration(minutes: 3)).isAfter(activeTravel.requestedDate);
-        if(shouldMarkAsCanceled) {
+        final shouldMarkAsCanceled =
+            DateTime.now().subtract(const Duration(minutes: 3)).isAfter(activeTravel.requestedDate);
+        if (shouldMarkAsCanceled) {
           await _cancelTravelRequest(activeTravel.id);
-        }
-        else {
+        } else {
           context.go(ClientRoutes.searchDriver, extra: {
             'travelId': activeTravel.id,
             'travelRequestedDate': activeTravel.requestedDate,
             'wasPageRestored': true,
           });
         }
-      }
-      else if(travelState == TravelState.accepted) {
+      } else if (travelState == TravelState.accepted) {
         context.go(ClientRoutes.trackDriver, extra: activeTravel);
       }
       // TravelState.inProgress
@@ -132,52 +130,51 @@ class ClientHomePageState extends State<ClientHomePage> {
 
   Future<void> _showOfflineModeDialog() async {
     showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => AlertDialog(
-          title: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(child: Text("¡Upps!. Parece que no tiene conexión")),
-              IconButton(icon: Icon(Icons.close_outlined), onPressed: () => context.pop()),
-            ],
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 12.0,
-            children: [
-              Text("No hemos detectado conexión para pedir el viaje, pero aquí le traemos otras alternativas:"),
-              // Call option
-              FilledButton(
-                  onPressed: () {
-                    final phoneNumber = ConfigPrefsManager.instance.getOperatorPhone();
-                    _launchPhoneDialer(phoneNumber ?? "+5352417814");
-                  },
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    spacing: 12.0,
-                    children: [
-                      Icon(Icons.phone_outlined),
-                      Text("Pedir por llamada")
-                    ],
-                  )
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => AlertDialog(
+        title: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Expanded(child: Text("¡Upps!. Parece que no tiene conexión")),
+            IconButton(icon: const Icon(Icons.close_outlined), onPressed: () => context.pop()),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 12.0,
+          children: [
+            const Text("No hemos detectado conexión para pedir el viaje, pero aquí le traemos otras alternativas:"),
+            // Call option
+            FilledButton(
+              onPressed: () {
+                final phoneNumber = ConfigPrefsManager.instance.getOperatorPhone();
+                _launchPhoneDialer(phoneNumber ?? "+5352417814");
+              },
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                spacing: 12.0,
+                children: [Icon(Icons.phone_outlined), Text("Pedir por llamada")],
               ),
-              // SMS option
-              FilledButton(
-                  onPressed: null,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    spacing: 12.0,
-                    children: [
-                      Icon(Icons.sms_outlined),
-                      Expanded(child: Text("Pedir por SMS (Diponible pronto)"))
-                    ],
-                  )
-              )
-            ],
-          ),
-        )
+            ),
+            // SMS option
+            const FilledButton(
+              onPressed: null,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                spacing: 12.0,
+                children: [
+                  Icon(Icons.sms_outlined),
+                  Expanded(
+                    child: Text("Pedir por SMS (Diponible pronto)"),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 
@@ -247,23 +244,19 @@ class ClientHomePageState extends State<ClientHomePage> {
         items: [
           Transform.scale(
             scale: 1,
-            child: _buildNavItem(
-                Icons.location_on, localizations.mapBottomItem, 0),
+            child: _buildNavItem(Icons.location_on, localizations.mapBottomItem, 0),
           ),
           Transform.scale(
             scale: 1,
-            child: _buildNavItem(Icons.local_taxi_outlined,
-                localizations.requestTaxiBottomItem, 1),
+            child: _buildNavItem(Icons.local_taxi_outlined, localizations.requestTaxiBottomItem, 1),
           ),
           Transform.scale(
             scale: 1,
-            child: _buildNavItem(
-                Icons.settings_outlined, localizations.settingsBottomItem, 2),
+            child: _buildNavItem(Icons.settings_outlined, localizations.settingsBottomItem, 2),
           ),
           Transform.scale(
             scale: 1,
-            child: _buildNavItem(
-                Icons.favorite_border, localizations.favoritesBottomItem, 3),
+            child: _buildNavItem(Icons.favorite_border, localizations.favoritesBottomItem, 3),
           ),
           SizedBox(
             width: double.infinity,
@@ -277,16 +270,16 @@ class ClientHomePageState extends State<ClientHomePage> {
                     Text(
                       _client.quberPoints.toInt().toString(),
                       style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onPrimaryContainer,
-                      ),
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onPrimaryContainer,
+                          ),
                     ),
                     Text(
                       localizations.quberPointsBottomItem,
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onPrimaryContainer,
-                      ),
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onPrimaryContainer,
+                          ),
                     ),
                   ],
                 ),
@@ -308,7 +301,7 @@ class ClientHomePageState extends State<ClientHomePage> {
   }
 
   Widget _buildNavItem(IconData icon, String text, int index) {
-    final double iconSize = 28;
+    const double iconSize = 28;
     final bool isSelected = _currentIndex == index;
 
     return SizedBox(
@@ -331,9 +324,9 @@ class ClientHomePageState extends State<ClientHomePage> {
                   child: Text(
                     text,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.onPrimaryContainer,
-                    ),
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        ),
                   ),
                 )
             ],
@@ -347,7 +340,7 @@ class ClientHomePageState extends State<ClientHomePage> {
     showDialog<FavoriteLocation>(
       context: context,
       builder: (BuildContext context) {
-        return FavoritesDialog();
+        return const FavoritesDialog();
       },
     ).then((selectedFav) {
       if (selectedFav != null) {
@@ -429,7 +422,7 @@ class _FavoritesDialogState extends State<FavoritesDialog> {
     final localizations = AppLocalizations.of(context)!;
 
     if (_loadingFavorites) {
-      return AlertDialog(
+      return const AlertDialog(
         content: SizedBox(
           height: 80,
           child: Center(child: CircularProgressIndicator()),
@@ -442,10 +435,7 @@ class _FavoritesDialogState extends State<FavoritesDialog> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(localizations.myMarkers,
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge
-                  ?.copyWith(fontWeight: FontWeight.bold)),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
           IconButton(
             icon: const Icon(Icons.close),
             onPressed: () => Navigator.of(context).pop(),
@@ -455,35 +445,34 @@ class _FavoritesDialogState extends State<FavoritesDialog> {
       content: _favorites.isEmpty
           ? Text(AppLocalizations.of(context)!.noFavorites)
           : SizedBox(
-        width: double.maxFinite,
-        child: ListView.builder(
-          shrinkWrap: true,
-          itemCount: _favorites.length,
-          itemBuilder: (context, index) {
-            final favorite = _favorites[index];
-            return ListTile(
-              leading: Image.asset(
-                'assets/markers/route/x60/pin_fav.png',
-                width: 20,
-                height: 20,
-              ),
-              title: Text(favorite.name),
-              onTap: () {
-                Navigator.pop(context, favorite);
-              },
-              trailing: IconButton(
-                icon: const Icon(Icons.delete_outline_sharp),
-                onPressed: () async {
-                  await _removeFavoriteAt(index);
+              width: double.maxFinite,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: _favorites.length,
+                itemBuilder: (context, index) {
+                  final favorite = _favorites[index];
+                  return ListTile(
+                    leading: Image.asset(
+                      'assets/markers/route/x60/pin_fav.png',
+                      width: 20,
+                      height: 20,
+                    ),
+                    title: Text(favorite.name),
+                    onTap: () {
+                      Navigator.pop(context, favorite);
+                    },
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete_outline_sharp),
+                      onPressed: () async {
+                        await _removeFavoriteAt(index);
+                      },
+                    ),
+                  );
                 },
               ),
-            );
-          },
-        ),
-      ),
+            ),
       shape: RoundedRectangleBorder(
-        borderRadius:
-        BorderRadius.circular(Theme.of(context).cardTheme.elevation ?? 12.0),
+        borderRadius: BorderRadius.circular(Theme.of(context).cardTheme.elevation ?? 12.0),
       ),
     );
   }
@@ -561,7 +550,7 @@ class _RequestTravelSheetWidgetState extends State<_RequestTravelSheetWidget> wi
             decoration: BoxDecoration(
               color: Theme.of(context).scaffoldBackgroundColor,
               borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-              boxShadow: [BoxShadow(blurRadius: 8, color: Colors.black26)],
+              boxShadow: const [BoxShadow(blurRadius: 8, color: Colors.black26)],
             ),
             child: Column(
               children: [
@@ -581,9 +570,11 @@ class _RequestTravelSheetWidgetState extends State<_RequestTravelSheetWidget> wi
                 Expanded(
                   child: SingleChildScrollView(
                     child: Padding(
-                      padding:
-                      EdgeInsets.only(left: 16.0, right: 16.0, bottom: 32.0),
-                      child: RequestTravelSheet(origin: MapView.globalKey.currentState?.origin, destination: MapView.globalKey.currentState?.destination),
+                      padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 32.0),
+                      child: RequestTravelSheet(
+                        origin: MapView.globalKey.currentState?.origin,
+                        destination: MapView.globalKey.currentState?.destination,
+                      ),
                     ),
                   ),
                 ),

@@ -12,7 +12,6 @@ import 'package:geolocator/geolocator.dart' as g;
 import 'package:quber_taxi/utils/map/turf.dart';
 
 class LocationPicker extends StatefulWidget {
-
   final bool isOrigin; // true for origin (A), false for destination (B)
 
   const LocationPicker({super.key, this.isOrigin = true});
@@ -22,10 +21,9 @@ class LocationPicker extends StatefulWidget {
 }
 
 class _LocationPickerState extends State<LocationPicker> {
-
   MapboxMap? _mapController;
   final _mapboxService = MapboxService();
-  
+
   // New state variables
   PointAnnotationManager? _pointAnnotationManager;
   PointAnnotation? _selectedPointAnnotation;
@@ -36,23 +34,23 @@ class _LocationPickerState extends State<LocationPicker> {
   void _onMapTap(Point point) async {
     final lng = point.coordinates.lng.toDouble();
     final lat = point.coordinates.lat.toDouble();
-    
+
     // Check if inside of Havana
     if (!kDebugMode) {
       final isInside = GeoBoundaries.isPointInHavana(lng, lat);
-      if(!isInside) {
+      if (!isInside) {
         showToast(context: context, message: AppLocalizations.of(context)!.destinationsLimitedToHavana);
         return;
       }
     }
-    
+
     // Update selected location
     setState(() {
       _selectedLng = lng;
       _selectedLat = lat;
       _isLocationSelected = true;
     });
-    
+
     // Add or update marker
     await _addOrUpdateMarker(lng, lat);
   }
@@ -64,25 +62,23 @@ class _LocationPickerState extends State<LocationPicker> {
     if (_selectedPointAnnotation != null) {
       await _pointAnnotationManager!.delete(_selectedPointAnnotation!);
     }
-    
+
     // Create new marker
     final pointAnnotationOptions = PointAnnotationOptions(
       geometry: Point(coordinates: Position(lng, lat)),
       image: await _loadMarkerImage(),
       iconAnchor: IconAnchor.BOTTOM,
     );
-    
+
     _selectedPointAnnotation = await _pointAnnotationManager!.create(pointAnnotationOptions);
   }
 
   Future<void> _selectLocation() async {
     if (!_isLocationSelected || _selectedLng == null || _selectedLat == null) return;
-    
+
     // Return the place
-    final mapboxPlace = await _mapboxService.getMapboxPlace(
-        longitude: _selectedLng!, latitude: _selectedLat!
-    );
-    if(!mounted) return;
+    final mapboxPlace = await _mapboxService.getMapboxPlace(longitude: _selectedLng!, latitude: _selectedLat!);
+    if (!mounted) return;
     context.pop(mapboxPlace);
   }
 
@@ -99,14 +95,13 @@ class _LocationPickerState extends State<LocationPicker> {
       body: Stack(
         children: [
           MapWidget(
-            styleUri: MapboxStyles.STANDARD,
             cameraOptions: cameraOptions,
             onMapCreated: (controller) async {
               // Update some mapbox component
               controller.location.updateSettings(LocationComponentSettings(enabled: true));
               controller.scaleBar.updateSettings(ScaleBarSettings(enabled: false));
               _mapController = controller;
-              
+
               // Initialize point annotation manager
               _pointAnnotationManager = await controller.annotations.createPointAnnotationManager();
             },
@@ -120,27 +115,25 @@ class _LocationPickerState extends State<LocationPicker> {
             right: 0,
             bottom: 0,
             child: Padding(
-              padding: EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(20.0),
               child: Row(
                 children: [
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: _isLocationSelected 
-                        ? _selectLocation 
-                        : () {
-                            showToast(
-                              context: context,
-                              message: AppLocalizations.of(context)!.tapMapToSelectLocation
-                            );
-                          },
+                      onPressed: _isLocationSelected
+                          ? _selectLocation
+                          : () {
+                              showToast(
+                                  context: context, message: AppLocalizations.of(context)!.tapMapToSelectLocation);
+                            },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: _isLocationSelected 
-                          ? Theme.of(context).colorScheme.primary 
-                          : Theme.of(context).colorScheme.surface,
-                        foregroundColor: _isLocationSelected 
-                          ? Theme.of(context).colorScheme.onPrimary 
-                          : Theme.of(context).colorScheme.onSurface.withAlpha(100),
-                        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                        backgroundColor: _isLocationSelected
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).colorScheme.surface,
+                        foregroundColor: _isLocationSelected
+                            ? Theme.of(context).colorScheme.onPrimary
+                            : Theme.of(context).colorScheme.onSurface.withAlpha(100),
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
                         ),
@@ -155,44 +148,44 @@ class _LocationPickerState extends State<LocationPicker> {
                       ),
                     ),
                   ),
-                  SizedBox(width: 12),
+                  const SizedBox(width: 12),
                   FloatingActionButton(
-                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
-                      ),
-                      onPressed: () async {
-                        await requestLocationPermission(
-                            context: context,
-                            onPermissionGranted: () async {
-                              final position = await g.Geolocator.getCurrentPosition();
-                              // Check if inside of Havana
-                              if (!kDebugMode) {
-                                final isInside = GeoBoundaries.isPointInHavana(position.longitude, position.latitude);
-                                if(!context.mounted) return;
-                                if(!isInside) {
-                                  showToast(
-                                      context: context,
-                                      message: AppLocalizations.of(context)!.ubicationFailed
-                                  );
-                                  return;
-                                }
-                              }
-                              _mapController!.easeTo(
-                                  CameraOptions(center: Point(coordinates: Position(position.longitude, position.latitude))),
-                                  MapAnimationOptions(duration: 500)
-                              );
-                            },
-                            onPermissionDenied: () => showToast(context: context, message: AppLocalizations.of(context)!.permissionsDenied),
-                            onPermissionDeniedForever: () =>
-                                showToast(context: context, message: AppLocalizations.of(context)!.permissionDeniedPermanently)
-                        );
-                      },
-                      child: Icon(
-                          Icons.my_location_outlined,
-                          color: Theme.of(context).iconTheme.color,
-                          size: Theme.of(context).iconTheme.size
-                      )
+                    backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+                    ),
+                    onPressed: () async {
+                      await requestLocationPermission(
+                        context: context,
+                        onPermissionGranted: () async {
+                          final position = await g.Geolocator.getCurrentPosition();
+                          // Check if inside of Havana
+                          if (!kDebugMode) {
+                            final isInside = GeoBoundaries.isPointInHavana(position.longitude, position.latitude);
+                            if (!context.mounted) return;
+                            if (!isInside) {
+                              showToast(context: context, message: AppLocalizations.of(context)!.ubicationFailed);
+                              return;
+                            }
+                          }
+                          _mapController!.easeTo(
+                              CameraOptions(
+                                  center: Point(coordinates: Position(position.longitude, position.latitude))),
+                              MapAnimationOptions(duration: 500));
+                        },
+                        onPermissionDenied: () =>
+                            showToast(context: context, message: AppLocalizations.of(context)!.permissionsDenied),
+                        onPermissionDeniedForever: () => showToast(
+                          context: context,
+                          message: AppLocalizations.of(context)!.permissionDeniedPermanently,
+                        ),
+                      );
+                    },
+                    child: Icon(
+                      Icons.my_location_outlined,
+                      color: Theme.of(context).iconTheme.color,
+                      size: Theme.of(context).iconTheme.size,
+                    ),
                   ),
                 ],
               ),
@@ -205,9 +198,8 @@ class _LocationPickerState extends State<LocationPicker> {
 
   Future<Uint8List> _loadMarkerImage() async {
     // Load the appropriate marker image based on whether it's origin or destination
-    final markerPath = widget.isOrigin 
-        ? 'assets/markers/route/x120/origin.png'
-        : 'assets/markers/route/x120/destination.png';
+    final markerPath =
+        widget.isOrigin ? 'assets/markers/route/x120/origin.png' : 'assets/markers/route/x120/destination.png';
     final byteData = await rootBundle.load(markerPath);
     return byteData.buffer.asUint8List();
   }

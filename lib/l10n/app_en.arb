@@ -58,7 +58,7 @@
   "updateTravel": "Update trips",
   "noTravel": "No trips available",
 
-  "noAssignedTrip": "The trip could not be assigned",
+  "noAssignedTrip": "The trip could not be started. Please make sure your account is active, you have enough credit, and you don’t have another trip in progress.",
 
   "countPeople": "Number of people traveling:",
   "pet": "Pet:",
@@ -154,7 +154,7 @@
     "nameDriver": "Name:",
     "carRegistration": "License Plate:",
     "phoneNumberDriver": "Phone Number:",
-    "email": "Email:",
+    "email": "irquensucursal1@gmail.com",
     "numberOfSeats": "Number of Seats:",
     "saveInformation": "Save",
     "myAccount": "Settings",

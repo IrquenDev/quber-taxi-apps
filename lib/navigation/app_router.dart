@@ -13,7 +13,7 @@ import 'package:quber_taxi/client-app/pages/home/search_origin.dart';
 import 'package:quber_taxi/client-app/pages/navigation/client_navigation.dart';
 import 'package:quber_taxi/client-app/pages/navigation/quber_reviews.dart';
 import 'package:quber_taxi/client-app/pages/search_driver/search_driver.dart';
-import 'package:quber_taxi/client-app/pages/settings/account_setting.dart';
+import 'package:quber_taxi/client-app/pages/settings/setting.dart';
 import 'package:quber_taxi/client-app/pages/track_driver/track_driver.dart';
 import 'package:quber_taxi/common/models/app_announcement.dart';
 import 'package:quber_taxi/common/models/review.dart';
@@ -71,23 +71,23 @@ final GoRouter appRouter = GoRouter(
           return CreateClientAccountPage(faceIdImage: faceIdImage);
         }),
     GoRoute(path: ClientRoutes.settings, builder: (context, state) => const ClientSettingsPage()),
-    GoRoute(path: ClientRoutes.home, builder: (context, state) => ClientHomePage()),
+    GoRoute(path: ClientRoutes.home, builder: (context, state) => const ClientHomePage()),
     GoRoute(path: ClientRoutes.searchOrigin, builder: (context, state) => const SearchOriginPage()),
     GoRoute(path: ClientRoutes.searchDestination, builder: (context, state) => const SearchDestinationPage()),
     GoRoute(
-        path: ClientRoutes.searchDriver,
-        name: ClientRoutes.searchDriver,
-        builder: (context, state) {
-          final params = state.extra as Map<String, dynamic>;
-          final travelId = params["travelId"] as int;
-          final wasPageRestored = params["wasPageRestored"] as bool;
-          final travelRequestedDate = params['travelRequestedDate'] as DateTime;
-          return SearchDriverPage(
-            travelId: travelId,
-            wasPageRestored: wasPageRestored,
-            travelRequestedDate: travelRequestedDate,
-          );
-        },
+      path: ClientRoutes.searchDriver,
+      name: ClientRoutes.searchDriver,
+      builder: (context, state) {
+        final params = state.extra as Map<String, dynamic>;
+        final travelId = params["travelId"] as int;
+        final wasPageRestored = params["wasPageRestored"] as bool;
+        final travelRequestedDate = params['travelRequestedDate'] as DateTime;
+        return SearchDriverPage(
+          travelId: travelId,
+          wasPageRestored: wasPageRestored,
+          travelRequestedDate: travelRequestedDate,
+        );
+      },
     ),
     GoRoute(
       path: ClientRoutes.trackDriver,
@@ -115,7 +115,7 @@ final GoRouter appRouter = GoRouter(
           return CreateDriverAccountPage(faceIdImage: faceIdImage);
         }),
     GoRoute(path: DriverRoutes.settings, builder: (context, state) => const DriverSettingsPage()),
-    GoRoute(path: DriverRoutes.home, builder: (context, state) => DriverHomePage()),
+    GoRoute(path: DriverRoutes.home, builder: (context, state) => const DriverHomePage()),
     GoRoute(
         path: DriverRoutes.navigation,
         builder: (context, state) {

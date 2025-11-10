@@ -47,9 +47,9 @@ class _LoginPageState extends State<LoginPage> {
     // Always hide keyboard
     FocusScope.of(context).unfocus();
     // Skip if form has invalid data
-    if(!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) return;
     // Check connection
-    if(runtime.hasConnection(context)) {
+    if (runtime.hasConnection(context)) {
       // Enable loading state
       setState(() => _isLoading = true);
       // Get form data
@@ -164,8 +164,8 @@ class _LoginPageState extends State<LoginPage> {
                               errorBuilder: (context, value) => Text(
                                 value,
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: Theme.of(context).colorScheme.surface,
-                                ),
+                                      color: Theme.of(context).colorScheme.surface,
+                                    ),
                               ),
                               decoration: InputDecoration(
                                 hintText: localization.enterPhoneNumber,
@@ -177,7 +177,7 @@ class _LoginPageState extends State<LoginPage> {
                                   borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
                                   borderSide: BorderSide.none,
                                 ),
-                                contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
                               ),
                               validator: (value) {
                                 if (value == null || value.trim().isEmpty) {
@@ -200,7 +200,7 @@ class _LoginPageState extends State<LoginPage> {
                                 value,
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                       color: Theme.of(context).colorScheme.surface,
-                                ),
+                                    ),
                               ),
                               decoration: InputDecoration(
                                 hintText: localization.enterPassword,
@@ -219,7 +219,7 @@ class _LoginPageState extends State<LoginPage> {
                                   borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
                                   borderSide: BorderSide.none,
                                 ),
-                                contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
                               ),
                               validator: Workflow<String?>()
                                   .step(RequiredStep(errorMessage: localization.requiredField))
@@ -228,26 +228,26 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             // Login Button
                             _isLoading
-                                ? CircularProgressIndicator()
+                                ? const CircularProgressIndicator()
                                 : SizedBox(
-                              width: double.infinity,
-                              height: 48,
-                              child: ElevatedButton(
-                                onPressed: () => _handleLogin(),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: colorScheme.primary,
-                                  foregroundColor: colorScheme.onPrimary,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
-                                  ),
-                                  elevation: 0,
-                                ),
-                                child: Text(
+                                    width: double.infinity,
+                                    height: 48,
+                                    child: ElevatedButton(
+                                      onPressed: () => _handleLogin(),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: colorScheme.primary,
+                                        foregroundColor: colorScheme.onPrimary,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+                                        ),
+                                        elevation: 0,
+                                      ),
+                                      child: Text(
                                         localization.loginButton,
                                         style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
                                       ),
-                              ),
-                            ),
+                                    ),
+                                  ),
                             // Forgot Password
                             TextButton(
                               onPressed: () {
@@ -270,7 +270,8 @@ class _LoginPageState extends State<LoginPage> {
                                 child: Text(
                                   localization.createAccountLogin,
                                   style: textTheme.bodyLarge?.copyWith(
-                                      fontWeight: FontWeight.bold, color: colorScheme.primary,
+                                    fontWeight: FontWeight.bold,
+                                    color: colorScheme.primary,
                                   ),
                                 ),
                               ),

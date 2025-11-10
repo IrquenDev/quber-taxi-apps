@@ -11,17 +11,12 @@ import 'package:quber_taxi/utils/runtime.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class TravelInfoSheet extends StatelessWidget {
-
   final Travel travel;
   final void Function() onPickUpConfirmationRequest;
   final VoidCallback onReportClient;
 
-  const TravelInfoSheet({
-    super.key,
-    required this.travel,
-    required this.onPickUpConfirmationRequest,
-    required this.onReportClient
-  });
+  const TravelInfoSheet(
+      {super.key, required this.travel, required this.onPickUpConfirmationRequest, required this.onReportClient});
 
   /// Opens the system phone dialer with the client's phone number.
   Future<void> _launchPhoneDialer(String phoneNumber) async {
@@ -38,8 +33,7 @@ class TravelInfoSheet extends StatelessWidget {
         // Try alternative approach with canLaunchUrl
         if (await canLaunchUrl(url)) {
           await launchUrl(url);
-        }
-        else {
+        } else {
           throw 'Could not launch dialer with number $cleanPhone';
         }
       }
@@ -85,25 +79,20 @@ class TravelInfoSheet extends StatelessWidget {
                   const SizedBox(width: 16.0),
                   // Client's Name & Phone
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(travel.client.name, style: textTheme.titleMedium),
-                        const SizedBox(height: 8.0),
-                        Text(
-                          travel.client.phone,
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                        )
-                      ]
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text(travel.client.name, style: textTheme.titleMedium),
+                    const SizedBox(height: 8.0),
+                    Text(
+                      travel.client.phone,
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
                     )
-                  ),
+                  ])),
                   // Contact Icon
                   IconButton(
                     onPressed: () async {
                       try {
-
                         await _launchPhoneDialer(travel.client.phone);
                       } catch (e) {
                         if (kDebugMode) {
@@ -119,14 +108,11 @@ class TravelInfoSheet extends StatelessWidget {
                         }
                       }
                     },
-                    icon: Icon(
-                      Icons.phone,
-                      color: colorScheme.primary,
-                    ),
+                    icon: Icon(Icons.phone, color: colorScheme.primary),
                   )
-                ]
-              )
-            )
+                ],
+              ),
+            ),
           ),
           const SizedBox(height: 12.0),
           Padding(
@@ -134,22 +120,20 @@ class TravelInfoSheet extends StatelessWidget {
             child: Column(
               children: [
                 // Travel Origin
-                Row(
-                  children: [
-                    Icon(
-                      Icons.my_location,
-                      color: colorScheme.onSurfaceVariant,
-                      size: 24.0,
+                Row(children: [
+                  Icon(
+                    Icons.my_location,
+                    color: colorScheme.onSurfaceVariant,
+                    size: 24.0,
+                  ),
+                  const SizedBox(width: 8.0),
+                  Expanded(
+                    child: Text(
+                      travel.originName,
+                      style: textTheme.bodyMedium,
                     ),
-                    const SizedBox(width: 8.0),
-                    Expanded(
-                      child: Text(
-                        travel.originName,
-                        style: textTheme.bodyMedium,
-                      ),
-                    ),
-                  ]
-                ),
+                  ),
+                ]),
                 // Vertical dotted line between origin and destination
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -174,17 +158,10 @@ class TravelInfoSheet extends StatelessWidget {
                 // Travel Destination
                 Row(
                   children: [
-                    Icon(
-                      Icons.location_on_outlined,
-                      color: colorScheme.onSurfaceVariant,
-                      size: 24.0,
-                    ),
+                    Icon(Icons.location_on_outlined, color: colorScheme.onSurfaceVariant, size: 24.0),
                     const SizedBox(width: 8.0),
                     Expanded(
-                      child: Text(
-                        travel.destinationName,
-                        style: textTheme.bodyMedium,
-                      ),
+                      child: Text(travel.destinationName, style: textTheme.bodyMedium),
                     ),
                   ],
                 ),
@@ -198,59 +175,47 @@ class TravelInfoSheet extends StatelessWidget {
                     children: [
                       RichText(
                         text: TextSpan(
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
+                          style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
                           children: [
                             TextSpan(
                               text: '${localizations.countPeople} ',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              style: const TextStyle(fontWeight: FontWeight.bold),
                             ),
-                            TextSpan(
-                              text: '${travel.requiredSeats}',
-                            ),
+                            TextSpan(text: '${travel.requiredSeats}'),
                           ],
                         ),
                       ),
                       const SizedBox(height: 8.0),
                       RichText(
                         text: TextSpan(
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
+                          style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
                           children: [
                             TextSpan(
                               text: '${localizations.pet} ',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              style: const TextStyle(fontWeight: FontWeight.bold),
                             ),
-                            TextSpan(
-                              text: travel.hasPets ? localizations.withPet : localizations.withoutPet,
-                            ),
+                            TextSpan(text: travel.hasPets ? localizations.withPet : localizations.withoutPet),
                           ],
                         ),
                       ),
                       const SizedBox(height: 8.0),
                       RichText(
                         text: TextSpan(
-                          style: textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
+                          style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
                           children: [
                             TextSpan(
                               text: '${localizations.typeVehicle} ',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              style: const TextStyle(fontWeight: FontWeight.bold),
                             ),
-                            TextSpan(
-                              text: TaxiType.nameOf(travel.taxiType, localizations),
-                            ),
+                            TextSpan(text: TaxiType.nameOf(travel.taxiType, localizations)),
                           ],
                         ),
                       ),
-                    ]
-                  )
-                )
-              ]
-            )
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 12.0),
           // Start Travel Button
@@ -263,56 +228,49 @@ class TravelInfoSheet extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
                 ),
-                padding: EdgeInsets.symmetric(
-                  vertical: 12.0,
-                ),
+                padding: const EdgeInsets.symmetric(vertical: 12.0),
               ),
-              onPressed:  () => onPickUpConfirmationRequest.call(),
+              onPressed: () => onPickUpConfirmationRequest.call(),
               child: Text(
                 localizations.startTrip,
-                style: textTheme.labelLarge?.copyWith(
-                  color: colorScheme.onPrimary,
-                  fontWeight: FontWeight.bold,
-                ),
-              )
-            )
+                style: textTheme.labelLarge?.copyWith(color: colorScheme.onPrimary, fontWeight: FontWeight.bold),
+              ),
+            ),
           ),
           const SizedBox(height: 20.0),
           // Report Client
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('¿El cliente nunca apareció ni hizo más contacto?'),
+              const Text('¿El cliente nunca apareció ni hizo más contacto?'),
               TextButton(
-                onPressed: hasConnection(context) ? () async {
-                  var reason = await _showReportClientDialog(context);
-                  if (reason != null) {
-                    final response = await DriverService().reportClient(
-                      travelId: travel.id,
-                      driverId: travel.driver!.id,
-                      clientId: travel.client.id,
-                      reason: reason
-                    );
-                    if(!context.mounted) return;
-                    if(response.statusCode == 200) {
-                      onReportClient();
-                    } else {
-                      showToast(context: context, message: "No se pudo llevar a acabo el reporte");
-                    }
-                  }
-                } : null,
+                onPressed: hasConnection(context)
+                    ? () async {
+                        var reason = await _showReportClientDialog(context);
+                        if (reason != null) {
+                          final response = await DriverService().reportClient(
+                              travelId: travel.id,
+                              driverId: travel.driver!.id,
+                              clientId: travel.client.id,
+                              reason: reason);
+                          if (!context.mounted) return;
+                          if (response.statusCode == 200) {
+                            onReportClient();
+                          } else {
+                            showToast(context: context, message: "No se pudo llevar a acabo el reporte");
+                          }
+                        }
+                      }
+                    : null,
                 child: Text(
                   'Reportar',
-                  style: textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.error,
-                    decoration: TextDecoration.underline,
-                  ),
+                  style: textTheme.bodyMedium?.copyWith(color: colorScheme.error, decoration: TextDecoration.underline),
                 ),
               ),
             ],
-          )
-        ]
-      )
+          ),
+        ],
+      ),
     );
   }
 
@@ -332,17 +290,15 @@ class TravelInfoSheet extends StatelessWidget {
               title: Text(
                 "Reportar cliente",
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const SizedBox(height: 12),
-                  const Text(
-                      "Continuar solo si el cliente tuvo un mal comportamiento real, "
-                          "pues se tomarán medidas severas con el mismo."
-                  ),
+                  const Text("Continuar solo si el cliente tuvo un mal comportamiento real, "
+                      "pues se tomarán medidas severas con el mismo."),
                   const SizedBox(height: 12),
                   TextFormField(
                     controller: reasonTFController,
@@ -358,13 +314,11 @@ class TravelInfoSheet extends StatelessWidget {
               ),
               actions: [
                 TextButton(
-                  onPressed: () => context.pop(null),
+                  onPressed: () => context.pop(),
                   child: Text(localizations.cancelButton),
                 ),
                 OutlinedButton(
-                  onPressed: canSubmit
-                      ? () => context.pop(reasonTFController.text.trim())
-                      : null,
+                  onPressed: canSubmit ? () => context.pop(reasonTFController.text.trim()) : null,
                   child: Text(localizations.acceptButton),
                 ),
               ],
@@ -379,20 +333,20 @@ class TravelInfoSheet extends StatelessWidget {
 /// Custom painter to draw a vertical dotted line
 class DottedLinePainter extends CustomPainter {
   final Color color;
-  
+
   DottedLinePainter({required this.color});
-  
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = color
       ..strokeWidth = 2.0
       ..strokeCap = StrokeCap.round;
-    
+
     const double dotSize = 3.0;
     const double spacing = 3.0;
     final double centerX = size.width / 2; // Center in the SizedBox
-    
+
     for (double y = 0; y < size.height; y += spacing + dotSize) {
       canvas.drawLine(
         Offset(centerX, y),
@@ -401,7 +355,7 @@ class DottedLinePainter extends CustomPainter {
       );
     }
   }
-  
+
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
