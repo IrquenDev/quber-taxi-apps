@@ -114,158 +114,168 @@ class _LoginPageState extends State<LoginPage> {
           // Content
           Positioned.fill(
             child: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40.0),
-                child: Column(
-                  children: [
-                    // Header Text
-                    Expanded(
-                      flex: 4,
-                      child: Center(
-                        child: Text(
-                          localization.welcomeTitle,
-                          textAlign: TextAlign.center,
-                          style: textTheme.displayLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: colorScheme.onSecondary,
-                              fontSize: MediaQuery.of(context).size.width * 0.15),
-                        ),
-                      ),
-                    ),
-                    // Form
-                    Expanded(
-                      flex: 6,
-                      child: Form(
-                        key: _formKey,
+              child: LayoutBuilder(
+                builder: (context, constraints){
+                  return SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(minHeight: constraints.minHeight),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 40.0),
                         child: Column(
-                          spacing: 20.0,
                           children: [
-                            // Phone Number Field
-                            TextFormField(
-                              controller: _phoneTFController,
-                              keyboardType: TextInputType.phone,
-                              maxLength: 12,
-                              style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
-                              errorBuilder: (context, value) => Text(
-                                value,
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                      color: Theme.of(context).colorScheme.surface,
-                                    ),
-                              ),
-                              decoration: InputDecoration(
-                                hintText: localization.enterPhoneNumber,
-                                hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
-                                fillColor: Colors.white.withValues(alpha: 0.7),
-                                filled: true,
-                                counterText: '',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
-                                  borderSide: BorderSide.none,
-                                ),
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
-                              ),
-                              validator: (value) {
-                                if (value == null || value.trim().isEmpty) {
-                                  return localization.requiredField;
-                                }
-                                final normalizedPhone = _normalizePhoneNumber(value);
-                                if (normalizedPhone.length != 8 || !RegExp(r'^\d{8}$').hasMatch(normalizedPhone)) {
-                                  return localization.invalidPhoneMessage;
-                                }
-                                return null;
-                              },
-                            ),
-                            // Password Field
-                            TextFormField(
-                              controller: _passwordTFController,
-                              obscureText: _obscureText,
-                              maxLength: 20,
-                              style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
-                              errorBuilder: (context, value) => Text(
-                                value,
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                      color: Theme.of(context).colorScheme.surface,
-                                    ),
-                              ),
-                              decoration: InputDecoration(
-                                hintText: localization.enterPassword,
-                                hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    _obscureText ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                                    color: colorScheme.onSurfaceVariant,
-                                  ),
-                                  onPressed: () => setState(() => _obscureText = !_obscureText),
-                                ),
-                                fillColor: Colors.white.withValues(alpha: 0.7),
-                                filled: true,
-                                counterText: '',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
-                                  borderSide: BorderSide.none,
-                                ),
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
-                              ),
-                              validator: Workflow<String?>()
-                                  .step(RequiredStep(errorMessage: localization.requiredField))
-                                  .withDefault((_) => null)
-                                  .proceed,
-                            ),
-                            // Login Button
-                            _isLoading
-                                ? const CircularProgressIndicator()
-                                : SizedBox(
-                                    width: double.infinity,
-                                    height: 48,
-                                    child: ElevatedButton(
-                                      onPressed: () => _handleLogin(),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: colorScheme.primary,
-                                        foregroundColor: colorScheme.onPrimary,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
-                                        ),
-                                        elevation: 0,
-                                      ),
-                                      child: Text(
-                                        localization.loginButton,
-                                        style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
-                                  ),
-                            // Forgot Password
-                            TextButton(
-                              onPressed: () {
-                                FocusScope.of(context).unfocus();
-                                showDialog(
-                                  context: context,
-                                  barrierDismissible: false,
-                                  builder: (context) => const ForgotPasswordDialog(),
-                                );
-                              },
+                            // Header Text
+                            const SizedBox(height: 80,),
+                            Center(
                               child: Text(
-                                localization.forgotPassword,
-                                style: textTheme.bodyMedium?.copyWith(color: Colors.white),
+                                localization.welcomeTitle,
+                                textAlign: TextAlign.center,
+                                style: textTheme.displayLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: colorScheme.onSecondary,
+                                    fontSize: MediaQuery.of(context).size.width * 0.15),
                               ),
                             ),
-                            // Create New Account
-                            if (runtime.isClientMode || runtime.isDriverMode)
-                              TextButton(
-                                onPressed: () => context.push(CommonRoutes.requestFaceId),
-                                child: Text(
-                                  localization.createAccountLogin,
-                                  style: textTheme.bodyLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                    color: colorScheme.primary,
-                                  ),
+
+                            // Form
+                            const SizedBox(height: 60,),
+                            SingleChildScrollView(
+                              padding: const EdgeInsets.only(bottom: 20),
+                              child: Form(
+                                key: _formKey,
+                                child: Column(
+                                  spacing: 20.0,
+                                  children: [
+                                    // Phone Number Field
+                                    TextFormField(
+                                      controller: _phoneTFController,
+                                      keyboardType: TextInputType.phone,
+                                      maxLength: 12,
+                                      style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
+                                      errorBuilder: (context, value) => Text(
+                                        value,
+                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                          color: Theme.of(context).colorScheme.surface,
+                                        ),
+                                      ),
+                                      decoration: InputDecoration(
+                                        hintText: localization.enterPhoneNumber,
+                                        hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
+                                        fillColor: Colors.white.withValues(alpha: 0.7),
+                                        filled: true,
+                                        counterText: '',
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+                                          borderSide: BorderSide.none,
+                                        ),
+                                        contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
+                                      ),
+                                      validator: (value) {
+                                        if (value == null || value.trim().isEmpty) {
+                                          return localization.requiredField;
+                                        }
+                                        final normalizedPhone = _normalizePhoneNumber(value);
+                                        if (normalizedPhone.length != 8 || !RegExp(r'^\d{8}$').hasMatch(normalizedPhone)) {
+                                          return localization.invalidPhoneMessage;
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                    // Password Field
+                                    TextFormField(
+                                      controller: _passwordTFController,
+                                      obscureText: _obscureText,
+                                      maxLength: 20,
+                                      style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
+                                      errorBuilder: (context, value) => Text(
+                                        value,
+                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                          color: Theme.of(context).colorScheme.surface,
+                                        ),
+                                      ),
+                                      decoration: InputDecoration(
+                                        hintText: localization.enterPassword,
+                                        hintStyle: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
+                                        suffixIcon: IconButton(
+                                          icon: Icon(
+                                            _obscureText ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                                            color: colorScheme.onSurfaceVariant,
+                                          ),
+                                          onPressed: () => setState(() => _obscureText = !_obscureText),
+                                        ),
+                                        fillColor: Colors.white.withValues(alpha: 0.7),
+                                        filled: true,
+                                        counterText: '',
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+                                          borderSide: BorderSide.none,
+                                        ),
+                                        contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14.0),
+                                      ),
+                                      validator: Workflow<String?>()
+                                          .step(RequiredStep(errorMessage: localization.requiredField))
+                                          .withDefault((_) => null)
+                                          .proceed,
+                                    ),
+                                    // Login Button
+                                    _isLoading
+                                        ? const CircularProgressIndicator()
+                                        : SizedBox(
+                                      width: double.infinity,
+                                      height: 48,
+                                      child: ElevatedButton(
+                                        onPressed: () => _handleLogin(),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: colorScheme.primary,
+                                          foregroundColor: colorScheme.onPrimary,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
+                                          ),
+                                          elevation: 0,
+                                        ),
+                                        child: Text(
+                                          localization.loginButton,
+                                          style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                    ),
+                                    // Forgot Password
+                                    TextButton(
+                                      onPressed: () {
+                                        FocusScope.of(context).unfocus();
+                                        showDialog(
+                                          context: context,
+                                          barrierDismissible: false,
+                                          builder: (context) => const ForgotPasswordDialog(),
+                                        );
+                                      },
+                                      child: Text(
+                                        localization.forgotPassword,
+                                        style: textTheme.bodyMedium?.copyWith(color: Colors.white),
+                                      ),
+                                    ),
+                                    // Create New Account
+                                    if (runtime.isClientMode || runtime.isDriverMode)
+                                      TextButton(
+                                        onPressed: () => context.push(CommonRoutes.requestFaceId),
+                                        child: Text(
+                                          localization.createAccountLogin,
+                                          style: textTheme.bodyLarge?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            color: colorScheme.primary,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
                                 ),
                               ),
+                            )
                           ],
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  );
+                },
               ),
             ),
           )
