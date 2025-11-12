@@ -227,7 +227,7 @@ class _SearchDestinationPageState extends State<SearchDestinationPage> {
                           filled: true, fillColor: Colors.transparent, contentPadding: EdgeInsets.zero),
                       hint: Text(
                         "Seleccionar un municipio como destino",
-                        style: textTheme.bodyLarge?.copyWith(color: colorScheme.primary, fontWeight: FontWeight.bold),
+                        style: textTheme.bodyLarge?.copyWith(color: colorScheme.primary, fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).size.width * 0.04),
                       ),
                       style: textTheme.bodyLarge,
                       // style of selected value (not hint)
