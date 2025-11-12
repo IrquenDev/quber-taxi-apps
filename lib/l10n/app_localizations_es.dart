@@ -405,7 +405,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get saveButtonPanel => 'Guardar';
 
   @override
-  String get passwordsSectionTitle => 'Contraseñas';
+  String get passwordsSectionTitle => 'Contraseña';
 
   @override
   String get newPassword => 'Nueva contraseña:';

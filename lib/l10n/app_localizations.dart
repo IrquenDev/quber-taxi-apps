@@ -851,7 +851,7 @@ abstract class AppLocalizations {
   /// No description provided for @passwordsSectionTitle.
   ///
   /// In es, this message translates to:
-  /// **'Contraseñas'**
+  /// **'Contraseña'**
   String get passwordsSectionTitle;
 
   /// No description provided for @newPassword.

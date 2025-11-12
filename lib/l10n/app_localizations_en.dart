@@ -402,7 +402,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saveButtonPanel => 'Save';
 
   @override
-  String get passwordsSectionTitle => 'Passwords';
+  String get passwordsSectionTitle => 'Password';
 
   @override
   String get newPassword => 'New password:';
