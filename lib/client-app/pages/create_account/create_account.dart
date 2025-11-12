@@ -12,6 +12,7 @@ import 'package:quber_taxi/common/services/account_service.dart';
 import 'package:quber_taxi/common/services/auth_service.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/client_routes.dart';
+import 'package:quber_taxi/navigation/routes/common_routes.dart';
 import 'package:quber_taxi/storage/session_prefs_manger.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/utils/image/image_utils.dart';
@@ -530,7 +531,7 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
                     padding: const EdgeInsets.only(left: 30.0, bottom: 90, top: 20),
                     child: Row(
                       children: [
-                        // Icon(Icons.arrow_back, color: colorScheme.shadow),
+                        IconButton(onPressed: () => context.go(CommonRoutes.login), icon:Icon(Icons.arrow_back) , color: colorScheme.shadow),
                         const SizedBox(width: 38),
                         Text(
                           AppLocalizations.of(context)!.createAccount,
