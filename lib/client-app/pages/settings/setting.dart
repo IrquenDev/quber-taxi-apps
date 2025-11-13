@@ -42,10 +42,9 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
 
   XFile? _profileImage;
   String? _initialProfileImageUrl;
-
   bool get _shouldUpdateImage =>
       _profileImage != null ||
-      (_profileImage == null && _initialProfileImageUrl == null && _client.profileImageUrl != null);
+          (_profileImage == null && _initialProfileImageUrl == null && _client.profileImageUrl != null);
   bool _isProcessingImage = false;
   bool _isSubmittingPersonalInfo = false;
   bool _isSubmittingPasswords = false;
@@ -686,11 +685,12 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                 height: 28,
               ),
               onPressed: () async {
-                if (_profileImage != null || _client.profileImageUrl != null || _initialProfileImageUrl != null) {
+                if (_profileImage != null || _initialProfileImageUrl != null) {
                   setState(() {
                     _profileImage = null;
                     _initialProfileImageUrl = null;
                   });
+                  await _savePersonalInfo();
                 } else {
                   final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
                   if (pickedImage != null) {
