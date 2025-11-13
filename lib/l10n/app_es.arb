@@ -58,7 +58,7 @@
   "updateTravel": "Actualizar viajes",
   "noTravel": "Sin viajes disponibles",
 
-  "noAssignedTrip": "No fue posible iniciar el viaje. Asegúrate de que tu cuenta esté activa, tengas crédito suficiente y no tengas otro viaje en curso.",
+  "noAssignedTrip": "Estamos teniendo problemas con el servidor. Por favor intente más tarde",
 
   "countPeople": "Cantidad de personas que viajan:",
   "pet": "Mascota:",
