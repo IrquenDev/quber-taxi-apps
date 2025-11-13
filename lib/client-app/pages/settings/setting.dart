@@ -685,7 +685,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                 height: 28,
               ),
               onPressed: () async {
-                if (_profileImage != null || _client.profileImageUrl != null || _initialProfileImageUrl != null) {
+                if (_profileImage != null || _initialProfileImageUrl != null) {
                   setState(() {
                     _profileImage = null;
                     _initialProfileImageUrl = null;
