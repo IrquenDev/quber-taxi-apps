@@ -58,7 +58,7 @@
   "updateTravel": "Update trips",
   "noTravel": "No trips available",
 
-  "noAssignedTrip": "The trip could not be started. Please make sure your account is active, you have enough credit, and you don’t have another trip in progress.",
+  "noAssignedTrip": "We're experiencing server issues. Please try again later.",
 
   "countPeople": "Number of people traveling:",
   "pet": "Pet:",
