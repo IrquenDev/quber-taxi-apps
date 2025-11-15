@@ -51,7 +51,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get vehicle => 'vehicle';
 
   @override
-  String get tooltipAboutEstimations => 'The estimates below, while very precise, are still approximate. Please refer to them as a guide. Actual distance and price will be calculated during the voyage.';
+  String get tooltipAboutEstimations =>
+      'The estimates below, while very precise, are still approximate. Please refer to them as a guide. Actual distance and price will be calculated during the voyage.';
 
   @override
   String get settingsHome => 'Settings';
@@ -93,28 +94,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get quberPointsEarned => 'Quber Points Earned';
 
   @override
-  String get inviteFriendsDescription => 'Invite friends with your referral code to earn more points. Use them to buy discounts on your trips.';
+  String get inviteFriendsDescription =>
+      'Invite friends with your referral code to earn more points. Use them to buy discounts on your trips.';
 
   @override
   String get driverCredit => 'Driver Credit';
 
   @override
-  String get driverCreditDescription => 'Available balance in your account. This credit is updated after each completed trip.';
+  String get driverCreditDescription =>
+      'Available balance in your account. This credit is updated after each completed trip.';
 
   @override
-  String get ubicationFailed => 'Your current location is outside the limits of Havana';
+  String get ubicationFailed =>
+      'Your current location is outside the limits of Havana';
 
   @override
   String get permissionsDenied => 'Location permission denied';
 
   @override
-  String get permissionDeniedPermanently => 'Location permission permanently denied';
+  String get permissionDeniedPermanently =>
+      'Location permission permanently denied';
 
   @override
   String get locationError => 'Error getting location';
 
   @override
-  String get destinationsLimitedToHavana => 'Destinations are limited to Havana';
+  String get destinationsLimitedToHavana =>
+      'Destinations are limited to Havana';
 
   @override
   String get selectLocation => 'Select location';
@@ -132,16 +138,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get actualUbication => 'Use my current location';
 
   @override
-  String get outLimits => 'Your current location is outside the limits of Havana';
+  String get outLimits =>
+      'Your current location is outside the limits of Havana';
 
   @override
   String get noResultsTitle => 'Oops!';
 
   @override
-  String get noResultsMessage => 'Our provider wasn\'t able to find similar results.';
+  String get noResultsMessage =>
+      'Our provider wasn\'t able to find similar results.';
 
   @override
-  String get noResultsHint => 'Try a more generic search, then refine it using the map.';
+  String get noResultsHint =>
+      'Try a more generic search, then refine it using the map.';
 
   @override
   String get searchDrivers => 'Searching for Drivers...';
@@ -156,7 +165,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noTravel => 'No trips available';
 
   @override
-  String get noAssignedTrip => 'We\'re experiencing server issues. Please try again later.';
+  String get noAssignedTrip =>
+      'We\'re experiencing server issues. Please try again later.';
 
   @override
   String get countPeople => 'Number of people traveling:';
@@ -213,7 +223,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recoverPassword => 'Recover Password';
 
   @override
-  String get recoverPasswordDescription => 'Please enter your phone number. We will send you a code to reset your password.';
+  String get recoverPasswordDescription =>
+      'Please enter your phone number. We will send you a code to reset your password.';
 
   @override
   String get sendButton => 'Send';
@@ -258,7 +269,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get invalidCodeMessage => 'Invalid or expired code';
 
   @override
-  String get unexpectedErrorMessage => 'Unexpected error. Please try again later.';
+  String get unexpectedErrorMessage =>
+      'Unexpected error. Please try again later.';
 
   @override
   String get codeSendErrorMessage => 'Failed to send code. Please try again.';
@@ -273,7 +285,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get phoneNotRegisteredMessage => 'The phone number is not registered';
 
   @override
-  String get unexpectedErrorLoginMessage => 'Something went wrong, please try again later';
+  String get unexpectedErrorLoginMessage =>
+      'Something went wrong, please try again later';
 
   @override
   String get locationNotFoundTitle => 'Location not found';
@@ -297,10 +310,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noBot => 'Please take a selfie to confirm you are not a bot.';
 
   @override
-  String get noUsedImage => 'We will not use this image as a profile picture nor will it be displayed publicly.';
+  String get noUsedImage =>
+      'We will not use this image as a profile picture nor will it be displayed publicly.';
 
   @override
-  String get verificationUser => 'This step is part of our verification system to ensure the safety of all users.';
+  String get verificationUser =>
+      'This step is part of our verification system to ensure the safety of all users.';
 
   @override
   String get takeSelfie => 'Take Selfie';
@@ -330,10 +345,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accountCreatedSuccess => 'Account successfully created';
 
   @override
-  String get errorCreatingAccount => 'An error occurred while creating the account';
+  String get errorCreatingAccount =>
+      'An error occurred while creating the account';
 
   @override
-  String get checkYourInternetConnection => 'Check your Internet connection and try again';
+  String get checkYourInternetConnection =>
+      'Check your Internet connection and try again';
 
   @override
   String get nowCanAskForTaxi => 'You can now go get your trip';
@@ -345,7 +362,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get successConfirm => 'We have successfully confirmed your identity.';
 
   @override
-  String get passSecurity => 'This step is part of our verification system to ensure the safety of all users.';
+  String get passSecurity =>
+      'This step is part of our verification system to ensure the safety of all users.';
 
   @override
   String get driverInfoTitle => 'Driver Information';
@@ -465,10 +483,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get companyDescription => 'Microenterprise - Taxi Agency';
 
   @override
-  String get companyAdress => '4th Street / Central and Market, Martín Pérez Neighborhood, San Miguel del Padrón';
+  String get companyAdress =>
+      '4th Street / Central and Market, Martín Pérez Neighborhood, San Miguel del Padrón';
 
   @override
-  String get companyAboutText => 'Quber is a microenterprise dedicated to providing transportation services through an organized taxi network, focused on offering safe, punctual and quality service. The company is committed to customer satisfaction and the well-being of its drivers, promoting a reliable, accessible mobility experience centered on respect, responsibility and efficiency.';
+  String get companyAboutText =>
+      'Quber is a microenterprise dedicated to providing transportation services through an organized taxi network, focused on offering safe, punctual and quality service. The company is committed to customer satisfaction and the well-being of its drivers, promoting a reliable, accessible mobility experience centered on respect, responsibility and efficiency.';
 
   @override
   String get contactAddress => '10th Street between Linea and 23rd';
@@ -543,7 +563,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get softwareCompany => 'Software company';
 
   @override
-  String get aboutText => 'Irquen, founded by three students and built as a family of friends, is now a software company with strong foundations and future vision. Our purpose is to make digitalization fast and accessible for everyone. Our mission is to bring technology to every corner, grow, optimize and expand. Our vision is to push boundaries, find solutions and create what doesn\'t exist yet.';
+  String get aboutText =>
+      'Irquen, founded by three students and built as a family of friends, is now a software company with strong foundations and future vision. Our purpose is to make digitalization fast and accessible for everyone. Our mission is to bring technology to every corner, grow, optimize and expand. Our vision is to push boundaries, find solutions and create what doesn\'t exist yet.';
 
   @override
   String get identityVerificationTitle => 'Identity Verification';
@@ -552,13 +573,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirmIdentityHeader => 'We need to confirm your identity';
 
   @override
-  String get takeSelfieInstruction => 'Please take a selfie to confirm you\'re not a bot.';
+  String get takeSelfieInstruction =>
+      'Please take a selfie to confirm you\'re not a bot.';
 
   @override
-  String get selfieUsageNote => 'We won\'t use this image as a profile picture or display it publicly.';
+  String get selfieUsageNote =>
+      'We won\'t use this image as a profile picture or display it publicly.';
 
   @override
-  String get verificationPurpose => 'This step is part of our verification process to ensure the safety of all users.';
+  String get verificationPurpose =>
+      'This step is part of our verification process to ensure the safety of all users.';
 
   @override
   String get takeSelfieButton => 'Take Selfie';
@@ -567,22 +591,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get identityVerificationHeader => 'Identity Verification';
 
   @override
-  String get thankYouForVerification => 'Thank you for confirming your identity';
+  String get thankYouForVerification =>
+      'Thank you for confirming your identity';
 
   @override
-  String get identityConfirmedSuccessfully => 'We have successfully confirmed your identity.';
+  String get identityConfirmedSuccessfully =>
+      'We have successfully confirmed your identity.';
 
   @override
-  String get verificationBenefits => 'This process helps us protect your account and maintain a safe community for all users.';
+  String get verificationBenefits =>
+      'This process helps us protect your account and maintain a safe community for all users.';
 
   @override
   String get createAccountButton => 'Create Account';
 
   @override
-  String get titlePlaceholder => 'A text should appear here, but it doesn\'t seem to have loaded.';
+  String get titlePlaceholder =>
+      'A text should appear here, but it doesn\'t seem to have loaded.';
 
   @override
-  String get descriptionPlaceholder => 'A description should appear here, but it doesn\'t seem to have loaded. Please wait a moment. If the issue persists, close the app and reopen it.';
+  String get descriptionPlaceholder =>
+      'A description should appear here, but it doesn\'t seem to have loaded. Please wait a moment. If the issue persists, close the app and reopen it.';
 
   @override
   String get createAccountTitle => 'Create Account';
@@ -624,19 +653,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get standardVehicle => 'Standard';
 
   @override
-  String get standardDescription => 'The most common choice for daily trips. Suitable for 3 or 4 passengers, offering acceptable comfort, good performance, and affordable rates.';
+  String get standardDescription =>
+      'The most common choice for daily trips. Suitable for 3 or 4 passengers, offering acceptable comfort, good performance, and affordable rates.';
 
   @override
   String get familyVehicle => 'Family';
 
   @override
-  String get familyDescription => 'Spacious and comfortable, ideal for groups of 6 or more people or trips with extra luggage. Perfect for group transfers or long journeys.';
+  String get familyDescription =>
+      'Spacious and comfortable, ideal for groups of 6 or more people or trips with extra luggage. Perfect for group transfers or long journeys.';
 
   @override
   String get comfortVehicle => 'Comfort';
 
   @override
-  String get comfortDescription => 'A superior comfort experience. Wider seats, smooth suspension, air conditioning, and greater attention to detail. Ideal for those seeking a more relaxed and pleasant ride.';
+  String get comfortDescription =>
+      'A superior comfort experience. Wider seats, smooth suspension, air conditioning, and greater attention to detail. Ideal for those seeking a more relaxed and pleasant ride.';
 
   @override
   String get passwordLabel => 'Password:';
@@ -654,13 +686,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get motoTaxiVehicle => 'Mototaxi';
 
   @override
-  String get motoTaxiDescription => 'Two- or three-wheeled vehicle, ideal for short trips in heavy traffic areas. Economical, agile, and perfect for quick navigation through narrow streets.';
+  String get motoTaxiDescription =>
+      'Two- or three-wheeled vehicle, ideal for short trips in heavy traffic areas. Economical, agile, and perfect for quick navigation through narrow streets.';
 
   @override
   String get updatePasswordSuccess => 'Password updated';
 
   @override
-  String get somethingWentWrong => 'Something went wrong, please try again later';
+  String get somethingWentWrong =>
+      'Something went wrong, please try again later';
 
   @override
   String get checkConnection => 'Please check your internet connection';
@@ -723,28 +757,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String get compatibilityErrorTitle => 'Compatibility error';
 
   @override
-  String get faceDetectionInstruction => 'We recommend placing your face in the indicated area.';
+  String get faceDetectionInstruction =>
+      'We recommend placing your face in the indicated area.';
 
   @override
-  String get livenessDetectionInstruction => 'We recommend that you do not act rigidly, without blinking or breathing naturally, to ensure accurate face detection.';
+  String get livenessDetectionInstruction =>
+      'We recommend that you do not act rigidly, without blinking or breathing naturally, to ensure accurate face detection.';
 
   @override
-  String get selfieProcessingInstruction => 'Our artificial intelligence is processing the selfie. Please stay connected to the internet and avoid closing the application.';
+  String get selfieProcessingInstruction =>
+      'Our artificial intelligence is processing the selfie. Please stay connected to the internet and avoid closing the application.';
 
   @override
-  String get deviceNotCompatibleMessage => 'Your device is not compatible with facial verification. Please contact technical support or try with another device.';
+  String get deviceNotCompatibleMessage =>
+      'Your device is not compatible with facial verification. Please contact technical support or try with another device.';
 
   @override
   String get imageProcessingErrorTitle => 'Image Processing Error';
 
   @override
-  String get imageProcessingErrorMessage => 'An error occurred while processing your image. Please try again later.';
+  String get imageProcessingErrorMessage =>
+      'An error occurred while processing your image. Please try again later.';
 
   @override
-  String get cameraPermissionPermanentlyDeniedTitle => 'Camera Permission Required';
+  String get cameraPermissionPermanentlyDeniedTitle =>
+      'Camera Permission Required';
 
   @override
-  String get cameraPermissionPermanentlyDeniedMessage => 'Camera access is permanently denied. To use identity verification, please enable camera permission in your device settings.';
+  String get cameraPermissionPermanentlyDeniedMessage =>
+      'Camera access is permanently denied. To use identity verification, please enable camera permission in your device settings.';
 
   @override
   String get goToSettingsButton => 'Go to Settings';
@@ -753,7 +794,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirmExitTitle => 'Confirm Exit';
 
   @override
-  String get confirmExitMessage => 'Are you sure you want to exit? You will lose all progress made so far.';
+  String get confirmExitMessage =>
+      'Are you sure you want to exit? You will lose all progress made so far.';
 
   @override
   String get passwordMinLengthError => 'Password must be at least 6 characters';
@@ -765,7 +807,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get phoneAlreadyRegistered => 'Phone number is already registered';
 
   @override
-  String get registrationError => 'We could not complete your registration. Please try again later';
+  String get registrationError =>
+      'We could not complete your registration. Please try again later';
 
   @override
   String get creatingAccount => 'Creating account...';
@@ -777,13 +820,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noConnection => 'No Connection';
 
   @override
-  String get noConnectionMessage => 'The app cannot continue without internet connection';
+  String get noConnectionMessage =>
+      'The app cannot continue without internet connection';
 
   @override
   String get needsApproval => 'Needs Approval';
 
   @override
-  String get needsApprovalMessage => 'Your account is in the process of activation. To continue, please visit our offices for the technical review of your vehicle and contract signing. We are located at 4th Street / Central and Market, Martín Pérez neighborhood, San Miguel del Padrón. Once you complete this step, you will be able to use the app normally and available trip requests will be displayed.';
+  String get needsApprovalMessage =>
+      'Your account is in the process of activation. To continue, please visit our offices for the technical review of your vehicle and contract signing. We are located at 4th Street / Central and Market, Martín Pérez neighborhood, San Miguel del Padrón. Once you complete this step, you will be able to use the app normally and available trip requests will be displayed.';
 
   @override
   String get weWaitForYou => 'We are waiting for you!';
@@ -809,7 +854,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get paymentReminderToday => 'Today\'s scheduled payment date has arrived. You have up to 4 days to make the payment.';
+  String get paymentReminderToday =>
+      'Today\'s scheduled payment date has arrived. You have up to 4 days to make the payment.';
 
   @override
   String paymentExpired(Object date) {
@@ -833,7 +879,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get days => 'days';
 
   @override
-  String get paymentOfficeInfo => ' Please go to our office at 4th Street / Central and Market, Martín Pérez neighborhood, San Miguel del Padrón to make it. You can check the amount by accessing your profile in the app.';
+  String get paymentOfficeInfo =>
+      ' Please go to our office at 4th Street / Central and Market, Martín Pérez neighborhood, San Miguel del Padrón to make it. You can check the amount by accessing your profile in the app.';
 
   @override
   String get thanksForAttention => 'Thank you for your attention.';
@@ -896,7 +943,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get driverBlocked => 'Account Blocked';
 
   @override
-  String get driverBlockedMessage => 'Your driver account has been blocked. Please visit our office at Calle 4ta / Central y mercado, reparto Martín Pérez, San Miguel del Padrón';
+  String get driverBlockedMessage =>
+      'Your driver account has been blocked. Please visit our office at Calle 4ta / Central y mercado, reparto Martín Pérez, San Miguel del Padrón';
 
   @override
   String get filterByName => 'Filter by name';
@@ -997,16 +1045,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get acceptTrip => 'Accept Trip';
 
   @override
-  String get acceptTripConfirmMessage => 'The client will be notified that their trip request has been accepted. Your location will start being shared only with them.';
+  String get acceptTripConfirmMessage =>
+      'The client will be notified that their trip request has been accepted. Your location will start being shared only with them.';
 
   @override
   String get accept => 'Accept';
 
   @override
-  String get locationPermissionRequired => 'Location permission is required to start sharing your location with the client';
+  String get locationPermissionRequired =>
+      'Location permission is required to start sharing your location with the client';
 
   @override
-  String get locationPermissionBlocked => 'Location permission blocked. Please enable again in settings';
+  String get locationPermissionBlocked =>
+      'Location permission blocked. Please enable again in settings';
 
   @override
   String get invalidCreditPercentage => 'Percentage must be between 0 and 100';
@@ -1024,7 +1075,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myDiscountCode => 'My discount code:';
 
   @override
-  String get inviteFriendDiscount => 'Invite a friend to use the app and ask them to enter your code when registering or from Settings. They will receive a 10% discount on their next trip.';
+  String get inviteFriendDiscount =>
+      'Invite a friend to use the app and ask them to enter your code when registering or from Settings. They will receive a 10% discount on their next trip.';
 
   @override
   String get copied => 'Copied';
@@ -1033,7 +1085,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accountVerification => 'Account Verification';
 
   @override
-  String get verificationCodeMessage => 'We have sent a verification code to your phone number via WhatsApp, please enter the code below.';
+  String get verificationCodeMessage =>
+      'We have sent a verification code to your phone number via WhatsApp, please enter the code below.';
 
   @override
   String get verificationCodeLabel => 'Verification code';
@@ -1066,13 +1119,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get verificationCodeExpired => 'Verification code expired';
 
   @override
-  String get tripRequestCancelled => 'The request for this trip has been cancelled';
+  String get tripRequestCancelled =>
+      'The request for this trip has been cancelled';
 
   @override
   String get operationSuccessful => 'Operation completed successfully';
 
   @override
-  String get errorChangingConfiguration => 'Error. Could not change the configuration';
+  String get errorChangingConfiguration =>
+      'Error. Could not change the configuration';
 
   @override
   String get errorChangingPassword => 'Error. Could not change the password';
@@ -1102,10 +1157,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingPage1Title => 'Ready to Travel?';
 
   @override
-  String get onboardingPage1Subtitle => 'Just by selecting the destination municipality';
+  String get onboardingPage1Subtitle =>
+      'Just by selecting the destination municipality';
 
   @override
-  String get onboardingPage1Description => 'you will be able to travel quickly and safely';
+  String get onboardingPage1Description =>
+      'you will be able to travel quickly and safely';
 
   @override
   String get onboardingPage2Title => 'But first';
@@ -1129,7 +1186,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingPage3Subtitle => 'Help your friend and earn benefits';
 
   @override
-  String get onboardingPage3Description => 'Enter a referral code so your friend gets a discount on their next trip. If you don\'t have one, you can continue.';
+  String get onboardingPage3Description =>
+      'Enter a referral code so your friend gets a discount on their next trip. If you don\'t have one, you can continue.';
 
   @override
   String get onboardingPage3InputHint => 'Enter your referral code';
@@ -1141,7 +1199,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingPage4Subtitle => 'Based on distance and destination';
 
   @override
-  String get onboardingPage4Description => 'The app will calculate and show the price in real time according to the distance traveled. So depending on the municipality you\'re going to, you\'ll be shown an estimated price range at the beginning. This allows you to make stops and visit multiple destinations with greater freedom.';
+  String get onboardingPage4Description =>
+      'The app will calculate and show the price in real time according to the distance traveled. So depending on the municipality you\'re going to, you\'ll be shown an estimated price range at the beginning. This allows you to make stops and visit multiple destinations with greater freedom.';
 
   @override
   String get onboardingPage5Title => 'Quber Points';
@@ -1150,13 +1209,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingPage5Subtitle => 'Travel and earn discounts';
 
   @override
-  String get onboardingPage5Description => 'Every time you take a trip or someone enters your referral code, you accumulate Quber Points. These points allow you to get discounts on future trips. Travel more and save more!';
+  String get onboardingPage5Description =>
+      'Every time you take a trip or someone enters your referral code, you accumulate Quber Points. These points allow you to get discounts on future trips. Travel more and save more!';
 
   @override
   String get tripAccepted => 'Trip Accepted';
 
   @override
-  String get tripAcceptedDescription => 'A driver has accepted your request. You are now waiting for their arrival. You will be able to see their location in real time on the map. We will ask for your confirmation when they are ready to pick you up.';
+  String get tripAcceptedDescription =>
+      'A driver has accepted your request. You are now waiting for their arrival. You will be able to see their location in real time on the map. We will ask for your confirmation when they are ready to pick you up.';
 
   @override
   String get seeDriverLocation => 'See driver\'s location';
@@ -1165,13 +1226,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noDriverLocation => 'Driver location not available yet';
 
   @override
-  String get pickupConfirmationInfo => 'We\' ll send a notification to the client. Once they accept, the trip will begin.';
+  String get pickupConfirmationInfo =>
+      'We\' ll send a notification to the client. Once they accept, the trip will begin.';
 
   @override
   String get pickupConfirmationTitle => 'Pickup confirmation';
 
   @override
-  String get pickupConfirmationMessage => 'The driver has indicated that your pickup has been completed. Please confirm only if you are already with the driver; once confirmed, the trip will begin.';
+  String get pickupConfirmationMessage =>
+      'The driver has indicated that your pickup has been completed. Please confirm only if you are already with the driver; once confirmed, the trip will begin.';
 
   @override
   String get pickupConfirmationSentTitle => 'Confirmation sent';
@@ -1219,7 +1282,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirmacionFinalizacion => 'Finish Confirmation';
 
   @override
-  String get confirmacionFinalizacionMensaje => 'The driver will be notified immediately that you want to end the trip. Please accept only if this is correct.';
+  String get confirmacionFinalizacionMensaje =>
+      'The driver will be notified immediately that you want to end the trip. Please accept only if this is correct.';
 
   @override
   String destinationsLimited(Object destinationName) {
@@ -1239,7 +1303,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirmacionLlegadaDestino => 'Destination Arrival Confirmation';
 
   @override
-  String get confirmacionLlegadaDestinoMensaje => 'The driver has notified that the destination has been reached. Please accept only if this is correct.';
+  String get confirmacionLlegadaDestinoMensaje =>
+      'The driver has notified that the destination has been reached. Please accept only if this is correct.';
 
   @override
   String get guidedRoute => 'Guided route';

@@ -97,6 +97,10 @@ dependencies:
   # Advanced image manipulation library.
   image: ^4.0.17
 
+  # Network image caching with disk cache
+  cached_network_image: ^3.3.1
+  flutter_cache_manager: ^3.4.1
+
   path_provider: ^2.1.2
   path: ^1.9.0
   crypto: ^3.0.3

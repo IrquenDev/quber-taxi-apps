@@ -17,7 +17,6 @@ import 'package:quber_taxi/utils/image/image_utils.dart';
 /// Handles multipart requests for file uploads (face ID, profile, taxi, license images)
 /// and ensures proper MIME types and orientation are applied.
 class AccountService {
-
   // Base endpoint for account-related operations.
   final _endpoint = "${ApiConfig().baseUrl}/account";
 
@@ -47,13 +46,13 @@ class AccountService {
     }
     // Check if any information was saved during onboarding.
     final onboardingData = OnboardingPrefsManager.instance.getOnboardingData();
-    if(onboardingData != null) {
+    if (onboardingData != null) {
       final referralCode = onboardingData["referralCode"];
-      if(referralCode != null && referralCode.isNotEmpty) {
+      if (referralCode != null && referralCode.isNotEmpty) {
         request.fields['referralCode'] = referralCode;
       }
       final referralSource = onboardingData["referralSource"];
-      if(referralSource != null) {
+      if (referralSource != null) {
         request.fields['referralSource'] = referralSource;
       }
     }
@@ -133,19 +132,14 @@ class AccountService {
   }
 
   Future<http.Response> updateClient(
-      int clientId,
-      String name,
-      String phone,
-      XFile? profileImage,
-      bool shouldUpdateImage
-  ) async {
+      int clientId, String name, String phone, XFile? profileImage, bool shouldUpdateImage) async {
     final url = Uri.parse("$_endpoint/update/client/$clientId");
     final request = http.MultipartRequest("POST", url);
     request.fields['name'] = name;
     request.fields['phone'] = phone;
     request.fields['shouldUpdateImage'] = shouldUpdateImage.toString();
     if (shouldUpdateImage) {
-      if(profileImage != null) {
+      if (profileImage != null) {
         request.files.add(await _getMultipartFileFromXFile(profileImage, "profileImage"));
       }
     }
@@ -159,37 +153,30 @@ class AccountService {
   }
 
   Future<http.Response> updateDriver(
-      int driverId,
-      String name,
-      String phone,
-      int seats,
-      String plate,
-      XFile? taxiImage,
-      bool shouldUpdateImage
-      ) async {
+    int driverId,
+    String name,
+    String phone,
+    int seats,
+    String plate,
+    XFile? taxiImage,
+  ) async {
     final url = Uri.parse("$_endpoint/update/driver/$driverId");
     final request = http.MultipartRequest("POST", url);
     request.fields['name'] = name;
     request.fields['phone'] = phone;
     request.fields['seats'] = seats.toString();
     request.fields['plate'] = plate;
-    request.fields['shouldUpdateImage'] = shouldUpdateImage.toString();
-
-    if (shouldUpdateImage) {
-      if (taxiImage != null) {
-        request.files.add(await _getMultipartFileFromXFile(taxiImage, "taxiImage"));
-      }
+    if (taxiImage != null) {
+      request.files.add(await _getMultipartFileFromXFile(taxiImage, "taxiImage"));
     }
     final streamedResponse = await request.send();
     return await http.Response.fromStream(streamedResponse);
   }
 
-  Future<http.Response> updateDriverPassword(int driverId, String password)
-  async {
+  Future<http.Response> updateDriverPassword(int driverId, String password) async {
     final url = Uri.parse("$_endpoint/driver/$driverId?password=$password");
     return await http.patch(url);
   }
-
 
   /// Converts a [Uint8List] (e.g. raw image bytes) into a [http.MultipartFile].
   ///
@@ -198,9 +185,8 @@ class AccountService {
   /// Used for face ID image uploads during registration.
   http.MultipartFile _getMultipartFileFromUint8List(Uint8List file, String value, String filename) {
     final faceMimeType = lookupMimeType('', headerBytes: file);
-    final faceContentType = faceMimeType != null
-        ? MediaType.parse(faceMimeType)
-        : MediaType('application', 'octet-stream');
+    final faceContentType =
+        faceMimeType != null ? MediaType.parse(faceMimeType) : MediaType('application', 'octet-stream');
     final fixedFaceIdImage = fixImageOrientation(file);
     return http.MultipartFile.fromBytes(
       value,
@@ -216,9 +202,8 @@ class AccountService {
   Future<http.MultipartFile> _getMultipartFileFromXFile(XFile file, String value) async {
     final filePath = file.path;
     final profileMimeType = lookupMimeType(filePath);
-    final profileContentType = profileMimeType != null
-        ? MediaType.parse(profileMimeType)
-        : MediaType('application', 'octet-stream');
+    final profileContentType =
+        profileMimeType != null ? MediaType.parse(profileMimeType) : MediaType('application', 'octet-stream');
     return await http.MultipartFile.fromPath(
       value,
       filePath,
