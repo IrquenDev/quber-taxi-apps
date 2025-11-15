@@ -531,7 +531,10 @@ class _CreateClientAccountPage extends State<CreateClientAccountPage> {
                     padding: const EdgeInsets.only(left: 30.0, bottom: 90, top: 20),
                     child: Row(
                       children: [
-                        IconButton(onPressed: () => context.go(CommonRoutes.login), icon:Icon(Icons.arrow_back) , color: colorScheme.shadow),
+                        IconButton(
+                            onPressed: () => context.go(CommonRoutes.login),
+                            icon: const Icon(Icons.arrow_back),
+                            color: colorScheme.shadow),
                         const SizedBox(width: 38),
                         Text(
                           AppLocalizations.of(context)!.createAccount,

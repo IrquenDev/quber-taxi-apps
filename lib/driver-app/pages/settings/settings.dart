@@ -1,27 +1,25 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_fusion/flutter_fusion.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:quber_taxi/common/models/driver.dart';
+import 'package:quber_taxi/common/models/taxi.dart';
+import 'package:quber_taxi/common/services/account_service.dart';
+import 'package:quber_taxi/config/api_config.dart';
 import 'package:quber_taxi/l10n/app_localizations.dart';
 import 'package:quber_taxi/navigation/routes/common_routes.dart';
 import 'package:quber_taxi/storage/session_prefs_manger.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/utils/app_version_utils.dart';
-
-import '../../../common/models/driver.dart';
-import '../../../common/models/taxi.dart';
-import '../../../common/services/account_service.dart';
-import '../../../common/widgets/cached_profile_image.dart';
-import '../../../config/api_config.dart';
-import '../../../utils/image/image_cache_service.dart';
-import '../../../utils/image/image_utils.dart';
-import '../../../utils/runtime.dart';
-import '../../../utils/workflow/core/workflow.dart';
-import '../../../utils/workflow/impl/form_validations.dart';
+import 'package:quber_taxi/utils/image/image_utils.dart';
+import 'package:quber_taxi/utils/runtime.dart';
+import 'package:quber_taxi/utils/workflow/core/workflow.dart';
+import 'package:quber_taxi/utils/workflow/impl/form_validations.dart';
+import 'package:quber_taxi/common/widgets/smart_cached_image.dart';
+import 'package:quber_taxi/utils/image/image_cache_manager.dart';
 
 class DriverSettingsPage extends StatefulWidget {
   const DriverSettingsPage({super.key});
@@ -37,7 +35,7 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
   final _confirmPasswordController = TextEditingController();
   final _accountService = AccountService();
   final _driver = Driver.fromJson(loggedInUser);
-  late final Taxi _taxi;
+  late Taxi _taxi;
   late TextEditingController _nameTFController;
   late TextEditingController _plateTFController;
   late TextEditingController _phoneTFController;
@@ -45,16 +43,13 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
   bool passwordVisible = false;
   bool confirmPasswordVisible = false;
   String _appVersion = '';
-
-  XFile? _profileImage;
-
-  bool get _shouldUpdateImage => _taxi.imageUrl.isNotEmpty;
+  XFile? _taxiImage;
   bool _isProcessingImage = false;
   bool _isSubmittingPersonalInfo = false;
   bool _isSubmittingPasswords = false;
-
-  // Error states for grouped validation
   bool _showImageError = false;
+  String? _imageCacheKey; // Cache key for taxi image
+  bool _isImageLoading = false; // Indicates if image is being downloaded after update
 
   // Scroll controller and keys for error navigation
   final ScrollController _scrollController = ScrollController();
@@ -70,7 +65,37 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
     _plateTFController = TextEditingController(text: _taxi.plate);
     _phoneTFController = TextEditingController(text: _driver.phone);
     _seatTFController = TextEditingController(text: _taxi.seats.toString());
+    // Initialize cache key synchronously so it's available when widget builds
+    _initializeImageCacheKey();
     _loadAppVersion();
+    // Save cache key if it was just created
+    _saveImageCacheKeyIfNeeded();
+  }
+
+  // Initialize image cache key synchronously from ImageCacheManager
+  void _initializeImageCacheKey() {
+    if (_taxi.imageUrl.isEmpty) {
+      _imageCacheKey = null;
+      return;
+    }
+
+    final result = ImageCacheManager.instance.getOrCreateCacheKeySync(
+      entityId: _driver.id,
+      entityType: 'driver',
+    );
+    _imageCacheKey = result.$1;
+  }
+
+  // Saves image cache key if it was just created
+  Future<void> _saveImageCacheKeyIfNeeded() async {
+    if (_taxi.imageUrl.isEmpty || _imageCacheKey == null) {
+      return;
+    }
+    await ImageCacheManager.instance.saveCacheKeyIfNeeded(
+      entityId: _driver.id,
+      entityType: 'driver',
+      cacheKey: _imageCacheKey!,
+    );
   }
 
   Future<void> _loadAppVersion() async {
@@ -108,7 +133,7 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
   void _scrollToFirstPersonalInfoError() {
     if (!_personalInfoFormKey.currentState!.validate()) {
       _scrollToWidget(_personalInfoKey);
-    } else if (_profileImage == null && _taxi.imageUrl.isEmpty) {
+    } else if (_taxiImage == null && _taxi.imageUrl.isEmpty) {
       _scrollToWidget(_imageKey);
     }
   }
@@ -121,10 +146,9 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
 
   void _validateAndSavePersonalInfo() {
     setState(() {
-      _showImageError = _profileImage == null && _taxi.imageUrl.isEmpty;
+      _showImageError = _taxiImage == null && _taxi.imageUrl.isEmpty;
     });
-
-    if (_personalInfoFormKey.currentState!.validate() && (_profileImage != null || _taxi.imageUrl.isNotEmpty)) {
+    if (_personalInfoFormKey.currentState!.validate()) {
       _savePersonalInfo();
     } else {
       _scrollToFirstPersonalInfoError();
@@ -139,77 +163,90 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
     }
   }
 
+  // Requires a previous call of _validateAndSavePersonalInfo
   Future<void> _savePersonalInfo() async {
     final localization = AppLocalizations.of(context)!;
-
+    // Check connection
     if (!hasConnection(context)) {
       showToast(context: context, message: localization.checkConnection);
       return;
     }
-
-    setState(() {
-      _isSubmittingPersonalInfo = true;
-    });
-
-    try {
-      final seats = int.tryParse(_seatTFController.text) ?? 0;
-      final response = await _accountService.updateDriver(_driver.id, _nameTFController.text, _phoneTFController.text,
-          seats, _plateTFController.text, _profileImage, _shouldUpdateImage);
-
-      if (!context.mounted) return;
-
-      if (response.statusCode == 200) {
-        final driver = Driver.fromJson(jsonDecode(response.body));
-        await SessionPrefsManager.instance.save(driver);
-
-        // Clear old image from cache if a new image was uploaded
-        if (_shouldUpdateImage) {
-          await ImageCacheService().removeFromCache("${ApiConfig().baseUrl}/${_taxi.imageUrl}");
+    // Update ui about isSubmittingPersonalInfo
+    setState(() => _isSubmittingPersonalInfo = true);
+    final seats = int.tryParse(_seatTFController.text) ?? 0;
+    // Make the request
+    final response = await _accountService.updateDriver(
+      _driver.id,
+      _nameTFController.text,
+      _phoneTFController.text,
+      seats,
+      _plateTFController.text,
+      _taxiImage,
+    );
+    // Avoid contexts' gaps
+    if (!mounted) return;
+    // Handle response
+    if (response.statusCode == 200) {
+      final driver = Driver.fromJson(jsonDecode(response.body));
+      // Store old image URL before updating to detect if image changed
+      final oldImageUrl = _taxi.imageUrl;
+      
+      // Update local session with new data
+      await SessionPrefsManager.instance.save(driver);
+      // Update taxi with new data
+      _taxi = driver.taxi;
+      
+      // Only invalidate cache if image actually changed
+      // This happens when:
+      // 1. A new image was uploaded (_taxiImage != null), OR
+      // 2. The image URL changed (oldImageUrl != newImageUrl)
+      final imageChanged = _taxiImage != null || oldImageUrl != _taxi.imageUrl;
+      
+      if (imageChanged && _taxi.imageUrl.isNotEmpty) {
+        final imageUrl = "${ApiConfig().baseUrl}/${_taxi.imageUrl}";
+        final newCacheKey = await ImageCacheManager.instance.invalidateCache(
+          entityId: _driver.id,
+          entityType: 'driver',
+          imageUrl: imageUrl,
+        );
+        
+        if (mounted) {
+          setState(() {
+            _imageCacheKey = newCacheKey;
+            _isImageLoading = true; // Show loading indicator while downloading new image
+          });
+          // onImageLoaded callback will hide the loading indicator when image finishes loading
         }
-
-        if (!mounted) return;
-        setState(() {
-          _profileImage = null;
-          _showImageError = false;
-        });
-        if (!mounted || !context.mounted) return;
-        showToast(context: context, message: localization.profileUpdatedSuccessfully);
-      } else if (response.statusCode == 409) {
-        if (!mounted || !context.mounted) return;
-        showToast(context: context, message: localization.phoneAlreadyRegistered);
-      } else {
-        if (!mounted || !context.mounted) return;
-        showToast(context: context, message: localization.somethingWentWrong);
       }
-    } catch (e) {
+      
+      // Clear image state
+      setState(() {
+        _taxiImage = null;
+        _showImageError = false;
+      });
+      // Avoid contexts' gaps
       if (!mounted) return;
+      // Show some feedback
+      showToast(context: context, message: localization.profileUpdatedSuccessfully);
+    } else if (response.statusCode == 409) {
+      showToast(context: context, message: localization.phoneAlreadyRegistered);
+    } else {
       showToast(context: context, message: localization.somethingWentWrong);
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isSubmittingPersonalInfo = false;
-        });
-      }
     }
+    // Update ui about isSubmittingPersonalInfo
+    setState(() => _isSubmittingPersonalInfo = false);
   }
 
   Future<void> _savePasswords() async {
     final localization = AppLocalizations.of(context)!;
-
     if (!hasConnection(context)) {
       showToast(context: context, message: localization.checkConnection);
       return;
     }
-
-    setState(() {
-      _isSubmittingPasswords = true;
-    });
-
+    setState(() => _isSubmittingPasswords = true);
     try {
       final response = await _accountService.updateDriverPassword(_driver.id, _passwordController.text);
-
       if (!context.mounted) return;
-
       if (response.statusCode == 200) {
         if (!mounted) return;
         setState(() {
@@ -312,23 +349,7 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
                               child: Column(
                                 key: _imageKey,
                                 children: [
-                                  GestureDetector(
-                                    onTap: () async {
-                                      final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
-                                      if (pickedImage != null) {
-                                        setState(() => _isProcessingImage = true);
-                                        final compressedImage = await compressXFileToTargetSize(pickedImage, 5);
-                                        setState(() => _isProcessingImage = false);
-                                        if (compressedImage != null) {
-                                          setState(() {
-                                            _profileImage = compressedImage;
-                                            _showImageError = false;
-                                          });
-                                        }
-                                      }
-                                    },
-                                    child: _buildCircleImagePicker(),
-                                  ),
+                                  _buildCircleImagePicker(),
                                   if (_showImageError)
                                     Padding(
                                       padding: const EdgeInsets.only(top: 8.0),
@@ -695,18 +716,50 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
               ),
             ],
           ),
-          child: _profileImage != null
+          child: _taxiImage != null
               ? CircleAvatar(
                   radius: 80,
-                  backgroundColor: colorScheme.onSecondary,
-                  backgroundImage: FileImage(File(_profileImage!.path)),
+                  foregroundImage: FileImage(File(_taxiImage!.path)),
                 )
-              : CachedProfileImage(
-                  radius: 80,
-                  imageUrl: _taxi.imageUrl.isNotEmpty ? "${ApiConfig().baseUrl}/${_taxi.imageUrl}" : null,
-                  backgroundColor: colorScheme.onSecondary,
-                  placeholderAsset: "assets/icons/taxi.svg",
-                  placeholderColor: colorScheme.onSecondaryContainer,
+              : Stack(
+                  children: [
+                    // Always load the image in background (even when showing loading indicator)
+                    SmartCachedImage.circle(
+                      radius: 80,
+                      imageUrl: _taxi.imageUrl.isNotEmpty
+                          ? "${ApiConfig().baseUrl}/${_taxi.imageUrl}"
+                          : null,
+                      cacheKey: _imageCacheKey,
+                      placeholderAsset: "assets/icons/taxi.svg",
+                      backgroundColor: colorScheme.onSecondary,
+                      placeholderColor: colorScheme.onSecondaryContainer,
+                      onImageLoaded: () {
+                        // Hide loading indicator when image finishes loading
+                        if (mounted && _isImageLoading) {
+                          setState(() {
+                            _isImageLoading = false;
+                          });
+                        }
+                      },
+                    ),
+                    // Show loading overlay when updating - hides placeholder
+                    if (_isImageLoading)
+                      ClipOval(
+                        child: Container(
+                          width: 160,
+                          height: 160,
+                          color: colorScheme.onSecondary,
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              strokeWidth: 3,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                colorScheme.onPrimary,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
         ),
         // Camera icon positioned at bottom right
@@ -743,7 +796,7 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
                   setState(() => _isProcessingImage = false);
                   if (compressedImage != null) {
                     setState(() {
-                      _profileImage = compressedImage;
+                      _taxiImage = compressedImage;
                       _showImageError = false;
                     });
                   }
@@ -752,25 +805,6 @@ class _DriverAccountSettingPage extends State<DriverSettingsPage> {
             ),
           ),
         ),
-        // Remove button if image is selected
-        if (_profileImage != null)
-          Positioned(
-            top: 8.0,
-            right: 8.0,
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  _profileImage = null;
-                  _showImageError = false;
-                });
-              },
-              child: CircleAvatar(
-                radius: 16,
-                backgroundColor: colorScheme.error,
-                child: Icon(Icons.close, color: colorScheme.onError, size: 16),
-              ),
-            ),
-          ),
       ],
     );
   }

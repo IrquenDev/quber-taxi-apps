@@ -17,7 +17,6 @@ import 'package:quber_taxi/utils/image/image_utils.dart';
 import 'package:quber_taxi/utils/runtime.dart';
 import 'package:quber_taxi/utils/workflow/core/workflow.dart';
 import 'package:quber_taxi/utils/workflow/impl/form_validations.dart';
-import 'package:quber_taxi/common/widgets/cached_profile_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class ClientSettingsPage extends StatefulWidget {
@@ -42,9 +41,10 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
 
   XFile? _profileImage;
   String? _initialProfileImageUrl;
+
   bool get _shouldUpdateImage =>
       _profileImage != null ||
-          (_profileImage == null && _initialProfileImageUrl == null && _client.profileImageUrl != null);
+      (_profileImage == null && _initialProfileImageUrl == null && _client.profileImageUrl != null);
   bool _isProcessingImage = false;
   bool _isSubmittingPersonalInfo = false;
   bool _isSubmittingPasswords = false;
@@ -641,19 +641,13 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
               ),
             ],
           ),
-          child: _profileImage != null
-              ? CircleAvatar(
-                  radius: 80,
-                  backgroundColor: colorScheme.onSecondary,
-                  backgroundImage: FileImage(File(_profileImage!.path)),
-                )
-              : CachedProfileImage(
-                  radius: 80,
-                  imageUrl: _initialProfileImageUrl != null ? "${ApiConfig().baseUrl}/$_initialProfileImageUrl" : null,
-                  backgroundColor: colorScheme.onSecondary,
-                  placeholderAsset: "assets/icons/user.svg",
-                  placeholderColor: colorScheme.onSecondaryContainer,
-                ),
+          child: CircleAvatar(
+            radius: 80,
+            backgroundImage: const AssetImage("assets/icons/group.svg"),
+            foregroundImage: _profileImage != null
+                ? FileImage(File(_profileImage!.path))
+                : NetworkImage("${ApiConfig().baseUrl}/$_initialProfileImageUrl"),
+          ),
         ),
         Positioned(
           bottom: 0,
