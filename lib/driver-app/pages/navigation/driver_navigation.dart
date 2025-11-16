@@ -5,6 +5,7 @@ import 'package:quber_taxi/common/models/driver.dart';
 import 'package:quber_taxi/common/services/account_service.dart';
 import 'package:quber_taxi/common/services/admin_service.dart';
 import 'package:quber_taxi/common/services/travel_service.dart';
+import 'package:quber_taxi/common/widgets/dialogs/confirm_dialog.dart';
 import 'package:quber_taxi/driver-app/pages/navigation/trip_completed.dart';
 import 'package:quber_taxi/enums/municipalities.dart';
 import 'package:quber_taxi/enums/travel_request_type.dart';
@@ -521,9 +522,17 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
                   const SizedBox(width: 12),
                   if (!_isTravelCompleted)
                     ElevatedButton.icon(
-                      onPressed: () {
+                      onPressed: () async {
                         if (widget.travel.requestType == TravelRequestType.online) {
-                          if (hasConnection(context)) {
+                          final result = await showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (context) => const ConfirmDialog(
+                                  title: 'Confirmación de finalización',
+                                  message:
+                                  "Se le notificará inmediatamente al cliente que desea terminar el viaje. Acepte solo "
+                                      "si esto es correcto."));
+                          if (hasConnection(context) && result == true) {
                             WebSocketService.instance
                                 .send("/app/travels/${widget.travel.id}/finish-confirmation", null);
                           } else {
