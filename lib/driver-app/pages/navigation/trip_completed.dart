@@ -67,8 +67,8 @@ class _DriverTripCompletedState extends State<DriverTripCompleted> {
                           } else {
                             return Image.asset(
                               index == 0
-                                  ? "assets/images/default_profile_picture"
-                                  : "assets/images/default_profile_driver",
+                                  ? "assets/images/default_profile_picture.png"
+                                  : "assets/images/default_profile_driver.png",
                               fit: BoxFit.fill,
                             );
                           }

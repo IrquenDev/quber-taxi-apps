@@ -321,7 +321,21 @@ class _DriversListPageState extends State<DriversListPage> {
               child: SizedBox(
                 width: 80.0,
                 height: 80.0,
-                child: Image.network('${ApiConfig().baseUrl}/${driver.taxi.imageUrl}', fit: BoxFit.cover),
+                child: driver.taxi.imageUrl != null && driver.taxi.imageUrl.isNotEmpty
+                    ? Image.network(
+                        '${ApiConfig().baseUrl}/${driver.taxi.imageUrl}',
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Image.asset(
+                            'assets/images/default_profile_driver.png',
+                            fit: BoxFit.cover,
+                          );
+                        },
+                      )
+                    : Image.asset(
+                        'assets/images/default_profile_driver.png',
+                        fit: BoxFit.cover,
+                      ),
               ),
             ),
             Expanded(

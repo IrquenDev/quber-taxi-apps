@@ -316,9 +316,21 @@ class _ClientsListPageState extends State<ClientsListPage> {
             child: SizedBox(
               width: 80.0,
               height: 80.0,
-              child: client.profileImageUrl != null
-                  ? Image.network('${ApiConfig().baseUrl}/${client.profileImageUrl}', fit: BoxFit.cover)
-                  : Image.asset('assets/images/default_profile_picture.png', fit: BoxFit.cover),
+              child: client.profileImageUrl != null && client.profileImageUrl!.isNotEmpty
+                  ? Image.network(
+                      '${ApiConfig().baseUrl}/${client.profileImageUrl}',
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Image.asset(
+                          'assets/images/default_profile_picture.png',
+                          fit: BoxFit.cover,
+                        );
+                      },
+                    )
+                  : Image.asset(
+                      'assets/images/default_profile_picture.png',
+                      fit: BoxFit.cover,
+                    ),
             ),
           ),
           Expanded(
