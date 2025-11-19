@@ -81,17 +81,54 @@ class _ClientTripCompletedState extends State<ClientTripCompleted> {
                         radius: 40.0,
                         offset: 20.0,
                         prototypeBuilder: (index) {
-                          final imageUrl =
-                              index == 0 ? widget.travel.client.profileImageUrl : widget.travel.driver!.taxi.imageUrl;
-                          if (imageUrl != null) {
-                            return Image.network("${ApiConfig().baseUrl}/$imageUrl", fit: BoxFit.fill);
+                          if (index == 0) {
+                            // Cliente
+                            final clientImageUrl = widget.travel.client.profileImageUrl;
+                            if (clientImageUrl != null && clientImageUrl.isNotEmpty) {
+                              return ClipOval(
+                                child: Image.network(
+                                  "${ApiConfig().baseUrl}/$clientImageUrl",
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Image.asset(
+                                      "assets/images/default_profile_picture.png",
+                                      fit: BoxFit.cover,
+                                    );
+                                  },
+                                ),
+                              );
+                            } else {
+                              return ClipOval(
+                                child: Image.asset(
+                                  "assets/images/default_profile_picture.png",
+                                  fit: BoxFit.cover,
+                                ),
+                              );
+                            }
                           } else {
-                            return Image.asset(
-                              index == 0
-                                  ? "assets/images/default_profile_picture"
-                                  : "assets/images/default_profile_driver",
-                              fit: BoxFit.fill,
-                            );
+                            // Driver (usar imagen del taxi)
+                            final driverImageUrl = widget.travel.driver?.taxi.imageUrl;
+                            if (driverImageUrl != null && driverImageUrl.isNotEmpty) {
+                              return ClipOval(
+                                child: Image.network(
+                                  "${ApiConfig().baseUrl}/$driverImageUrl",
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Image.asset(
+                                      "assets/images/default_profile_driver.png",
+                                      fit: BoxFit.cover,
+                                    );
+                                  },
+                                ),
+                              );
+                            } else {
+                              return ClipOval(
+                                child: Image.asset(
+                                  "assets/images/default_profile_driver.png",
+                                  fit: BoxFit.cover,
+                                ),
+                              );
+                            }
                           }
                         }),
                     // Title
