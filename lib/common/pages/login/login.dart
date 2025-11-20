@@ -130,10 +130,9 @@ class _LoginPageState extends State<LoginPage> {
                               child: Text(
                                 localization.welcomeTitle,
                                 textAlign: TextAlign.center,
-                                style: textTheme.displayLarge?.copyWith(
+                                style: textTheme.displayMedium?.copyWith(
                                     fontWeight: FontWeight.bold,
-                                    color: colorScheme.onSecondary,
-                                    fontSize: MediaQuery.of(context).size.width * 0.15),
+                                    color: colorScheme.onSecondary),
                               ),
                             ),
 
