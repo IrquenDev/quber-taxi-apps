@@ -1,14 +1,17 @@
 name: Android Build and Distribute
 
-#Modify to use your current project package
-env:
-  PACKAGE_NAME: com.irquen.quber_taxi
-
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
+    inputs:
+      flavor:
+        description: 'Flavor to build and deploy'
+        required: true
+        type: choice
+        options:
+          - client
+          - driver
+          - admin
+        default: client
 
 jobs:
   version:
@@ -50,7 +53,30 @@ jobs:
     name: Create Android Build
     needs: version
     runs-on: ubuntu-latest
+    env:
+      FLAVOR: ${{ github.event.inputs.flavor }}
     steps:
+      - name: Set Package Name based on Flavor
+        id: package_name
+        run: |
+          case "${{ github.event.inputs.flavor }}" in
+            client)
+              PACKAGE_NAME="com.irquen.quber_taxi"
+              ;;
+            driver)
+              PACKAGE_NAME="com.irquen.quber_taxi.driver"
+              ;;
+            admin)
+              PACKAGE_NAME="com.irquen.quber_taxi.admin"
+              ;;
+            *)
+              echo "Error: Unknown flavor ${{ github.event.inputs.flavor }}"
+              exit 1
+              ;;
+          esac
+          echo "package_name=$PACKAGE_NAME" >> $GITHUB_OUTPUT
+          echo "Package Name: $PACKAGE_NAME"
+      
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -174,7 +200,30 @@ jobs:
     name: Deploy to Google Play Store
     needs: [ version, build ]
     runs-on: ubuntu-latest
+    env:
+      FLAVOR: ${{ github.event.inputs.flavor }}
     steps:
+      - name: Set Package Name based on Flavor
+        id: package_name
+        run: |
+          case "${{ github.event.inputs.flavor }}" in
+            client)
+              PACKAGE_NAME="com.irquen.quber_taxi"
+              ;;
+            driver)
+              PACKAGE_NAME="com.irquen.quber_taxi.driver"
+              ;;
+            admin)
+              PACKAGE_NAME="com.irquen.quber_taxi.admin"
+              ;;
+            *)
+              echo "Error: Unknown flavor ${{ github.event.inputs.flavor }}"
+              exit 1
+              ;;
+          esac
+          echo "package_name=$PACKAGE_NAME" >> $GITHUB_OUTPUT
+          echo "Package Name: $PACKAGE_NAME"
+      
       - name: Download Android AAB Artifact
         uses: actions/download-artifact@v4
         with:
@@ -220,7 +269,7 @@ jobs:
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
-          packageName: ${{ env.PACKAGE_NAME }}
+          packageName: ${{ steps.package_name.outputs.package_name }}
           releaseFiles: ./release/*.aab
           debugSymbols: ./release/debug-symbols
           mappingFile: ./release/mapping.txt
@@ -236,6 +285,8 @@ jobs:
         run: |
           echo "GOOGLE PLAY STORE DEPLOYMENT COMPLETED" >> $GITHUB_STEP_SUMMARY
           echo "================================================" >> $GITHUB_STEP_SUMMARY
+          echo "Flavor: ${{ env.FLAVOR }}" >> $GITHUB_STEP_SUMMARY
+          echo "Package: ${{ steps.package_name.outputs.package_name }}" >> $GITHUB_STEP_SUMMARY
           echo "Version: ${{ steps.version.outputs.content }}+${{ github.run_number }}" >> $GITHUB_STEP_SUMMARY
           echo "Track: internal (Internal Testing)" >> $GITHUB_STEP_SUMMARY
           echo "Status: completed" >> $GITHUB_STEP_SUMMARY
