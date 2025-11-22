@@ -185,14 +185,13 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
       children: [
         // Origin / Destination inputs.
         Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
           spacing: 16.0,
           children: [
             Column(
               children: [
                 const Icon(Icons.my_location),
                 Padding(
-                  padding: EdgeInsets.symmetric(vertical: 2.0),
+                  padding: const EdgeInsets.symmetric(vertical: 2.0),
                   child: Container(width: 1.5, height: 20.0, color: Theme.of(context).dividerColor),
                 ),
                 const Icon(Icons.location_on_outlined),
@@ -217,7 +216,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                         }
                       },
                       child: Text(_originName ?? AppLocalizations.of(context)!.originName, style: textTheme.bodyLarge)),
-                  Divider(height: 1),
+                  const Divider(height: 1),
                   GestureDetector(
                     onTap: () async {
                       final resultData = await context.push<Map<String, dynamic>?>(ClientRoutes.searchDestination);
@@ -322,7 +321,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
           ],
         ),
         // Divider
-        Divider(height: 1),
+        const Divider(height: 1),
         // Estimations for distance and price
         if (_canEstimateDistance)
           Column(
@@ -370,8 +369,8 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
                 foregroundColor: colorScheme.secondary,
                 backgroundColor: colorScheme.primaryContainer,
-                textStyle: TextStyle(fontWeight: FontWeight.bold),
-                padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 100)),
+                textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 100)),
             onPressed: _canEstimateDistance && hasConnection(context)
                 ? () async {
                     // Check it's a valid distance (means correct selection of origin and destination)
@@ -387,32 +386,32 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                       return;
                     }
                     final response = await _travelService.requestNewTravel(
-                        clientId: _client.id,
-                        originName: _originName!,
-                        destinationName: _destinationName!,
-                        originCoords: _originCoords!,
-                        destinationCoords: _destinationCoords,
-                        requiredSeats: _passengerCount,
-                        hasPets: _hasPets,
-                        taxiType: _selectedTaxi,
-                        fixedDistance: _fixedDistance,
-                        minDistance: _minDistance,
-                        maxDistance: _maxDistance,
-                        fixedPrice: _fixedPrice,
-                        minPrice: _minPrice,
-                        maxPrice: _maxPrice,
+                      clientId: _client.id,
+                      originName: _originName!,
+                      destinationName: _destinationName!,
+                      originCoords: _originCoords!,
+                      destinationCoords: _destinationCoords,
+                      requiredSeats: _passengerCount,
+                      hasPets: _hasPets,
+                      taxiType: _selectedTaxi,
+                      fixedDistance: _fixedDistance,
+                      minDistance: _minDistance,
+                      maxDistance: _maxDistance,
+                      fixedPrice: _fixedPrice,
+                      minPrice: _minPrice,
+                      maxPrice: _maxPrice,
                     );
                     if (!context.mounted) return;
                     if (response.statusCode == 200) {
                       final travel = Travel.fromJson(jsonDecode(response.body));
                       // Radar animation while waiting for acceptation.
                       final updatedTravel = await context.push<Travel?>(
-                          ClientRoutes.searchDriver,
-                          extra: {
-                            'travelId': travel.id,
-                            'travelRequestedDate': travel.requestedDate,
-                            'wasPageRestored': false,
-                          },
+                        ClientRoutes.searchDriver,
+                        extra: {
+                          'travelId': travel.id,
+                          'travelRequestedDate': travel.requestedDate,
+                          'wasPageRestored': false,
+                        },
                       );
                       if (updatedTravel != null) {
                         if (!context.mounted) return;
@@ -434,15 +433,13 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                             "BLOQUEADO: Puesto que ha sido reportado por mal comportamiento ya no se le permite solicitar nuevos viajes.",
                         durationInSeconds: 4,
                       );
-                    }
-                    else if(response.statusCode == 409) {
+                    } else if (response.statusCode == 409) {
                       showToast(
                         context: context,
                         message: "Ya se encuentra en un viaje activo, solo puede solicitar uno a la vez.",
                         durationInSeconds: 4,
                       );
-                    }
-                    else {
+                    } else {
                       showToast(context: context, message: "Ocurrió algo mal, por favor inténtelo más tarde");
                     }
                   }
@@ -503,7 +500,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
                           Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                             Row(children: [
                               Text(localizations.vehicle, style: textTheme.bodySmall),
-                              if (isSelected) SizedBox(width: 8.0),
+                              if (isSelected) const SizedBox(width: 8.0),
                               if (isSelected)
                                 SizedBox(
                                   width: Theme.of(context).iconTheme.size! * 0.75,
@@ -524,7 +521,7 @@ class _RequestTravelSheetState extends State<RequestTravelSheet> {
             Align(
                 alignment: Alignment.bottomCenter,
                 child: Padding(
-                    padding: EdgeInsets.only(bottom: 8.0, right: 8.0),
+                    padding: const EdgeInsets.only(bottom: 8.0, right: 8.0),
                     child: Image.asset(taxi.assetRef(AssetDpi.xhdpi))))
           ],
         ),

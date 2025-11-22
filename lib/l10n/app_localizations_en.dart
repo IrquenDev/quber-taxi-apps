@@ -165,7 +165,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noTravel => 'No trips available';
 
   @override
-  String get noAssignedTrip => 'The trip could not be assigned';
+  String get noAssignedTrip =>
+      'We\'re experiencing server issues. Please try again later.';
 
   @override
   String get countPeople => 'Number of people traveling:';
@@ -401,7 +402,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get saveButtonPanel => 'Save';
 
   @override
-  String get passwordsSectionTitle => 'Passwords';
+  String get passwordsSectionTitle => 'Password';
 
   @override
   String get newPassword => 'New password:';
@@ -431,7 +432,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get phoneNumberDriver => 'Phone Number:';
 
   @override
-  String get email => 'Email:';
+  String get email => 'irquensucursal1@gmail.com';
 
   @override
   String get numberOfSeats => 'Number of Seats:';

@@ -12,31 +12,25 @@ import 'package:quber_taxi/theme/dimensions.dart';
 import 'package:quber_taxi/utils/runtime.dart';
 
 class ClientTripCompleted extends StatefulWidget {
-
   final Travel travel;
   final int? duration;
   final int? distance;
   final double? price;
 
-  const ClientTripCompleted({
-    super.key,
-    required this.travel,
-    required this.duration,
-    required this.distance,
-    required this.price
-  });
+  const ClientTripCompleted(
+      {super.key, required this.travel, required this.duration, required this.distance, required this.price});
 
   @override
   State<ClientTripCompleted> createState() => _ClientTripCompletedState();
 }
 
 class _ClientTripCompletedState extends State<ClientTripCompleted> {
-
   final TextEditingController _commentController = TextEditingController();
   final _reviewService = ReviewService();
   final double _horizontalPadding = 20.0;
   final double _highHorizontalPadding = 40.0;
   int _rating = 0;
+
   bool get _canSubmitReview => _rating != 0 && _commentController.text.isNotEmpty;
   late Future<List<Review>> _futureReviews;
 
@@ -72,11 +66,10 @@ class _ClientTripCompletedState extends State<ClientTripCompleted> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               spacing: 8.0,
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // Header Section
                 Column(
@@ -84,28 +77,63 @@ class _ClientTripCompletedState extends State<ClientTripCompleted> {
                   children: [
                     // Client & Driver Profile Images
                     CircleStack(
-                        count: 2, radius: 40.0, offset: 20.0,
+                        count: 2,
+                        radius: 40.0,
+                        offset: 20.0,
                         prototypeBuilder: (index) {
-                          final imageUrl = index == 0
-                              ? widget.travel.client.profileImageUrl
-                              : widget.travel.driver!.taxi.imageUrl;
-                          if(imageUrl != null) {
-                            return Image.network("${ApiConfig().baseUrl}/$imageUrl", fit: BoxFit.fill);
+                          if (index == 0) {
+                            // Cliente
+                            final clientImageUrl = widget.travel.client.profileImageUrl;
+                            if (clientImageUrl != null && clientImageUrl.isNotEmpty) {
+                              return ClipOval(
+                                child: Image.network(
+                                  "${ApiConfig().baseUrl}/$clientImageUrl",
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Image.asset(
+                                      "assets/images/default_profile_picture.png",
+                                      fit: BoxFit.cover,
+                                    );
+                                  },
+                                ),
+                              );
+                            } else {
+                              return ClipOval(
+                                child: Image.asset(
+                                  "assets/images/default_profile_picture.png",
+                                  fit: BoxFit.cover,
+                                ),
+                              );
+                            }
                           } else {
-                            return Image.asset(
-                              index == 0
-                                  ? "assets/images/default_profile_picture"
-                                  : "assets/images/default_profile_driver",
-                              fit: BoxFit.fill,
-                            );
+                            // Driver (usar imagen del taxi)
+                            final driverImageUrl = widget.travel.driver?.taxi.imageUrl;
+                            if (driverImageUrl != null && driverImageUrl.isNotEmpty) {
+                              return ClipOval(
+                                child: Image.network(
+                                  "${ApiConfig().baseUrl}/$driverImageUrl",
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Image.asset(
+                                      "assets/images/default_profile_driver.png",
+                                      fit: BoxFit.cover,
+                                    );
+                                  },
+                                ),
+                              );
+                            } else {
+                              return ClipOval(
+                                child: Image.asset(
+                                  "assets/images/default_profile_driver.png",
+                                  fit: BoxFit.cover,
+                                ),
+                              );
+                            }
                           }
-                        }
-                    ),
+                        }),
                     // Title
-                    Text(
-                        loc.tripCompleted,
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)
-                    ),
+                    Text(loc.tripCompleted,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
                     // Timestamp
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: _highHorizontalPadding),
@@ -114,14 +142,14 @@ class _ClientTripCompletedState extends State<ClientTripCompleted> {
                         spacing: 8.0,
                         children: [
                           Text(
-                              loc.dateLabel,
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)
+                            loc.dateLabel,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
                           ),
                           Text(DateFormat(loc.dateFormat, 'es_ES').format(DateTime.now())),
-                        ]
-                      )
-                    )
-                  ]
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
                 const Divider(),
                 // Comment & Reviews Section
@@ -129,22 +157,17 @@ class _ClientTripCompletedState extends State<ClientTripCompleted> {
                   mainAxisSize: MainAxisSize.min,
                   spacing: 8.0,
                   children: [
-                    Text(
-                      loc.reviewSctHeader,
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)
-                    ),
+                    Text(loc.reviewSctHeader,
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)),
                     Text(loc.reviewTooltip, style: Theme.of(context).textTheme.bodySmall),
                     // Rating
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: List.generate(5, (index) {
                         return IconButton(
-                          icon: Icon(
-                            index < _rating ? Icons.star : Icons.star_border,
-                            color: Theme.of(context).colorScheme.primaryContainer
-                          ),
-                          onPressed: () => setState(() => _rating = index + 1)
-                        );
+                            icon: Icon(index < _rating ? Icons.star : Icons.star_border,
+                                color: Theme.of(context).colorScheme.primaryContainer),
+                            onPressed: () => setState(() => _rating = index + 1));
                       }),
                     ),
                     TextField(
@@ -152,76 +175,71 @@ class _ClientTripCompletedState extends State<ClientTripCompleted> {
                       decoration: InputDecoration(
                         hintText: loc.reviewTextHint,
                         suffixIcon: IconButton(
-                            icon: const Icon(Icons.send_outlined),
-                            onPressed: _canSubmitReview && hasConnection(context) ? () async {
-                              final response = await _reviewService.submitReview(
-                                comment: _commentController.text,
-                                rating: _rating,
-                                clientId: widget.travel.client.id,
-                                driverId: widget.travel.driver!.id,
-                              );
-                              if(!context.mounted) return;
-                              if(response.statusCode != 200) {
-                                showToast(context: context, message: loc.reviewSaveError);
-                              } else {
-                                showToast(context: context, message: loc.reviewThankYou);
-                                _commentController.clear();
-                                _refreshReviews(); // update comments count message
-                              }
-                            }  : null
-                        )
-                      )
+                          icon: const Icon(Icons.send_outlined),
+                          onPressed: _canSubmitReview && hasConnection(context)
+                              ? () async {
+                                  final response = await _reviewService.submitReview(
+                                    comment: _commentController.text,
+                                    rating: _rating,
+                                    clientId: widget.travel.client.id,
+                                    driverId: widget.travel.driver!.id,
+                                  );
+                                  if (!context.mounted) return;
+                                  if (response.statusCode != 200) {
+                                    showToast(context: context, message: loc.reviewSaveError);
+                                  } else {
+                                    showToast(context: context, message: loc.reviewThankYou);
+                                    _commentController.clear();
+                                    _refreshReviews(); // update comments count message
+                                  }
+                                }
+                              : null,
+                        ),
+                      ),
                     ),
                     // Comment history
                     FutureBuilder(
-                        future: _futureReviews,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return const Center(child: CircularProgressIndicator());
-                          }
-                          else if(snapshot.hasError) {
-                            return Center(child: Text(loc.reviewsLoadError));
-                          }
-                          else if(!snapshot.hasData || snapshot.data!.isEmpty) {
-                            return Center(child: Text(loc.noReviews));
-                          }
-                          else {
-                            final data = snapshot.data;
-                            final commentsCount = data!.length;
-                            return Padding(
-                                padding: EdgeInsets.only(left: _horizontalPadding),
-                                child: Row(
-                                    spacing: 20.0,
-                                    children: [
-                                      // People who commented
-                                      CircleStack(
-                                          count: commentsCount <= 4 ? commentsCount : 4,
-                                          radius: 16,
-                                          offset: 8,
-                                          prototypeBuilder: (index) => Image.network(
-                                              "${ApiConfig().baseUrl}/${data[index]}",
-                                              fit: BoxFit.fill
-                                          )
-                                      ),
-                                      GestureDetector(
-                                        onTap: commentsCount != 0 ? ()=> context.push(
-                                            ClientRoutes.quberReviews,
-                                            extra: data
-                                        ) : null,
-                                        child: Text(
-                                          '$commentsCount ${loc.commentsLabel}',
-                                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                              fontWeight: FontWeight.bold
-                                          )
-                                        ),
-                                      )
-                                    ]
-                                )
-                            );
-                          }
+                      future: _futureReviews,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
+                        } else if (snapshot.hasError) {
+                          return Center(child: Text(loc.reviewsLoadError));
+                        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          return Center(child: Text(loc.noReviews));
+                        } else {
+                          final data = snapshot.data;
+                          final commentsCount = data!.length;
+                          return Padding(
+                            padding: EdgeInsets.only(left: _horizontalPadding),
+                            child: Row(
+                              spacing: 20.0,
+                              children: [
+                                // People who commented
+                                CircleStack(
+                                  count: commentsCount <= 4 ? commentsCount : 4,
+                                  radius: 16,
+                                  offset: 8,
+                                  prototypeBuilder: (index) =>
+                                      Image.network("${ApiConfig().baseUrl}/${data[index]}", fit: BoxFit.fill),
+                                ),
+                                GestureDetector(
+                                  onTap: commentsCount != 0
+                                      ? () => context.push(ClientRoutes.quberReviews, extra: data)
+                                      : null,
+                                  child: Text(
+                                    '$commentsCount ${loc.commentsLabel}',
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
                         }
-                    )
-                  ]
+                      },
+                    ),
+                  ],
                 ),
                 const Divider(),
                 Column(
@@ -230,49 +248,46 @@ class _ClientTripCompletedState extends State<ClientTripCompleted> {
                   children: [
                     TripDetailRow(
                         label: loc.tripPriceLabel,
-                        text: widget.price != null ? '${widget.price!.toStringAsFixed(0)} ${loc.currencyLabel}' : '-'
-                    ),
+                        text: widget.price != null ? '${widget.price!.toStringAsFixed(0)} ${loc.currencyLabel}' : '-'),
                     TripDetailRow(
                         label: loc.tripDurationLabel,
                         text: widget.duration != null
                             ? '${widget.duration!.toStringAsFixed(0)} ${loc.minutesLabel}'
-                            : '-'
-                    ),
+                            : '-'),
                     TripDetailRow(
                         label: loc.tripDistanceLabel,
                         text: widget.distance != null
                             ? '${widget.distance!.toStringAsFixed(0)} ${loc.kilometersLabel}'
-                            : '-'
-                    ),
+                            : '-'),
                     TripDetailRow(label: loc.originLabel, text: widget.travel.originName),
                     TripDetailRow(label: loc.destinationLabel, text: widget.travel.destinationName),
-                  ]
+                  ],
                 )
-              ]
+              ],
             ),
           ),
           // Accept Button
           SizedBox(
             width: double.infinity,
             child: OutlinedButton(
-              style: Theme.of(context).outlinedButtonTheme.style?.copyWith(
-                shape: WidgetStatePropertyAll(RoundedRectangleBorder())
-              ),
+              style: Theme.of(context)
+                  .outlinedButtonTheme
+                  .style
+                  ?.copyWith(shape: const WidgetStatePropertyAll(RoundedRectangleBorder())),
               onPressed: () => context.go(ClientRoutes.home),
-              child:  Text(
+              child: Text(
                 loc.acceptButton,
                 style: TextStyle(color: Theme.of(context).colorScheme.secondary, fontSize: 16),
-              )
-            )
-          )
-        ]
-      )
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
 
 class TripDetailRow extends StatelessWidget {
-
   final String label;
   final String text;
 
@@ -287,7 +302,7 @@ class TripDetailRow extends StatelessWidget {
       children: [
         Text(label, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
         Text(text)
-      ]
+      ],
     );
   }
 }

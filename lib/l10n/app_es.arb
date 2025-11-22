@@ -58,7 +58,7 @@
   "updateTravel": "Actualizar viajes",
   "noTravel": "Sin viajes disponibles",
 
-  "noAssignedTrip": "No se pudo asignar el viaje",
+  "noAssignedTrip": "Estamos teniendo problemas con el servidor. Por favor intente más tarde",
 
   "countPeople": "Cantidad de personas que viajan:",
   "pet": "Mascota:",
@@ -143,7 +143,7 @@
   "driverCreditPercentage": "Porciento de crédito para Quber:",
   "tripPricePerKm": "Precio de viaje por KM y vehículo:",
   "saveButtonPanel": "Guardar",
-  "passwordsSectionTitle": "Contraseñas",
+  "passwordsSectionTitle": "Contraseña",
   "newPassword": "Nueva contraseña:",
   "confirmPassword": "Confirme contraseña:",
   "otherActionsTitle": "Otras acciones",
@@ -155,7 +155,7 @@
   "nameDriver": "Nombre:",
   "carRegistration": "Chapa:",
   "phoneNumberDriver": "Num. teléfono:",
-  "email": "Correo electrónico:",
+  "email": "irquensucursal1@gmail.com",
   "numberOfSeats": "Número de asientos:",
   "saveInformation": "Guardar",
   "myAccount": "Ajustes",

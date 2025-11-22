@@ -47,7 +47,6 @@ class AnnouncementWebSocketHandler extends WebSocketHandler<AppAnnouncement> {
   /// Parses the incoming raw JSON string into a single [AppAnnouncement] object
   @override
   AppAnnouncement parseMessage(String raw) {
-    print(raw);
     final Map<String, dynamic> jsonMap = jsonDecode(raw);
     return AppAnnouncement.fromJson(jsonMap);
   }

@@ -3,7 +3,6 @@ name: Android Build and Distribute
 #Modify to use your current project package
 env:
   PACKAGE_NAME: com.irquen.quber_taxi
-  FLAVOR: client
 
 on:
   workflow_dispatch:
@@ -93,11 +92,16 @@ jobs:
           keytool -list -v -keystore ${{ steps.android_keystore.outputs.filePath }} -storepass ${{ secrets.RONNY_ANDROID_KEYSTORE_PASSWORD }} | head -20
 
       #Modify to use your current project env variables
-      - name: Create env file
+      - name: Create env files
         run: |
-          touch .env
-          echo "BASE_URL=${{ secrets.BASE_URL }}" >> .env
-          echo "MAPBOX_ACCESS_TOKEN=${{ secrets.MAPBOX_ACCESS_TOKEN }}" >> .env
+          mkdir -p env
+          echo "targetEnvironment=prod" > env/.env
+          echo "BASE_URL=${{ secrets.BASE_URL }}" > env/.env.prod
+          echo "MAPBOX_ACCESS_TOKEN=${{ secrets.MAPBOX_ACCESS_TOKEN }}" >> env/.env.prod
+          echo "Environment files created:"
+          ls -la env/
+          cat env/.env
+          cat env/.env.prod
       - name: Setup Java
         uses: actions/setup-java@v4
         with:

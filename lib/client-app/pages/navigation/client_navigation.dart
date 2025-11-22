@@ -20,7 +20,6 @@ import 'package:turf/distance.dart' as td;
 import 'package:turf/turf.dart' as turf;
 
 class ClientNavigation extends StatefulWidget {
-
   final Travel travel;
   final bool wasPageRestored;
 
@@ -43,7 +42,9 @@ class _ClientNavigationState extends State<ClientNavigation> {
   final List<turf.Position> _realTimeRoute = [];
   StreamSubscription<g.Position>? _locationStream;
   num _distanceInKm = 0;
-  double? get _finalPrice => (widget.wasPageRestored || _travelPriceByTaxiType == null) ? null : _distanceInKm * _travelPriceByTaxiType!;
+
+  double? get _finalPrice =>
+      (widget.wasPageRestored || _travelPriceByTaxiType == null) ? null : _distanceInKm * _travelPriceByTaxiType!;
   Stopwatch? _stopwatch;
   late final FinishConfirmationHandler _confirmationHandler;
   final _travelService = TravelService();
@@ -56,8 +57,8 @@ class _ClientNavigationState extends State<ClientNavigation> {
   void _showRestoredBanner() {
     _scaffoldMessenger.showMaterialBanner(
       MaterialBanner(
-        padding: EdgeInsets.all(8.0),
-        content: Text(
+        padding: const EdgeInsets.all(8.0),
+        content: const Text(
           'Vista restaurada: Las métricas del viaje ya no son confiables. Guíese por la app del conductor.',
           style: TextStyle(
             fontSize: 14,
@@ -92,7 +93,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
   void _startTrackingDistance() {
     if (!widget.wasPageRestored) {
       _locationStream =
-          g.Geolocator.getPositionStream(locationSettings: g.LocationSettings(distanceFilter: 5)).listen(_onMove);
+          g.Geolocator.getPositionStream(locationSettings: const g.LocationSettings(distanceFilter: 5)).listen(_onMove);
     }
   }
 
@@ -108,7 +109,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
     if (widget.wasPageRestored || _realTimeRoute.isEmpty) return;
     final point1 = turf.Point(coordinates: _realTimeRoute.last);
     final point2 = turf.Point(coordinates: turf.Position(newPosition.longitude, newPosition.latitude));
-    final segmentDistance = td.distance(point1, point2, Unit.kilometers);
+    final segmentDistance = td.distance(point1, point2);
     setState(() => _distanceInKm += segmentDistance);
   }
 
@@ -237,7 +238,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
 
   void _markTravelAsCompleted() async {
     final response = await _travelService.changeState(travelId: widget.travel.id, state: TravelState.completed);
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       setState(() {
         _isTravelCompleted = true; // show completed travel metrics (bottom sheet)
       });
@@ -251,7 +252,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if(widget.wasPageRestored) {
+      if (widget.wasPageRestored) {
         _showRestoredBanner();
       } else {
         final quberConfig = await AdminService().getQuberConfig();
@@ -302,7 +303,6 @@ class _ClientNavigationState extends State<ClientNavigation> {
         body: Stack(
           children: [
             MapWidget(
-              styleUri: MapboxStyles.STANDARD,
               cameraOptions: cameraOptions,
               onMapCreated: (controller) => _onMapCreated(controller, colorScheme),
               onCameraChangeListener: _onCameraChangeListener,
@@ -323,7 +323,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
                           BoxShadow(
                             color: Colors.black.withAlpha(25),
                             blurRadius: 4,
-                            offset: Offset(0, 2),
+                            offset: const Offset(0, 2),
                           ),
                         ],
                       ),
@@ -344,7 +344,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
                         tooltip: 'Ver mi ubicación',
                       ),
                     ),
-                    SizedBox(width: 12),
+                    const SizedBox(width: 12),
                     if (!_isTravelCompleted)
                       ElevatedButton.icon(
                         onPressed: hasConnection(context)
@@ -363,8 +363,8 @@ class _ClientNavigationState extends State<ClientNavigation> {
                                 }
                               }
                             : null,
-                        icon: Icon(Icons.done_outline, color: Colors.white),
-                        label: Text(
+                        icon: const Icon(Icons.done_outline, color: Colors.white),
+                        label: const Text(
                           'Finalizar viaje',
                           style: TextStyle(
                             color: Colors.white,
@@ -374,7 +374,7 @@ class _ClientNavigationState extends State<ClientNavigation> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Theme.of(context).colorScheme.primary,
                           foregroundColor: Colors.white,
-                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
@@ -385,7 +385,6 @@ class _ClientNavigationState extends State<ClientNavigation> {
                 ),
               ),
             ),
-
           ],
         ),
         bottomSheet: _isTravelCompleted

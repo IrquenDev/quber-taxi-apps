@@ -17,7 +17,6 @@ import 'package:quber_taxi/utils/image/image_utils.dart';
 import 'package:quber_taxi/utils/runtime.dart';
 import 'package:quber_taxi/utils/workflow/core/workflow.dart';
 import 'package:quber_taxi/utils/workflow/impl/form_validations.dart';
-import 'package:quber_taxi/common/widgets/cached_profile_image.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class ClientSettingsPage extends StatefulWidget {
@@ -76,6 +75,10 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    _nameTFController.dispose();
+    _phoneTFController.dispose();
     super.dispose();
   }
 
@@ -115,20 +118,23 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
       if (response.statusCode == 200) {
         final client = Client.fromJson(jsonDecode(response.body));
         await SessionPrefsManager.instance.save(client);
+        if (!mounted) return;
         setState(() {
           _profileImage = null;
           _initialProfileImageUrl = client.profileImageUrl;
         });
+        if (!mounted || !context.mounted) return;
         showToast(context: context, message: localization.profileUpdatedSuccessfully);
       } else if (response.statusCode == 409) {
+        if (!mounted || !context.mounted) return;
         showToast(context: context, message: localization.phoneAlreadyRegistered);
       } else {
+        if (!mounted || !context.mounted) return;
         showToast(context: context, message: localization.somethingWentWrong);
       }
     } catch (e) {
-      if (context.mounted) {
-        showToast(context: context, message: localization.somethingWentWrong);
-      }
+      if (!mounted) return;
+      showToast(context: context, message: localization.somethingWentWrong);
     } finally {
       if (mounted) {
         setState(() {
@@ -154,18 +160,20 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
       );
       if (!context.mounted) return;
       if (response.statusCode == 200) {
+        if (!mounted) return;
         setState(() {
           _passwordController.clear();
           _confirmPasswordController.clear();
         });
+        if (!mounted || !context.mounted) return;
         showToast(context: context, message: localization.updatePasswordSuccess);
       } else {
+        if (!mounted || !context.mounted) return;
         showToast(context: context, message: localization.somethingWentWrong);
       }
     } catch (e) {
-      if (context.mounted) {
-        showToast(context: context, message: localization.somethingWentWrong);
-      }
+      if (!mounted) return;
+      showToast(context: context, message: localization.somethingWentWrong);
     } finally {
       if (mounted) {
         setState(() {
@@ -186,26 +194,34 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
         children: [
           // Curved Yellow Header
           Positioned(
-              top: 0.0,
-              left: 0,
-              right: 0,
-              child: Container(
-                  height: 240.0,
-                  decoration: BoxDecoration(
-                      color: colorScheme.primaryContainer,
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(dimensions.borderRadius),
-                        bottomRight: Radius.circular(dimensions.borderRadius),
-                      )),
-                  child: SafeArea(
-                      child: Align(
-                          alignment: Alignment.topCenter,
-                          child: Padding(
-                              padding: EdgeInsets.only(top: 30),
-                              child: Text(localization.myAccount,
-                                  style: textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ))))))),
+            top: 0.0,
+            left: 0,
+            right: 0,
+            child: Container(
+              height: 240.0,
+              decoration: BoxDecoration(
+                color: colorScheme.primaryContainer,
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(dimensions.borderRadius),
+                  bottomRight: Radius.circular(dimensions.borderRadius),
+                ),
+              ),
+              child: SafeArea(
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 30),
+                    child: Text(
+                      localization.myAccount,
+                      style: textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
           // Content
           Positioned(
             right: 20.0,
@@ -326,10 +342,12 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                               onToggle: (v) => setState(() => confirmPasswordVisible = v),
                               validationWorkflow: Workflow<String?>()
                                   .step(RequiredStep(errorMessage: localization.requiredField))
-                                  .step(MatchOtherStep(
-                                    other: _passwordController.text,
-                                    errorMessage: localization.passwordsDoNotMatch,
-                                  ))
+                                  .step(
+                                    MatchOtherStep(
+                                      other: _passwordController.text,
+                                      errorMessage: localization.passwordsDoNotMatch,
+                                    ),
+                                  )
                                   .breakOnFirstApply(true)
                                   .withDefault((_) => null),
                             ),
@@ -369,40 +387,50 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                     ),
                     // Referral Code Card
                     Container(
-                        padding: const EdgeInsets.all(20.0),
-                        decoration: BoxDecoration(
-                          color: colorScheme.surfaceContainerLowest,
-                          borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusLarge),
-                        ),
-                        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                          Text(AppLocalizations.of(context)!.myDiscountCode,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge
-                                  ?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.secondary)),
+                      padding: const EdgeInsets.all(20.0),
+                      decoration: BoxDecoration(
+                        color: colorScheme.surfaceContainerLowest,
+                        borderRadius: BorderRadius.circular(dimensions.cardBorderRadiusLarge),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            AppLocalizations.of(context)!.myDiscountCode,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyLarge
+                                ?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.secondary),
+                          ),
                           const SizedBox(height: 8),
-                          Text(AppLocalizations.of(context)!.inviteFriendDiscount,
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colorScheme.secondary)),
+                          Text(
+                            AppLocalizations.of(context)!.inviteFriendDiscount,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colorScheme.secondary),
+                          ),
                           const SizedBox(height: 8),
-                          Row(children: [
-                            Expanded(
-                              child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: colorScheme.outline),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Text(_client.referralCode)),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.copy),
-                              onPressed: () {
-                                Clipboard.setData(ClipboardData(text: _client.referralCode));
-                                showToast(context: context, message: AppLocalizations.of(context)!.copied);
-                              },
-                            )
-                          ])
-                        ])),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: colorScheme.outline),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Text(_client.referralCode)),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.copy),
+                                onPressed: () {
+                                  Clipboard.setData(ClipboardData(text: _client.referralCode));
+                                  showToast(context: context, message: AppLocalizations.of(context)!.copied);
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
                     const SizedBox(height: 16),
                     // Card 3: About Us/Dev
                     Container(
@@ -456,8 +484,8 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
           if (_isProcessingImage)
             Positioned.fill(
               child: Container(
-                color: colorScheme.scrim.withOpacity(0.6),
-                child: Center(child: CircularProgressIndicator()),
+                color: colorScheme.scrim.withValues(alpha: 0.6),
+                child: const Center(child: CircularProgressIndicator()),
               ),
             ),
         ],
@@ -509,21 +537,18 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
               borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
               borderSide: BorderSide(
                 color: colorScheme.outlineVariant,
-                width: 1,
               ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
               borderSide: BorderSide(
                 color: colorScheme.outlineVariant,
-                width: 1,
               ),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
               borderSide: BorderSide(
                 color: colorScheme.error,
-                width: 1,
               ),
             ),
           ),
@@ -580,21 +605,18 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
               borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
               borderSide: BorderSide(
                 color: colorScheme.outlineVariant,
-                width: 1,
               ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
               borderSide: BorderSide(
                 color: colorScheme.outlineVariant,
-                width: 1,
               ),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(dimensions.buttonBorderRadius),
               borderSide: BorderSide(
                 color: colorScheme.error,
-                width: 1,
               ),
             ),
           ),
@@ -612,27 +634,20 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: colorScheme.shadow.withOpacity(0.2),
+                color: colorScheme.shadow.withValues(alpha: 0.2),
                 spreadRadius: 2,
                 blurRadius: 5,
                 offset: const Offset(0, 3),
               ),
             ],
           ),
-          child: _profileImage != null
-              ? CircleAvatar(
-                  radius: 80,
-                  backgroundColor: colorScheme.onSecondary,
-                  backgroundImage: FileImage(File(_profileImage!.path)),
-                )
-              : CachedProfileImage(
-                  radius: 80,
-                  imageUrl:
-                      _initialProfileImageUrl != null ? "${ApiConfig().baseUrl}/${_initialProfileImageUrl}" : null,
-                  backgroundColor: colorScheme.onSecondary,
-                  placeholderAsset: "assets/icons/user.svg",
-                  placeholderColor: colorScheme.onSecondaryContainer,
-                ),
+          child: CircleAvatar(
+            radius: 80,
+            backgroundImage: const AssetImage("assets/icons/group.svg"),
+            foregroundImage: _profileImage != null
+                ? FileImage(File(_profileImage!.path))
+                : NetworkImage("${ApiConfig().baseUrl}/$_initialProfileImageUrl"),
+          ),
         ),
         Positioned(
           bottom: 0,
@@ -645,7 +660,7 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: colorScheme.shadow.withOpacity(0.15),
+                  color: colorScheme.shadow.withValues(alpha: 0.15),
                   spreadRadius: 1,
                   blurRadius: 3,
                   offset: const Offset(0, 2),
@@ -658,17 +673,18 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
                 (_profileImage != null || _initialProfileImageUrl != null)
                     ? "assets/icons/close.svg"
                     : "assets/icons/camera.svg",
-                color: colorScheme.onSecondaryContainer,
+                colorFilter: ColorFilter.mode(colorScheme.onSecondaryContainer, BlendMode.srcIn),
                 fit: BoxFit.scaleDown,
                 width: 28, // Forces the SVG size
                 height: 28,
               ),
               onPressed: () async {
-                if (_profileImage != null || _client.profileImageUrl != null || _initialProfileImageUrl != null) {
+                if (_profileImage != null || _initialProfileImageUrl != null) {
                   setState(() {
                     _profileImage = null;
                     _initialProfileImageUrl = null;
                   });
+                  await _savePersonalInfo();
                 } else {
                   final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
                   if (pickedImage != null) {
@@ -759,42 +775,6 @@ class _ClientSettingsPageState extends State<ClientSettingsPage> {
               ),
             ),
             const SizedBox(width: 8),
-            Icon(
-              icon,
-              size: 20,
-              color: iconColor ?? Theme.of(context).colorScheme.onSurface,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLogoutItem({
-    required String text,
-    required IconData icon,
-    required VoidCallback onTap,
-    Color? textColor,
-    Color? iconColor,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(Theme.of(context).extension<DimensionExtension>()!.buttonBorderRadius),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          children: [
-            const Spacer(),
-            Expanded(
-              child: Text(
-                text,
-                style: TextStyle(
-                  fontSize: Theme.of(context).textTheme.bodyLarge?.fontSize,
-                  color: textColor ?? Theme.of(context).colorScheme.onSurface,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
             Icon(
               icon,
               size: 20,

@@ -395,7 +395,7 @@ abstract class AppLocalizations {
   /// No description provided for @noAssignedTrip.
   ///
   /// In es, this message translates to:
-  /// **'No se pudo asignar el viaje'**
+  /// **'Estamos teniendo problemas con el servidor. Por favor intente más tarde'**
   String get noAssignedTrip;
 
   /// No description provided for @countPeople.
@@ -851,7 +851,7 @@ abstract class AppLocalizations {
   /// No description provided for @passwordsSectionTitle.
   ///
   /// In es, this message translates to:
-  /// **'Contraseñas'**
+  /// **'Contraseña'**
   String get passwordsSectionTitle;
 
   /// No description provided for @newPassword.
@@ -911,7 +911,7 @@ abstract class AppLocalizations {
   /// No description provided for @email.
   ///
   /// In es, this message translates to:
-  /// **'Correo electrónico:'**
+  /// **'irquensucursal1@gmail.com'**
   String get email;
 
   /// No description provided for @numberOfSeats.

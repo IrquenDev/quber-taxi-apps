@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:quber_taxi/theme/dimensions.dart';
-import 'dart:math' as math;
 
 /// A circular informational dialog with a large number, medium text, and small text.
 ///

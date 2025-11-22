@@ -5,6 +5,7 @@ import 'package:quber_taxi/common/models/driver.dart';
 import 'package:quber_taxi/common/services/account_service.dart';
 import 'package:quber_taxi/common/services/admin_service.dart';
 import 'package:quber_taxi/common/services/travel_service.dart';
+import 'package:quber_taxi/common/widgets/dialogs/confirm_dialog.dart';
 import 'package:quber_taxi/driver-app/pages/navigation/trip_completed.dart';
 import 'package:quber_taxi/enums/municipalities.dart';
 import 'package:quber_taxi/enums/travel_request_type.dart';
@@ -44,41 +45,53 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
   final _mapboxService = MapboxService();
   late final MapboxMap _mapController;
   late double _mapBearing;
+
   // Markers
   PointAnnotationManager? _pointAnnotationManager;
   late Uint8List _destinationMakerImage;
   PointAnnotation? _destinationMarker;
   PointAnnotation? _taxiMarker;
+
   // LineLayer for drawing route
   final _lineLayer = LineLayer(
       id: "line-layer",
-      sourceId: "sourceId", // matches GeoJsonSource.id
+      sourceId: "sourceId",
+      // matches GeoJsonSource.id
       lineColor: 0xFF0000FF,
       lineWidth: 4.0,
       minZoom: 1,
       maxZoom: 24);
   bool _isRouteDrawn = false;
   bool _isGuidedRouteEnabled = false;
+
   // Real time distance calculation
   final List<turf.Position> _realTimeRoute = [];
   late final StreamSubscription<g.Position> _locationStream;
   num _distanceInKm = 0;
   Stopwatch? _stopwatch;
+
   int get _duration => _stopwatch?.elapsed.inMinutes ?? 0;
+
   int? get _finalDuration => widget.wasPageRestored ? null : _duration;
+
   // Ignore points outside of selected municipality (when applicable)
   turf.Polygon? _municipalityPolygon;
+
   // Websocket for travel state changed (Here we must wait for the client to accept the finish confirmation or
   // trigger it be himself).
   late final TravelStateHandler _travelStateHandler;
   bool _isTravelCompleted = false;
   Driver _driver = Driver.fromJson(loggedInUser);
+
   // Price calculation
   late final double _creditForQuber;
   double? _travelPriceByTaxiType;
+
   double get _finalPrice => _distanceInKm * (_travelPriceByTaxiType!);
+
   // Cached route for fixed destination
   List<List<num>>? _fixedRouteCoordinates;
+
   bool get _isFixedDestination => widget.travel.destinationCoords != null;
   final _travelService = TravelService();
   late ScaffoldMessengerState _scaffoldMessenger;
@@ -86,12 +99,12 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
   void _showRestoredBanner() {
     _scaffoldMessenger.showMaterialBanner(
       MaterialBanner(
-        padding: EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8.0),
         content: Text(
           'Vista restaurada: Las métricas del viaje ya no son confiables. Se le aplicará una penalización al '
-              'finalizar el viaje'
-              '${!_isFixedDestination ? " y se asumirá el precio máximo para calcular el crédito a descontar." : "."}',
-          style: TextStyle(
+          'finalizar el viaje'
+          '${!_isFixedDestination ? " y se asumirá el precio máximo para calcular el crédito a descontar." : "."}',
+          style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
           ),
@@ -128,7 +141,7 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
   }
 
   void _onMove(g.Position newPosition) {
-    if(widget.wasPageRestored) {
+    if (widget.wasPageRestored) {
       _updateTaxiMarker(newPosition);
     } else {
       _stopwatch ??= Stopwatch()..start();
@@ -141,7 +154,7 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
   void _calcRealTimeDistance(g.Position newPosition) {
     final point1 = turf.Point(coordinates: _realTimeRoute.last);
     final point2 = turf.Point(coordinates: turf.Position(newPosition.longitude, newPosition.latitude));
-    final segmentDistance = td.distance(point1, point2, Unit.kilometers);
+    final segmentDistance = td.distance(point1, point2);
     setState(() => _distanceInKm += segmentDistance);
   }
 
@@ -177,8 +190,7 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
     await _drawRouteFromCoordinates(route.coordinates, destinationLng, destinationLat);
   }
 
-  Future<void> _drawRouteFromCoordinates(
-      List<List<num>> coordinates, num destinationLng, num destinationLat) async {
+  Future<void> _drawRouteFromCoordinates(List<List<num>> coordinates, num destinationLng, num destinationLat) async {
     // Applying dynamic zoom to fully expose the route.
     zoomToFitRoute(_mapController, coordinates);
     // Create or update destination marker
@@ -378,7 +390,7 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
     _stopwatch?.stop();
     // Mark this travel as completed (or with issues) in the api
     late http.Response response;
-    if(widget.wasPageRestored) {
+    if (widget.wasPageRestored) {
       response = await _travelService.markAsCompletedWithIssue(travelId: widget.travel.id);
     } else {
       response = await _travelService.markAsCompleted(
@@ -410,11 +422,9 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
     super.initState();
     // ALWAYS RUNS ON START UP
     // Websocket handler waiting for travel state changes (completed)
-    _travelStateHandler = TravelStateHandler(
-        state: TravelState.completed,
-        travelId: widget.travel.id,
-        onMessage: _completeTravel
-    )..activate();
+    _travelStateHandler =
+        TravelStateHandler(state: TravelState.completed, travelId: widget.travel.id, onMessage: _completeTravel)
+          ..activate();
     // Load municipality polygon if destination is a municipality (useful to limit the driver into the destination
     // municipality boxing when selecting a guided route directly from map);
     if (!_isFixedDestination) {
@@ -432,11 +442,10 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
         _fixedRouteCoordinates = route.coordinates;
       }
       // Start streaming location (_onMove behavior depends on wasPageRestored)
-      _locationStream = g.Geolocator
-          .getPositionStream(locationSettings: g.LocationSettings(distanceFilter: 5))
-          .listen(_onMove);
+      _locationStream =
+          g.Geolocator.getPositionStream(locationSettings: const g.LocationSettings(distanceFilter: 5)).listen(_onMove);
       // DEPENDS ON WAS PAGE RESTORED
-      if(widget.wasPageRestored) {
+      if (widget.wasPageRestored) {
         _showRestoredBanner();
       } else {
         // Get travel price (base on driver's taxi) and percentage of credit to discount from REST API.
@@ -465,108 +474,115 @@ class _DriverNavigationPageState extends State<DriverNavigationPage> {
       zoom: 17,
     );
     return Scaffold(
-        resizeToAvoidBottomInset: true,
-        body: Stack(
-          children: [
-            MapWidget(
-                styleUri: MapboxStyles.STANDARD,
-                cameraOptions: cameraOptions,
-                onMapCreated: (controller) => _onMapCreated(controller, colorScheme),
-                onLongTapListener: _onLongTapListener,
-                onCameraChangeListener: _onCameraChangeListener),
-            Positioned(
-              top: MediaQuery.of(context).padding.top + 16,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: colorScheme.surface,
-                        borderRadius: BorderRadius.circular(8),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withAlpha(25),
-                            blurRadius: 4,
-                            offset: Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: IconButton(
-                        onPressed: () async {
-                          final position = await g.Geolocator.getCurrentPosition();
-                          _mapController.easeTo(
-                            CameraOptions(
-                              center: Point(
-                                coordinates: Position(position.longitude, position.latitude),
-                              ),
-                              zoom: 17,
+      resizeToAvoidBottomInset: true,
+      body: Stack(
+        children: [
+          MapWidget(
+              cameraOptions: cameraOptions,
+              onMapCreated: (controller) => _onMapCreated(controller, colorScheme),
+              onLongTapListener: _onLongTapListener,
+              onCameraChangeListener: _onCameraChangeListener),
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 16,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: colorScheme.surface,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withAlpha(25),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: IconButton(
+                      onPressed: () async {
+                        final position = await g.Geolocator.getCurrentPosition();
+                        _mapController.easeTo(
+                          CameraOptions(
+                            center: Point(
+                              coordinates: Position(position.longitude, position.latitude),
                             ),
-                            MapAnimationOptions(duration: 1000),
-                          );
-                        },
-                        icon: Icon(Icons.my_location, color: colorScheme.primary),
-                        tooltip: loc.showMyLocation,
+                            zoom: 17,
+                          ),
+                          MapAnimationOptions(duration: 1000),
+                        );
+                      },
+                      icon: Icon(Icons.my_location, color: colorScheme.primary),
+                      tooltip: loc.showMyLocation,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  if (!_isTravelCompleted)
+                    ElevatedButton.icon(
+                      onPressed: () async {
+                        if (widget.travel.requestType == TravelRequestType.online) {
+                          final result = await showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (context) => const ConfirmDialog(
+                                  title: 'Confirmación de finalización',
+                                  message:
+                                  "Se le notificará inmediatamente al cliente que desea terminar el viaje. Acepte solo "
+                                      "si esto es correcto."));
+                          if (hasConnection(context) && result == true) {
+                            WebSocketService.instance
+                                .send("/app/travels/${widget.travel.id}/finish-confirmation", null);
+                          } else {
+                            showToast(context: context, message: "Por favor revise su conexión a internet");
+                          }
+                        } else {
+                          _completeTravel(widget.travel);
+                        }
+                      },
+                      icon: Icon(Icons.done_outline, color: colorScheme.onPrimary),
+                      label: Text(
+                        loc.finishTrip,
+                        style:
+                            textTheme.bodyMedium?.copyWith(color: colorScheme.onPrimary, fontWeight: FontWeight.w600),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: colorScheme.primary,
+                        foregroundColor: colorScheme.onPrimary,
+                        padding: dims.contentPadding,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        elevation: 4,
                       ),
                     ),
-                    SizedBox(width: 12),
-                    if (!_isTravelCompleted)
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          if(widget.travel.requestType == TravelRequestType.online) {
-                            if(hasConnection(context)) {
-                              WebSocketService.instance.send(
-                                  "/app/travels/${widget.travel.id}/finish-confirmation",
-                                  null
-                              );
-                            }
-                            else {
-                              showToast(context: context, message: "Por favor revise su conexión a internet");
-                            }
-                          }
-                          else {
-                            _completeTravel(widget.travel);
-                          }
-                        },
-                        icon: Icon(Icons.done_outline, color: colorScheme.onPrimary),
-                        label: Text(
-                          loc.finishTrip,
-                          style: textTheme.bodyMedium?.copyWith(color: colorScheme.onPrimary, fontWeight: FontWeight.w600),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: colorScheme.primary,
-                          foregroundColor: colorScheme.onPrimary,
-                          padding: dims.contentPadding,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          elevation: 4,
-                        ),
-                      ),
-                  ],
-                ),
+                ],
               ),
             ),
-          ],
-        ),
-        bottomSheet: _isTravelCompleted
-            ? DriverTripCompleted(
-                travel: widget.travel,
-                driver: _driver,
-                duration: _finalDuration,
-                distance: widget.wasPageRestored ? null : _distanceInKm.toInt(),
-                finalPrice: widget.wasPageRestored
-                    ? _isFixedDestination ? widget.travel.fixedPrice! : widget.travel.maxPrice!
-                    : _finalPrice
-              )
-            : DriverTripInfo(
-                distance: widget.wasPageRestored ? null : _distanceInKm.toInt(),
-                travelPriceByTaxiType: _travelPriceByTaxiType,
-                onGuidedRouteSwitched: _onGuidedRouteSwitched,
-                isFixedDestination: _isFixedDestination,
-                travel: widget.travel,
-              ));
+          ),
+        ],
+      ),
+      bottomSheet: _isTravelCompleted
+          ? DriverTripCompleted(
+              travel: widget.travel,
+              driver: _driver,
+              duration: _finalDuration,
+              distance: widget.wasPageRestored ? null : _distanceInKm.toInt(),
+              finalPrice: widget.wasPageRestored
+                  ? _isFixedDestination
+                      ? widget.travel.fixedPrice!
+                      : widget.travel.maxPrice!
+                  : _finalPrice,
+            )
+          : DriverTripInfo(
+              distance: widget.wasPageRestored ? null : _distanceInKm.toInt(),
+              travelPriceByTaxiType: _travelPriceByTaxiType,
+              onGuidedRouteSwitched: _onGuidedRouteSwitched,
+              isFixedDestination: _isFixedDestination,
+              travel: widget.travel,
+            ),
+    );
   }
 }
