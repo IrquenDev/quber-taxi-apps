@@ -11,9 +11,10 @@
 .svn/
 .swiftpm/
 migrate_working_dir/
+
 # Environment variables files
-env/.env
-env/.env.*
+env/
+
 # Old .env files
 .env
 
