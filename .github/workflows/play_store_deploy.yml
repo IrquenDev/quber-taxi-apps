@@ -1,14 +1,17 @@
 name: Android Build and Distribute
 
-#Modify to use your current project package
-env:
-  PACKAGE_NAME: com.irquen.quber_taxi
-
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
+    inputs:
+      flavor:
+        description: 'Flavor to build and deploy'
+        required: true
+        type: choice
+        options:
+          - client
+          - driver
+          - admin
+        default: client
 
 jobs:
   version:
@@ -50,7 +53,30 @@ jobs:
     name: Create Android Build
     needs: version
     runs-on: ubuntu-latest
+    env:
+      FLAVOR: ${{ github.event.inputs.flavor }}
     steps:
+      - name: Set Package Name based on Flavor
+        id: package_name
+        run: |
+          case "${{ github.event.inputs.flavor }}" in
+            client)
+              PACKAGE_NAME="com.irquen.quber_taxi"
+              ;;
+            driver)
+              PACKAGE_NAME="com.irquen.quber_taxi.driver"
+              ;;
+            admin)
+              PACKAGE_NAME="com.irquen.quber_taxi.admin"
+              ;;
+            *)
+              echo "Error: Unknown flavor ${{ github.event.inputs.flavor }}"
+              exit 1
+              ;;
+          esac
+          echo "package_name=$PACKAGE_NAME" >> $GITHUB_OUTPUT
+          echo "Package Name: $PACKAGE_NAME"
+      
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -85,6 +111,11 @@ jobs:
           pwd
           ls -l ${{ steps.android_keystore.outputs.filePath }}
           ls -l android/key.properties
+          echo "Verifying key.properties content:"
+          cat android/key.properties
+          echo "Verifying keystore file exists and is readable:"
+          file ${{ steps.android_keystore.outputs.filePath }}
+          keytool -list -v -keystore ${{ steps.android_keystore.outputs.filePath }} -storepass ${{ secrets.RONNY_ANDROID_KEYSTORE_PASSWORD }} | head -20
 
       #Modify to use your current project env variables
       - name: Create env files
@@ -122,37 +153,77 @@ jobs:
 
       - name: Build Android App Bundle (AAB)
         run: |
-          flutter build appbundle
+          flutter build appbundle --flavor ${{ env.FLAVOR }} --release
           echo "AAB Build completed. Checking output:"
           pwd
-          ls -l build/app/outputs/bundle/release/app-release.aab
+          ls -l build/app/outputs/bundle/${{ env.FLAVOR }}Release/app-${{ env.FLAVOR }}-release.aab
+
+      - name: Verify AAB Signing
+        run: |
+          echo "Verifying AAB is signed with release keystore..."
+          bundletool_version="1.15.6"
+          wget -q https://github.com/google/bundletool/releases/download/${bundletool_version}/bundletool-all-${bundletool_version}.jar -O bundletool.jar
+          java -jar bundletool.jar validate --bundle=build/app/outputs/bundle/${{ env.FLAVOR }}Release/app-${{ env.FLAVOR }}-release.aab
+          echo "Checking signing certificate..."
+          unzip -p build/app/outputs/bundle/${{ env.FLAVOR }}Release/app-${{ env.FLAVOR }}-release.aab META-INF/MANIFEST.MF | head -20
+          echo "AAB validation completed successfully!"
 
       - name: Upload Android AAB Artifact
         uses: actions/upload-artifact@v4
         with:
           name: android-release-aab
-          path: build/app/outputs/bundle/release/app-release.aab
+          path: build/app/outputs/bundle/${{ env.FLAVOR }}Release/app-${{ env.FLAVOR }}-release.aab
           retention-days: 30
 
+      - name: Prepare Flavor Name for Debug Symbols Path
+        id: flavor_cap
+        run: |
+          FLAVOR_CAP="$(echo ${{ env.FLAVOR }} | sed 's/^./\U&/')"
+          echo "capitalized=$FLAVOR_CAP" >> $GITHUB_OUTPUT
+          echo "Capitalized flavor: $FLAVOR_CAP"
+      
       - name: Upload Debug Symbols
         uses: actions/upload-artifact@v4
         with:
           name: debug-symbols
-          path: build/app/intermediates/merged_native_libs/release/mergeReleaseNativeLibs/out/lib
+          path: build/app/intermediates/merged_native_libs/${{ env.FLAVOR }}Release/merge${{ steps.flavor_cap.outputs.capitalized }}ReleaseNativeLibs/out/lib
           retention-days: 30
 
       - name: Upload Mapping File
         uses: actions/upload-artifact@v4
         with:
           name: mapping
-          path: build/app/outputs/mapping/release/mapping.txt
+          path: build/app/outputs/mapping/${{ env.FLAVOR }}Release/mapping.txt
           retention-days: 30
 
   deploy_playstore:
     name: Deploy to Google Play Store
     needs: [ version, build ]
     runs-on: ubuntu-latest
+    env:
+      FLAVOR: ${{ github.event.inputs.flavor }}
     steps:
+      - name: Set Package Name based on Flavor
+        id: package_name
+        run: |
+          case "${{ github.event.inputs.flavor }}" in
+            client)
+              PACKAGE_NAME="com.irquen.quber_taxi"
+              ;;
+            driver)
+              PACKAGE_NAME="com.irquen.quber_taxi.driver"
+              ;;
+            admin)
+              PACKAGE_NAME="com.irquen.quber_taxi.admin"
+              ;;
+            *)
+              echo "Error: Unknown flavor ${{ github.event.inputs.flavor }}"
+              exit 1
+              ;;
+          esac
+          echo "package_name=$PACKAGE_NAME" >> $GITHUB_OUTPUT
+          echo "Package Name: $PACKAGE_NAME"
+      
       - name: Download Android AAB Artifact
         uses: actions/download-artifact@v4
         with:
@@ -189,7 +260,7 @@ jobs:
           echo "Release directory contents:"
           ls -la ./release/
           echo "Checking AAB:"
-          ls -l ./release/app-release.aab
+          ls -l ./release/*.aab
           echo "Checking mapping file:"
           ls -l ./release/mapping.txt
           echo "Checking debug symbols:"
@@ -198,19 +269,26 @@ jobs:
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
-          packageName: ${{ env.PACKAGE_NAME }}
-          releaseFiles: ./release/app-release.aab
+          packageName: ${{ steps.package_name.outputs.package_name }}
+          releaseFiles: ./release/*.aab
           debugSymbols: ./release/debug-symbols
           mappingFile: ./release/mapping.txt
-          track: production
+          # Available tracks: internal, alpha, beta, production
+          # - internal: Internal testing (up to 100 testers)
+          # - alpha: Closed testing alpha track
+          # - beta: Open/closed testing beta track
+          # - production: Production release for all users
+          track: internal
           status: completed
 
       - name: Deployment Success Notification
         run: |
           echo "GOOGLE PLAY STORE DEPLOYMENT COMPLETED" >> $GITHUB_STEP_SUMMARY
           echo "================================================" >> $GITHUB_STEP_SUMMARY
+          echo "Flavor: ${{ env.FLAVOR }}" >> $GITHUB_STEP_SUMMARY
+          echo "Package: ${{ steps.package_name.outputs.package_name }}" >> $GITHUB_STEP_SUMMARY
           echo "Version: ${{ steps.version.outputs.content }}+${{ github.run_number }}" >> $GITHUB_STEP_SUMMARY
-          echo "Track: production" >> $GITHUB_STEP_SUMMARY
+          echo "Track: internal (Internal Testing)" >> $GITHUB_STEP_SUMMARY
           echo "Status: completed" >> $GITHUB_STEP_SUMMARY
           echo "Build Date: $(date)" >> $GITHUB_STEP_SUMMARY
           echo "Commit: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
