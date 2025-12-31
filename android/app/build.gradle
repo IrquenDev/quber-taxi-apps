@@ -40,7 +40,9 @@ android {
         applicationId = "com.irquen.quber_taxi"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
+        // Use GitHub run number as versionCode for unique builds, fallback to Flutter's versionCode
+        def runNumber = System.getenv("GITHUB_RUN_NUMBER")
+        versionCode = runNumber != null && !runNumber.isEmpty() ? Integer.parseInt(runNumber) : flutter.versionCode
         versionName = flutter.versionName
     }
 

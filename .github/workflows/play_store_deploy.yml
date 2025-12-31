@@ -190,6 +190,8 @@ jobs:
         run: flutter pub run build_runner build --delete-conflicting-outputs
 
       - name: Build Android App Bundle (AAB)
+        env:
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
         run: |
           flutter build appbundle --flavor ${{ env.FLAVOR }} --release
           echo "AAB Build completed. Checking output:"
