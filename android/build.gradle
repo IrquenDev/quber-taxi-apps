@@ -15,17 +15,17 @@ subprojects {
 
 // Force NDK r28+ for all subprojects after evaluation
 // This overrides any plugin-specific NDK version settings (like :jni)
+// Using gradle.afterProject instead of afterEvaluate to avoid evaluation conflicts
 // See: https://developer.android.com/guide/practices/page-sizes
-subprojects {
-    afterEvaluate { project ->
-        if (project.hasProperty('android')) {
-            project.android {
-                def currentNdkVersion = project.android.ndkVersion
-                if (currentNdkVersion != null && (currentNdkVersion.startsWith("26.") || currentNdkVersion.startsWith("27."))) {
-                    println "⚠ Forcing NDK r28 in subproject ${project.name} (was: ${currentNdkVersion})"
-                }
-                ndkVersion = "28.2.13676358"
+gradle.afterProject { project ->
+    // Only apply to subprojects (not root project) that have Android configuration
+    if (project != rootProject && project.hasProperty('android')) {
+        project.android {
+            def currentNdkVersion = project.android.ndkVersion
+            if (currentNdkVersion != null && (currentNdkVersion.startsWith("26.") || currentNdkVersion.startsWith("27."))) {
+                println "⚠ Forcing NDK r28 in subproject ${project.name} (was: ${currentNdkVersion})"
             }
+            ndkVersion = "28.2.13676358"
         }
     }
 }
