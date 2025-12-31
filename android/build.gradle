@@ -11,10 +11,12 @@ subprojects {
 }
 subprojects {
     project.evaluationDependsOn(":app")
-    
-    // Force NDK r28+ for all subprojects to ensure 16KB page size compatibility
-    // This overrides any plugin-specific NDK version settings (like :jni)
-    // See: https://developer.android.com/guide/practices/page-sizes
+}
+
+// Force NDK r28+ for all subprojects after evaluation
+// This overrides any plugin-specific NDK version settings (like :jni)
+// See: https://developer.android.com/guide/practices/page-sizes
+subprojects {
     afterEvaluate { project ->
         if (project.hasProperty('android')) {
             project.android {
