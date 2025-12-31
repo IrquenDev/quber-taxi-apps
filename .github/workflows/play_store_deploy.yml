@@ -192,15 +192,10 @@ jobs:
             fi
           done
 
-          # Configure NDK path in local.properties to force Gradle to use NDK r28
-          if [ -f "android/local.properties" ]; then
-            # Remove existing ndk.dir if present
-            sed -i '/^ndk\.dir=/d' android/local.properties
-          else
-            touch android/local.properties
-          fi
-          echo "ndk.dir=$NDK_PATH" >> android/local.properties
-          echo "✓ NDK path configured in local.properties: $NDK_PATH"
+          # DO NOT configure ndk.dir in local.properties
+          # Let Gradle use ndkVersion from build.gradle (matching local build behavior)
+          # NDK r28 will be forced in all subprojects via android/build.gradle
+          echo "✓ NDK version will be forced via build.gradle (matching local build behavior)"
 
       - name: Get dependencies
         run: flutter pub get
@@ -211,10 +206,6 @@ jobs:
       - name: Verify NDK r28 is configured
         run: |
           echo "Verifying NDK r28 configuration..."
-          if [ -f "android/local.properties" ]; then
-            echo "local.properties content:"
-            cat android/local.properties | grep -i ndk || echo "No NDK path found in local.properties"
-          fi
 
           # Verify NDK 26 is not present
           if [ -d "$ANDROID_HOME/ndk/26.1.10909125" ]; then
@@ -228,6 +219,8 @@ jobs:
           else
             echo "✓ NDK r28 verified at $ANDROID_HOME/ndk/28.2.13676358"
           fi
+
+          echo "✓ NDK version will be forced via build.gradle in all subprojects (matching local build behavior)"
 
       - name: Build Android App Bundle (AAB)
         env:
