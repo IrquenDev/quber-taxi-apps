@@ -183,11 +183,51 @@ jobs:
             echo "⚠ NDK r28 not found locally, Gradle will download it during build (this may take longer)"
           fi
 
+          # Remove NDK 26 to prevent Gradle from using it
+          echo "Removing NDK 26.x versions to force use of NDK r28..."
+          for ndk_dir in $ANDROID_HOME/ndk/26.*; do
+            if [ -d "$ndk_dir" ]; then
+              echo "Removing $ndk_dir..."
+              rm -rf "$ndk_dir"
+            fi
+          done
+
+          # Configure NDK path in local.properties to force Gradle to use NDK r28
+          if [ -f "android/local.properties" ]; then
+            # Remove existing ndk.dir if present
+            sed -i '/^ndk\.dir=/d' android/local.properties
+          else
+            touch android/local.properties
+          fi
+          echo "ndk.dir=$NDK_PATH" >> android/local.properties
+          echo "✓ NDK path configured in local.properties: $NDK_PATH"
+
       - name: Get dependencies
         run: flutter pub get
 
       - name: Generate files
         run: flutter pub run build_runner build --delete-conflicting-outputs
+
+      - name: Verify NDK r28 is configured
+        run: |
+          echo "Verifying NDK r28 configuration..."
+          if [ -f "android/local.properties" ]; then
+            echo "local.properties content:"
+            cat android/local.properties | grep -i ndk || echo "No NDK path found in local.properties"
+          fi
+
+          # Verify NDK 26 is not present
+          if [ -d "$ANDROID_HOME/ndk/26.1.10909125" ]; then
+            echo "⚠ WARNING: NDK 26.1.10909125 still present, removing..."
+            rm -rf "$ANDROID_HOME/ndk/26.1.10909125"
+          fi
+
+          # Verify NDK r28 is present
+          if [ ! -d "$ANDROID_HOME/ndk/28.2.13676358" ]; then
+            echo "⚠ WARNING: NDK r28 not found, Gradle will download it"
+          else
+            echo "✓ NDK r28 verified at $ANDROID_HOME/ndk/28.2.13676358"
+          fi
 
       - name: Build Android App Bundle (AAB)
         env:
