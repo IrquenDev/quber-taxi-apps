@@ -62,6 +62,15 @@ android {
 
 }
 
+// Force NDK version after Flutter plugin applies its configuration
+// This ensures NDK r28+ is used for 16KB page size compatibility
+// Only applied to main app project, not to plugin subprojects
+afterEvaluate {
+    android {
+        ndkVersion = "28.2.13676358"
+    }
+}
+
 flutter {
     source = "../.."
 }
