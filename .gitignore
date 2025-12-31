@@ -18,6 +18,8 @@ env/
 # Old .env files
 .env
 
+.vscode/
+
 # IntelliJ related
 *.iml
 *.ipr

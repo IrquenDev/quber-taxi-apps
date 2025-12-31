@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       flavor:
-        description: 'Flavor to build and deploy'
+        description: "Flavor to build and deploy"
         required: true
         type: choice
         options:
@@ -76,7 +76,7 @@ jobs:
           esac
           echo "package_name=$PACKAGE_NAME" >> $GITHUB_OUTPUT
           echo "Package Name: $PACKAGE_NAME"
-      
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -98,8 +98,8 @@ jobs:
         id: android_keystore
         uses: timheuer/base64-to-file@v1.2
         with:
-          fileName: 'upload-keystore.jks'
-          encodedString: '${{ secrets.RONNY_ANDROID_KEYSTORE_BASE64 }}'
+          fileName: "upload-keystore.jks"
+          encodedString: "${{ secrets.RONNY_ANDROID_KEYSTORE_BASE64 }}"
 
       - name: Create key.properties
         run: |
@@ -131,7 +131,7 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
+          distribution: "zulu"
           java-version: "17"
           cache: gradle
 
@@ -139,11 +139,49 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.x"
-          channel: 'stable'
+          channel: "stable"
           cache: true
 
       - name: Accept Android SDK licenses
         run: yes | flutter doctor --android-licenses
+
+      - name: Install NDK r28 for 16KB page size compatibility
+        run: |
+          echo "Ensuring NDK r28.2.13676358 is available for 16KB page size compatibility..."
+          NDK_VERSION="28.2.13676358"
+          NDK_PATH="$ANDROID_HOME/ndk/$NDK_VERSION"
+
+          # Check if NDK r28 is already installed
+          if [ -d "$NDK_PATH" ]; then
+            echo "NDK r28 already installed at $NDK_PATH"
+          else
+            echo "NDK r28 not found, installing..."
+            # Find sdkmanager
+            if [ -d "$ANDROID_HOME/cmdline-tools/latest" ]; then
+              SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+            elif [ -d "$ANDROID_HOME/cmdline-tools" ]; then
+              SDKMANAGER=$(find $ANDROID_HOME/cmdline-tools -name sdkmanager -type f | head -1)
+            else
+              echo "Error: sdkmanager not found"
+              exit 1
+            fi
+            
+            if [ -n "$SDKMANAGER" ] && [ -f "$SDKMANAGER" ]; then
+              echo "Installing NDK $NDK_VERSION using $SDKMANAGER"
+              yes | $SDKMANAGER "ndk;$NDK_VERSION" || {
+                echo "Failed to install NDK via sdkmanager, Gradle will download it automatically during build"
+              }
+            else
+              echo "sdkmanager not found, Gradle will download NDK automatically during build"
+            fi
+          fi
+
+          # Verify installation
+          if [ -d "$NDK_PATH" ]; then
+            echo "✓ NDK r28 successfully available at $NDK_PATH"
+          else
+            echo "⚠ NDK r28 not found locally, Gradle will download it during build (this may take longer)"
+          fi
 
       - name: Get dependencies
         run: flutter pub get
@@ -181,7 +219,7 @@ jobs:
           FLAVOR_CAP="$(echo ${{ env.FLAVOR }} | sed 's/^./\U&/')"
           echo "capitalized=$FLAVOR_CAP" >> $GITHUB_OUTPUT
           echo "Capitalized flavor: $FLAVOR_CAP"
-      
+
       - name: Upload Debug Symbols
         uses: actions/upload-artifact@v4
         with:
@@ -198,7 +236,7 @@ jobs:
 
   deploy_playstore:
     name: Deploy to Google Play Store
-    needs: [ version, build ]
+    needs: [version, build]
     runs-on: ubuntu-latest
     env:
       FLAVOR: ${{ github.event.inputs.flavor }}
@@ -223,7 +261,7 @@ jobs:
           esac
           echo "package_name=$PACKAGE_NAME" >> $GITHUB_OUTPUT
           echo "Package Name: $PACKAGE_NAME"
-      
+
       - name: Download Android AAB Artifact
         uses: actions/download-artifact@v4
         with:
